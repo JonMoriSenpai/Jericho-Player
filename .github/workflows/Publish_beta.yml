@@ -1,0 +1,46 @@
+name: Node.js CI
+
+on:
+  push:
+    branches: [beta]
+  pull_request:
+    branches: [beta]
+
+jobs:
+  quality:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        node-version: [16.x]
+        os: [ubuntu-latest, windows-latest]
+        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+      - run: npm ci
+      - run: npm run lint:fix
+  Publish_beta:
+    runs-on: 'ubuntu-latest'
+    if: ${{ github.ref == 'refs/heads/beta' }}
+    needs: [quality]
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+      - run: npm ci
+      - run: npm run lint:fix
+      - run: |
+          npm set //registry.npmjs.org/:_authToken ${{ secrets.NPM_TOKEN }}
+          npm version --git-tag-version=false $(jq --raw-output '.version' package.json)-beta.$(date +%s).$(git rev-parse --short HEAD)
+          npm publish --tag beta || true
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

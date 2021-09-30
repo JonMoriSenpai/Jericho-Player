@@ -1,0 +1,6 @@
+.idea/
+.vscode/
+lib/
+node_modules/
+.nyc_output/
+test/

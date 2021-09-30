@@ -1,0 +1,13 @@
+.nyc_output/
+node_modules/
+.vscode/
+test/
+README.md
+LICENSE
+.eslintrc.json
+.github/
+.gitignore
+example/
+.babelrc
+.eslintignore
+.npmrc
