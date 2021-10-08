@@ -17,8 +17,8 @@ class StreamPacket {
   async create(Query, StreamCreateOptions) {
     const ValidationResults = ValidateUrl(Query)
     var StreamAudioResource = null
-    var ProcessedResults = !ValidationResults
-      ? YoutubeDLQueryExtractor(Query)
+    var TrackData = !ValidationResults
+      ? await YoutubeDLQueryExtractor(Query)
       : (await PlayDLQueryExtractor(
           Query,
           ValidationResults,
@@ -32,14 +32,25 @@ class StreamPacket {
             StreamCreateOptions.highWaterMark,
         }))
 
-    if (!ProcessedResults) return void null
-    else if (ProcessedResults.Extractor === 'play-dl') {
+    if (!TrackData) return void null
+    else if (
+      TrackData.tracks &&
+      TrackData.tracks[0].orignal_extractor === 'play-dl'
+    ) {
       StreamAudioResource = await PlayDLAudioResourceExtractor(
-        ProcessedResults.RawData,
-        null,
+        TrackData.RawData,
+        StreamOptions,
       )
-    } else if (ProcessedResults.Extractor === 'youtube-dl') {
-      StreamAudioResource = await YoutubeDLAudioResourceExtractor()
+    } else if (
+      TrackData.tracks &&
+      TrackData.tracks[0].orignal_extractor === 'youtube-dl'
+    ) {
+      StreamAudioResource = YoutubeDLAudioResourceExtractor(TrackData.tracks[0])
+    } else if (
+      TrackData.tracks &&
+      TrackData.tracks[0].orignal_extractor === 'ytdl-core'
+    ) {
+      StreamAudioResource = YTDLAudioResourceExtractor(TrackData.tracks[0])
     }
   }
 }

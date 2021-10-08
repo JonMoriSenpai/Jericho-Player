@@ -49,18 +49,17 @@ async function PlayDLQueryExtractor(query, QueryModeType, limit = 20) {
 }
 
 async function PlayDLAudioResourceExtractor(
-  Query,
+  RawDataInfo,
   StreamOptions = {
     quality: undefined,
     cookie: undefined,
     proxy: undefined,
   } || undefined,
 ) {
-  const StreamSource = validate(Query)
-    ? await stream(Query, StreamOptions)
-    : await stream_from_info(Query, StreamOptions)
+  const StreamSource = await stream_from_info(RawDataInfo, StreamOptions)
   const AudioResource = createAudioResource(StreamSource.stream, {
     inputType: StreamSource.type,
+    metadata: RawDataInfo,
   })
   return AudioResource
 }
