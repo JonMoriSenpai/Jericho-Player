@@ -1,3 +1,5 @@
+const { Collection } = require('discord.js')
+
 class Queue {
   static #QueueNumbers = 0
   constructor(
@@ -19,34 +21,29 @@ class Queue {
   ) {
     Queue.#QueueNumbers += 1
     this.Client = Client
-    this.Type = Type
+    this.Type = Type || `MusicPlayer`
     this.QueueId = Queue.#QueueNumbers
     this.QueueOptions = Options
-    this.message = message
+    this.guild = message.guild
     this.metadata = metadata
-    this = Queue.#QueueItemsCreation(this)
+    this.tracks = []
+    this.guildId = message.guild.id
+    this.StreamPacket = null
+    this.destroyed = false
+    this.TimeStamp = null
+    this.playing = undefined
   }
-  play() {}
-  search() {}
-  destroy() {}
-  skip() {}
-  stop() {}
-  skipTo() {}
-  jump() {}
-  clear() {}
-  insert() {}
-  NowPlaying() {}
-  volume() {}
-  TrackAdd() {}
-  TracksAdd() {}
-  remove() {}
-  position() {}
+  play(query, QueryType = AutoQueryType) {
+    
+  }
 
-  static #QueueItemsCreation(QueueInstance) {
-    QueueInstance.tracks = []
-    QueueInstance.guildId = QueueInstance.message.guild.id
-    QueueInstance.StreamDispacher = null
-    return QueueInstance
+  get current() {
+    if (!this.playing) return undefined
+    else return this.playing
+  }
+
+  #QueueDestruction() {
+    this.destroyed = true
   }
 }
 

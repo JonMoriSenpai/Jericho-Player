@@ -63,37 +63,35 @@ class Player {
         PlayerOptions.LeaveOnUsersOnlyTimedout,
     }
     var QueueInstance = new Queue(Client, message, this.Type, QueueOptions)
-    return this.#QueueCacheAdd(QueueInstance)
+    return Player.#QueueCacheAdd(QueueInstance)
   }
   DeleteQueue(GuildId) {
-    if (
-      this.#QueueCacheRemove(GuildId) &&
-      this.#QueueCacheRemove(GuildId).destroyed
-    )
-      return true
-    else if (
-      this.#QueueCacheRemove(GuildId) &&
-      !this.#QueueCacheRemove(GuildId).destroyed
-    ) {
-      var QueueInstance = this.#QueueCacheFetch(GuildId)
-      QueueInstance
+    if (Player.#QueueCacheFetch(GuildId)) {
+      var QueueInstance = Player.#QueueCacheRemove(GuildId)
+      return QueueInstance
     } else
       throw Error(
         `[Invalid Queue] Queue is not Present for GuildId: "${GuildId}"`,
       )
   }
+  GetQueue(GuildId) {
+    const QueueInstance = Player.#QueueCacheFetch(GuildId)
+    return QueueInstance
+  }
 
-  #QueueCacheAdd(QueueInstance) {
+  static #QueueCacheAdd(QueueInstance) {
     Player.#QueueCaches[`${QueueInstance.GuildId}`] = QueueInstance
     return QueueInstance
   }
-  #QueueCacheFetch(GuildId) {
-    return Player.#QueueCaches[`${QueueInstance.GuildId}`]
+  static #QueueCacheFetch(GuildId) {
+    return Player.#QueueCaches[`${GuildId || QueueInstance.GuildId}`]
   }
-  #QueueCacheRemove(GuildId) {
+  static #QueueCacheRemove(GuildId) {
     if (!this.#QueueCacheFetch(GuildId)) return false
-    var QueueInstance = Player.#QueueCaches[`${QueueInstance.GuildId}`]
-    Player.#QueueCaches[`${QueueInstance.GuildId}`] = null
+    const QueueInstance = Player.#QueueCaches[`${GuildId}`]
+    Player.#QueueCaches[`${GuildId}`] = null
     return QueueInstance
   }
 }
+
+module.exports = Player

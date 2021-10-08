@@ -24,14 +24,14 @@
     "push": "git add . && npm run commit && git push"
   },
   "devDependencies": {
-    "@babel/eslint-parser": "^7.15.4",
-    "@babel/preset-env": "^7.15.4",
+    "@babel/eslint-parser": "^7.15.8",
+    "@babel/preset-env": "^7.15.8",
     "cz-conventional-changelog": "^3.3.0",
     "eslint": "^7.32.0",
     "eslint-config-airbnb-base": "^14.2.1",
     "eslint-plugin-import": "^2.24.2",
     "nyc": "^15.1.0",
-    "semantic-release": "^17.4.7"
+    "semantic-release": "^18.0.0"
   },
   "config": {
     "commitizen": {
@@ -44,8 +44,9 @@
   },
   "dependencies": {
     "@discordjs/voice": "^0.6.0",
-    "discord-api-types": "^0.22.0",
-    "discord.js": "^13.1.0"
+    "discord-api-types": "^0.23.1",
+    "discord.js": "^13.2.0",
+    "play-dl": "^1.0.6"
   },
   "directories": {
     "example": "example"
