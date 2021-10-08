@@ -10,7 +10,7 @@ async function YoutubeDLQueryExtractor(Query) {
     youtubeSkipDashManifest: true,
     referer: Query,
   }).then((QueryResults) => {
-    return QueryResults
+    return { RawData: QueryResults, Extractor: 'youtubedl' }
   })
 }
 

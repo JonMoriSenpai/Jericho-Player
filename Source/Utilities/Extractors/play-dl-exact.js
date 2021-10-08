@@ -41,11 +41,11 @@ async function PlayDLQueryExtractor(query, QueryModeType, limit = 20) {
     SearchSource = { soundcloud: 'playlists' }
   else SearchSource = undefined
 
-  const RawDataInfo = await search(query, {
+  const QueryResults = await search(query, {
     limit: limit,
     source: SearchSource,
   })
-  return RawDataInfo
+  return { RawData: QueryResults, Extractor: 'play-dl' }
 }
 
 async function PlayDLStreamExtractor(

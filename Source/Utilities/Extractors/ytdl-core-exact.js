@@ -12,26 +12,25 @@ async function YTDLQueryExtractor(
     Filter: 'audioandvideo',
   } || undefined,
 ) {
-  if (YTDL.validateURL(Query) && YTDL.validateID(Query)) {
-    const ProxyAgent = ExtractorOptions.Proxy
-      ? HttpsProxyAgent(ExtractorOptions.Proxy)
-      : undefined
-    return await YTDL.getInfo(Query, {
-      requestOptions: ExtractorOptions.Cookies
-        ? {
-            headers: {
-              cookie: ExtractorOptions.Cookies,
-            },
-          }
-        : ProxyAgent
-        ? { ProxyAgent }
-        : undefined,
-      highWaterMark: ExtractorOptions.HighWaterMark,
-      liveBuffer: ExtractorOptions.BufferTimeout,
-      quality: ExtractorOptions.Quality,
-      filter: ExtractorOptions.Filter,
-    })
-  }
+  const ProxyAgent = ExtractorOptions.Proxy
+    ? HttpsProxyAgent(ExtractorOptions.Proxy)
+    : undefined
+  const QueryResults = await YTDL.getInfo(Query, {
+    requestOptions: ExtractorOptions.Cookies
+      ? {
+          headers: {
+            cookie: ExtractorOptions.Cookies,
+          },
+        }
+      : ProxyAgent
+      ? { ProxyAgent }
+      : undefined,
+    highWaterMark: ExtractorOptions.HighWaterMark,
+    liveBuffer: ExtractorOptions.BufferTimeout,
+    quality: ExtractorOptions.Quality,
+    filter: ExtractorOptions.Filter,
+  })
+  return { RawData: QueryResults, Extractor: 'ytdl-core' }
 }
 
 module.exports = YTDLQueryExtractor
