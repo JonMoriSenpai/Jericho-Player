@@ -48,24 +48,21 @@ async function PlayDLQueryExtractor(query, QueryModeType, limit = 20) {
   return { RawData: QueryResults, Extractor: 'play-dl' }
 }
 
-async function PlayDLStreamExtractor(
+async function PlayDLAudioResourceExtractor(
   Query,
   StreamOptions = {
     quality: undefined,
     cookie: undefined,
     proxy: undefined,
   } || undefined,
-  CreateAudioResourceif = false,
 ) {
   const StreamSource = validate(Query)
     ? await stream(Query, StreamOptions)
     : await stream_from_info(Query, StreamOptions)
-  if (!CreateAudioResourceif) return StreamSource
-  else {
-    return createAudioResource(StreamSource.stream, {
-      inputType: StreamSource.type,
-    })
-  }
+  const AudioResource = createAudioResource(StreamSource.stream, {
+    inputType: StreamSource.type,
+  })
+  return AudioResource
 }
 
-module.exports = { PlayDLQueryExtractor, PlayDLStreamExtractor }
+module.exports = { PlayDLQueryExtractor, PlayDLAudioResourceExtractor }

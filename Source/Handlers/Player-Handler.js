@@ -1,4 +1,4 @@
-const Queue = require('./Queue.js')
+const Queue = require('./Queue-Handler.js')
 
 class Player {
   static #QueueCaches = []

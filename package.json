@@ -46,7 +46,8 @@
     "@discordjs/voice": "^0.6.0",
     "discord-api-types": "^0.23.1",
     "discord.js": "^13.2.0",
-    "play-dl": "^1.0.6",
+    "is-url": "^1.2.4",
+    "play-dl": "^1.0.8",
     "youtube-dl-exec": "^1.2.14",
     "ytdl-core": "^4.9.1"
   },
