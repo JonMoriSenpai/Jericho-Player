@@ -55,17 +55,16 @@ async function PlayDLStreamExtractor(
     cookie: undefined,
     proxy: undefined,
   } || undefined,
-  CreateResourceif = false,
+  CreateAudioResourceif = false,
 ) {
   const StreamSource = validate(Query)
     ? await stream(Query, StreamOptions)
     : await stream_from_info(Query, StreamOptions)
-  if (!CreateResourceif) return StreamSource
+  if (!CreateAudioResourceif) return StreamSource
   else {
-    var StreamResource = createAudioResource(StreamSource.stream, {
+    return createAudioResource(StreamSource.stream, {
       inputType: StreamSource.type,
     })
-    return StreamResource
   }
 }
 
