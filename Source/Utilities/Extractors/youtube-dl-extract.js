@@ -3,7 +3,7 @@ const isUrl = require('is-url')
 const { createAudioResource } = require('@discordjs/voice')
 const Track = require('../../Structures/Tracks.js')
 
-async function YoutubeDLQueryExtractor(Query) {
+async function YoutubeDLQueryExtractor(Query, CustomExtractor = 'youtube-dl') {
   if (!isUrl(Query)) Query = `ytsearch:` + Query
   const QueryResults = await YoutubeDL(Query, {
     dumpSingleJson: true,
@@ -13,8 +13,7 @@ async function YoutubeDLQueryExtractor(Query) {
     preferFreeFormats: true,
     youtubeSkipDashManifest: true,
   })
-  const TrackInstance = new Track()
-  return TrackInstance.createYoutubeDLTrack(QueryResults)
+  return Track.createYoutubeDLTrack(QueryResults, CustomExtractor)
 }
 
 function YoutubeDLAudioResourceExtractor(TrackData) {

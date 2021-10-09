@@ -1,5 +1,7 @@
 const YTDL = require('ytdl-core')
 const HttpsProxyAgent = require('https-proxy-agent')
+const { YoutubeDLQueryExtractor } = require('./youtube-dl-extract')
+const { validate } = require('play-dl')
 
 async function YTDLQueryExtractor(
   Query,
@@ -12,6 +14,7 @@ async function YTDLQueryExtractor(
     Filter: 'audioandvideo',
   } || undefined,
 ) {
+  const ValidateUrlResult = validate(query)
   const ProxyAgent = ExtractorOptions.Proxy
     ? HttpsProxyAgent(ExtractorOptions.Proxy)
     : undefined
@@ -30,7 +33,23 @@ async function YTDLQueryExtractor(
     quality: ExtractorOptions.Quality,
     filter: ExtractorOptions.Filter,
   })
-  return { RawData: QueryResults, Extractor: 'ytdl-core' }
+  var YoutubeDLTracks = {
+    playlist: ValidateUrlResult === 'yt_playlist' ?? false,
+    tracks: [],
+  }
+  var CacheData = null
+  var count = 0
+  for (count = 0; count < QueryResults.length; ++count) {
+    CacheData = await YoutubeDLQueryExtractor(
+      QueryResults[count].url,
+      ValidateUrlResult === 'yt_playlist' ?? false,
+    )
+    CacheData.tracks[0]
+      ? YoutubeDLTracks.tracks.push(CacheData.tracks[0])
+      : null
+    if (!YoutubeDLTracks.playlist) break
+  }
+  return YoutubeDLTracks
 }
 
 module.exports = YTDLQueryExtractor

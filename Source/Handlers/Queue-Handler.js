@@ -33,7 +33,7 @@ class Queue {
     this.TimeStamp = null
     this.playing = undefined
   }
-  play(query, QueryType = AutoQueryType) {
+  play(query) {
     
   }
 

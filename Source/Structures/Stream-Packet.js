@@ -1,13 +1,13 @@
-const ValidateUrl = require('../Utilities/Extractors/validate-exact')
+const ValidateUri = require('../Utilities/Extractors/validate-uri')
 const {
   YoutubeDLAudioResourceExtractor,
   YoutubeDLQueryExtractor,
-} = require('../Utilities/Extractors/youtube-dl-exact')
+} = require('../Utilities/Extractors/youtube-dl-extract')
 const {
   PlayDLQueryExtractor,
   PlayDLAudioResourceExtractor,
-} = require('../Utilities/Extractors/play-dl-exact')
-const YTDLQueryExtractor = require('../Utilities/Extractors/ytdl-core-exact')
+} = require('../Utilities/Extractors/play-dl-extract')
+const YTDLQueryExtractor = require('../Utilities/Extractors/ytdl-core-extract')
 
 class StreamPacket {
   constructor(Queue) {
@@ -15,27 +15,24 @@ class StreamPacket {
   }
 
   async create(Query, StreamCreateOptions) {
-    const ValidationResults = ValidateUrl(Query)
     var StreamAudioResource = null
-    var TrackData = !ValidationResults
-      ? await YoutubeDLQueryExtractor(Query)
-      : (await PlayDLQueryExtractor(
-          Query,
-          ValidationResults,
-          StreamCreateOptions,
-        )) ??
-        (await YTDLQueryExtractor(Query, {
-          Cookies: StreamCreateOptions.cookie || StreamCreateOptions.Cookies,
-          Proxy: StreamCreateOptions.Proxy || StreamCreateOptions.Proxies,
-          HighWaterMark:
-            StreamCreateOptions.HighWaterMark ||
-            StreamCreateOptions.highWaterMark,
-        }))
+    var TrackData =
+      !ValidateUri(Query) ||
+      (ValidateUri(Query) && ValidateUri(Query) !== 'youtube')
+        ? await YoutubeDLQueryExtractor(Query)
+        : (await PlayDLQueryExtractor(Query, StreamCreateOptions)) ??
+          (await YTDLQueryExtractor(Query, {
+            Cookies: StreamCreateOptions.cookie || StreamCreateOptions.Cookies,
+            Proxy: StreamCreateOptions.Proxy || StreamCreateOptions.Proxies,
+            HighWaterMark:
+              StreamCreateOptions.HighWaterMark ||
+              StreamCreateOptions.highWaterMark,
+          }))
 
     if (!TrackData) return void null
     else if (
       TrackData.tracks &&
-      TrackData.tracks[0].orignal_extractor === 'play-dl'
+      TrackData.tracks[0].custom_extractor === 'play-dl'
     ) {
       StreamAudioResource = await PlayDLAudioResourceExtractor(
         TrackData.RawData,
@@ -43,12 +40,12 @@ class StreamPacket {
       )
     } else if (
       TrackData.tracks &&
-      TrackData.tracks[0].orignal_extractor === 'youtube-dl'
+      TrackData.tracks[0].custom_extractor === 'youtube-dl'
     ) {
       StreamAudioResource = YoutubeDLAudioResourceExtractor(TrackData.tracks[0])
     } else if (
       TrackData.tracks &&
-      TrackData.tracks[0].orignal_extractor === 'ytdl-core'
+      TrackData.tracks[0].custom_extractor === 'ytdl-core'
     ) {
       StreamAudioResource = YTDLAudioResourceExtractor(TrackData.tracks[0])
     }
