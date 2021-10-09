@@ -1,7 +1,7 @@
 {
-  "name": "jericho-player",
+  "name": "music-downloader",
   "version": "1.0.0",
-  "description": "Jericho Music Player and Radio Player Framework for node-ytdl-core",
+  "description": "Jericho Player Framework's Downloader for youtube-dl Suppport",
   "main": "./Source/index.js",
   "module": "./Source/index.mjs",
   "types": "./typings/index.d.ts",
@@ -43,13 +43,8 @@
     "npm": ">=7.0.0"
   },
   "dependencies": {
-    "@discordjs/voice": "^0.6.0",
-    "discord-api-types": "^0.23.1",
-    "discord.js": "^13.2.0",
     "is-url": "^1.2.4",
-    "play-dl": "^1.0.8",
-    "youtube-dl-exec": "^1.2.14",
-    "ytdl-core": "^4.9.1"
+    "youtube-dl-exec": "^1.2.14"
   },
   "directories": {
     "example": "example"
@@ -57,11 +52,11 @@
   "author": "Sid is Live YT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/SidisLiveYT/Jericho-Player.git"
+    "url": "git+https://github.com/Jericho-Player/Music-Downloader.git"
   },
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/SidisLiveYT/Jericho-Player/issues"
+    "url": "https://github.com/Jericho-Player/Music-Downloader/issues"
   },
-  "homepage": "https://github.com/SidisLiveYT/Jericho-Player#readme"
+  "homepage": "https://github.com/Jericho-Player/Music-Downloader#readme"
 }
