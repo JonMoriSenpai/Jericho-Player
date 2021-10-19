@@ -1,7 +1,8 @@
-const { Collection } = require('discord.js')
+const { Collection } = require('discord.js');
 
 class Queue {
   static #QueueNumbers = 0
+
   constructor(
     Client,
     message,
@@ -19,32 +20,33 @@ class Queue {
       LeaveOnUsersOnlyTimedout: 0,
     },
   ) {
-    Queue.#QueueNumbers += 1
-    this.Client = Client
-    this.Type = Type || `MusicPlayer`
-    this.QueueId = Queue.#QueueNumbers
-    this.QueueOptions = Options
-    this.guild = message.guild
-    this.metadata = metadata
-    this.tracks = []
-    this.guildId = message.guild.id
-    this.StreamPacket = null
-    this.destroyed = false
-    this.TimeStamp = null
-    this.playing = undefined
+    Queue.#QueueNumbers += 1;
+    this.Client = Client;
+    this.Type = Type || 'MusicPlayer';
+    this.QueueId = Queue.#QueueNumbers;
+    this.QueueOptions = Options;
+    this.guild = message.guild;
+    this.metadata = Options.metadata;
+    this.tracks = [];
+    this.guildId = message.guild.id;
+    this.StreamPacket = null;
+    this.destroyed = false;
+    this.TimeStamp = null;
+    this.playing = undefined;
   }
+
   play(query) {
-    
+
   }
 
   get current() {
-    if (!this.playing) return undefined
-    else return this.playing
+    if (!this.playing) return undefined;
+    return this.playing;
   }
 
   #QueueDestruction() {
-    this.destroyed = true
+    this.destroyed = true;
   }
 }
 
-module.exports = Queue
+module.exports = Queue;
