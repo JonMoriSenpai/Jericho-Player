@@ -1,4 +1,9 @@
-const { joinVoiceChannel, getVoiceConnection } = require('@discordjs/voice');
+const {
+  joinVoiceChannel,
+  getVoiceConnection,
+  VoiceConnectionStatus,
+  entersState,
+} = require('@discordjs/voice');
 
 async function join(
   Client,
@@ -15,6 +20,7 @@ async function join(
     guildId: Channel.guild.id,
     adapterCreator: Channel.guild.voiceAdapterCreator,
   });
+  await entersState(VoiceConnection, VoiceConnectionStatus.Ready, 30e3);
   Channel = Client.channels.cache.get(`${Channel.id}`)
     ?? (await Client.channels.fetch(`${Channel.id}`));
   if (
@@ -24,7 +30,8 @@ async function join(
   ) {
     Channel.guild.me.voice.setSuppressed(false).catch((err) => VoiceConnection);
     return VoiceConnection;
-  } return VoiceConnection;
+  }
+  return VoiceConnection;
 }
 
 function disconnect(
@@ -34,7 +41,9 @@ function disconnect(
   },
 ) {
   const VoiceConnection = getVoiceConnection(GuildId);
-  if (VoiceConnection && DisconnectChannelOptions.destroy) { return VoiceConnection.destroy(true); }
+  if (VoiceConnection && DisconnectChannelOptions.destroy) {
+    return VoiceConnection.destroy(true);
+  }
   if (VoiceConnection) return VoiceConnection.disconnect();
   throw Error('Voice Connection is not Found to disconnect/destroy');
 }

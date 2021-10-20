@@ -1,68 +1,39 @@
-const { Extractor } = require('playdl-music-extractor');
+const { Extractor } = require('playdl-music-extractor')
 
 class TrackGenerator {
-  constructor(
-    extractor = null,
-    FetchOptions = {
-      IgnoreError: true,
-    },
-  ) {
-    this.extractor = extractor !== 'youtube-dl' ? 'play-dl' : 'youtube-dl';
-    this.FetchOptions = FetchOptions;
-    this.songs = [];
-  }
-
-  async fetch(
+  static async fetch(
     Query,
-    FetchOptions = {
-      IgnoreError: true,
-    },
-    NotCacheSongs = false,
+    FetchOptions = { IgnoreError: true },
+    extractor = 'play-dl',
+    CacheLength = 0,
   ) {
-    if (!Query || (Query && typeof Query === 'string')) { throw Error('Invalid Song Query is Detected'); }
-    const RawData = await this.#SongsFetching(Query, FetchOptions);
+    if (!Query || (Query && typeof Query === 'string')) {
+      throw Error('Invalid Song Query is Detected')
+    }
+    const RawData = await TrackGenerator.#SongsFetching(
+      Query,
+      FetchOptions,
+      extractor,
+    )
     if (
-      !RawData
-      || (RawData && !RawData.tracks)
-      || (RawData && RawData.tracks && !RawData.tracks[0])
+      !RawData ||
+      (RawData && !RawData.tracks) ||
+      (RawData && RawData.tracks && !RawData.tracks[0])
     ) {
       return {
         playlist: false,
+        streamdatas: [],
         tracks: [],
-      };
+      }
     }
-    const Chunks = this.#Track_Id_Placement(RawData.tracks, NotCacheSongs);
+    const Chunks = TrackGenerator.#Track_Id_Placement(
+      RawData.tracks,
+      CacheLength,
+    )
     return {
       playlist: RawData.playlist,
-      tracks: Chunks,
-    };
-  }
-
-  remove(index = 0) {
-    if (!index || (index && typeof index !== 'number')) { throw Error('InValid Song\'s is mentioned'); } else if (!this.songs || (this.songs && !this.songs[Number(index)])) { throw Error('Song Index is not present in Cache'); }
-    return this.songs.splice(index, 1).length;
-  }
-
-  async insert(
-    index = 0,
-    Query,
-    FetchOptions = {
-      IgnoreError: true,
-    },
-  ) {
-    if (!Query || (Query && typeof Query === 'string')) { throw Error('Invalid Song Query is Detected'); }
-    if (!index || (index && typeof index !== 'number')) { throw Error('InValid Song\'s is mentioned'); } else if (!this.songs || (this.songs && !this.songs[Number(index)])) { throw Error('Song Index is not present in Cache'); }
-    const Chunks = await this.fetch(Query, FetchOptions, true);
-    if (
-      !Chunks
-      || (Chunks && !Chunks.tracks)
-      || (Chunks && Chunks.tracks && !Chunks.tracks[0])
-    ) { throw Error('No Song is found based on given Query'); } else {
-      return void this.songs.splice(
-        index,
-        0,
-        Chunks && Chunks.playlist ? Chunks.tracks : Chunks.tracks[0],
-      );
+      streamdatas: Chunks.streamdatas,
+      tracks: Chunks.tracks,
     }
   }
 
@@ -80,35 +51,35 @@ class TrackGenerator {
       likes: 0,
       is_live: false,
       dislikes: 0,
-    };
-  }
-
-  async #SongsFetching(Query, FetchOptions) {
-    FetchOptions = FetchOptions ?? this.FetchOptions;
-    const RawData = (this.extractor.includes('youtube-dl')
-      ? await this.#YoutubeDLExtractor(Query)
-      : null) ?? (await Extractor(Query, FetchOptions));
-    return RawData;
-  }
-
-  #Track_Id_Placement(Tracks, NotCacheSongs = false) {
-    const ProcessTracks = [];
-    for (
-      let count = 0, len = Tracks.length, Cachelength = this.songs.length;
-      count < len;
-      ++count
-    ) {
-      Tracks[count].Id = Cachelength + 1;
-      if (!NotCacheSongs) this.songs.push(Tracks[count]);
-      ProcessTracks.push(TrackGenerator.#UserTrackModelGen(Tracks[count]));
     }
-    return ProcessTracks[0] ? ProcessTracks : [];
   }
 
-  async #YoutubeDLExtractor(Query) {
-    const Downloader = require('video-extractor').Extractor;
-    return await Downloader(Query);
+  static async #SongsFetching(Query, FetchOptions, extractor = 'play-dl') {
+    const RawData =
+      (extractor.includes('youtube-dl')
+        ? await TrackGenerator.#YoutubeDLExtractor(Query)
+        : null) ?? (await Extractor(Query, FetchOptions))
+    return RawData
+  }
+
+  static #Track_Id_Placement(Tracks, CacheLength) {
+    var StreamDatas = []
+    var SearchTracks = []
+    for (let count = 0, len = Tracks.length; count < len; ++count) {
+      Tracks[count].Id = CacheLength + 1
+      SearchTracks.push(TrackGenerator.#UserTrackModelGen(Tracks[count]))
+      StreamDatas.push(Tracks[count])
+    }
+    return {
+      streamdatas: StreamDatas[0] ? StreamDatas : [],
+      tracks: SearchTracks[0] ? SearchTracks : [],
+    }
+  }
+
+  static async #YoutubeDLExtractor(Query) {
+    const Downloader = require('video-extractor').Extractor
+    return await Downloader(Query)
   }
 }
 
-module.exports = TrackGenerator;
+module.exports = TrackGenerator

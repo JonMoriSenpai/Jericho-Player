@@ -1,31 +1,43 @@
-const { createAudioResource } = require('@discordjs/voice');
-const TracksGen = require('./Tracks');
-const VoiceUtils = require('../Utilities/VoiceUtils');
+const { createAudioResource } = require('@discordjs/voice')
+const TracksGen = require('./Tracks')
+const VoiceUtils = require('../Utilities/VoiceUtils')
 
 class StreamPacketGen {
   static #PacketsCache = {}
 
-  constructor(Client, GuildId) {
-    this.Client = Client;
-    this.Channel = null;
-    this.searches = null;
-    this.tracks = null;
-    this.TracksInstance = null;
-    this.VoiceConnection = null;
-    this.GuildId = GuildId;
+  constructor(Client, GuildId, MetadataValue = null, extractor = 'play-dl') {
+    this.Client = Client
+    this.VoiceChannel = null
+    this.extractor = extractor
+    this.searches = []
+    this.tracks = []
+    this.VoiceConnection = null
+    this.metadata = MetadataValue
+    this.GuildId = GuildId
   }
 
-  async create(Query, VoiceChannel, StreamCreateOptions) {
-    this.TracksInstance = new TracksGen(StreamCreateOptions.extractor, {
-      IgnoreError: StreamCreateOptions.IgnoreError,
-    });
-    this.searches = await this.TracksInstance.fetch(Query, StreamCreateOptions);
-    this.tracks = this.TracksInstance.songs;
+  async create(
+    Query,
+    VoiceChannel,
+    StreamCreateOptions = {
+      IgnoreError: true,
+    },
+    extractor = 'play-dl',
+  ) {
+    var Chunks = await TracksGen.fetch(
+      Query,
+      StreamCreateOptions,
+      extractor,
+      this.tracks.length,
+    )
+    this.searches = Chunks.tracks
+    this.tracks = Chunks.streamdatas
+    this.VoiceChannel = VoiceChannel
     this.VoiceConnection = await VoiceUtils.join(this.Client, VoiceChannel, {
       force: true,
-    });
-    StreamPacketGen.#PacketsCache[`${this.GuildId}`] = this;
-    return StreamPacketGen.StreamAudioResourceExtractor();
+    })
+    StreamPacketGen.#PacketsCache[`${this.GuildId}`] = this
+    return void null
   }
 
   destroy(
@@ -33,18 +45,27 @@ class StreamPacketGen {
       destroy: true,
     },
   ) {
-    VoiceUtils.disconnect(this.GuildId, DisconnectChannelOptions);
-    const Garbage = {};
-    Garbage.TrackInstance = this.TracksInstance;
-    delete Garbage.TrackInstance;
+    return VoiceUtils.disconnect(this.GuildId, DisconnectChannelOptions)
   }
 
-  remove(Index) {
-    this.TracksInstance.remove(Index);
+  remove(Index = 0, Amount = 1) {
+    if (Index <= -1) throw Error(`Invalid Index Value is detected !`)
+    this.tracks.splice(Index, Amount)
+    this.searches.splice(Index, Amount)
+    return true
   }
 
-  insert(Index, Query, StreamFetchOptions) {
-    this.TracksInstance.insert(Index, Query, StreamFetchOptions);
+  async insert(Index = -1, Query, StreamFetchOptions, extractor) {
+    var Chunk = await TracksGen.fetch(
+      Query,
+      StreamFetchOptions,
+      extractor ?? this.extractor,
+      this.tracks.length,
+    )
+    if (Index <= -1) throw Error(`Invalid Index Value is detected !`)
+    this.tracks.splice(Index, 0, Chunk.streamdatas)
+    this.searches.splice(Index, 0, Chunk.tracks)
+    return true
   }
 
   static DestroyStreamPacket(
@@ -53,32 +74,26 @@ class StreamPacketGen {
       destroy: true,
     },
   ) {
-    if (!StreamPacketGen.#PacketsCache[`${GuildId}`]) { throw Error('No Stream packet was found'); }
-    const StreamPacketInstance = StreamPacketGen.#PacketsCache[`${GuildId}`];
-    StreamPacketInstance.destroy(GuildId, DisconnectChannelOptions);
-    const GarbageCollector = {};
-    GarbageCollector.TrackInstance = StreamPacketInstance;
-    delete GarbageCollector.TrackInstance;
+    if (!StreamPacketGen.#PacketsCache[`${GuildId}`]) {
+      throw Error('No Stream packet was found')
+    }
+    const StreamPacketInstance = StreamPacketGen.#PacketsCache[`${GuildId}`]
+    return StreamPacketInstance.destroy(GuildId, DisconnectChannelOptions)
   }
 
-  static StreamAudioResourceExtractor(
-    TrackData,
-    StreamPacketInstance,
-    MetadataValue,
-  ) {
+  async StreamAudioResourceExtractor(Track) {
     try {
-      return createAudioResource(TrackData.stream, {
-        inputType: TrackData.stream_type,
+      return createAudioResource(Track.stream, {
+        inputType: Track.stream_type,
         metadata: {
-          metadata: MetadataValue,
-          TrackData,
-          StreamPacketData: StreamPacketInstance,
+          metadata: this.metadata,
+          Track,
         },
-      });
+      })
     } catch (error) {
-      return void null;
+      return void null
     }
   }
 }
 
-module.exports = StreamPacketGen;
+module.exports = StreamPacketGen
