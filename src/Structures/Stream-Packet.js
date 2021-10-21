@@ -1,19 +1,33 @@
-const { createAudioResource } = require('@discordjs/voice')
-const TracksGen = require('./Tracks')
-const VoiceUtils = require('../Utilities/VoiceUtils')
+const { createAudioResource } = require('@discordjs/voice');
+const TracksGen = require('./Tracks');
+const VoiceUtils = require('../Utilities/Voice-Utils');
+const ClassUtils = require('../Utilities/Class-Utils');
 
 class StreamPacketGen {
   static #PacketsCache = {}
 
-  constructor(Client, GuildId, MetadataValue = null, extractor = 'play-dl') {
-    this.Client = Client
-    this.VoiceChannel = null
-    this.extractor = extractor
-    this.searches = []
-    this.tracks = []
-    this.VoiceConnection = null
-    this.metadata = MetadataValue
-    this.GuildId = GuildId
+  constructor(
+    Client,
+    GuildId,
+    MetadataValue = null,
+    extractor = 'play-dl',
+    ExtractorStreamOptions = {
+      Limit: 1,
+      Quality: 'high',
+      Proxy: null,
+    },
+    IgnoreError = true,
+  ) {
+    this.Client = Client;
+    this.VoiceChannel = null;
+    this.extractor = extractor;
+    this.searches = [];
+    this.tracks = [];
+    this.VoiceConnection = null;
+    this.metadata = MetadataValue;
+    this.GuildId = GuildId;
+    this.ExtractorStreamOptions = ExtractorStreamOptions;
+    this.IgnoreError = IgnoreError ?? true;
   }
 
   async create(
@@ -21,23 +35,32 @@ class StreamPacketGen {
     VoiceChannel,
     StreamCreateOptions = {
       IgnoreError: true,
+      ExtractorStreamOptions: {
+        Limit: 1,
+        Quality: 'high',
+        Proxy: null,
+      },
     },
     extractor = 'play-dl',
   ) {
-    var Chunks = await TracksGen.fetch(
+    StreamCreateOptions.ExtractorStreamOptions = ClassUtils.extractoptions(
+      StreamCreateOptions.ExtractorStreamOptions,
+      this.ExtractorStreamOptions,
+    );
+    const Chunks = await TracksGen.fetch(
       Query,
       StreamCreateOptions,
       extractor,
       this.tracks.length,
-    )
-    this.searches = Chunks.tracks
-    this.tracks = Chunks.streamdatas
-    this.VoiceChannel = VoiceChannel
+    );
+    this.searches = Chunks.tracks;
+    this.tracks = Chunks.streamdatas;
+    this.VoiceChannel = VoiceChannel;
     this.VoiceConnection = await VoiceUtils.join(this.Client, VoiceChannel, {
       force: true,
-    })
-    StreamPacketGen.#PacketsCache[`${this.GuildId}`] = this
-    return void null
+    });
+    StreamPacketGen.#PacketsCache[`${this.GuildId}`] = this;
+    return void null;
   }
 
   destroy(
@@ -45,27 +68,43 @@ class StreamPacketGen {
       destroy: true,
     },
   ) {
-    return VoiceUtils.disconnect(this.GuildId, DisconnectChannelOptions)
+    return VoiceUtils.disconnect(this.GuildId, DisconnectChannelOptions);
   }
 
   remove(Index = 0, Amount = 1) {
-    if (Index <= -1) throw Error(`Invalid Index Value is detected !`)
-    this.tracks.splice(Index, Amount)
-    this.searches.splice(Index, Amount)
-    return true
+    if (Index <= -1) throw Error('Invalid Index Value is detected !');
+    this.tracks.splice(Index, Amount);
+    this.searches.splice(Index, Amount);
+    return true;
   }
 
-  async insert(Index = -1, Query, StreamFetchOptions, extractor) {
-    var Chunk = await TracksGen.fetch(
+  async insert(
+    Index = -1,
+    Query,
+    StreamFetchOptions = {
+      IgnoreError: true,
+      ExtractorStreamOptions: {
+        Limit: 1,
+        Quality: 'high',
+        Proxy: null,
+      },
+    },
+    extractor,
+  ) {
+    StreamFetchOptions.ExtractorStreamOptions = ClassUtils.extractoptions(
+      StreamFetchOptions.ExtractorStreamOptions,
+      this.ExtractorStreamOptions,
+    );
+    const Chunk = await TracksGen.fetch(
       Query,
       StreamFetchOptions,
       extractor ?? this.extractor,
       this.tracks.length,
-    )
-    if (Index <= -1) throw Error(`Invalid Index Value is detected !`)
-    this.tracks.splice(Index, 0, Chunk.streamdatas)
-    this.searches.splice(Index, 0, Chunk.tracks)
-    return true
+    );
+    if (Index <= -1) throw Error('Invalid Index Value is detected !');
+    this.tracks.splice(Index, 0, Chunk.streamdatas);
+    this.searches.splice(Index, 0, Chunk.tracks);
+    return true;
   }
 
   static DestroyStreamPacket(
@@ -75,10 +114,10 @@ class StreamPacketGen {
     },
   ) {
     if (!StreamPacketGen.#PacketsCache[`${GuildId}`]) {
-      throw Error('No Stream packet was found')
+      throw Error('No Stream packet was found');
     }
-    const StreamPacketInstance = StreamPacketGen.#PacketsCache[`${GuildId}`]
-    return StreamPacketInstance.destroy(GuildId, DisconnectChannelOptions)
+    const StreamPacketInstance = StreamPacketGen.#PacketsCache[`${GuildId}`];
+    return StreamPacketInstance.destroy(GuildId, DisconnectChannelOptions);
   }
 
   async StreamAudioResourceExtractor(Track) {
@@ -89,11 +128,11 @@ class StreamPacketGen {
           metadata: this.metadata,
           Track,
         },
-      })
+      });
     } catch (error) {
-      return void null
+      return void null;
     }
   }
 }
 
-module.exports = StreamPacketGen
+module.exports = StreamPacketGen;

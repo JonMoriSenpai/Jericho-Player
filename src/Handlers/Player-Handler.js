@@ -1,14 +1,19 @@
 const Queue = require('./Queue-Handler.js');
+const ClassUtils = require('../Utilities/Class-Utils');
 
 class Player {
   static #QueueCaches = []
 
   constructor(
     Client,
-    Type = null,
     PlayerOptions = {
-      metadata: null,
-      YTDLDownloadOptions: null,
+      extractor: 'play-dl',
+      ExtractorStreamOptions: {
+        Limit: 1,
+        Quality: 'high',
+        Proxy: null,
+      },
+      IgnoreError: true,
       LeaveOnEmpty: false,
       LeaveOnEnd: false,
       LeaveOnBotOnly: false,
@@ -20,15 +25,20 @@ class Player {
     },
   ) {
     this.Client = Client;
-    this.Type = Type;
     this.PlayerOptions = PlayerOptions;
   }
 
   CreateQueue(
     message,
     QueueCreateOptions = {
+      extractor: 'play-dl',
       metadata: null,
-      YTDLDownloadOptions: null,
+      ExtractorStreamOptions: {
+        Limit: 1,
+        Quality: 'high',
+        Proxy: null,
+      },
+      IgnoreError: true,
       LeaveOnEmpty: false,
       LeaveOnEnd: false,
       LeaveOnBotOnly: false,
@@ -39,19 +49,17 @@ class Player {
       LeaveOnUsersOnlyTimedout: 0,
     },
   ) {
-    const QueueInstance = new Queue(
-      this.Client,
-      message,
-      this.Type,
+    QueueCreateOptions = ClassUtils.extractoptions(
       QueueCreateOptions,
+      this.PlayerOptions,
     );
+    const QueueInstance = new Queue(this.Client, message, QueueCreateOptions);
     return Player.#QueueCacheAdd(QueueInstance);
   }
 
   DeleteQueue(GuildId) {
     if (Player.#QueueCacheFetch(GuildId)) {
-      const QueueInstance = Player.#QueueCacheRemove(GuildId);
-      return QueueInstance;
+      return void Player.#QueueCacheRemove(GuildId);
     }
     throw Error(
       `[Invalid Queue] Queue is not Present for GuildId: "${GuildId}"`,
@@ -76,7 +84,10 @@ class Player {
     if (!this.#QueueCacheFetch(GuildId)) return false;
     const QueueInstance = Player.#QueueCaches[`${GuildId}`];
     Player.#QueueCaches[`${GuildId}`] = null;
-    return QueueInstance;
+    const Garbage = {};
+    Garbage.Structure = QueueInstance;
+    delete Garbage.Structure;
+    return void null;
   }
 }
 
