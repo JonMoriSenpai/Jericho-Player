@@ -46,8 +46,7 @@
     "@discordjs/voice": "^0.6.0",
     "discord.js": "^13.2.0",
     "is-url": "^1.2.4",
-    "playdl-music-extractor": "^1.0.4",
-    "video-extractor": "^1.1.14"
+    "playdl-music-extractor": "^2.0.0"
   },
   "directories": {
     "example": "example"
