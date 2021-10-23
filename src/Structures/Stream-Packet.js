@@ -61,7 +61,7 @@ class StreamPacketGen {
     this.JerichoPlayer.emit(
       'TracksAdd',
       this.JerichoPlayer.GetQueue(this.guildId),
-      this.searches,
+      Chunks.tracks,
     );
     if (VoiceChannel) {
       this.VoiceChannel = !this.VoiceChannel
@@ -127,6 +127,11 @@ class StreamPacketGen {
       );
     }
     this.#__HandleInsertion(Number(Index) ?? -1, Chunk);
+    this.JerichoPlayer.emit(
+      'TracksAdd',
+      this.JerichoPlayer.GetQueue(this.guildId),
+      Chunk.tracks,
+    );
     return this;
   }
 
