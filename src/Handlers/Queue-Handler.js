@@ -47,8 +47,6 @@ class Queue {
     this.tracks = [];
     this.guildId = message.guild.id;
     this.destroyed = false;
-    this.playing = false;
-    this.paused = false;
     this.MusicPlayer = createAudioPlayer({
       behaviors: {
         noSubscriber: NoSubscriberBehavior.Play,
@@ -57,12 +55,7 @@ class Queue {
     this.JerichoPlayer = JerichoPlayer;
 
     this.MusicPlayer.on('stateChange', (oldState, newState) => {
-      if (
-        oldState.status === AudioPlayerStatus.Idle
-        && newState.status === AudioPlayerStatus.Playing
-      ) {
-        this.playing = true;
-      } else if (newState.status === AudioPlayerStatus.Idle) {
+      if (newState.status === AudioPlayerStatus.Idle) {
         this.JerichoPlayer.emit('TrackEnd', this.tracks[0], this);
         this.#__CleaningTrackMess();
         this.#__ResourcePlay();
@@ -126,7 +119,7 @@ class Queue {
       PlayOptions.extractor,
     );
     this.tracks = this.StreamPacket.searches;
-    await this.#__ResourcePlay();
+    if (!this.playing && !this.paused) await this.#__ResourcePlay();
     return true;
   }
 
@@ -170,7 +163,6 @@ class Queue {
     if (this.destroyed) return void this.JerichoPlayer.emit('error', 'Destroyed Queue', this);
     if (!this.playing) return void this.JerichoPlayer.emit('error', 'Not Playing', this);
     if (!this.StreamPacket.tracks[0]) return void this.JerichoPlayer.emit('error', 'Empty Queue', this);
-    this.paused = true;
     return this.MusicPlayer.pause(true);
   }
 
@@ -271,6 +263,31 @@ class Queue {
     return true;
   }
 
+  get paused() {
+    if (
+      !(
+        this.MusicPlayer
+        && this.MusicPlayer.state
+        && this.MusicPlayer.state.status
+      )
+    ) return false;
+    return (
+      this.MusicPlayer.state.status === AudioPlayerStatus.Paused
+      || this.MusicPlayer.state.status === AudioPlayerStatus.AutoPaused
+    );
+  }
+
+  get playing() {
+    if (
+      !(
+        this.MusicPlayer
+        && this.MusicPlayer.state
+        && this.MusicPlayer.state.status
+      )
+    ) return false;
+    return this.MusicPlayer.state.status !== AudioPlayerStatus.Idle;
+  }
+
   get current() {
     if (!this.playing || !this.destroyed) return undefined;
     return this.StreamPacket.searches[0];
@@ -278,7 +295,6 @@ class Queue {
 
   async #__ResourcePlay() {
     if (!this.StreamPacket.tracks[0]) {
-      this.playing = false;
       Queue.#TimedoutIds[
         `${this.guildId}`
       ] = this.#__QueueAudioPlayerStatusManager();
@@ -303,7 +319,6 @@ class Queue {
         ? true
         : undefined;
     }
-    this.playing = true;
     return void (await entersState(
       this.MusicPlayer,
       AudioPlayerStatus.Playing,

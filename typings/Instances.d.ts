@@ -31,6 +31,7 @@ export type Queue = {
   readonly destroyed: Boolean
   readonly JerichoPlayer: JerichoPlayer
   readonly playing: Boolean
+  readonly paused: Boolean
   readonly IgnoreError: Boolean
   readonly MusicPlayer: AudioPlayer
   play(
