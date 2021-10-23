@@ -1,5 +1,4 @@
 const EventEmitter = require('events');
-const { ClientUser, Message, Guild } = require('discord.js/src/index.js');
 const Queue = require('./Queue-Handler.js');
 const ClassUtils = require('../Utilities/Class-Utils');
 const { join, disconnect } = require('../Utilities/Voice-Utils');
@@ -28,10 +27,7 @@ class JerichoPlayer extends EventEmitter {
     },
   ) {
     super();
-    if (
-      !Client
-      || !(Client && Client.user && typeof Client.user === typeof ClientUser)
-    ) throw Error('Invalid Discord Client , Please Provide one Correctly');
+    if (!Client || !(Client && Client.user)) throw Error('Invalid Discord Client , Please Provide one Correctly');
     this.Client = Client;
     this.JerichoPlayerOptions = JerichoPlayerOptions;
     this.Client.on('voiceStateUpdate', (OldVoiceState, NewVoiceState) => {
@@ -113,15 +109,7 @@ class JerichoPlayer extends EventEmitter {
       LeaveOnBotOnlyTimedout: 0,
     },
   ) {
-    if (
-      !message
-      || !(
-        message
-        && typeof message === typeof Message
-        && message.guild
-        && typeof message.guild === typeof Guild
-      )
-    ) {
+    if (!message || !(message && message.guild)) {
       throw Error(
         'Invalid Guild Message , Please Provide Correct Guild Message Correctly',
       );
