@@ -39,12 +39,30 @@ function disconnect(
   DisconnectChannelOptions = {
     destroy: true,
   },
+  Timedout = 0,
 ) {
-  const VoiceConnection = getVoiceConnection(GuildId);
-  if (VoiceConnection && DisconnectChannelOptions.destroy) {
-    return VoiceConnection.destroy(true);
+  if (Timedout && Timedout > 0) {
+    return setTimeout(() => {
+      const VoiceConnection = getVoiceConnection(GuildId);
+      if (
+        VoiceConnection
+        && DisconnectChannelOptions
+        && DisconnectChannelOptions.destroy
+      ) {
+        return void VoiceConnection.destroy(true);
+      }
+      if (VoiceConnection) return void VoiceConnection.disconnect();
+    }, Timedout * 1000);
   }
-  if (VoiceConnection) return VoiceConnection.disconnect();
+  const VoiceConnection = getVoiceConnection(GuildId);
+  if (
+    VoiceConnection
+    && DisconnectChannelOptions
+    && DisconnectChannelOptions.destroy
+  ) {
+    return void VoiceConnection.destroy(true);
+  }
+  if (VoiceConnection) return void VoiceConnection.disconnect();
   throw Error('Voice Connection is not Found to disconnect/destroy');
 }
 

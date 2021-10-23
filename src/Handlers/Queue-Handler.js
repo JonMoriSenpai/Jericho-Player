@@ -6,9 +6,10 @@ const {
 } = require('@discordjs/voice');
 const StreamPacketGen = require('../Structures/Stream-Packet');
 const ClassUtils = require('../Utilities/Class-Utils');
+const { disconnect } = require('../Utilities/Voice-Utils');
 
 class Queue {
-  static #QueueNumbers = 0
+  static #TimedoutIds = {}
 
   constructor(
     Client,
@@ -25,14 +26,11 @@ class Queue {
       LeaveOnEmpty: false,
       LeaveOnEnd: false,
       LeaveOnBotOnly: false,
-      LeaveOnUsersOnly: false,
       LeaveOnEmptyTimedout: 0,
       LeaveOnEndTimedout: 0,
       LeaveOnBotOnlyTimedout: 0,
-      LeaveOnUsersOnlyTimedout: 0,
     },
   ) {
-    Queue.#QueueNumbers += 1;
     this.Client = Client;
     this.StreamPacket = new StreamPacketGen(
       Client,
@@ -41,7 +39,6 @@ class Queue {
       QueueOptions.extractor,
       QueueOptions.ExtractorStreamOptions,
     );
-    this.QueueId = Queue.#QueueNumbers;
     this.QueueOptions = QueueOptions;
     this.guild = message.guild;
     this.metadata = QueueOptions.metadata;
@@ -49,7 +46,6 @@ class Queue {
     this.guildId = message.guild.id;
     this.destroyed = false;
     this.playing = false;
-    this.IgnoreError = QueueOptions.IgnoreError ?? false;
     this.MusicPlayer = createAudioPlayer({
       behaviors: {
         noSubscriber: NoSubscriberBehavior.Play,
@@ -61,12 +57,10 @@ class Queue {
         oldState.status === AudioPlayerStatus.Idle
         && newState.status === AudioPlayerStatus.Playing
       ) {
-        this.playing = false;
+        this.playing = true;
         // console.log('Playing audio output on audio player'); //Work to be Done with Player Events
       } else if (newState.status === AudioPlayerStatus.Idle) {
-        this.tracks.shift();
-        this.StreamPacket.tracks.shift();
-        this.StreamPacket.searches.shift();
+        this.#__CleaningTrackMess();
         this.#__ResourcePlay();
         // console.log('Playback has stopped. Attempting to restart or next Song.'); //Work to be Done with Player Events
       }
@@ -88,15 +82,13 @@ class Queue {
       LeaveOnEmpty: false,
       LeaveOnEnd: false,
       LeaveOnBotOnly: false,
-      LeaveOnUsersOnly: false,
       LeaveOnEmptyTimedout: 0,
       LeaveOnEndTimedout: 0,
       LeaveOnBotOnlyTimedout: 0,
-      LeaveOnUsersOnlyTimedout: 0,
     },
   ) {
-    PlayOptions = ClassUtils.extractoptions(PlayOptions, this.QueueOptions);
-    await this.StreamPacket.create(
+    PlayOptions = ClassUtils.stablizingoptions(PlayOptions, this.QueueOptions);
+    this.StreamPacket = await this.StreamPacket.create(
       Query,
       VoiceChannel,
       PlayOptions,
@@ -113,12 +105,50 @@ class Queue {
   }
 
   async #__ResourcePlay() {
+    if (!this.StreamPacket.tracks[0]) {
+      this.playing = false;
+      Queue.#TimedoutIds[
+        `${this.guildId}`
+      ] = this.#__QueueAudioPlayerStatusManager();
+      throw Error('Queue has been Ended');
+    }
+    Queue.#TimedoutIds[`${this.guildId}`] = Queue.#TimedoutIds[
+      `${this.guildId}`
+    ]
+      ? clearTimeout(Number(Queue.#TimedoutIds[`${this.guildId}`]))
+      : undefined;
     const AudioResource = await this.StreamPacket.StreamAudioResourceExtractor(
       this.StreamPacket.tracks[0],
     );
     this.MusicPlayer.play(AudioResource);
     this.playing = true;
-    return await entersState(this.MusicPlayer, AudioPlayerStatus.Playing, 5e3);
+    return void (await entersState(
+      this.MusicPlayer,
+      AudioPlayerStatus.Playing,
+      5e3,
+    ));
+  }
+
+  #__CleaningTrackMess() {
+    this.tracks.shift();
+    this.StreamPacket.tracks.shift();
+    this.StreamPacket.searches.shift();
+  }
+
+  #__QueueAudioPlayerStatusManager() {
+    Queue.#TimedoutIds[`${this.guildId}`] = Queue.#TimedoutIds[
+      `${this.guildId}`
+    ]
+      ? clearTimeout(Number(Queue.#TimedoutIds[`${this.guildId}`]))
+      : undefined;
+    if (this.QueueOptions.LeaveOnEnd && this.playing && !this.tracks[0]) {
+      return disconnect(
+        this.guildId,
+        { destroy: true },
+        this.QueueOptions.LeaveOnEndTimedout,
+      );
+    }
+    return void null;
   }
 }
 

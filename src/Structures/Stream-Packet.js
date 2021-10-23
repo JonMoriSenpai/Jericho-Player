@@ -43,7 +43,7 @@ class StreamPacketGen {
     },
     extractor = 'play-dl',
   ) {
-    StreamCreateOptions.ExtractorStreamOptions = ClassUtils.extractoptions(
+    StreamCreateOptions.ExtractorStreamOptions = ClassUtils.stablizingoptions(
       StreamCreateOptions.ExtractorStreamOptions,
       this.ExtractorStreamOptions,
     );
@@ -53,14 +53,28 @@ class StreamPacketGen {
       extractor,
       this.tracks.length,
     );
-    this.searches = Chunks.tracks;
-    this.tracks = Chunks.streamdatas;
-    this.VoiceChannel = VoiceChannel;
-    this.VoiceConnection = await VoiceUtils.join(this.Client, VoiceChannel, {
-      force: true,
-    });
+    this.searches.splice(this.searches.length, 0, Chunks.tracks);
+    this.tracks.splice(this.tracks.length, 0, Chunks.streamdatas);
+    if (VoiceChannel) {
+      this.VoiceChannel = !this.VoiceChannel
+        || !this.VoiceConnection
+        || (this.VoiceChannel && VoiceChannel.id !== this.VoiceChannel.id)
+        ? VoiceChannel
+        : this.VoiceChannel;
+      this.VoiceConnection = !this.VoiceChannel
+        || !this.VoiceConnection
+        || (this.VoiceChannel && VoiceChannel.id !== this.VoiceChannel.id)
+        ? await VoiceUtils.join(this.Client, VoiceChannel, {
+          force: true,
+        })
+        : this.VoiceConnection;
+    } else if (!VoiceChannel && !this.VoiceChannel && !this.VoiceConnection) {
+      throw Error(
+        '[Invalid Voice Data] Voice Connection or Voice Channnel is not Present for Stream Packet',
+      );
+    }
     StreamPacketGen.#PacketsCache[`${this.GuildId}`] = this;
-    return void null;
+    return this;
   }
 
   destroy(
@@ -91,7 +105,7 @@ class StreamPacketGen {
     },
     extractor,
   ) {
-    StreamFetchOptions.ExtractorStreamOptions = ClassUtils.extractoptions(
+    StreamFetchOptions.ExtractorStreamOptions = ClassUtils.stablizingoptions(
       StreamFetchOptions.ExtractorStreamOptions,
       this.ExtractorStreamOptions,
     );

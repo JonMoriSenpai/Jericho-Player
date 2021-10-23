@@ -21,6 +21,7 @@
     "no-param-reassign": "off",
     "radix": "off",
     "global-require": "off",
-    "no-useless-escape": "off"
+    "no-useless-escape": "off",
+    "import/no-unresolved": "off"
   }
 }
