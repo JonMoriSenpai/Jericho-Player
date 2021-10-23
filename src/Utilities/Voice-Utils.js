@@ -53,14 +53,14 @@ function disconnect(
         VoiceConnection.destroy(true);
         if (QueueInstance) {
           return void QueueInstance.JerichoPlayer.emit(
-            'QueueEnd',
+            'ConnectionEnd',
             QueueInstance,
           );
         }
         return void null;
       }
       if (VoiceConnection) {
-        if (QueueInstance) QueueInstance.JerichoPlayer.emit('QueueEnd', QueueInstance);
+        if (QueueInstance) QueueInstance.JerichoPlayer.emit('ConnectionEnd', QueueInstance);
         return void VoiceConnection.disconnect();
       }
       return void QueueInstance.JerichoPlayer.emit(
@@ -77,11 +77,16 @@ function disconnect(
     && DisconnectChannelOptions.destroy
   ) {
     VoiceConnection.destroy(true);
-    if (QueueInstance) return void QueueInstance.JerichoPlayer.emit('QueueEnd', QueueInstance);
+    if (QueueInstance) {
+      return void QueueInstance.JerichoPlayer.emit(
+        'ConnectionEnd',
+        QueueInstance,
+      );
+    }
     return void null;
   }
   if (VoiceConnection) {
-    if (QueueInstance) QueueInstance.JerichoPlayer.emit('QueueEnd', QueueInstance);
+    if (QueueInstance) QueueInstance.JerichoPlayer.emit('ConnectionEnd', QueueInstance);
     return void VoiceConnection.disconnect();
   }
   return void QueueInstance.JerichoPlayer.emit(

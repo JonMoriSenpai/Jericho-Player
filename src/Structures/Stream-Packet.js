@@ -52,7 +52,7 @@ class StreamPacketGen {
       Query,
       StreamCreateOptions,
       extractor,
-      this.tracks.length,
+      Number(this.tracks[-1].Id),
     );
     this.searches = this.searches.concat(Chunks.tracks);
     this.tracks = this.tracks.concat(Chunks.streamdatas);
@@ -75,7 +75,7 @@ class StreamPacketGen {
         })
         : this.VoiceConnection;
     } else if (!VoiceChannel && !this.VoiceChannel && !this.VoiceConnection) {
-      this.JerichoPlayer.emit(
+      return void this.JerichoPlayer.emit(
         'ConnectionError',
         this.VoiceConnection,
         this.guildId,
@@ -85,18 +85,10 @@ class StreamPacketGen {
     return this;
   }
 
-  remove(Index = 0, Amount = 1) {
-    if (Index <= -1) {
-      this.JerichoPlayer.emit(
-        'error',
-        'Invalid Index',
-        this.JerichoPlayer.GetQueue(this.guildId),
-        Index,
-      );
-    }
+  remove(Index = -1, Amount = 1) {
     this.tracks.splice(Index, Amount);
     this.searches.splice(Index, Amount);
-    return true;
+    return this;
   }
 
   async insert(
@@ -120,19 +112,33 @@ class StreamPacketGen {
       Query,
       StreamFetchOptions,
       extractor ?? this.extractor,
-      this.tracks.length,
+      Number(this.tracks[-1].Id),
     );
-    if (Index <= -1) {
-      this.JerichoPlayer.emit(
+    if (Number(Index) < -1) {
+      return void this.JerichoPlayer.emit(
         'error',
         'Invalid Index',
         this.JerichoPlayer.GetQueue(this.guildId),
-        Index,
+        Number(Index),
       );
     }
-    this.searches = this.searches.concat(Chunk.tracks);
-    this.tracks = this.tracks.concat(Chunk.streamdatas);
-    return true;
+    this.#__HandleInsertion(Number(Index) ?? -1, Chunk);
+    return this;
+  }
+
+  #__HandleInsertion(Index = -1, Chunk) {
+    if (!Index || (Index && Index < 0)) {
+      this.searches = this.searches.concat(Chunk.tracks);
+      this.tracks = this.tracks.concat(Chunk.streamdatas);
+    } else {
+      let GarbageFirstPhase = this.searches.splice(0, Index);
+      let GarbageSecondPhase = GarbageFirstPhase.concat(Chunk.tracks);
+      this.searches = GarbageSecondPhase.concat(this.searches);
+      GarbageFirstPhase = this.tracks.splice(0, Index);
+      GarbageSecondPhase = GarbageFirstPhase.concat(Chunk.streamdatas);
+      this.tracks = GarbageSecondPhase.concat(this.tracks);
+    }
+    return void null;
   }
 
   async StreamAudioResourceExtractor(Track) {

@@ -48,6 +48,7 @@ class Queue {
     this.guildId = message.guild.id;
     this.destroyed = false;
     this.playing = false;
+    this.paused = false;
     this.MusicPlayer = createAudioPlayer({
       behaviors: {
         noSubscriber: NoSubscriberBehavior.Play,
@@ -89,6 +90,7 @@ class Queue {
       LeaveOnBotOnlyTimedout: 0,
     },
   ) {
+    if (this.destroyed) return void this.JerichoPlayer.emit('error', 'Destroyed Queue', this);
     PlayOptions = ClassUtils.stablizingoptions(PlayOptions, this.QueueOptions);
     this.StreamPacket
       ? this.StreamPacket
@@ -112,9 +114,16 @@ class Queue {
   }
 
   skip(TrackIndex) {
+    if (this.destroyed) return void this.JerichoPlayer.emit('error', 'Destroyed Queue', this);
     if (TrackIndex && typeof TrackIndex !== 'number') {
-      this.JerichoPlayer.emit('error', 'Invalid Index', this, TrackIndex);
-    } else if (!this.playing || (this.playing && !this.StreamPacket.tracks[1])) this.JerichoPlayer.emit('error', 'Empty Queue', this);
+      return void this.JerichoPlayer.emit(
+        'error',
+        'Invalid Index',
+        this,
+        TrackIndex,
+      );
+    }
+    if (!this.playing || (this.playing && !this.StreamPacket.tracks[1])) return void this.JerichoPlayer.emit('error', 'Empty Queue', this);
     TrackIndex && TrackIndex > 1
       ? this.#__CleaningTrackMess(undefined, TrackIndex - 1 ?? undefined)
       : undefined;
@@ -123,8 +132,9 @@ class Queue {
   }
 
   stop() {
-    if (!this.playing) this.JerichoPlayer.emit('error', 'Not Playing', this);
-    else if (!this.StreamPacket.tracks[0]) this.JerichoPlayer.emit('error', 'Empty Queue', this);
+    if (this.destroyed) return void this.JerichoPlayer.emit('error', 'Destroyed Queue', this);
+    if (!this.playing) return void this.JerichoPlayer.emit('error', 'Not Playing', this);
+    if (!this.StreamPacket.tracks[0]) return void this.JerichoPlayer.emit('error', 'Empty Queue', this);
     this.#__CleaningTrackMess(
       0,
       (this.StreamPacket.tracks.length > 1
@@ -136,19 +146,99 @@ class Queue {
     return true;
   }
 
+  pause() {
+    if (this.destroyed) return void this.JerichoPlayer.emit('error', 'Destroyed Queue', this);
+    if (!this.playing) return void this.JerichoPlayer.emit('error', 'Not Playing', this);
+    if (!this.StreamPacket.tracks[0]) return void this.JerichoPlayer.emit('error', 'Empty Queue', this);
+    this.paused = true;
+    return this.MusicPlayer.pause(true);
+  }
+
+  resume() {
+    if (this.destroyed) return void this.JerichoPlayer.emit('error', 'Destroyed Queue', this);
+    if (!this.playing) return void this.JerichoPlayer.emit('error', 'Not Playing', this);
+    if (!this.StreamPacket.tracks[0]) return void this.JerichoPlayer.emit('error', 'Empty Queue', this);
+    if (!this.paused) return void this.JerichoPlayer.emit('error', 'Not Paused', this);
+    if (!this.MusicPlayer) return this.MusicPlayer.unpause();
+    return void null;
+  }
+
+  async insert(
+    Query,
+    TrackIndex = -1,
+    InsertOptions = {
+      IgnoreError: true,
+      extractor: 'play-dl',
+      metadata: this.metadata,
+      ExtractorStreamOptions: {
+        Limit: 1,
+        Quality: 'high',
+        Proxy: null,
+      },
+    },
+  ) {
+    if (this.destroyed) return void this.JerichoPlayer.emit('error', 'Destroyed Queue', this);
+    InsertOptions = ClassUtils.stablizingoptions(
+      InsertOptions,
+      this.QueueOptions,
+    );
+    this.StreamPacket
+      ? this.StreamPacket
+      : new StreamPacketGen(
+        this.Client,
+        this.guildId,
+        InsertOptions.metadata,
+        InsertOptions.extractor,
+        InsertOptions.ExtractorStreamOptions,
+        this.JerichoPlayer,
+      );
+    this.StreamPacket = await this.StreamPacket.insert(
+      TrackIndex ?? -1,
+      Query,
+      InsertOptions.ExtractorStreamOptions,
+      InsertOptions.extractor,
+    );
+    this.tracks = this.StreamPacket.searches;
+    return true;
+  }
+
+  remove(Index = -1, Amount = 1) {
+    if (this.destroyed) {
+      return void this.JerichoPlayer.emit(
+        'error',
+        'Destroyed Queue',
+        this.JerichoPlayer.GetQueue(this.guildId),
+      );
+    }
+    if (Index < -1) {
+      return void this.JerichoPlayer.emit(
+        'error',
+        'Invalid Index',
+        this.JerichoPlayer.GetQueue(this.guildId),
+        Index,
+      );
+    }
+    this.StreamPacket = this.StreamPacket.remove(Index, Amount);
+    return true;
+  }
+
   destroy(connection = true) {
+    if (this.destroyed) return void this.JerichoPlayer.emit('error', 'Destroyed Queue', this);
     if (connection) {
       disconnect(this.guildId, { destroy: true }, undefined, this.JerichoPlayer);
     }
     this.destroyed = true;
+    this.StreamPacket.tracks = [];
+    this.StreamPacket.searches = [];
     const Garbage = {};
     Garbage.container = this.StreamPacket;
     delete Garbage.container;
     this.StreamPacket = undefined;
+    return true;
   }
 
   get current() {
-    if (!this.playing) return undefined;
+    if (!this.playing || !this.destroyed) return undefined;
     return this.StreamPacket.searches[0];
   }
 
@@ -158,9 +248,10 @@ class Queue {
       Queue.#TimedoutIds[
         `${this.guildId}`
       ] = this.#__QueueAudioPlayerStatusManager();
-      if (!Queue.#TimedoutIds[`${this.guildId}`]) this.JerichoPlayer.emit('QueueEnd', this);
-      else return void null;
+      if (!Queue.#TimedoutIds[`${this.guildId}`]) return void this.JerichoPlayer.emit('QueueEnd', this);
+      return void null;
     }
+    if (this.destroyed) return void null;
     Queue.#TimedoutIds[`${this.guildId}`] = Queue.#TimedoutIds[
       `${this.guildId}`
     ]
@@ -188,9 +279,6 @@ class Queue {
 
   #__CleaningTrackMess(StartingTrackIndex = 0, DeleteTracksCount) {
     DeleteTracksCount
-      ? this.tracks.splice(StartingTrackIndex ?? 0, DeleteTracksCount)
-      : this.tracks.shift();
-    DeleteTracksCount
       ? this.StreamPacket.tracks.splice(
         StartingTrackIndex ?? 0,
         DeleteTracksCount,
@@ -205,6 +293,7 @@ class Queue {
   }
 
   #__QueueAudioPlayerStatusManager() {
+    if (this.destroyed) return void null;
     Queue.#TimedoutIds[`${this.guildId}`] = Queue.#TimedoutIds[
       `${this.guildId}`
     ]

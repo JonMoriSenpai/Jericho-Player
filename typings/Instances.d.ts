@@ -36,10 +36,19 @@ export type Queue = {
   play(
     Query: String,
     VoiceChannel: VoiceChannel,
-    PlayOptions: QueueOptions
-  ): Promise<Boolean>
-  skip(TrackIndex: Number): Boolean
-  stop(): Boolean
+    PlayOptions?: QueueOptions
+  ): Promise<Boolean> | undefined
+  skip(TrackIndex: Number): Boolean | undefined
+  stop(): Boolean | undefined
+  pause(): Boolean | undefined
+  resume(): Boolean | undefined
+  insert(
+    Query: String,
+    TrackIndex: Number,
+    InsertOptions: InsertOptions
+  ): Boolean | undefined
+  destroy(connection?: Boolean): Boolean | undefined
+  remove(Index?: Number, Amount?: Number): Boolean | undefined
 }
 
 export type Track = {
@@ -95,7 +104,7 @@ export type Stream = {
 
 export type PlayerOptions = {
   extractor: String | 'play-dl' | 'youtube-dl'
-  ExtractorStreamOptions: {
+  ExtractorStreamOptions?: {
     Limit: Number
     Quality: String | 'high' | 'low' | 'medium'
     Proxy: String | Array<String> | 'IPAdress:PortNumber'
@@ -108,11 +117,21 @@ export type PlayerOptions = {
   LeaveOnEndTimedout: Number | 'Time in Seconds'
   LeaveOnBotOnlyTimedout: Number | 'Time in Seconds'
 }
+export type InsertOptions = {
+  extractor: String | 'play-dl' | 'youtube-dl'
+  metadata: any
+  ExtractorStreamOptions?: {
+    Limit: Number
+    Quality: String | 'high' | 'low' | 'medium'
+    Proxy: String | Array<String> | 'IPAdress:PortNumber'
+  }
+  IgnoreError: Boolean
+}
 
 export type QueueOptions = {
   extractor: String | 'play-dl' | 'youtube-dl'
   metadata: any
-  ExtractorStreamOptions: {
+  ExtractorStreamOptions?: {
     Limit: Number
     Quality: String | 'high' | 'low' | 'medium'
     Proxy: String | Array<String> | 'IPAdress:PortNumber'

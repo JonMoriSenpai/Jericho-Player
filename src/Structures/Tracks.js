@@ -77,9 +77,9 @@ class TrackGenerator {
     },
     extractor = 'play-dl',
   ) {
-    const RawData = (extractor.includes('youtube-dl')
+    const RawData = (extractor && extractor.includes('youtube-dl')
       ? await TrackGenerator.#YoutubeDLExtractor(Query)
-      : null)
+      : undefined)
       ?? (await StreamDownloader(Query, FetchOptions.ExtractorStreamOptions));
     return RawData;
   }
