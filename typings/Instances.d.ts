@@ -60,7 +60,7 @@ export type StreamPacket = {
   readonly subscription: PlayerSubscription
   readonly VoiceConnection: VoiceConnection
   metadata: any
-  readonly GuildId: Guild['id'] | Snowflake | String
+  readonly guildId: Guild['id'] | Snowflake | String
   readonly ExtractorStreamOptions: {
     Limit: Number
     Quality: String | 'high' | 'low' | 'medium'

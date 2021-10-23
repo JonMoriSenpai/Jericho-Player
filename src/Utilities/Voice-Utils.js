@@ -35,7 +35,7 @@ async function join(
 }
 
 function disconnect(
-  GuildId,
+  guildId,
   DisconnectChannelOptions = {
     destroy: true,
   },
@@ -44,7 +44,7 @@ function disconnect(
 ) {
   if (Timedout && Timedout > 0) {
     return setTimeout(() => {
-      const VoiceConnection = getVoiceConnection(GuildId);
+      const VoiceConnection = getVoiceConnection(guildId);
       if (
         VoiceConnection
         && DisconnectChannelOptions
@@ -60,7 +60,7 @@ function disconnect(
       throw Error('Voice Connection is not Found to disconnect/destroy');
     }, Timedout * 1000);
   }
-  const VoiceConnection = getVoiceConnection(GuildId);
+  const VoiceConnection = getVoiceConnection(guildId);
   if (
     VoiceConnection
     && DisconnectChannelOptions

@@ -8,7 +8,7 @@ class StreamPacketGen {
 
   constructor(
     Client,
-    GuildId,
+    guildId,
     MetadataValue = null,
     extractor = 'play-dl',
     ExtractorStreamOptions = {
@@ -26,7 +26,7 @@ class StreamPacketGen {
     this.VoiceConnection = null;
     this.metadata = MetadataValue;
     this.subscription = undefined;
-    this.GuildId = GuildId;
+    this.guildId = guildId;
     this.ExtractorStreamOptions = ExtractorStreamOptions;
     this.IgnoreError = IgnoreError ?? true;
   }
@@ -74,7 +74,7 @@ class StreamPacketGen {
         '[Invalid Voice Data] Voice Connection or Voice Channnel is not Present for Stream Packet',
       );
     }
-    StreamPacketGen.#PacketsCache[`${this.GuildId}`] = this;
+    StreamPacketGen.#PacketsCache[`${this.guildId}`] = this;
     return this;
   }
 
@@ -84,7 +84,7 @@ class StreamPacketGen {
     },
   ) {
     return VoiceUtils.disconnect(
-      this.GuildId,
+      this.guildId,
       DisconnectChannelOptions,
       undefined,
       true,
@@ -128,16 +128,16 @@ class StreamPacketGen {
   }
 
   static DestroyStreamPacket(
-    GuildId,
+    guildId,
     DisconnectChannelOptions = {
       destroy: true,
     },
   ) {
-    if (!StreamPacketGen.#PacketsCache[`${GuildId}`]) {
+    if (!StreamPacketGen.#PacketsCache[`${guildId}`]) {
       throw Error('No Stream packet was found');
     }
-    const StreamPacketInstance = StreamPacketGen.#PacketsCache[`${GuildId}`];
-    return StreamPacketInstance.destroy(GuildId, DisconnectChannelOptions);
+    const StreamPacketInstance = StreamPacketGen.#PacketsCache[`${guildId}`];
+    return StreamPacketInstance.destroy(guildId, DisconnectChannelOptions);
   }
 
   async StreamAudioResourceExtractor(Track) {
