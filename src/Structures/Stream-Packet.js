@@ -52,7 +52,9 @@ class StreamPacketGen {
       Query,
       StreamCreateOptions,
       extractor,
-      Number(this.tracks[this.tracks.length - 1].Id),
+      this.tracks.length > 0
+        ? Number(this.tracks[this.tracks.length - 1].Id)
+        : 0,
     );
     this.searches = this.searches.concat(Chunks.tracks);
     this.tracks = this.tracks.concat(Chunks.streamdatas);
@@ -112,7 +114,9 @@ class StreamPacketGen {
       Query,
       StreamFetchOptions,
       extractor ?? this.extractor,
-      Number(this.tracks[this.tracks.length - 1].Id),
+      this.tracks.length > 0
+        ? Number(this.tracks[this.tracks.length - 1].Id)
+        : 0,
     );
     if (Number(Index) < -1) {
       return void this.JerichoPlayer.emit(
