@@ -4,8 +4,6 @@ const VoiceUtils = require('../Utilities/Voice-Utils');
 const ClassUtils = require('../Utilities/Class-Utils');
 
 class StreamPacketGen {
-  static #PacketsCache = {}
-
   constructor(
     Client,
     guildId,
@@ -16,6 +14,7 @@ class StreamPacketGen {
       Quality: 'high',
       Proxy: null,
     },
+    JerichoPlayer = undefined,
     IgnoreError = true,
   ) {
     this.Client = Client;
@@ -29,6 +28,7 @@ class StreamPacketGen {
     this.guildId = guildId;
     this.ExtractorStreamOptions = ExtractorStreamOptions;
     this.IgnoreError = IgnoreError ?? true;
+    this.JerichoPlayer = JerichoPlayer;
   }
 
   async create(
@@ -69,30 +69,20 @@ class StreamPacketGen {
           force: true,
         })
         : this.VoiceConnection;
-    } else if (!VoiceChannel && !this.VoiceChannel && !this.VoiceConnection) {
-      throw Error(
-        '[Invalid Voice Data] Voice Connection or Voice Channnel is not Present for Stream Packet',
-      );
-    }
-    StreamPacketGen.#PacketsCache[`${this.guildId}`] = this;
+    } else if (!VoiceChannel && !this.VoiceChannel && !this.VoiceConnection) this.JerichoPlayer.emit('ConnectionError', this.VoiceConnection, this.guildId);
+
     return this;
   }
 
-  destroy(
-    DisconnectChannelOptions = {
-      destroy: true,
-    },
-  ) {
-    return VoiceUtils.disconnect(
-      this.guildId,
-      DisconnectChannelOptions,
-      undefined,
-      true,
-    );
-  }
-
   remove(Index = 0, Amount = 1) {
-    if (Index <= -1) throw Error('Invalid Index Value is detected !');
+    if (Index <= -1) {
+      this.JerichoPlayer.emit(
+        'error',
+        'Invalid Index',
+        this.JerichoPlayer.getQueue(this.guildId),
+        Index,
+      );
+    }
     this.tracks.splice(Index, Amount);
     this.searches.splice(Index, Amount);
     return true;
@@ -121,23 +111,17 @@ class StreamPacketGen {
       extractor ?? this.extractor,
       this.tracks.length,
     );
-    if (Index <= -1) throw Error('Invalid Index Value is detected !');
+    if (Index <= -1) {
+      this.JerichoPlayer.emit(
+        'error',
+        'Invalid Index',
+        this.JerichoPlayer.getQueue(this.guildId),
+        Index,
+      );
+    }
     this.searches = this.searches.concat(Chunk.tracks);
     this.tracks = this.tracks.concat(Chunk.streamdatas);
     return true;
-  }
-
-  static DestroyStreamPacket(
-    guildId,
-    DisconnectChannelOptions = {
-      destroy: true,
-    },
-  ) {
-    if (!StreamPacketGen.#PacketsCache[`${guildId}`]) {
-      throw Error('No Stream packet was found');
-    }
-    const StreamPacketInstance = StreamPacketGen.#PacketsCache[`${guildId}`];
-    return StreamPacketInstance.destroy(guildId, DisconnectChannelOptions);
   }
 
   async StreamAudioResourceExtractor(Track) {

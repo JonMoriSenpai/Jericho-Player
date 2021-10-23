@@ -40,7 +40,7 @@ function disconnect(
     destroy: true,
   },
   Timedout = 0,
-  JerichoPlayerWorkload = false,
+  QueueInstance = undefined,
 ) {
   if (Timedout && Timedout > 0) {
     return setTimeout(() => {
@@ -51,13 +51,23 @@ function disconnect(
         && DisconnectChannelOptions.destroy
       ) {
         VoiceConnection.destroy(true);
-        if (JerichoPlayerWorkload) throw Error('Queue is Ended and Bot has been Disconnected');
+        if (QueueInstance) {
+          return void QueueInstance.JerichoPlayer.emit(
+            'QueueEnd',
+            QueueInstance,
+          );
+        }
+        return void null;
       }
       if (VoiceConnection) {
-        if (JerichoPlayerWorkload) throw Error('Queue is Ended and Bot has been Disconnected');
-        VoiceConnection.disconnect();
+        if (QueueInstance) QueueInstance.JerichoPlayer.emit('QueueEnd', QueueInstance);
+        return void VoiceConnection.disconnect();
       }
-      throw Error('Voice Connection is not Found to disconnect/destroy');
+      return void QueueInstance.JerichoPlayer.emit(
+        'ConnectionError',
+        VoiceConnection,
+        guildId,
+      );
     }, Timedout * 1000);
   }
   const VoiceConnection = getVoiceConnection(guildId);
@@ -67,14 +77,18 @@ function disconnect(
     && DisconnectChannelOptions.destroy
   ) {
     VoiceConnection.destroy(true);
-    if (JerichoPlayerWorkload) throw Error('Queue is Ended and Bot has been Disconnected');
+    if (QueueInstance) return void QueueInstance.JerichoPlayer.emit('QueueEnd', QueueInstance);
+    return void null;
   }
   if (VoiceConnection) {
-    if (JerichoPlayerWorkload) throw Error('Queue is Ended and Bot has been Disconnected');
-    VoiceConnection.disconnect();
+    if (QueueInstance) QueueInstance.JerichoPlayer.emit('QueueEnd', QueueInstance);
+    return void VoiceConnection.disconnect();
   }
-
-  throw Error('Voice Connection is not Found to disconnect/destroy');
+  return void QueueInstance.JerichoPlayer.emit(
+    'ConnectionError',
+    VoiceConnection,
+    guildId,
+  );
 }
 
 module.exports = { join, disconnect };

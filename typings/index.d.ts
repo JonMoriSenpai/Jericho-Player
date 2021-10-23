@@ -1,7 +1,8 @@
 import { Guild, Client, Message, Snowflake } from 'discord.js'
 import { Queue, PlayerOptions, QueueOptions } from './Instances'
+import EventEmitter from 'events'
 
-export class JerichoPlayer {
+export class JerichoPlayer extends EventEmitter {
   public constructor (Client: Client, PlayerOptions: PlayerOptions)
   public readonly Client: Client
   public readonly PlayerOptions: PlayerOptions

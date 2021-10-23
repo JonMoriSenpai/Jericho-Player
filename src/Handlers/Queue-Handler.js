@@ -30,6 +30,7 @@ class Queue {
       LeaveOnEndTimedout: 0,
       LeaveOnBotOnlyTimedout: 0,
     },
+    JerichoPlayer = undefined,
   ) {
     this.Client = Client;
     this.StreamPacket = new StreamPacketGen(
@@ -38,6 +39,7 @@ class Queue {
       QueueOptions.metadata,
       QueueOptions.extractor,
       QueueOptions.ExtractorStreamOptions,
+      JerichoPlayer,
     );
     this.QueueOptions = QueueOptions;
     this.message = message;
@@ -51,6 +53,7 @@ class Queue {
         noSubscriber: NoSubscriberBehavior.Play,
       },
     });
+    this.JerichoPlayer = JerichoPlayer;
 
     this.MusicPlayer.on('stateChange', (oldState, newState) => {
       if (
@@ -58,11 +61,11 @@ class Queue {
         && newState.status === AudioPlayerStatus.Playing
       ) {
         this.playing = true;
-        // console.log('Playing audio output on audio player'); //Work to be Done with Player Events
+        this.JerichoPlayer.emit('NowPlaying', this.tracks[0], this);
       } else if (newState.status === AudioPlayerStatus.Idle) {
+        this.JerichoPlayer.emit('TrackEnd', this.tracks[0], this);
         this.#__CleaningTrackMess();
         this.#__ResourcePlay();
-        // console.log('Playback has stopped. Attempting to restart or next Song.'); //Work to be Done with Player Events
       }
     });
   }
@@ -88,6 +91,16 @@ class Queue {
     },
   ) {
     PlayOptions = ClassUtils.stablizingoptions(PlayOptions, this.QueueOptions);
+    this.StreamPacket
+      ? this.StreamPacket
+      : new StreamPacketGen(
+        this.Client,
+        this.guildId,
+        PlayOptions.metadata,
+        PlayOptions.extractor,
+        PlayOptions.ExtractorStreamOptions,
+        this.JerichoPlayer,
+      );
     this.StreamPacket = await this.StreamPacket.create(
       Query,
       VoiceChannel,
@@ -101,10 +114,8 @@ class Queue {
 
   skip(TrackIndex) {
     if (TrackIndex && typeof TrackIndex !== 'number') {
-      throw Error(
-        'Invalid Track Index : Invalid Value has been Provided , it should be Number',
-      );
-    } else if (!this.playing || (this.playing && !this.StreamPacket.tracks[1])) throw Error('No Songs are Present in Queue!');
+      this.JerichoPlayer.emit('error', 'Invalid Index', this, TrackIndex);
+    } else if (!this.playing || (this.playing && !this.StreamPacket.tracks[1])) this.JerichoPlayer.emit('error', 'Empty Queue', this);
     TrackIndex && TrackIndex > 1
       ? this.#__CleaningTrackMess(undefined, TrackIndex - 1 ?? undefined)
       : undefined;
@@ -113,8 +124,8 @@ class Queue {
   }
 
   stop() {
-    if (!this.playing) throw Error('Queue is not Playing');
-    else if (!this.StreamPacket.tracks[0]) throw Error('Tracks are not in Queue to Stop');
+    if (!this.playing) this.JerichoPlayer.emit('error', 'Not Playing', this);
+    else if (!this.StreamPacket.tracks[0]) this.JerichoPlayer.emit('error', 'Empty Queue', this);
     this.#__CleaningTrackMess(
       0,
       (this.StreamPacket.tracks.length > 1
@@ -124,6 +135,17 @@ class Queue {
     this.MusicPlayer.stop();
     this.StreamPacket.subscription.unsubscribe();
     return true;
+  }
+
+  destroy(connection = true) {
+    if (connection) {
+      disconnect(this.guildId, { destroy: true }, undefined, this.JerichoPlayer);
+    }
+    this.destroyed = true;
+    const Garbage = {};
+    Garbage.container = this.StreamPacket;
+    delete Garbage.container;
+    this.StreamPacket = undefined;
   }
 
   get current() {
@@ -137,7 +159,7 @@ class Queue {
       Queue.#TimedoutIds[
         `${this.guildId}`
       ] = this.#__QueueAudioPlayerStatusManager();
-      if (!Queue.#TimedoutIds[`${this.guildId}`]) throw Error('Queue has been Ended');
+      if (!Queue.#TimedoutIds[`${this.guildId}`]) this.JerichoPlayer.emit('QueueEnd', this);
       else return void null;
     }
     Queue.#TimedoutIds[`${this.guildId}`] = Queue.#TimedoutIds[
@@ -157,7 +179,6 @@ class Queue {
         : undefined;
     }
     this.playing = true;
-    this.message.reply(`Now Playing - \`${this.tracks.title}\``); // Removed after Adding Player Events
     return void (await entersState(
       this.MusicPlayer,
       AudioPlayerStatus.Playing,
@@ -194,7 +215,7 @@ class Queue {
         this.guildId,
         { destroy: true },
         this.QueueOptions.LeaveOnEndTimedout,
-        true,
+        this.JerichoPlayer,
       );
     }
     return void null;

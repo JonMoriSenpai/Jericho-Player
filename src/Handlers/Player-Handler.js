@@ -1,8 +1,9 @@
+const EventEmitter = require('events');
 const Queue = require('./Queue-Handler.js');
 const ClassUtils = require('../Utilities/Class-Utils');
 const { join, disconnect } = require('../Utilities/Voice-Utils');
 
-class JerichoPlayer {
+class JerichoPlayer extends EventEmitter {
   static #QueueCaches = []
 
   static #TimedoutIds = {}
@@ -25,6 +26,7 @@ class JerichoPlayer {
       LeaveOnBotOnlyTimedout: 0,
     },
   ) {
+    super();
     this.Client = Client;
     this.JerichoPlayerOptions = JerichoPlayerOptions;
     this.Client.on('voiceStateUpdate', (OldVoiceState, NewVoiceState) => {
@@ -78,6 +80,10 @@ class JerichoPlayer {
           ? clearTimeout(JerichoPlayer.#TimedoutIds[`${QueueInstance.guildId}`])
           : null;
       }
+      if (!NewVoiceState.channel && OldVoiceState.id === this.Client.user.id) {
+        this.emit('BotDisconnect', QueueInstance);
+        return this.DeleteQueue(QueueInstance.guildId);
+      }
       return void null;
     });
   }
@@ -107,17 +113,14 @@ class JerichoPlayer {
       this.JerichoPlayerOptions,
     );
     const QueueInstance = JerichoPlayer.#QueueCacheFetch(message.guild.id, QueueCreateOptions)
-      ?? new Queue(this.Client, message, QueueCreateOptions);
+      ?? new Queue(this.Client, message, QueueCreateOptions, this);
     return JerichoPlayer.#QueueCacheAdd(QueueInstance);
   }
 
   DeleteQueue(guildId) {
     if (JerichoPlayer.#QueueCacheFetch(guildId)) {
       return void JerichoPlayer.#QueueCacheRemove(guildId);
-    }
-    throw Error(
-      `[Invalid Queue] Queue is not Present for guildId: "${guildId}"`,
-    );
+    } return void this.emit('error', 'Destroyed Queue', undefined);
   }
 
   GetQueue(guildId) {
@@ -145,11 +148,12 @@ class JerichoPlayer {
   static #QueueCacheRemove(guildId) {
     if (!this.#QueueCacheFetch(guildId)) return false;
     const QueueInstance = JerichoPlayer.#QueueCaches[`${guildId}`];
+    if (JerichoPlayer.#QueueCaches[`${guildId}`].playing) JerichoPlayer.#QueueCaches[`${guildId}`].stop();
     QueueInstance.destroy();
     const Garbage = {};
     Garbage.Structure = QueueInstance;
     delete Garbage.Structure;
-    JerichoPlayer.#QueueCaches[`${guildId}`] = null;
+    JerichoPlayer.#QueueCaches[`${guildId}`] = undefined;
     return void null;
   }
 

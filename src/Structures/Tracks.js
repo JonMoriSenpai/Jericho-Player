@@ -15,7 +15,12 @@ class TrackGenerator {
     CacheLength = 0,
   ) {
     if (!Query || (Query && typeof Query !== 'string')) {
-      throw Error('Invalid Song Query is Detected');
+      return {
+        playlist: false,
+        streamdatas: [],
+        tracks: [],
+        error: 'Query was Invalid',
+      };
     }
     const RawData = await TrackGenerator.#SongsFetching(
       Query,
@@ -48,9 +53,11 @@ class TrackGenerator {
     const StreamDatas = [];
     const SearchTracks = [];
     for (let count = 0, len = Tracks.length; count < len; ++count) {
-      Tracks[count].Id = CacheLength + 1;
-      SearchTracks.push(TrackGenerator.#UserTrackModelGen(Tracks[count]));
-      StreamDatas.push(Tracks[count]);
+      Tracks[count] ? (Tracks[count].Id = CacheLength + 1) : undefined;
+      Tracks[count]
+        ? SearchTracks.push(TrackGenerator.#UserTrackModelGen(Tracks[count]))
+        : undefined;
+      Tracks[count] ? StreamDatas.push(Tracks[count]) : undefined;
     }
     return {
       streamdatas: StreamDatas[0] ? StreamDatas : [],
