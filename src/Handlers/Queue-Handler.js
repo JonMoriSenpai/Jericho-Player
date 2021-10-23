@@ -61,7 +61,6 @@ class Queue {
         && newState.status === AudioPlayerStatus.Playing
       ) {
         this.playing = true;
-        this.JerichoPlayer.emit('NowPlaying', this.tracks[0], this);
       } else if (newState.status === AudioPlayerStatus.Idle) {
         this.JerichoPlayer.emit('TrackEnd', this.tracks[0], this);
         this.#__CleaningTrackMess();
@@ -170,6 +169,7 @@ class Queue {
     const AudioResource = await this.StreamPacket.StreamAudioResourceExtractor(
       this.StreamPacket.tracks[0],
     );
+    this.JerichoPlayer.emit('NowPlaying', this.tracks[0], this);
     this.MusicPlayer.play(AudioResource);
     if (!this.StreamPacket.subscription && this.StreamPacket.VoiceConnection) {
       this.StreamPacket.subscription = this.StreamPacket.VoiceConnection.subscribe(
