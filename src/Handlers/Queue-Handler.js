@@ -75,12 +75,6 @@ class Queue {
         Quality: 'high',
         Proxy: null,
       },
-      LeaveOnEmpty: false,
-      LeaveOnEnd: false,
-      LeaveOnBotOnly: false,
-      LeaveOnEmptyTimedout: 0,
-      LeaveOnEndTimedout: 0,
-      LeaveOnBotOnlyTimedout: 0,
     },
   ) {
     if (this.destroyed) return void this.JerichoPlayer.emit('error', 'Destroyed Queue', this);

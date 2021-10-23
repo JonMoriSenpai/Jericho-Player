@@ -27,20 +27,20 @@ class JerichoPlayer extends EventEmitter {
     },
   ) {
     super();
-    if (!Client) throw Error('Invalid Discord Client , Please Provide one Correctly');
+    if (!Client) { throw Error('Invalid Discord Client , Please Provide one Correctly'); }
     this.Client = Client;
     this.JerichoPlayerOptions = JerichoPlayerOptions;
     this.Client.on('voiceStateUpdate', (OldVoiceState, NewVoiceState) => {
       const QueueInstance = JerichoPlayer.#QueueCacheFetch(
-        (NewVoiceState ? NewVoiceState.guildId : null)
-          ?? (OldVoiceState ? OldVoiceState.guildId : null),
+        (NewVoiceState ? NewVoiceState.guild.id : null)
+          ?? (OldVoiceState ? OldVoiceState.guild.id : null),
       );
       if (
         !QueueInstance
         || (QueueInstance && QueueInstance.destroyed)
         || (QueueInstance && !QueueInstance.playing)
         || OldVoiceState.channel.id === NewVoiceState.channel.id
-      ) return void null;
+      ) { return void null; }
       if (
         OldVoiceState.channel
         && NewVoiceState.channel
@@ -48,8 +48,8 @@ class JerichoPlayer extends EventEmitter {
       ) {
         JerichoPlayer.#QueueCaches[
           `${
-            (NewVoiceState ? NewVoiceState.guildId : null)
-            ?? (OldVoiceState ? OldVoiceState.guildId : null)
+            (NewVoiceState ? NewVoiceState.guild.id : null)
+            ?? (OldVoiceState ? OldVoiceState.guild.id : null)
           }`
         ].StreamPacket.VoiceConnection = join(
           this.Client,
@@ -64,8 +64,8 @@ class JerichoPlayer extends EventEmitter {
         ] = this.#JerichoPlayerVoiceConnectionManager(
           JerichoPlayer.#QueueCaches[
             `${
-              (NewVoiceState ? NewVoiceState.guildId : null)
-              ?? (OldVoiceState ? OldVoiceState.guildId : null)
+              (NewVoiceState ? NewVoiceState.guild.id : null)
+              ?? (OldVoiceState ? OldVoiceState.guild.id : null)
             }`
           ],
           OldVoiceState.channel,
@@ -103,7 +103,6 @@ class JerichoPlayer extends EventEmitter {
       LeaveOnEmpty: false,
       LeaveOnEnd: false,
       LeaveOnBotOnly: false,
-
       LeaveOnEmptyTimedout: 0,
       LeaveOnEndTimedout: 0,
       LeaveOnBotOnlyTimedout: 0,
@@ -180,7 +179,7 @@ class JerichoPlayer extends EventEmitter {
   static #QueueCacheRemove(guildId) {
     if (!this.#QueueCacheFetch(guildId)) return false;
     const QueueInstance = JerichoPlayer.#QueueCaches[`${guildId}`];
-    if (JerichoPlayer.#QueueCaches[`${guildId}`].playing) JerichoPlayer.#QueueCaches[`${guildId}`].stop();
+    if (JerichoPlayer.#QueueCaches[`${guildId}`].playing) { JerichoPlayer.#QueueCaches[`${guildId}`].stop(); }
     QueueInstance.destroy();
     const Garbage = {};
     Garbage.Structure = QueueInstance;

@@ -1,5 +1,7 @@
 class ClassUtils {
   static stablizingoptions(Local, Parent) {
+    if (!Local) return Parent;
+    if (!Parent) return Local;
     const ProcessOptions = {};
     const Options = Object.keys(Local);
     for (let count = 0, len = Options.length; count < len; ++count) {
