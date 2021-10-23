@@ -99,6 +99,15 @@ class Queue {
     return true;
   }
 
+  set metadata(MetadataValue) {
+    this.metadata = MetadataValue;
+    return this.metadata;
+  }
+
+  get metadata() {
+    return this.metadata;
+  }
+
   get current() {
     if (!this.playing) return undefined;
     return this.StreamPacket.searches[0];

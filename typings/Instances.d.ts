@@ -1,12 +1,12 @@
 import { AudioPlayer, VoiceConnection } from '@discordjs/voice'
-import { Client, Guild, Message, Snowflake, VoiceChannel } from 'discord.js'
+import { Client, Guild, Snowflake, VoiceChannel } from 'discord.js'
 
 export type Queue = {
   readonly Client: Client
   readonly StreamPacket: StreamPacket
   readonly QueueOptions: {
     readonly extractor: String | 'play-dl' | 'youtube-dl'
-    readonly metadata: Object
+    metadata: any
     readonly ExtractorStreamOptions: {
       Limit: Number
       Quality: String | 'high' | 'low' | 'medium'
@@ -20,13 +20,18 @@ export type Queue = {
     readonly LeaveOnBotOnlyTimedout: Number | 'Time in Seconds'
   }
   readonly guild: Guild
-  metadata: Object
+  metadata: any
   readonly tracks: Array<Track>
   readonly guildId: Guild['id'] | Snowflake | String
   readonly destroyed: Boolean
   readonly playing: Boolean
   readonly IgnoreError: Boolean
   readonly MusicPlayer: AudioPlayer
+  play(
+    Query: String,
+    VoiceChannel: VoiceChannel,
+    PlayOptions: QueueOptions
+  ): Promise<Boolean>
 }
 
 export type Track = {
@@ -51,7 +56,7 @@ export type StreamPacket = {
   readonly searches: Array<Track>
   readonly tracks: Array<Stream>
   readonly VoiceConnection: VoiceConnection
-  metadata: Object
+  metadata: any
   readonly GuildId: Guild['id'] | Snowflake | String
   readonly ExtractorStreamOptions: {
     Limit: Number
@@ -96,7 +101,7 @@ export type PlayerOptions = {
 
 export type QueueOptions = {
   extractor: String | 'play-dl' | 'youtube-dl'
-  metadata: Object
+  metadata: any
   ExtractorStreamOptions: {
     Limit: Number
     Quality: String | 'high' | 'low' | 'medium'
