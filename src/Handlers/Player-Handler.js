@@ -31,7 +31,7 @@ class JerichoPlayer extends EventEmitter {
     this.Client = Client;
     this.JerichoPlayerOptions = JerichoPlayerOptions;
     this.Client.on('voiceStateUpdate', (OldVoiceState, NewVoiceState) => {
-      const QueueInstance = this.GetQueue(
+      const QueueInstance = JerichoPlayer.#QueueCacheFetch(
         (NewVoiceState ? NewVoiceState.guildId : null)
           ?? (OldVoiceState ? OldVoiceState.guildId : null),
       );
