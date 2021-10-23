@@ -1,4 +1,4 @@
-const { createAudioResource } = require('@discordjs/voice');
+const { createAudioResource, StreamType } = require('@discordjs/voice');
 const TracksGen = require('./Tracks');
 const VoiceUtils = require('../Utilities/Voice-Utils');
 const ClassUtils = require('../Utilities/Class-Utils');
@@ -25,6 +25,7 @@ class StreamPacketGen {
     this.tracks = [];
     this.VoiceConnection = null;
     this.metadata = MetadataValue;
+    this.subscription = undefined;
     this.GuildId = GuildId;
     this.ExtractorStreamOptions = ExtractorStreamOptions;
     this.IgnoreError = IgnoreError ?? true;
@@ -53,8 +54,8 @@ class StreamPacketGen {
       extractor,
       this.tracks.length,
     );
-    this.searches.splice(this.searches.length, 0, Chunks.tracks);
-    this.tracks.splice(this.tracks.length, 0, Chunks.streamdatas);
+    this.searches = this.searches.concat(Chunks.tracks);
+    this.tracks = this.tracks.concat(Chunks.streamdatas);
     if (VoiceChannel) {
       this.VoiceChannel = !this.VoiceChannel
         || !this.VoiceConnection
@@ -116,8 +117,8 @@ class StreamPacketGen {
       this.tracks.length,
     );
     if (Index <= -1) throw Error('Invalid Index Value is detected !');
-    this.tracks.splice(Index, 0, Chunk.streamdatas);
-    this.searches.splice(Index, 0, Chunk.tracks);
+    this.searches = this.searches.concat(Chunk.tracks);
+    this.tracks = this.tracks.concat(Chunk.streamdatas);
     return true;
   }
 
@@ -137,7 +138,7 @@ class StreamPacketGen {
   async StreamAudioResourceExtractor(Track) {
     try {
       return createAudioResource(Track.stream, {
-        inputType: Track.stream_type,
+        inputType: Track.stream_type ?? StreamType.Arbitrary,
         metadata: {
           metadata: this.metadata,
           Track,

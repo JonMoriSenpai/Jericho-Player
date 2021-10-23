@@ -55,6 +55,7 @@ export type StreamPacket = {
   readonly extractor: String | 'play-dl' | 'youtube-dl'
   readonly searches: Array<Track>
   readonly tracks: Array<Stream>
+  readonly subscription: Boolean
   readonly VoiceConnection: VoiceConnection
   metadata: any
   readonly GuildId: Guild['id'] | Snowflake | String

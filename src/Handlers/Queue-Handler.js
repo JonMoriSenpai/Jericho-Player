@@ -121,6 +121,13 @@ class Queue {
       this.StreamPacket.tracks[0],
     );
     this.MusicPlayer.play(AudioResource);
+    if (!this.StreamPacket.subscription && this.StreamPacket.VoiceConnection) {
+      this.StreamPacket.subscription = this.StreamPacket.VoiceConnection.subscribe(
+        this.MusicPlayer,
+      )
+        ? true
+        : undefined;
+    }
     this.playing = true;
     return void (await entersState(
       this.MusicPlayer,

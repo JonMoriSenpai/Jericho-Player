@@ -14,7 +14,7 @@ class TrackGenerator {
     extractor = 'play-dl',
     CacheLength = 0,
   ) {
-    if (!Query || (Query && typeof Query === 'string')) {
+    if (!Query || (Query && typeof Query !== 'string')) {
       throw Error('Invalid Song Query is Detected');
     }
     const RawData = await TrackGenerator.#SongsFetching(
@@ -86,7 +86,6 @@ class TrackGenerator {
     return {
       Id: TrackData.Id,
       url: TrackData.url,
-      video_Id: TrackData.video_Id,
       title: TrackData.title,
       description: TrackData.description,
       duration: TrackData.duration,
