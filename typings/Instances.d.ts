@@ -1,5 +1,9 @@
-import { AudioPlayer, PlayerSubscription, VoiceConnection } from '@discordjs/voice'
-import { Client, Guild, Snowflake, VoiceChannel } from 'discord.js'
+import {
+  AudioPlayer,
+  PlayerSubscription,
+  VoiceConnection
+} from '@discordjs/voice'
+import { Client, Guild, Message, Snowflake, VoiceChannel } from 'discord.js'
 
 export type Queue = {
   readonly Client: Client
@@ -19,7 +23,7 @@ export type Queue = {
     readonly LeaveOnEndTimedout: Number | 'Time in Seconds'
     readonly LeaveOnBotOnlyTimedout: Number | 'Time in Seconds'
   }
-  readonly guild: Guild
+  message: Message
   metadata: any
   readonly tracks: Array<Track>
   readonly guildId: Guild['id'] | Snowflake | String

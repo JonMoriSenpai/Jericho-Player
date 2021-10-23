@@ -40,7 +40,7 @@ class Queue {
       QueueOptions.ExtractorStreamOptions,
     );
     this.QueueOptions = QueueOptions;
-    this.guild = message.guild;
+    this.message = message;
     this.metadata = QueueOptions.metadata;
     this.tracks = [];
     this.guildId = message.guild.id;
@@ -105,10 +105,9 @@ class Queue {
         'Invalid Track Index : Invalid Value has been Provided , it should be Number',
       );
     } else if (!this.playing || (this.playing && !this.StreamPacket.tracks[1])) throw Error('No Songs are Present in Queue!');
-    this.#__CleaningTrackMess(
-      undefined,
-      (TrackIndex > 1 ? TrackIndex - 1 : undefined) ?? undefined,
-    );
+    TrackIndex && TrackIndex > 1
+      ? this.#__CleaningTrackMess(undefined, TrackIndex - 1 ?? undefined)
+      : undefined;
     this.MusicPlayer.stop();
     return true;
   }
@@ -158,6 +157,7 @@ class Queue {
         : undefined;
     }
     this.playing = true;
+    this.message.reply(`Now Playing - \`${this.tracks.title}\``); // Removed after Adding Player Events
     return void (await entersState(
       this.MusicPlayer,
       AudioPlayerStatus.Playing,
