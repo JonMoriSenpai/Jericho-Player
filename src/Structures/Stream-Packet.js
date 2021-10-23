@@ -56,6 +56,11 @@ class StreamPacketGen {
     );
     this.searches = this.searches.concat(Chunks.tracks);
     this.tracks = this.tracks.concat(Chunks.streamdatas);
+    this.JerichoPlayer.emit(
+      'TracksAdd',
+      this.JerichoPlayer.getQueue(this.guildId),
+      this.searches,
+    );
     if (VoiceChannel) {
       this.VoiceChannel = !this.VoiceChannel
         || !this.VoiceConnection
@@ -69,7 +74,13 @@ class StreamPacketGen {
           force: true,
         })
         : this.VoiceConnection;
-    } else if (!VoiceChannel && !this.VoiceChannel && !this.VoiceConnection) this.JerichoPlayer.emit('ConnectionError', this.VoiceConnection, this.guildId);
+    } else if (!VoiceChannel && !this.VoiceChannel && !this.VoiceConnection) {
+      this.JerichoPlayer.emit(
+        'ConnectionError',
+        this.VoiceConnection,
+        this.guildId,
+      );
+    }
 
     return this;
   }
