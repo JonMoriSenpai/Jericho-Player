@@ -121,15 +121,6 @@ class StreamPacketGen {
     return true;
   }
 
-  set metadata(MetadataValue) {
-    this.metadata = MetadataValue;
-    return this.metadata;
-  }
-
-  get metadata() {
-    return this.metadata;
-  }
-
   static DestroyStreamPacket(
     GuildId,
     DisconnectChannelOptions = {

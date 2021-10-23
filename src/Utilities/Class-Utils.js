@@ -8,7 +8,10 @@ class ClassUtils {
         && Parent[Options[count]] !== undefined
         && Local[Options[count]]
         && !Local[Options[count]][0]
-        ? ClassUtils.stablizingoptions(Local[Options[count]])
+        ? ClassUtils.stablizingoptions(
+          Local[Options[count]],
+          Parent[Options[count]],
+        )
         : null)
         ?? (Local[Options[count]] === undefined
           ? Parent[Options[count]]
