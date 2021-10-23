@@ -1,7 +1,7 @@
 {
   "name": "jericho-player",
   "version": "1.0.0",
-  "description": "Jericho Music Player and Radio Player Framework for Discord Bots",
+  "description": "Jericho Player Framework for discord.js and @discordjs/voice Supported Bots for Music Player and Radio Players",
   "main": "./src/index.js",
   "module": "./src/index.mjs",
   "types": "./typings/index.d.ts",
@@ -21,7 +21,7 @@
     "lint:fix": "eslint ./src --fix",
     "commit": "git-cz",
     "semantic-release": "semantic-release --branches main",
-    "push": "git add . && npm run commit && git push"
+    "commit:push": "git add . && npm run commit && git push"
   },
   "devDependencies": {
     "@babel/eslint-parser": "^7.15.8",
@@ -54,11 +54,11 @@
   "author": "Sid is Live YT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Jericho-Player/Music-Downloader.git"
+    "url": "git+https://github.com/Jericho-Player/Jericho-Player.git"
   },
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/Jericho-Player/Music-Downloader/issues"
+    "url": "https://github.com/Jericho-Player/Jericho-Player/issues"
   },
-  "homepage": "https://github.com/Jericho-Player/Music-Downloader#readme"
+  "homepage": "https://github.com/Jericho-Player/Jericho-Player#readme"
 }
