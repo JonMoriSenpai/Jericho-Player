@@ -91,6 +91,20 @@ class Queue {
     },
   ) {
     if (this.destroyed) return void this.JerichoPlayer.emit('error', 'Destroyed Queue', this);
+    if (
+      !VoiceChannel
+      || !(
+        VoiceChannel
+        && VoiceChannel.type
+        && ['guild_voice', 'guild_stage_voice'].includes(
+          VoiceChannel.type.toLowerCase().trim(),
+        )
+      )
+    ) {
+      throw Error(
+        'Invalid Guild VoiceChannel , Please Provide Correct Guild VoiceChannel Correctly',
+      );
+    }
     PlayOptions = ClassUtils.stablizingoptions(PlayOptions, this.QueueOptions);
     this.StreamPacket
       ? this.StreamPacket
@@ -115,7 +129,10 @@ class Queue {
 
   skip(TrackIndex) {
     if (this.destroyed) return void this.JerichoPlayer.emit('error', 'Destroyed Queue', this);
-    if (TrackIndex && typeof TrackIndex !== 'number') {
+    if (
+      TrackIndex
+      && !(typeof TrackIndex === 'number' || typeof TrackIndex === 'string')
+    ) {
       return void this.JerichoPlayer.emit(
         'error',
         'Invalid Index',
@@ -178,6 +195,17 @@ class Queue {
     },
   ) {
     if (this.destroyed) return void this.JerichoPlayer.emit('error', 'Destroyed Queue', this);
+    if (
+      TrackIndex
+      && !(typeof TrackIndex === 'number' || typeof TrackIndex === 'string')
+    ) {
+      return void this.JerichoPlayer.emit(
+        'error',
+        'Invalid Index',
+        this,
+        TrackIndex,
+      );
+    }
     InsertOptions = ClassUtils.stablizingoptions(
       InsertOptions,
       this.QueueOptions,
@@ -193,7 +221,7 @@ class Queue {
         this.JerichoPlayer,
       );
     this.StreamPacket = await this.StreamPacket.insert(
-      TrackIndex ?? -1,
+      Number(TrackIndex) ?? -1,
       Query,
       InsertOptions.ExtractorStreamOptions,
       InsertOptions.extractor,
@@ -210,7 +238,10 @@ class Queue {
         this.JerichoPlayer.GetQueue(this.guildId),
       );
     }
-    if (Index < -1) {
+    if (Index && !(typeof Index === 'number' || typeof Index === 'string')) {
+      return void this.JerichoPlayer.emit('error', 'Invalid Index', this, Index);
+    }
+    if (Number(Index) < -1) {
       return void this.JerichoPlayer.emit(
         'error',
         'Invalid Index',
@@ -218,7 +249,7 @@ class Queue {
         Index,
       );
     }
-    this.StreamPacket = this.StreamPacket.remove(Index, Amount);
+    this.StreamPacket = this.StreamPacket.remove(Number(Index), Number(Amount));
     return true;
   }
 

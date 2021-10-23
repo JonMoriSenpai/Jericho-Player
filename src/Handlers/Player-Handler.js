@@ -1,5 +1,5 @@
 const EventEmitter = require('events');
-const { ClientUser } = require('discord.js/src/index.js');
+const { ClientUser, Message, Guild } = require('discord.js/src/index.js');
 const Queue = require('./Queue-Handler.js');
 const ClassUtils = require('../Utilities/Class-Utils');
 const { join, disconnect } = require('../Utilities/Voice-Utils');
@@ -30,7 +30,7 @@ class JerichoPlayer extends EventEmitter {
     super();
     if (
       !Client
-      || !(Client && Client.user && Client.user instanceof ClientUser)
+      || !(Client && Client.user && typeof Client.user === typeof ClientUser)
     ) throw Error('Invalid Discord Client , Please Provide one Correctly');
     this.Client = Client;
     this.JerichoPlayerOptions = JerichoPlayerOptions;
@@ -113,6 +113,19 @@ class JerichoPlayer extends EventEmitter {
       LeaveOnBotOnlyTimedout: 0,
     },
   ) {
+    if (
+      !message
+      || !(
+        message
+        && typeof message === typeof Message
+        && message.guild
+        && typeof message.guild === typeof Guild
+      )
+    ) {
+      throw Error(
+        'Invalid Guild Message , Please Provide Correct Guild Message Correctly',
+      );
+    }
     QueueCreateOptions = ClassUtils.stablizingoptions(
       QueueCreateOptions,
       this.JerichoPlayerOptions,
@@ -123,6 +136,14 @@ class JerichoPlayer extends EventEmitter {
   }
 
   DeleteQueue(guildId) {
+    if (
+      !guildId
+      || !(guildId && (typeof guildId === 'string' || typeof guildId === 'number'))
+    ) {
+      throw Error(
+        'Invalid Guild Id , Please Provide Correct Guild Id Correctly',
+      );
+    }
     if (JerichoPlayer.#QueueCacheFetch(guildId)) {
       return void JerichoPlayer.#QueueCacheRemove(guildId);
     }
@@ -130,6 +151,14 @@ class JerichoPlayer extends EventEmitter {
   }
 
   GetQueue(guildId) {
+    if (
+      !guildId
+      || !(guildId && (typeof guildId === 'string' || typeof guildId === 'number'))
+    ) {
+      throw Error(
+        'Invalid Guild Id , Please Provide Correct Guild Id Correctly',
+      );
+    }
     return JerichoPlayer.#QueueCacheFetch(guildId);
   }
 
