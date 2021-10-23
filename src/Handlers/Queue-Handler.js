@@ -95,6 +95,9 @@ class Queue {
       !VoiceChannel
       || !(
         VoiceChannel
+        && VoiceChannel.id
+        && VoiceChannel.guild
+        && VoiceChannel.guild.id
         && VoiceChannel.type
         && ['guild_voice', 'guild_stage_voice'].includes(
           VoiceChannel.type.toLowerCase().trim(),

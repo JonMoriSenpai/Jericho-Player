@@ -27,7 +27,7 @@ class JerichoPlayer extends EventEmitter {
     },
   ) {
     super();
-    if (!Client || !(Client && Client.user)) throw Error('Invalid Discord Client , Please Provide one Correctly');
+    if (!Client) throw Error('Invalid Discord Client , Please Provide one Correctly');
     this.Client = Client;
     this.JerichoPlayerOptions = JerichoPlayerOptions;
     this.Client.on('voiceStateUpdate', (OldVoiceState, NewVoiceState) => {
@@ -109,7 +109,16 @@ class JerichoPlayer extends EventEmitter {
       LeaveOnBotOnlyTimedout: 0,
     },
   ) {
-    if (!message || !(message && message.guild)) {
+    if (
+      !message
+      || !(
+        message
+        && message.guild
+        && message.guild.id
+        && message.channel
+        && message.channel.id
+      )
+    ) {
       throw Error(
         'Invalid Guild Message , Please Provide Correct Guild Message Correctly',
       );
