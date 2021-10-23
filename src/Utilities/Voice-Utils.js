@@ -50,8 +50,8 @@ function disconnect(
         && DisconnectChannelOptions.destroy
       ) {
         return void VoiceConnection.destroy(true);
-      }
-      if (VoiceConnection) return void VoiceConnection.disconnect();
+      } if (VoiceConnection) return void VoiceConnection.disconnect();
+      throw Error('Voice Connection is not Found to disconnect/destroy');
     }, Timedout * 1000);
   }
   const VoiceConnection = getVoiceConnection(GuildId);
@@ -61,8 +61,7 @@ function disconnect(
     && DisconnectChannelOptions.destroy
   ) {
     return void VoiceConnection.destroy(true);
-  }
-  if (VoiceConnection) return void VoiceConnection.disconnect();
+  } if (VoiceConnection) return void VoiceConnection.disconnect();
   throw Error('Voice Connection is not Found to disconnect/destroy');
 }
 
