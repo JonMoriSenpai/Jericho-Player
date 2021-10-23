@@ -40,6 +40,7 @@ function disconnect(
     destroy: true,
   },
   Timedout = 0,
+  JerichoPlayerWorkload = false,
 ) {
   if (Timedout && Timedout > 0) {
     return setTimeout(() => {
@@ -49,8 +50,13 @@ function disconnect(
         && DisconnectChannelOptions
         && DisconnectChannelOptions.destroy
       ) {
-        return void VoiceConnection.destroy(true);
-      } if (VoiceConnection) return void VoiceConnection.disconnect();
+        VoiceConnection.destroy(true);
+        if (JerichoPlayerWorkload) throw Error('Queue is Ended and Bot has been Disconnected');
+      }
+      if (VoiceConnection) {
+        if (JerichoPlayerWorkload) throw Error('Queue is Ended and Bot has been Disconnected');
+        VoiceConnection.disconnect();
+      }
       throw Error('Voice Connection is not Found to disconnect/destroy');
     }, Timedout * 1000);
   }
@@ -60,8 +66,14 @@ function disconnect(
     && DisconnectChannelOptions
     && DisconnectChannelOptions.destroy
   ) {
-    return void VoiceConnection.destroy(true);
-  } if (VoiceConnection) return void VoiceConnection.disconnect();
+    VoiceConnection.destroy(true);
+    if (JerichoPlayerWorkload) throw Error('Queue is Ended and Bot has been Disconnected');
+  }
+  if (VoiceConnection) {
+    if (JerichoPlayerWorkload) throw Error('Queue is Ended and Bot has been Disconnected');
+    VoiceConnection.disconnect();
+  }
+
   throw Error('Voice Connection is not Found to disconnect/destroy');
 }
 

@@ -83,7 +83,12 @@ class StreamPacketGen {
       destroy: true,
     },
   ) {
-    return VoiceUtils.disconnect(this.GuildId, DisconnectChannelOptions);
+    return VoiceUtils.disconnect(
+      this.GuildId,
+      DisconnectChannelOptions,
+      undefined,
+      true,
+    );
   }
 
   remove(Index = 0, Amount = 1) {

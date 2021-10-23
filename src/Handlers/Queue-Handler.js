@@ -99,6 +99,34 @@ class Queue {
     return true;
   }
 
+  skip(TrackIndex) {
+    if (TrackIndex && typeof TrackIndex !== 'number') {
+      throw Error(
+        'Invalid Track Index : Invalid Value has been Provided , it should be Number',
+      );
+    } else if (!this.playing || (this.playing && !this.StreamPacket.tracks[1])) throw Error('No Songs are Present in Queue!');
+    this.#__CleaningTrackMess(
+      undefined,
+      (TrackIndex > 1 ? TrackIndex - 1 : undefined) ?? undefined,
+    );
+    this.MusicPlayer.stop();
+    return true;
+  }
+
+  stop() {
+    if (!this.playing) throw Error('Queue is not Playing');
+    else if (!this.StreamPacket.tracks[0]) throw Error('Tracks are not in Queue to Stop');
+    this.#__CleaningTrackMess(
+      0,
+      (this.StreamPacket.tracks.length > 1
+        ? this.StreamPacket.tracks.length
+        : undefined) ?? undefined,
+    );
+    this.MusicPlayer.stop();
+    this.StreamPacket.subscription.unsubscribe();
+    return true;
+  }
+
   get current() {
     if (!this.playing) return undefined;
     return this.StreamPacket.searches[0];
@@ -110,7 +138,8 @@ class Queue {
       Queue.#TimedoutIds[
         `${this.guildId}`
       ] = this.#__QueueAudioPlayerStatusManager();
-      throw Error('Queue has been Ended');
+      if (!Queue.#TimedoutIds[`${this.guildId}`]) throw Error('Queue has been Ended');
+      else return void null;
     }
     Queue.#TimedoutIds[`${this.guildId}`] = Queue.#TimedoutIds[
       `${this.guildId}`
@@ -136,10 +165,22 @@ class Queue {
     ));
   }
 
-  #__CleaningTrackMess() {
-    this.tracks.shift();
-    this.StreamPacket.tracks.shift();
-    this.StreamPacket.searches.shift();
+  #__CleaningTrackMess(StartingTrackIndex = 0, DeleteTracksCount) {
+    DeleteTracksCount
+      ? this.tracks.splice(StartingTrackIndex ?? 0, DeleteTracksCount)
+      : this.tracks.shift();
+    DeleteTracksCount
+      ? this.StreamPacket.tracks.splice(
+        StartingTrackIndex ?? 0,
+        DeleteTracksCount,
+      )
+      : this.StreamPacket.tracks.shift();
+    DeleteTracksCount
+      ? this.StreamPacket.searches.splice(
+        StartingTrackIndex ?? 0,
+        DeleteTracksCount,
+      )
+      : this.StreamPacket.searches.shift();
   }
 
   #__QueueAudioPlayerStatusManager() {
@@ -153,6 +194,7 @@ class Queue {
         this.guildId,
         { destroy: true },
         this.QueueOptions.LeaveOnEndTimedout,
+        true,
       );
     }
     return void null;

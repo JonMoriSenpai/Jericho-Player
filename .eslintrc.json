@@ -22,6 +22,7 @@
     "radix": "off",
     "global-require": "off",
     "no-useless-escape": "off",
-    "import/no-unresolved": "off"
+    "import/no-unresolved": "off",
+    "no-unused-expressions": "off"
   }
 }

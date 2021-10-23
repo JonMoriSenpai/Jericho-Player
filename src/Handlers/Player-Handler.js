@@ -43,23 +43,33 @@ class JerichoPlayer {
         && NewVoiceState.channel
         && NewVoiceState.id === this.Client.user.id
       ) {
-        QueueInstance.StreamPacket.VoiceConnection = join(
+        JerichoPlayer.#QueueCaches[
+          `${
+            (NewVoiceState ? NewVoiceState.guildId : null)
+            ?? (OldVoiceState ? OldVoiceState.guildId : null)
+          }`
+        ].StreamPacket.VoiceConnection = join(
           this.Client,
           NewVoiceState.channel,
         );
+
         return void null;
-      } if (
-        !NewVoiceState.channel
-        && OldVoiceState.id !== this.Client.user.id
-      ) {
+      }
+      if (!NewVoiceState.channel && OldVoiceState.id !== this.Client.user.id) {
         JerichoPlayer.#TimedoutIds[
           `${QueueInstance.guildId}`
         ] = this.#JerichoPlayerVoiceConnectionManager(
-          QueueInstance,
+          JerichoPlayer.#QueueCaches[
+            `${
+              (NewVoiceState ? NewVoiceState.guildId : null)
+              ?? (OldVoiceState ? OldVoiceState.guildId : null)
+            }`
+          ],
           OldVoiceState.channel,
         );
         return void null;
-      } if (
+      }
+      if (
         QueueInstance.StreamPacket.VoiceChannel.id
           === NewVoiceState.channel.id
         && NewVoiceState.id !== this.Client.user.id
@@ -67,7 +77,8 @@ class JerichoPlayer {
         return JerichoPlayer.#TimedoutIds[`${QueueInstance.guildId}`]
           ? clearTimeout(JerichoPlayer.#TimedoutIds[`${QueueInstance.guildId}`])
           : null;
-      } return void null;
+      }
+      return void null;
     });
   }
 
@@ -164,6 +175,7 @@ class JerichoPlayer {
         QueueInstance.guildId,
         { destroy: true },
         QueueInstance.QueueOptions.LeaveOnEmptyTimedout,
+        true,
       );
     }
     if (
@@ -179,6 +191,7 @@ class JerichoPlayer {
         QueueInstance.guildId,
         { destroy: true },
         QueueInstance.QueueOptions.LeaveOnBotOnlyTimedout,
+        true,
       );
     }
     return void null;

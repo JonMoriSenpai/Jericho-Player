@@ -1,4 +1,4 @@
-import { AudioPlayer, VoiceConnection } from '@discordjs/voice'
+import { AudioPlayer, PlayerSubscription, VoiceConnection } from '@discordjs/voice'
 import { Client, Guild, Snowflake, VoiceChannel } from 'discord.js'
 
 export type Queue = {
@@ -32,6 +32,8 @@ export type Queue = {
     VoiceChannel: VoiceChannel,
     PlayOptions: QueueOptions
   ): Promise<Boolean>
+  skip(TrackIndex: Number): Boolean
+  stop(): Boolean
 }
 
 export type Track = {
@@ -55,7 +57,7 @@ export type StreamPacket = {
   readonly extractor: String | 'play-dl' | 'youtube-dl'
   readonly searches: Array<Track>
   readonly tracks: Array<Stream>
-  readonly subscription: Boolean
+  readonly subscription: PlayerSubscription
   readonly VoiceConnection: VoiceConnection
   metadata: any
   readonly GuildId: Guild['id'] | Snowflake | String
