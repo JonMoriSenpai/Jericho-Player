@@ -58,7 +58,7 @@ class StreamPacketGen {
     this.tracks = this.tracks.concat(Chunks.streamdatas);
     this.JerichoPlayer.emit(
       'TracksAdd',
-      this.JerichoPlayer.getQueue(this.guildId),
+      this.JerichoPlayer.GetQueue(this.guildId),
       this.searches,
     );
     if (VoiceChannel) {
@@ -90,7 +90,7 @@ class StreamPacketGen {
       this.JerichoPlayer.emit(
         'error',
         'Invalid Index',
-        this.JerichoPlayer.getQueue(this.guildId),
+        this.JerichoPlayer.GetQueue(this.guildId),
         Index,
       );
     }
@@ -126,7 +126,7 @@ class StreamPacketGen {
       this.JerichoPlayer.emit(
         'error',
         'Invalid Index',
-        this.JerichoPlayer.getQueue(this.guildId),
+        this.JerichoPlayer.GetQueue(this.guildId),
         Index,
       );
     }
