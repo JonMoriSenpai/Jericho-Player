@@ -309,7 +309,10 @@ class JerichoPlayer extends EventEmitter {
       : undefined;
     if (MissingDeps[2]) {
       setTimeout(() => {
-        this.emit('error', [...MissingDeps].join('\n'));
+        this.emit(
+          'error',
+          ['-'.repeat(50), ...MissingDeps, '-'.repeat(50)].join('\n'),
+        );
       }, 2 * 1000);
     }
     if (!Client) {
