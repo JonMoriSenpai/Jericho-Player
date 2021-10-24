@@ -32,7 +32,7 @@ class JerichoPlayer extends EventEmitter {
   ) {
     super();
 
-    JerichoPlayer.#__buildsandDepschecks(Client);
+    this.#__buildsandDepschecks(Client);
     this.Client = Client;
     this.JerichoPlayerOptions = ClassUtils.stablizingoptions(
       JerichoPlayerOptions,
@@ -254,9 +254,13 @@ class JerichoPlayer extends EventEmitter {
     return void null;
   }
 
-  static #__buildsandDepschecks(Client) {
+  #__buildsandDepschecks(Client) {
     let FmpeggGarbage;
     let LibopusGarbage;
+    const MissingDeps = [];
+    MissingDeps.push(
+      '--[ Missing Dependencies from package.json | Do - "npm i packageName" ]--',
+    );
     try {
       const GarbageInfo = FFmpeg.getInfo();
       FmpeggGarbage = `- version: ${GarbageInfo.version}`;
@@ -266,33 +270,54 @@ class JerichoPlayer extends EventEmitter {
     } catch (err) {
       LibopusGarbage = FmpeggGarbage = undefined;
     }
+    !ClassUtils.ScanDeps('@discordjs/voice')
+      ? MissingDeps.push(`${MissingDeps.length + 1})  "@discordjs/voice"`)
+      : undefined;
+    !ClassUtils.ScanDeps('prism-media')
+      ? MissingDeps.push(`${MissingDeps.length + 1})  "prism-media"`)
+      : undefined;
 
-    if (
-      !ClassUtils.ScanDeps('@discordjs/voice')
-      || !ClassUtils.ScanDeps('prism-media')
-      || !(
-        ClassUtils.ScanDeps('@discordjs/opus')
-        && ClassUtils.ScanDeps('opusscript')
+    !ClassUtils.ScanDeps('@discordjs/opus')
+    && !ClassUtils.ScanDeps('opusscript')
+      ? MissingDeps.push(
+        `${MissingDeps.length + 1})  "@discordjs/voice" OR "opusscript"`,
       )
-      || !(
-        ClassUtils.ScanDeps('tweetnacl')
-        || (ClassUtils.ScanDeps('libsodium-wrappers')
-          && ClassUtils.ScanDeps('sodium'))
+      : undefined;
+
+    !ClassUtils.ScanDeps('tweetnacl')
+    && !(ClassUtils.ScanDeps('libsodium-wrapper') && ClassUtils.ScanDeps('sodium'))
+      ? MissingDeps.push(
+        `${
+          MissingDeps.length + 1
+        })  "tweetnacl" OR ("libsodium-wrapper" And "sodium")`,
       )
-      || (!ClassUtils.ScanDeps('playdl-music-extractor')
-        && !ClassUtils.ScanDeps('video-extractor'))
-      || !(
-        ClassUtils.ScanDeps('ffmpeg-static')
-        || (LibopusGarbage && FmpeggGarbage)
+      : undefined;
+
+    !ClassUtils.ScanDeps('ffmpeg-static') && !(LibopusGarbage && FmpeggGarbage)
+      ? MissingDeps.push(
+        `${MissingDeps.length + 1})  "ffmpeg-static" OR "Ffmpeg Soft."`,
       )
-    ) {
-      throw Error(
-        'Missing Dependencies from package.json | Use - "Utils.ScanDeps()" from the inbuilt Package Utils to see Missing Dependencies and Do - "npm i packageName"',
+      : undefined;
+
+    !ClassUtils.ScanDeps('playdl-music-extractor')
+    && !ClassUtils.ScanDeps('video-extractor')
+      ? MissingDeps.push(
+        `${
+          MissingDeps.length + 1
+        })  "playdl-music-extractor" OR "video-extractor"`,
+      )
+      : undefined;
+    if (MissingDeps[1]) {
+      this.emit(
+        'error',
+        ['-'.repeat(50), ...MissingDeps, '-'.repeat(50)].join('\n'),
       );
     }
     if (!Client) {
-      throw Error('Invalid Discord Client , Please Provide one Correctly');
-    }
+      throw Error(
+        'Invalid Discord Client has been Detected! | And get some Voice and Channel Intents too',
+      );
+    } else return true;
   }
 }
 
