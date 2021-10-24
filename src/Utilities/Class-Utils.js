@@ -65,6 +65,7 @@ class ClassUtils {
       } catch (err) {
         report.push('- not found');
       }
+      addVersion('ffmpeg-static');
       report.push('');
 
       // Extractors
@@ -73,9 +74,10 @@ class ClassUtils {
       addVersion('video-extractor');
 
       return ['-'.repeat(50), ...report, '-'.repeat(50)].join('\n');
-    } return (
+    }
+    return (
       ClassUtils.#__versioning(packageName)
-        ?? ClassUtils.#__versioning(packageName.toLowerCase().trim())
+      ?? ClassUtils.#__versioning(packageName.toLowerCase().trim())
     );
   }
 

@@ -1,4 +1,5 @@
 const EventEmitter = require('events');
+const { FFmpeg } = require('prism-media');
 const Queue = require('./Queue-Handler.js');
 const ClassUtils = require('../Utilities/Class-Utils');
 const { join } = require('../Utilities/Voice-Utils');
@@ -30,9 +31,8 @@ class JerichoPlayer extends EventEmitter {
     },
   ) {
     super();
-    if (!Client) {
-      throw Error('Invalid Discord Client , Please Provide one Correctly');
-    }
+
+    JerichoPlayer.#__buildsandDepschecks(Client);
     this.Client = Client;
     this.JerichoPlayerOptions = ClassUtils.stablizingoptions(
       JerichoPlayerOptions,
@@ -252,6 +252,47 @@ class JerichoPlayer extends EventEmitter {
       );
     }
     return void null;
+  }
+
+  static #__buildsandDepschecks(Client) {
+    let FmpeggGarbage;
+    let LibopusGarbage;
+    try {
+      const GarbageInfo = FFmpeg.getInfo();
+      FmpeggGarbage = `- version: ${GarbageInfo.version}`;
+      LibopusGarbage = `- libopus: ${
+        GarbageInfo.output.includes('--enable-libopus') ? 'yes' : 'no'
+      }`;
+    } catch (err) {
+      LibopusGarbage = FmpeggGarbage = undefined;
+    }
+
+    if (
+      !ClassUtils.ScanDeps('@discordjs/voice')
+      || !ClassUtils.ScanDeps('prism-media')
+      || !(
+        ClassUtils.ScanDeps('@discordjs/opus')
+        && ClassUtils.ScanDeps('opusscript')
+      )
+      || !(
+        ClassUtils.ScanDeps('tweetnacl')
+        || (ClassUtils.ScanDeps('libsodium-wrappers')
+          && ClassUtils.ScanDeps('sodium'))
+      )
+      || (!ClassUtils.ScanDeps('playdl-music-extractor')
+        && !ClassUtils.ScanDeps('video-extractor'))
+      || !(
+        ClassUtils.ScanDeps('ffmpeg-static')
+        || (LibopusGarbage && FmpeggGarbage)
+      )
+    ) {
+      throw Error(
+        'Missing Dependencies from package.json | Use - "Utils.ScanDeps()" from the inbuilt Package Utils to see Missing Dependencies and Do - "npm i packageName"',
+      );
+    }
+    if (!Client) {
+      throw Error('Invalid Discord Client , Please Provide one Correctly');
+    }
   }
 }
 
