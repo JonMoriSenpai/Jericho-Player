@@ -136,6 +136,7 @@ class JerichoPlayer extends EventEmitter {
       LeaveOnBotOnlyTimedout: 0,
     },
   ) {
+    this.#__buildsandDepschecks(this.Client);
     if (
       !message
       || !(
@@ -160,6 +161,7 @@ class JerichoPlayer extends EventEmitter {
   }
 
   DeleteQueue(guildId) {
+    this.#__buildsandDepschecks(this.Client);
     if (
       !guildId
       || !(guildId && (typeof guildId === 'string' || typeof guildId === 'number'))
@@ -175,6 +177,7 @@ class JerichoPlayer extends EventEmitter {
   }
 
   GetQueue(guildId) {
+    this.#__buildsandDepschecks(this.Client);
     if (
       !guildId
       || !(guildId && (typeof guildId === 'string' || typeof guildId === 'number'))
@@ -219,6 +222,7 @@ class JerichoPlayer extends EventEmitter {
   }
 
   #JerichoPlayerVoiceConnectionManager(QueueInstance, VoiceChannel) {
+    this.#__buildsandDepschecks(this.Client);
     const clientchecks = (member) => member.user.id === this.Client.user.id;
     const userchecks = (member) => !member.user.bot;
 
@@ -295,7 +299,9 @@ class JerichoPlayer extends EventEmitter {
 
     !ClassUtils.ScanDeps('ffmpeg-static') && !(LibopusGarbage && FmpeggGarbage)
       ? MissingDeps.push(
-        `${MissingDeps.length - 1})  "ffmpeg-static" OR "Ffmpeg Soft."`,
+        `${
+          MissingDeps.length - 1
+        })  "ffmpeg-static" OR "Ffmpeg from [https://www.ffmpeg.org/download.html]"`,
       )
       : undefined;
 
@@ -311,7 +317,12 @@ class JerichoPlayer extends EventEmitter {
       setTimeout(() => {
         this.emit(
           'error',
-          ['-'.repeat(50), ...MissingDeps, '-'.repeat(50)].join('\n'),
+          [
+            '-'.repeat(50),
+            ...MissingDeps,
+            '--[ queue value will be undefined By-default as it will trigger as ->  player.on("error",errorMessage) => {} ]--',
+            '-'.repeat(50),
+          ].join('\n'),
         );
       }, 2 * 1000);
     }
@@ -319,7 +330,7 @@ class JerichoPlayer extends EventEmitter {
       throw Error(
         'Invalid Discord Client has been Detected! | And get some Voice and Channel Intents too',
       );
-    } else return true;
+    } else return void null;
   }
 }
 
