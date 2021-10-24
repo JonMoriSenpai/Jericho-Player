@@ -23,8 +23,8 @@ class Queue {
         Proxy: null,
       },
       IgnoreError: true,
-      LeaveOnEmpty: false,
-      LeaveOnEnd: false,
+      LeaveOnEmpty: true,
+      LeaveOnEnd: true,
       LeaveOnBotOnly: false,
       LeaveOnEmptyTimedout: 0,
       LeaveOnEndTimedout: 0,
@@ -57,7 +57,7 @@ class Queue {
     this.MusicPlayer.on('stateChange', (oldState, newState) => {
       if (newState.status === AudioPlayerStatus.Idle) {
         this.JerichoPlayer.emit('TrackEnd', this.tracks[0], this);
-        this.#__CleaningTrackMess();
+        if (this.playing && !this.destroyed) this.#__CleaningTrackMess();
         this.#__ResourcePlay();
       }
     });
@@ -96,7 +96,7 @@ class Queue {
       );
     }
     PlayOptions = ClassUtils.stablizingoptions(PlayOptions, this.QueueOptions);
-    this.StreamPacket
+    this.StreamPacket = this.StreamPacket
       ? this.StreamPacket
       : new StreamPacketGen(
         this.Client,
@@ -242,23 +242,19 @@ class Queue {
     return true;
   }
 
-  destroy(connectionTimedout) {
+  destroy(connectionTimedout = 0) {
     if (this.destroyed) return void this.JerichoPlayer.emit('error', 'Destroyed Queue', this);
     this.StreamPacket.tracks = [];
     this.StreamPacket.searches = [];
-    let NodeTimeoutId;
-    if (
-      connectionTimedout
-      && (typeof connectionTimedout === 'number'
-        || typeof connectionTimedout === 'string')
-    ) {
-      NodeTimeoutId = disconnect(
+    const NodeTimeoutId = connectionTimedout || connectionTimedout === 0
+      ? disconnect(
         this.guildId,
         { destroy: true },
         Number(connectionTimedout) ?? 0,
         this,
-      );
-    }
+      )
+      : undefined;
+
     this.destroyed = true;
     const Garbage = {};
     Garbage.container = this.StreamPacket;
@@ -298,11 +294,16 @@ class Queue {
   }
 
   async #__ResourcePlay() {
-    if (!this.StreamPacket.tracks[0]) {
+    if (
+      !this.StreamPacket
+      || (this.StreamPacket
+        && this.StreamPacket.tracks
+        && !this.StreamPacket.tracks[0])
+    ) {
       Queue.#TimedoutIds[
         `${this.guildId}`
       ] = this.#__QueueAudioPlayerStatusManager();
-      if (!Queue.#TimedoutIds[`${this.guildId}`]) return void this.JerichoPlayer.emit('QueueEnd', this);
+      if (!Queue.#TimedoutIds[`${this.guildId}`]) return void this.JerichoPlayer.emit('queueEnd', this);
       return void null;
     }
     if (this.destroyed) return void null;
@@ -314,14 +315,11 @@ class Queue {
     const AudioResource = await this.StreamPacket.StreamAudioResourceExtractor(
       this.StreamPacket.tracks[0],
     );
-    this.JerichoPlayer.emit('NowPlaying', this.tracks[0], this);
+    this.JerichoPlayer.emit('trackStart', this.tracks[0], this);
     this.MusicPlayer.play(AudioResource);
     if (!this.StreamPacket.subscription && this.StreamPacket.VoiceConnection) {
-      this.StreamPacket.subscription = this.StreamPacket.VoiceConnection.subscribe(
-        this.MusicPlayer,
-      )
-        ? true
-        : undefined;
+      this.StreamPacket.subscription = this.StreamPacket.VoiceConnection.subscribe(this.MusicPlayer)
+        ?? undefined;
     }
     return void (await entersState(
       this.MusicPlayer,

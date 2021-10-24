@@ -50,7 +50,6 @@ function disconnect(
         && DisconnectChannelOptions
         && DisconnectChannelOptions.destroy
       ) {
-        VoiceConnection.destroy(true);
         if (
           QueueInstance
           && QueueInstance.playing
@@ -58,12 +57,8 @@ function disconnect(
         ) {
           QueueInstance.MusicPlayer.stop();
           QueueInstance.StreamPacket.subscription.unsubscribe();
-          return void QueueInstance.JerichoPlayer.emit(
-            'QueueEnd',
-            QueueInstance,
-          );
         }
-        return void null;
+        return void VoiceConnection.destroy(true);
       }
       if (VoiceConnection) {
         if (
@@ -73,12 +68,11 @@ function disconnect(
         ) {
           QueueInstance.MusicPlayer.stop();
           QueueInstance.StreamPacket.subscription.unsubscribe();
-          QueueInstance.JerichoPlayer.emit('QueueEnd', QueueInstance);
         }
         return void VoiceConnection.disconnect();
       }
       return void QueueInstance.JerichoPlayer.emit(
-        'ConnectionError',
+        'connectionError',
         VoiceConnection,
         guildId,
       );
@@ -90,24 +84,21 @@ function disconnect(
     && DisconnectChannelOptions
     && DisconnectChannelOptions.destroy
   ) {
-    VoiceConnection.destroy(true);
     if (QueueInstance && QueueInstance.playing && !QueueInstance.destroyed) {
       QueueInstance.MusicPlayer.stop();
       QueueInstance.StreamPacket.subscription.unsubscribe();
-      return void QueueInstance.JerichoPlayer.emit('QueueEnd', QueueInstance);
     }
-    return void null;
+    return void VoiceConnection.destroy(true);
   }
   if (VoiceConnection) {
     if (QueueInstance && QueueInstance.playing && !QueueInstance.destroyed) {
       QueueInstance.MusicPlayer.stop();
       QueueInstance.StreamPacket.subscription.unsubscribe();
-      QueueInstance.JerichoPlayer.emit('QueueEnd', QueueInstance);
     }
     return void VoiceConnection.disconnect();
   }
   return void QueueInstance.JerichoPlayer.emit(
-    'ConnectionError',
+    'connectionError',
     VoiceConnection,
     guildId,
   );

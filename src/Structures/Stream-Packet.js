@@ -59,7 +59,7 @@ class StreamPacketGen {
     this.searches = this.searches.concat(Chunks.tracks);
     this.tracks = this.tracks.concat(Chunks.streamdatas);
     this.JerichoPlayer.emit(
-      'TracksAdd',
+      'tracksAdd',
       this.JerichoPlayer.GetQueue(this.guildId),
       Chunks.tracks,
     );
@@ -78,7 +78,7 @@ class StreamPacketGen {
         : this.VoiceConnection;
     } else if (!VoiceChannel && !this.VoiceChannel && !this.VoiceConnection) {
       return void this.JerichoPlayer.emit(
-        'ConnectionError',
+        'connectionError',
         this.VoiceConnection,
         this.guildId,
       );
@@ -128,7 +128,7 @@ class StreamPacketGen {
     }
     this.#__HandleInsertion(Number(Index) ?? -1, Chunk);
     this.JerichoPlayer.emit(
-      'TracksAdd',
+      'tracksAdd',
       this.JerichoPlayer.GetQueue(this.guildId),
       Chunk.tracks,
     );

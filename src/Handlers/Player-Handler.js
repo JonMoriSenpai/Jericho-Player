@@ -18,8 +18,8 @@ class JerichoPlayer extends EventEmitter {
         Proxy: null,
       },
       IgnoreError: true,
-      LeaveOnEmpty: false,
-      LeaveOnEnd: false,
+      LeaveOnEmpty: true,
+      LeaveOnEnd: true,
       LeaveOnBotOnly: false,
       LeaveOnEmptyTimedout: 0,
       LeaveOnEndTimedout: 0,
@@ -42,13 +42,16 @@ class JerichoPlayer extends EventEmitter {
         !QueueInstance
         || (QueueInstance && QueueInstance.destroyed)
         || (QueueInstance && !QueueInstance.playing)
-        || OldVoiceState.channel.id === NewVoiceState.channel.id
+        || (NewVoiceState.channel
+          && OldVoiceState.channel
+          && OldVoiceState.channel.id === NewVoiceState.channel.id)
       ) {
         return void null;
       }
       if (
         OldVoiceState.channel
         && NewVoiceState.channel
+        && OldVoiceState.channel.id !== NewVoiceState.channel.id
         && NewVoiceState.id === this.Client.user.id
       ) {
         JerichoPlayer.#QueueCaches[
@@ -79,6 +82,8 @@ class JerichoPlayer extends EventEmitter {
       }
       if (
         NewVoiceState.channel
+        && QueueInstance.StreamPacket
+        && QueueInstance.StreamPacket.VoiceChannel
         && QueueInstance.StreamPacket.VoiceChannel.id
           === NewVoiceState.channel.id
         && NewVoiceState.id !== this.Client.user.id
@@ -99,7 +104,7 @@ class JerichoPlayer extends EventEmitter {
         ) {
           this.emit('channelEmpty', QueueInstance, OldVoiceState.channel);
         }
-        this.emit('BotDisconnect', QueueInstance);
+        this.emit('botDisconnect', QueueInstance);
         return this.DeleteQueue(QueueInstance.guildId);
       }
       return void null;
@@ -117,8 +122,8 @@ class JerichoPlayer extends EventEmitter {
         Proxy: null,
       },
       IgnoreError: true,
-      LeaveOnEmpty: false,
-      LeaveOnEnd: false,
+      LeaveOnEmpty: true,
+      LeaveOnEnd: true,
       LeaveOnBotOnly: false,
       LeaveOnEmptyTimedout: 0,
       LeaveOnEndTimedout: 0,
@@ -217,7 +222,6 @@ class JerichoPlayer extends EventEmitter {
         Number(JerichoPlayer.#TimedoutIds[`${QueueInstance.guildId}`]),
       )
       : undefined;
-
     if (
       QueueInstance.QueueOptions.LeaveOnEmpty
       && ((VoiceChannel.members.size === 1
