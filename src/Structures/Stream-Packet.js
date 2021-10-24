@@ -56,6 +56,13 @@ class StreamPacketGen {
         ? Number(this.tracks[this.tracks.length - 1].Id)
         : 0,
     );
+    if (Chunks.error) {
+      return void this.JerichoPlayer.emit(
+        'error',
+        Chunks.error,
+        this.JerichoPlayer.GetQueue(this.guildId),
+      );
+    }
     this.searches = this.searches.concat(Chunks.tracks);
     this.tracks = this.tracks.concat(Chunks.streamdatas);
     this.JerichoPlayer.emit(

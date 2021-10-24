@@ -19,7 +19,7 @@ class TrackGenerator {
         playlist: false,
         streamdatas: [],
         tracks: [],
-        error: 'Query was Invalid',
+        error: 'Invalid Query',
       };
     }
     const RawData = await TrackGenerator.#SongsFetching(
@@ -36,6 +36,7 @@ class TrackGenerator {
         playlist: false,
         streamdatas: [],
         tracks: [],
+        error: 'No Tracks from Query',
       };
     }
     const Chunks = TrackGenerator.#Track_Id_Placement(

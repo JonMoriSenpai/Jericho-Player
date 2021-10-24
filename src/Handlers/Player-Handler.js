@@ -2,6 +2,9 @@ const EventEmitter = require('events');
 const Queue = require('./Queue-Handler.js');
 const ClassUtils = require('../Utilities/Class-Utils');
 const { join } = require('../Utilities/Voice-Utils');
+const {
+  DefaultJerichoPlayerOptions,
+} = require('../../typings/types/interfaces');
 
 class JerichoPlayer extends EventEmitter {
   static #QueueCaches = []
@@ -31,7 +34,10 @@ class JerichoPlayer extends EventEmitter {
       throw Error('Invalid Discord Client , Please Provide one Correctly');
     }
     this.Client = Client;
-    this.JerichoPlayerOptions = JerichoPlayerOptions;
+    this.JerichoPlayerOptions = ClassUtils.stablizingoptions(
+      JerichoPlayerOptions,
+      DefaultJerichoPlayerOptions,
+    );
     this.Client.on('voiceStateUpdate', (OldVoiceState, NewVoiceState) => {
       const QueueInstance = JerichoPlayer.#QueueCacheFetch(
         (NewVoiceState ? NewVoiceState.guild.id : null)

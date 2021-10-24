@@ -7,6 +7,7 @@ const {
 const StreamPacketGen = require('../Structures/Stream-Packet');
 const ClassUtils = require('../Utilities/Class-Utils');
 const { disconnect } = require('../Utilities/Voice-Utils');
+const { DefaultQueueCreateOptions } = require('../../typings/types/interfaces');
 
 class Queue {
   static #TimedoutIds = {}
@@ -33,6 +34,10 @@ class Queue {
     JerichoPlayer = undefined,
   ) {
     this.Client = Client;
+    this.QueueOptions = QueueOptions = ClassUtils.stablizingoptions(
+      QueueOptions,
+      DefaultQueueCreateOptions,
+    );
     this.StreamPacket = new StreamPacketGen(
       Client,
       message.guild.id,
@@ -41,7 +46,6 @@ class Queue {
       QueueOptions.ExtractorStreamOptions,
       JerichoPlayer,
     );
-    this.QueueOptions = QueueOptions;
     this.message = message;
     this.metadata = QueueOptions.metadata;
     this.tracks = [];
@@ -56,8 +60,8 @@ class Queue {
 
     this.MusicPlayer.on('stateChange', (oldState, newState) => {
       if (newState.status === AudioPlayerStatus.Idle) {
-        this.JerichoPlayer.emit('TrackEnd', this.tracks[0], this);
-        if (this.playing && !this.destroyed) this.#__CleaningTrackMess();
+        this.JerichoPlayer.emit('trackEnd', this, this.tracks[0]);
+        if (!this.destroyed) this.#__CleaningTrackMess();
         this.#__ResourcePlay();
       }
     });
@@ -295,10 +299,11 @@ class Queue {
 
   async #__ResourcePlay() {
     if (
-      !this.StreamPacket
-      || (this.StreamPacket
+      !(
+        this.StreamPacket
         && this.StreamPacket.tracks
-        && !this.StreamPacket.tracks[0])
+        && this.StreamPacket.tracks[0]
+      )
     ) {
       Queue.#TimedoutIds[
         `${this.guildId}`
@@ -315,7 +320,7 @@ class Queue {
     const AudioResource = await this.StreamPacket.StreamAudioResourceExtractor(
       this.StreamPacket.tracks[0],
     );
-    this.JerichoPlayer.emit('trackStart', this.tracks[0], this);
+    this.JerichoPlayer.emit('trackStart', this, this.tracks[0]);
     this.MusicPlayer.play(AudioResource);
     if (!this.StreamPacket.subscription && this.StreamPacket.VoiceConnection) {
       this.StreamPacket.subscription = this.StreamPacket.VoiceConnection.subscribe(this.MusicPlayer)
@@ -350,7 +355,7 @@ class Queue {
     ]
       ? clearTimeout(Number(Queue.#TimedoutIds[`${this.guildId}`]))
       : undefined;
-    if (this.QueueOptions.LeaveOnEnd && this.playing && !this.tracks[0]) {
+    if (this.QueueOptions.LeaveOnEnd && !this.tracks[0]) {
       return this.destroy(this.QueueOptions.LeaveOnEndTimedout ?? 0);
     }
     return void null;

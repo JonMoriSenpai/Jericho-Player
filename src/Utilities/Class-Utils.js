@@ -3,7 +3,9 @@ class ClassUtils {
     if (!Local) return Parent;
     if (!Parent) return Local;
     const ProcessOptions = {};
-    const Options = Object.keys(Local);
+    const Options = Object.keys(Local).length > Object.keys(Parent).length
+      ? Object.keys(Local)
+      : Object.keys(Parent);
     for (let count = 0, len = Options.length; count < len; ++count) {
       ProcessOptions[Options[count]] = (typeof Local[Options[count]] === 'object'
         && Local[Options[count]] !== undefined
@@ -14,7 +16,7 @@ class ClassUtils {
           Local[Options[count]],
           Parent[Options[count]],
         )
-        : null)
+        : undefined)
         ?? (Local[Options[count]] === undefined
           ? Parent[Options[count]]
           : Local[Options[count]]);
