@@ -257,30 +257,30 @@ class JerichoPlayer extends EventEmitter {
   #__buildsandDepschecks(Client) {
     let FmpeggGarbage;
     let LibopusGarbage;
-    const MissingDeps = [];
+    const MissingDeps = [' '];
     MissingDeps.push(
       '--[ Missing Dependencies from package.json | Do - "npm i packageName" ]--',
     );
     try {
       const GarbageInfo = FFmpeg.getInfo();
-      FmpeggGarbage = `- version: ${GarbageInfo.version}`;
-      LibopusGarbage = `- libopus: ${
+      FmpeggGarbage = !!`- version: ${GarbageInfo.version}`;
+      LibopusGarbage = !!`- libopus: ${
         GarbageInfo.output.includes('--enable-libopus') ? 'yes' : 'no'
       }`;
     } catch (err) {
       LibopusGarbage = FmpeggGarbage = undefined;
     }
     !ClassUtils.ScanDeps('@discordjs/voice')
-      ? MissingDeps.push(`${MissingDeps.length + 1})  "@discordjs/voice"`)
+      ? MissingDeps.push(`${MissingDeps.length - 1})  "@discordjs/voice"`)
       : undefined;
     !ClassUtils.ScanDeps('prism-media')
-      ? MissingDeps.push(`${MissingDeps.length + 1})  "prism-media"`)
+      ? MissingDeps.push(`${MissingDeps.length - 1})  "prism-media"`)
       : undefined;
 
     !ClassUtils.ScanDeps('@discordjs/opus')
     && !ClassUtils.ScanDeps('opusscript')
       ? MissingDeps.push(
-        `${MissingDeps.length + 1})  "@discordjs/voice" OR "opusscript"`,
+        `${MissingDeps.length - 1})  "@discordjs/opus" OR "opusscript"`,
       )
       : undefined;
 
@@ -288,14 +288,14 @@ class JerichoPlayer extends EventEmitter {
     && !(ClassUtils.ScanDeps('libsodium-wrapper') && ClassUtils.ScanDeps('sodium'))
       ? MissingDeps.push(
         `${
-          MissingDeps.length + 1
+          MissingDeps.length - 1
         })  "tweetnacl" OR ("libsodium-wrapper" And "sodium")`,
       )
       : undefined;
 
     !ClassUtils.ScanDeps('ffmpeg-static') && !(LibopusGarbage && FmpeggGarbage)
       ? MissingDeps.push(
-        `${MissingDeps.length + 1})  "ffmpeg-static" OR "Ffmpeg Soft."`,
+        `${MissingDeps.length - 1})  "ffmpeg-static" OR "Ffmpeg Soft."`,
       )
       : undefined;
 
@@ -303,15 +303,14 @@ class JerichoPlayer extends EventEmitter {
     && !ClassUtils.ScanDeps('video-extractor')
       ? MissingDeps.push(
         `${
-          MissingDeps.length + 1
+          MissingDeps.length - 1
         })  "playdl-music-extractor" OR "video-extractor"`,
       )
       : undefined;
-    if (MissingDeps[1]) {
-      this.emit(
-        'error',
-        ['-'.repeat(50), ...MissingDeps, '-'.repeat(50)].join('\n'),
-      );
+    if (MissingDeps[2]) {
+      setTimeout(() => {
+        this.emit('error', [...MissingDeps].join('\n'));
+      }, 2 * 1000);
     }
     if (!Client) {
       throw Error(
