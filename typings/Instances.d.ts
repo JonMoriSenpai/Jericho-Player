@@ -156,3 +156,4 @@ export type QueueOptions = {
   LeaveOnEndTimedout: Number | 'Time in Seconds'
   LeaveOnBotOnlyTimedout: Number | 'Time in Seconds'
 }
+

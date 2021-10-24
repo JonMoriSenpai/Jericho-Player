@@ -13,3 +13,7 @@ export class JerichoPlayer extends EventEmitter {
   public GetQueue (guildId: Guild['id'] | Snowflake | String): Queue | undefined
   public DeleteQueue (guildId: Guild['id'] | Snowflake | String): undefined
 }
+
+export type Utils = {
+  ScanDeps(PackageName: String | undefined): String | undefined
+}

@@ -64,7 +64,7 @@ class TrackGenerator {
     const StreamDatas = [];
     const SearchTracks = [];
     for (let count = 0, len = Tracks.length; count < len; ++count) {
-      Tracks[count] ? (Tracks[count].Id = CacheLength + 1) : undefined;
+      Tracks[count] ? (Tracks[count].Id = ++CacheLength) : undefined;
       Tracks[count]
         ? SearchTracks.push(
           TrackGenerator.#UserTrackModelGen(Tracks[count], RequestedByUser),
@@ -90,15 +90,18 @@ class TrackGenerator {
     },
     extractor = 'play-dl',
   ) {
-    const RawData = (extractor && extractor.includes('youtube-dl')
+    const RawData = (extractor
+      && extractor.includes('youtube-dl')
+      && ClassUtils.ScanDeps('video-extractor')
       ? await TrackGenerator.#YoutubeDLExtractor(Query)
-      : undefined)
-      ?? (await StreamDownloader(Query, FetchOptions.ExtractorStreamOptions));
+      : undefined) ?? ClassUtils.ScanDeps('video-extractor')
+      ? await StreamDownloader(Query, FetchOptions.ExtractorStreamOptions)
+      : undefined;
     return RawData;
   }
 
   static async #YoutubeDLExtractor(Query) {
-    const { StreamDownloader } = require('video-extractor');
+    const { StreamDownloader } = require('playdl-music-extractor');
     return await StreamDownloader(Query);
   }
 

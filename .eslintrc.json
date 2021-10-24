@@ -24,6 +24,7 @@
     "no-useless-escape": "off",
     "import/no-unresolved": "off",
     "no-unused-expressions": "off",
-    "no-multi-assign": "off"
+    "no-multi-assign": "off",
+    "import/no-dynamic-require": "off"
   }
 }
