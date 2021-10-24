@@ -51,16 +51,30 @@ function disconnect(
         && DisconnectChannelOptions.destroy
       ) {
         VoiceConnection.destroy(true);
-        if (QueueInstance) {
+        if (
+          QueueInstance
+          && QueueInstance.playing
+          && !QueueInstance.destroyed
+        ) {
+          QueueInstance.MusicPlayer.stop();
+          QueueInstance.StreamPacket.subscription.unsubscribe();
           return void QueueInstance.JerichoPlayer.emit(
-            'ConnectionEnd',
+            'QueueEnd',
             QueueInstance,
           );
         }
         return void null;
       }
       if (VoiceConnection) {
-        if (QueueInstance) QueueInstance.JerichoPlayer.emit('ConnectionEnd', QueueInstance);
+        if (
+          QueueInstance
+          && QueueInstance.playing
+          && !QueueInstance.destroyed
+        ) {
+          QueueInstance.MusicPlayer.stop();
+          QueueInstance.StreamPacket.subscription.unsubscribe();
+          QueueInstance.JerichoPlayer.emit('QueueEnd', QueueInstance);
+        }
         return void VoiceConnection.disconnect();
       }
       return void QueueInstance.JerichoPlayer.emit(
@@ -77,16 +91,19 @@ function disconnect(
     && DisconnectChannelOptions.destroy
   ) {
     VoiceConnection.destroy(true);
-    if (QueueInstance) {
-      return void QueueInstance.JerichoPlayer.emit(
-        'ConnectionEnd',
-        QueueInstance,
-      );
+    if (QueueInstance && QueueInstance.playing && !QueueInstance.destroyed) {
+      QueueInstance.MusicPlayer.stop();
+      QueueInstance.StreamPacket.subscription.unsubscribe();
+      return void QueueInstance.JerichoPlayer.emit('QueueEnd', QueueInstance);
     }
     return void null;
   }
   if (VoiceConnection) {
-    if (QueueInstance) QueueInstance.JerichoPlayer.emit('ConnectionEnd', QueueInstance);
+    if (QueueInstance && QueueInstance.playing && !QueueInstance.destroyed) {
+      QueueInstance.MusicPlayer.stop();
+      QueueInstance.StreamPacket.subscription.unsubscribe();
+      QueueInstance.JerichoPlayer.emit('QueueEnd', QueueInstance);
+    }
     return void VoiceConnection.disconnect();
   }
   return void QueueInstance.JerichoPlayer.emit(

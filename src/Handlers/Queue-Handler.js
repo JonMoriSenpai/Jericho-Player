@@ -242,19 +242,29 @@ class Queue {
     return true;
   }
 
-  destroy(connection = true) {
+  destroy(connectionTimedout) {
     if (this.destroyed) return void this.JerichoPlayer.emit('error', 'Destroyed Queue', this);
-    if (connection) {
-      disconnect(this.guildId, { destroy: true }, undefined, this.JerichoPlayer);
-    }
-    this.destroyed = true;
     this.StreamPacket.tracks = [];
     this.StreamPacket.searches = [];
+    let NodeTimeoutId;
+    if (
+      connectionTimedout
+      && (typeof connectionTimedout === 'number'
+        || typeof connectionTimedout === 'string')
+    ) {
+      NodeTimeoutId = disconnect(
+        this.guildId,
+        { destroy: true },
+        Number(connectionTimedout) ?? 0,
+        this,
+      );
+    }
+    this.destroyed = true;
     const Garbage = {};
     Garbage.container = this.StreamPacket;
     delete Garbage.container;
     this.StreamPacket = undefined;
-    return true;
+    return NodeTimeoutId ?? undefined;
   }
 
   get paused() {
@@ -343,12 +353,7 @@ class Queue {
       ? clearTimeout(Number(Queue.#TimedoutIds[`${this.guildId}`]))
       : undefined;
     if (this.QueueOptions.LeaveOnEnd && this.playing && !this.tracks[0]) {
-      return disconnect(
-        this.guildId,
-        { destroy: true },
-        this.QueueOptions.LeaveOnEndTimedout,
-        this.JerichoPlayer,
-      );
+      return this.destroy(this.QueueOptions.LeaveOnEndTimedout ?? 0);
     }
     return void null;
   }

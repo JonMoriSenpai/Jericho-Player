@@ -48,7 +48,7 @@ export type Queue = {
     TrackIndex: Number,
     InsertOptions: PlayOptions
   ): Boolean | undefined
-  destroy(connection?: Boolean): Boolean | undefined
+  destroy(connectionTimedout?: Number): Number | Boolean | undefined
   remove(Index?: Number, Amount?: Number): Boolean | undefined
 }
 

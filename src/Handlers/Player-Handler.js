@@ -1,7 +1,7 @@
 const EventEmitter = require('events');
 const Queue = require('./Queue-Handler.js');
 const ClassUtils = require('../Utilities/Class-Utils');
-const { join, disconnect } = require('../Utilities/Voice-Utils');
+const { join } = require('../Utilities/Voice-Utils');
 
 class JerichoPlayer extends EventEmitter {
   static #QueueCaches = []
@@ -27,7 +27,9 @@ class JerichoPlayer extends EventEmitter {
     },
   ) {
     super();
-    if (!Client) { throw Error('Invalid Discord Client , Please Provide one Correctly'); }
+    if (!Client) {
+      throw Error('Invalid Discord Client , Please Provide one Correctly');
+    }
     this.Client = Client;
     this.JerichoPlayerOptions = JerichoPlayerOptions;
     this.Client.on('voiceStateUpdate', (OldVoiceState, NewVoiceState) => {
@@ -35,12 +37,15 @@ class JerichoPlayer extends EventEmitter {
         (NewVoiceState ? NewVoiceState.guild.id : null)
           ?? (OldVoiceState ? OldVoiceState.guild.id : null),
       );
+      const clientchecks = (member) => member.user.id === this.Client.user.id;
       if (
         !QueueInstance
         || (QueueInstance && QueueInstance.destroyed)
         || (QueueInstance && !QueueInstance.playing)
         || OldVoiceState.channel.id === NewVoiceState.channel.id
-      ) { return void null; }
+      ) {
+        return void null;
+      }
       if (
         OldVoiceState.channel
         && NewVoiceState.channel
@@ -73,15 +78,27 @@ class JerichoPlayer extends EventEmitter {
         return void null;
       }
       if (
-        QueueInstance.StreamPacket.VoiceChannel.id
+        NewVoiceState.channel
+        && QueueInstance.StreamPacket.VoiceChannel.id
           === NewVoiceState.channel.id
         && NewVoiceState.id !== this.Client.user.id
       ) {
-        return JerichoPlayer.#TimedoutIds[`${QueueInstance.guildId}`]
+        JerichoPlayer.#TimedoutIds[`${QueueInstance.guildId}`] = JerichoPlayer
+          .#TimedoutIds[`${QueueInstance.guildId}`]
           ? clearTimeout(JerichoPlayer.#TimedoutIds[`${QueueInstance.guildId}`])
           : null;
+        return void null;
       }
       if (!NewVoiceState.channel && OldVoiceState.id === this.Client.user.id) {
+        if (
+          OldVoiceState.channel
+          && OldVoiceState.channel.members
+          && ((OldVoiceState.channel.members.size === 1
+            && OldVoiceState.channel.members.some(clientchecks))
+            || OldVoiceState.channel.members.size === 0)
+        ) {
+          this.emit('channelEmpty', QueueInstance, OldVoiceState.channel);
+        }
         this.emit('BotDisconnect', QueueInstance);
         return this.DeleteQueue(QueueInstance.guildId);
       }
@@ -179,8 +196,10 @@ class JerichoPlayer extends EventEmitter {
   static #QueueCacheRemove(guildId) {
     if (!this.#QueueCacheFetch(guildId)) return false;
     const QueueInstance = JerichoPlayer.#QueueCaches[`${guildId}`];
-    if (JerichoPlayer.#QueueCaches[`${guildId}`].playing) { JerichoPlayer.#QueueCaches[`${guildId}`].stop(); }
-    QueueInstance.destroy();
+    if (JerichoPlayer.#QueueCaches[`${guildId}`].playing) {
+      JerichoPlayer.#QueueCaches[`${guildId}`].stop();
+    }
+    if (!QueueInstance.destroyed) QueueInstance.destroy();
     const Garbage = {};
     Garbage.Structure = QueueInstance;
     delete Garbage.Structure;
@@ -197,7 +216,7 @@ class JerichoPlayer extends EventEmitter {
       ? clearTimeout(
         Number(JerichoPlayer.#TimedoutIds[`${QueueInstance.guildId}`]),
       )
-      : null;
+      : undefined;
 
     if (
       QueueInstance.QueueOptions.LeaveOnEmpty
@@ -205,11 +224,8 @@ class JerichoPlayer extends EventEmitter {
         && VoiceChannel.members.some(clientchecks))
         || VoiceChannel.members.size === 0)
     ) {
-      return disconnect(
-        QueueInstance.guildId,
-        { destroy: true },
-        QueueInstance.QueueOptions.LeaveOnEmptyTimedout,
-        true,
+      return QueueInstance.destroy(
+        QueueInstance.QueueOptions.LeaveOnEmptyTimedout ?? 0,
       );
     }
     if (
@@ -221,11 +237,8 @@ class JerichoPlayer extends EventEmitter {
         && !VoiceChannel.members.some(clientchecks)
         && VoiceChannel.members.size <= 1)
     ) {
-      return disconnect(
-        QueueInstance.guildId,
-        { destroy: true },
-        QueueInstance.QueueOptions.LeaveOnBotOnlyTimedout,
-        true,
+      return QueueInstance.destroy(
+        QueueInstance.QueueOptions.LeaveOnBotOnlyTimedout ?? 0,
       );
     }
     return void null;
