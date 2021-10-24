@@ -124,6 +124,14 @@ class StreamPacketGen {
       StreamFetchOptions.ExtractorStreamOptions,
       this.ExtractorStreamOptions,
     );
+    if (!this.VoiceChannel && !this.VoiceConnection) {
+      return void this.JerichoPlayer.emit(
+        'error',
+        'Invalid Connection',
+        this.VoiceConnection,
+        this.guildId,
+      );
+    }
     const Chunk = await TracksGen.fetch(
       Query,
       StreamFetchOptions,
@@ -132,6 +140,13 @@ class StreamPacketGen {
         ? Number(this.tracks[this.tracks.length - 1].Id)
         : 0,
     );
+    if (Chunk.error) {
+      return void this.JerichoPlayer.emit(
+        'error',
+        Chunk.error,
+        this.JerichoPlayer.GetQueue(this.guildId),
+      );
+    }
     if (Number(Index) < -1) {
       return void this.JerichoPlayer.emit(
         'error',
@@ -140,6 +155,20 @@ class StreamPacketGen {
         Number(Index),
       );
     }
+    Chunk.playlist === true || Chunk.playlist
+      ? this.JerichoPlayer.emit(
+        'playlistAdd',
+        this.JerichoPlayer.GetQueue(this.guildId),
+        Chunk.tracks,
+        'insert',
+      )
+      : undefined;
+    this.JerichoPlayer.emit(
+      'tracksAdd',
+      this.JerichoPlayer.GetQueue(this.guildId),
+      Chunk.tracks,
+      'insert',
+    );
     this.#__HandleInsertion(Number(Index) ?? -1, Chunk);
     this.JerichoPlayer.emit(
       'tracksAdd',
