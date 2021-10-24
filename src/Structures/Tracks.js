@@ -1,4 +1,8 @@
 const { StreamDownloader } = require('playdl-music-extractor');
+const ClassUtils = require('../Utilities/Class-Utils');
+const {
+  DefaultExtractorStreamOptions,
+} = require('../../typings/types/interfaces');
 
 class TrackGenerator {
   static async fetch(
@@ -8,12 +12,16 @@ class TrackGenerator {
       ExtractorStreamOptions: {
         Limit: 1,
         Quality: 'high',
-        Proxy: null,
+        Proxy: undefined,
       },
     },
     extractor = 'play-dl',
     CacheLength = 0,
   ) {
+    FetchOptions.ExtractorStreamOptions = ClassUtils.stablizingoptions(
+      FetchOptions.ExtractorStreamOptions,
+      DefaultExtractorStreamOptions,
+    );
     if (!Query || (Query && typeof Query !== 'string')) {
       return {
         playlist: false,
@@ -73,7 +81,7 @@ class TrackGenerator {
       ExtractorStreamOptions: {
         Limit: 1,
         Quality: 'high',
-        Proxy: null,
+        Proxy: undefined,
       },
     },
     extractor = 'play-dl',

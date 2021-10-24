@@ -2,6 +2,9 @@ const { createAudioResource, StreamType } = require('@discordjs/voice');
 const TracksGen = require('./Tracks');
 const VoiceUtils = require('../Utilities/Voice-Utils');
 const ClassUtils = require('../Utilities/Class-Utils');
+const {
+  DefaultExtractorStreamOptions,
+} = require('../../typings/types/interfaces');
 
 class StreamPacketGen {
   constructor(
@@ -12,7 +15,7 @@ class StreamPacketGen {
     ExtractorStreamOptions = {
       Limit: 1,
       Quality: 'high',
-      Proxy: null,
+      Proxy: undefined,
     },
     JerichoPlayer = undefined,
     IgnoreError = true,
@@ -26,7 +29,10 @@ class StreamPacketGen {
     this.metadata = MetadataValue;
     this.subscription = undefined;
     this.guildId = guildId;
-    this.ExtractorStreamOptions = ExtractorStreamOptions;
+    this.ExtractorStreamOptions = ExtractorStreamOptions = ClassUtils.stablizingoptions(
+      ExtractorStreamOptions,
+      DefaultExtractorStreamOptions,
+    );
     this.IgnoreError = IgnoreError ?? true;
     this.JerichoPlayer = JerichoPlayer;
   }
@@ -39,7 +45,7 @@ class StreamPacketGen {
       ExtractorStreamOptions: {
         Limit: 1,
         Quality: 'high',
-        Proxy: null,
+        Proxy: undefined,
       },
     },
     extractor = 'play-dl',
@@ -115,7 +121,7 @@ class StreamPacketGen {
       ExtractorStreamOptions: {
         Limit: 1,
         Quality: 'high',
-        Proxy: null,
+        Proxy: undefined,
       },
     },
     extractor,

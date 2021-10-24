@@ -21,7 +21,7 @@ class Queue {
       ExtractorStreamOptions: {
         Limit: 1,
         Quality: 'high',
-        Proxy: null,
+        Proxy: undefined,
       },
       IgnoreError: true,
       LeaveOnEmpty: true,
@@ -77,7 +77,7 @@ class Queue {
       ExtractorStreamOptions: {
         Limit: 1,
         Quality: 'high',
-        Proxy: null,
+        Proxy: undefined,
       },
     },
   ) {
@@ -183,7 +183,7 @@ class Queue {
       ExtractorStreamOptions: {
         Limit: 1,
         Quality: 'high',
-        Proxy: null,
+        Proxy: undefined,
       },
     },
   ) {
@@ -213,12 +213,12 @@ class Queue {
         InsertOptions.ExtractorStreamOptions,
         this.JerichoPlayer,
       );
-    this.StreamPacket = await this.StreamPacket.insert(
+    this.StreamPacket = (await this.StreamPacket.insert(
       Number(TrackIndex) ?? -1,
       Query,
       InsertOptions.ExtractorStreamOptions,
       InsertOptions.extractor,
-    );
+    )) ?? this.StreamPacket;
     this.tracks = this.StreamPacket.searches;
     return true;
   }

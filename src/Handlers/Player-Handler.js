@@ -18,7 +18,7 @@ class JerichoPlayer extends EventEmitter {
       ExtractorStreamOptions: {
         Limit: 1,
         Quality: 'high',
-        Proxy: null,
+        Proxy: undefined,
       },
       IgnoreError: true,
       LeaveOnEmpty: true,
@@ -125,7 +125,7 @@ class JerichoPlayer extends EventEmitter {
       ExtractorStreamOptions: {
         Limit: 1,
         Quality: 'high',
-        Proxy: null,
+        Proxy: undefined,
       },
       IgnoreError: true,
       LeaveOnEmpty: true,
