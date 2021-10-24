@@ -1,4 +1,3 @@
-const { StreamDownloader } = require('playdl-music-extractor');
 const ClassUtils = require('../Utilities/Class-Utils');
 const {
   DefaultExtractorStreamOptions,
@@ -102,26 +101,46 @@ class TrackGenerator {
     },
     extractor = 'play-dl',
   ) {
-    let RawData = (extractor && extractor.includes('youtube-dl')
+    let RawData = (extractor
+      && extractor.includes('youtube-dl')
+      && ClassUtils.ScanDeps('video-extractor')
       ? await TrackGenerator.#YoutubeDLExtractor(Query)
       : undefined)
-      ?? (await StreamDownloader(Query, FetchOptions.ExtractorStreamOptions));
+      ?? (ClassUtils.ScanDeps('playdl-music-extractor')
+        ? await TrackGenerator.#PlayDLExtractor(
+          Query,
+          FetchOptions.ExtractorStreamOptions,
+        )
+        : undefined);
     if (
       !RawData
       || (RawData && !RawData.tracks)
       || (RawData && RawData.tracks && !RawData.tracks[0])
     ) {
-      RawData = (extractor && extractor.includes('youtube-dl')
-        ? await StreamDownloader(Query, FetchOptions.ExtractorStreamOptions)
-        : undefined) ?? (await TrackGenerator.#YoutubeDLExtractor(Query));
+      RawData = (ClassUtils.ScanDeps('playdl-music-extractor')
+        ? await TrackGenerator.#PlayDLExtractor(
+          Query,
+          FetchOptions.ExtractorStreamOptions,
+        )
+        : undefined)
+        ?? (extractor
+        && extractor.includes('youtube-dl')
+        && ClassUtils.ScanDeps('video-extractor')
+          ? await TrackGenerator.#YoutubeDLExtractor(Query)
+          : undefined);
       return RawData;
     }
     return RawData;
   }
 
   static async #YoutubeDLExtractor(Query) {
-    const { StreamDownloader } = require('playdl-music-extractor');
+    const { StreamDownloader } = require('video-extractor');
     return await StreamDownloader(Query);
+  }
+
+  static async #PlayDLExtractor(Query, ExtractorStreamOptions) {
+    const { StreamDownloader } = require('playdl-music-extractor');
+    return await StreamDownloader(Query, ExtractorStreamOptions);
   }
 
   static #UserTrackModelGen(TrackData, RequestedByUser) {

@@ -35,6 +35,8 @@ class StreamPacketGen {
     );
     this.IgnoreError = IgnoreError ?? true;
     this.JerichoPlayer = JerichoPlayer;
+    this.volume = 0.8;
+    this.AudioResource = undefined;
   }
 
   async create(
@@ -205,14 +207,19 @@ class StreamPacketGen {
 
   async StreamAudioResourceExtractor(Track) {
     try {
-      return createAudioResource(Track.stream, {
+      const AudioResource = createAudioResource(Track.stream, {
         inputType: Track.stream_type ?? StreamType.Arbitrary,
         metadata: {
           metadata: this.metadata,
           Track,
         },
+        inlineVolume: true,
       });
+      this.AudioResource = AudioResource;
+      AudioResource.volume.setVolume(this.volume ?? 0.8);
+      return this.AudioResource;
     } catch (error) {
+      this.AudioResource = undefined;
       return void null;
     }
   }

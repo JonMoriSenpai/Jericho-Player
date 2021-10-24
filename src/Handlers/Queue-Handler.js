@@ -60,7 +60,15 @@ class Queue {
 
     this.MusicPlayer.on('stateChange', (oldState, newState) => {
       if (newState.status === AudioPlayerStatus.Idle) {
-        this.JerichoPlayer.emit('trackEnd', this, this.tracks[0]);
+        if (
+          this.StreamPacket
+          && this.track
+          && this.tracks[0]
+          && this.StreamPacket.AudioResource
+        ) {
+          this.StreamPacket.AudioResource = undefined;
+          this.JerichoPlayer.emit('trackEnd', this, this.tracks[0]);
+        }
         if (!this.destroyed) this.#__CleaningTrackMess();
         this.#__ResourcePlay();
       }
@@ -119,7 +127,7 @@ class Queue {
       RequestedByUser ?? undefined,
     )) ?? this.StreamPacket;
     this.tracks = this.StreamPacket.searches;
-    if (!this.playing && !this.paused) await this.#__ResourcePlay();
+    if (!this.playing && !this.paused && this.tracks && this.tracks[0]) await this.#__ResourcePlay();
     return true;
   }
 
@@ -254,6 +262,8 @@ class Queue {
     if (this.destroyed) return void this.JerichoPlayer.emit('error', 'Destroyed Queue', this);
     this.StreamPacket.tracks = [];
     this.StreamPacket.searches = [];
+    this.StreamPacket.volume = 0.8;
+    this.StreamPacket.AudioResource = undefined;
     const NodeTimeoutId = connectionTimedout || connectionTimedout === 0
       ? disconnect(
         this.guildId,
@@ -269,6 +279,41 @@ class Queue {
     delete Garbage.container;
     this.StreamPacket = undefined;
     return NodeTimeoutId ?? undefined;
+  }
+
+  mute() {
+    this.volume = 0;
+    return true;
+  }
+
+  unmute(Volume) {
+    this.volume = Volume ?? 0.8;
+    return this.volume;
+  }
+
+  get volume() {
+    if (this.destroyed) return void this.JerichoPlayer.emit('error', 'Destroyed Queue', this);
+    return (this.StreamPacket.volume ?? 0.8) * 100;
+  }
+
+  set volume(Volume) {
+    if (this.destroyed) return void this.JerichoPlayer.emit('error', 'Destroyed Queue', this);
+    if (
+      !Volume
+      || (Volume
+        && !(typeof Volume === 'number' || typeof Volume === 'string')
+        && (Number(Volume) > 200 || Number(Volume) < 0))
+    ) {
+      return void this.JerichoPlayer.emit(
+        'error',
+        'Invalid Volume',
+        this,
+        Volume,
+      );
+    }
+    this.StreamPacket.volume = Number(Volume) / 100;
+    if (this.tracks && this.tracks[0] && this.StreamPacket.AudioResource) this.StreamPacket.AudioResource.volume.setVolume(this.StreamPacket.volume);
+    return this.StreamPacket.volume;
   }
 
   get paused() {

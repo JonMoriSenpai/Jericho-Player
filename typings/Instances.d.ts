@@ -1,5 +1,6 @@
 import {
   AudioPlayer,
+  AudioResource,
   PlayerSubscription,
   VoiceConnection
 } from '@discordjs/voice'
@@ -33,6 +34,7 @@ export type Queue = {
   }
   message: Message
   metadata: any
+  volume: Number
   readonly tracks: Array<Track>
   readonly guildId: Guild['id'] | Snowflake | String
   readonly destroyed: Boolean
@@ -59,6 +61,8 @@ export type Queue = {
   ): Boolean | undefined
   destroy(connectionTimedout?: Number): Number | Boolean | undefined
   remove(Index?: Number, Amount?: Number): Boolean | undefined
+  mute(): Boolean | undefined
+  unmute(Volume?: Number): Boolean | Number | undefined
 }
 
 export type Track = {
@@ -105,6 +109,8 @@ export type Stream = {
   readonly description: String
   readonly stream: String
   readonly stream_type: String
+  readonly volume: Number
+  readonly AudioResource: AudioResource
   readonly duration: Number
   readonly thumbnail: String
   readonly channelId: String
@@ -156,4 +162,3 @@ export type QueueOptions = {
   LeaveOnEndTimedout: Number | 'Time in Seconds'
   LeaveOnBotOnlyTimedout: Number | 'Time in Seconds'
 }
-
