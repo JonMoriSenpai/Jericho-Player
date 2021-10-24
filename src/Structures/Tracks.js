@@ -7,6 +7,7 @@ const {
 class TrackGenerator {
   static async fetch(
     Query,
+    RequestedByUser = undefined,
     FetchOptions = {
       IgnoreError: true,
       ExtractorStreamOptions: {
@@ -50,6 +51,7 @@ class TrackGenerator {
     const Chunks = TrackGenerator.#Track_Id_Placement(
       RawData.tracks,
       CacheLength,
+      RequestedByUser,
     );
     return {
       playlist: RawData.playlist,
@@ -58,13 +60,15 @@ class TrackGenerator {
     };
   }
 
-  static #Track_Id_Placement(Tracks, CacheLength) {
+  static #Track_Id_Placement(Tracks, CacheLength, RequestedByUser = undefined) {
     const StreamDatas = [];
     const SearchTracks = [];
     for (let count = 0, len = Tracks.length; count < len; ++count) {
       Tracks[count] ? (Tracks[count].Id = CacheLength + 1) : undefined;
       Tracks[count]
-        ? SearchTracks.push(TrackGenerator.#UserTrackModelGen(Tracks[count]))
+        ? SearchTracks.push(
+          TrackGenerator.#UserTrackModelGen(Tracks[count], RequestedByUser),
+        )
         : undefined;
       Tracks[count] ? StreamDatas.push(Tracks[count]) : undefined;
     }
@@ -98,10 +102,12 @@ class TrackGenerator {
     return await StreamDownloader(Query);
   }
 
-  static #UserTrackModelGen(TrackData) {
+  static #UserTrackModelGen(TrackData, RequestedByUser) {
     return {
       Id: TrackData.Id,
+      RequestedByUser,
       url: TrackData.url,
+      video_Id: TrackData.video_Id ?? undefined,
       title: TrackData.title,
       description: TrackData.description,
       duration: TrackData.duration,

@@ -3,7 +3,14 @@ import {
   PlayerSubscription,
   VoiceConnection
 } from '@discordjs/voice'
-import { Client, Guild, Message, Snowflake, VoiceChannel } from 'discord.js'
+import {
+  Client,
+  Guild,
+  Message,
+  Snowflake,
+  User,
+  VoiceChannel
+} from 'discord.js'
 import { JerichoPlayer } from './index'
 
 export type Queue = {
@@ -37,6 +44,7 @@ export type Queue = {
   play(
     Query: String,
     VoiceChannel: VoiceChannel,
+    RequestedByUser: User | undefined,
     PlayOptions?: PlayOptions
   ): Promise<Boolean> | undefined
   skip(TrackIndex: Number): Boolean | undefined
@@ -46,6 +54,7 @@ export type Queue = {
   insert(
     Query: String,
     TrackIndex: Number,
+    RequestedByUser: User | undefined,
     InsertOptions: PlayOptions
   ): Boolean | undefined
   destroy(connectionTimedout?: Number): Number | Boolean | undefined
@@ -56,6 +65,7 @@ export type Track = {
   readonly Id: Number
   readonly url: String
   readonly video_Id: String
+  readonly RequestedByUser: User | undefined
   readonly title: String
   readonly description: String
   readonly duration: Number
@@ -90,6 +100,7 @@ export type Stream = {
   readonly Id: Number
   readonly url: String
   readonly video_Id: String
+  readonly RequestedByUser: User | undefined
   readonly title: String
   readonly description: String
   readonly stream: String

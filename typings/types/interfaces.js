@@ -1,3 +1,15 @@
+const DefaultExtractorStreamOptions = {
+  Limit: 1,
+  Quality: 'high',
+  Proxy: undefined,
+}
+
+const DefaultStreamCreateOptions = {
+  RequestedByUser: undefined,
+  IgnoreError: true,
+  ExtractorStreamOptions: DefaultExtractorStreamOptions,
+}
+
 const DefaultJerichoPlayerOptions = {
   extractor: 'play-dl',
   ExtractorStreamOptions: DefaultExtractorStreamOptions,
@@ -23,14 +35,9 @@ const DefaultQueueCreateOptions = {
   LeaveOnBotOnlyTimedout: 0,
 }
 
-const DefaultExtractorStreamOptions = {
-  Limit: 1,
-  Quality: 'high',
-  Proxy: undefined,
-}
-
 module.exports = {
   DefaultQueueCreateOptions,
   DefaultJerichoPlayerOptions,
   DefaultExtractorStreamOptions,
+  DefaultStreamCreateOptions,
 }
