@@ -65,6 +65,8 @@ class ClassUtils {
       } catch (err) {
         report.push('- not found');
       }
+      report.push('');
+
       // Extractors
       report.push('Extractors');
       addVersion('playdl-music-extractor');
@@ -84,7 +86,7 @@ class ClassUtils {
         : ClassUtils.#__SearchPackageJson(
           dirname(require.resolve(name)),
           name,
-          4,
+          8,
         );
       return pkg?.version ?? undefined;
     } catch (err) {

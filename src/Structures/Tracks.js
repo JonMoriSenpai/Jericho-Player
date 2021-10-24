@@ -30,6 +30,33 @@ class TrackGenerator {
         tracks: [],
         error: 'Invalid Query',
       };
+    } if (
+      (extractor
+        && typeof extractor === 'string'
+        && extractor.toLowerCase().trim().includes('youtube-dl')
+        && !ClassUtils.ScanDeps('video-extractor'))
+      || (!ClassUtils.ScanDeps('playdl-music-extractor')
+        && !ClassUtils.ScanDeps('video-extractor'))
+      || (extractor
+        && typeof extractor === 'string'
+        && !extractor.toLowerCase().trim().includes('youtube-dl')
+        && !ClassUtils.ScanDeps('playdl-music-extractor'))
+    ) {
+      return {
+        playlist: false,
+        streamdatas: [],
+        tracks: [],
+        error: `${
+          !ClassUtils.ScanDeps('playdl-music-extractor')
+          && !ClassUtils.ScanDeps('video-extractor')
+            ? 'Extractors : "playdl-music-extractor" and "video-extractor"'
+            : undefined ?? !ClassUtils.ScanDeps('video-extractor')
+              ? 'Extractor : "video-extractor"'
+              : undefined ?? !ClassUtils.ScanDeps('playdl-music-extractor')
+                ? 'Extractor : "playdl-music-extractor" '
+                : undefined
+        } is not Present`,
+      };
     }
     const RawData = await TrackGenerator.#SongsFetching(
       Query,
@@ -90,14 +117,20 @@ class TrackGenerator {
     },
     extractor = 'play-dl',
   ) {
-    const RawData = (extractor
-      && extractor.includes('youtube-dl')
-      && ClassUtils.ScanDeps('video-extractor')
+    const RawData = (extractor && extractor.includes('youtube-dl')
       ? await TrackGenerator.#YoutubeDLExtractor(Query)
-      : undefined) ?? ClassUtils.ScanDeps('video-extractor')
-      ? await StreamDownloader(Query, FetchOptions.ExtractorStreamOptions)
-      : undefined;
-    return RawData;
+      : undefined)
+      ?? (await StreamDownloader(Query, FetchOptions.ExtractorStreamOptions));
+    if (
+      !RawData
+      || (RawData && !RawData.tracks)
+      || (RawData && RawData.tracks && !RawData.tracks[0])
+    ) {
+      RawData = (extractor && extractor.includes('youtube-dl')
+        ? await StreamDownloader(Query, FetchOptions.ExtractorStreamOptions)
+        : undefined) ?? (await TrackGenerator.#YoutubeDLExtractor(Query));
+      return RawData;
+    } return RawData;
   }
 
   static async #YoutubeDLExtractor(Query) {

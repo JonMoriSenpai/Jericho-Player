@@ -14,6 +14,8 @@ export class JerichoPlayer extends EventEmitter {
   public DeleteQueue (guildId: Guild['id'] | Snowflake | String): undefined
 }
 
-export type Utils = {
-  ScanDeps(PackageName: String | undefined): String | undefined
+export class Utils {
+  public static ScanDeps (
+    PackageName: String | undefined
+  ): String | Number | undefined
 }
