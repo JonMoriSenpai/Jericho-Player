@@ -65,6 +65,13 @@ class StreamPacketGen {
     }
     this.searches = this.searches.concat(Chunks.tracks);
     this.tracks = this.tracks.concat(Chunks.streamdatas);
+    Chunks.playlist === true || Chunks.playlist
+      ? this.JerichoPlayer.emit(
+        'playlistAdd',
+        this.JerichoPlayer.GetQueue(this.guildId),
+        Chunks.tracks,
+      )
+      : undefined;
     this.JerichoPlayer.emit(
       'tracksAdd',
       this.JerichoPlayer.GetQueue(this.guildId),

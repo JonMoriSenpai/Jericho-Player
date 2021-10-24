@@ -110,12 +110,12 @@ class Queue {
         PlayOptions.ExtractorStreamOptions,
         this.JerichoPlayer,
       );
-    this.StreamPacket = await this.StreamPacket.create(
+    this.StreamPacket = (await this.StreamPacket.create(
       Query,
       VoiceChannel,
       PlayOptions,
       PlayOptions.extractor,
-    );
+    )) ?? this.StreamPacket;
     this.tracks = this.StreamPacket.searches;
     if (!this.playing && !this.paused) await this.#__ResourcePlay();
     return true;
@@ -308,8 +308,7 @@ class Queue {
       Queue.#TimedoutIds[
         `${this.guildId}`
       ] = this.#__QueueAudioPlayerStatusManager();
-      if (!Queue.#TimedoutIds[`${this.guildId}`]) return void this.JerichoPlayer.emit('queueEnd', this);
-      return void null;
+      return void this.JerichoPlayer.emit('queueEnd', this);
     }
     if (this.destroyed) return void null;
     Queue.#TimedoutIds[`${this.guildId}`] = Queue.#TimedoutIds[

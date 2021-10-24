@@ -36,7 +36,7 @@ class TrackGenerator {
         playlist: false,
         streamdatas: [],
         tracks: [],
-        error: 'No Tracks from Query',
+        error: 'Search Not Found',
       };
     }
     const Chunks = TrackGenerator.#Track_Id_Placement(

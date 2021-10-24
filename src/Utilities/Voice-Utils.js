@@ -50,22 +50,14 @@ function disconnect(
         && DisconnectChannelOptions
         && DisconnectChannelOptions.destroy
       ) {
-        if (
-          QueueInstance
-          && QueueInstance.playing
-          && !QueueInstance.destroyed
-        ) {
+        if (QueueInstance && !QueueInstance.destroyed) {
           QueueInstance.MusicPlayer.stop();
           QueueInstance.StreamPacket.subscription.unsubscribe();
         }
         return void VoiceConnection.destroy(true);
       }
       if (VoiceConnection) {
-        if (
-          QueueInstance
-          && QueueInstance.playing
-          && !QueueInstance.destroyed
-        ) {
+        if (QueueInstance && !QueueInstance.destroyed) {
           QueueInstance.MusicPlayer.stop();
           QueueInstance.StreamPacket.subscription.unsubscribe();
         }
@@ -84,14 +76,14 @@ function disconnect(
     && DisconnectChannelOptions
     && DisconnectChannelOptions.destroy
   ) {
-    if (QueueInstance && QueueInstance.playing && !QueueInstance.destroyed) {
+    if (QueueInstance && !QueueInstance.destroyed) {
       QueueInstance.MusicPlayer.stop();
       QueueInstance.StreamPacket.subscription.unsubscribe();
     }
     return void VoiceConnection.destroy(true);
   }
   if (VoiceConnection) {
-    if (QueueInstance && QueueInstance.playing && !QueueInstance.destroyed) {
+    if (QueueInstance && !QueueInstance.destroyed) {
       QueueInstance.MusicPlayer.stop();
       QueueInstance.StreamPacket.subscription.unsubscribe();
     }
