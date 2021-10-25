@@ -430,16 +430,16 @@ class JerichoPlayer extends EventEmitter {
         'Invalid Discord Client has been Detected! | And get some Voice and Channel Intents too',
       );
     } else if (
-      !new Intents(this.Client.options.intents).has(
+      !new Intents(Client.options.intents).has(
         Intents.FLAGS.GUILD_VOICE_STATES,
       )
-      && !new Intents(this.Client.options.intents).has(Intents.FLAGS.GUILDS)
+      && !new Intents(Client.options.intents).has(Intents.FLAGS.GUILDS)
     ) {
       throw SyntaxError(
         'Missing Intents in Discord Client\n - GUILD_VOICE_STATES || Intents.FLAGS.GUILD_VOICE_STATES\n - - GUILDS || Intents.FLAGS.GUILDS',
       );
     } else if (
-      !new Intents(this.Client.options.intents).has(
+      !new Intents(Client.options.intents).has(
         Intents.FLAGS.GUILD_VOICE_STATES,
       )
     ) {
@@ -447,7 +447,7 @@ class JerichoPlayer extends EventEmitter {
         'Missing Intents in Discord Client\n - GUILD_VOICE_STATES || Intents.FLAGS.GUILD_VOICE_STATES',
       );
     } else if (
-      !new Intents(this.Client.options.intents).has(Intents.FLAGS.GUILDS)
+      !new Intents(Client.options.intents).has(Intents.FLAGS.GUILDS)
     ) {
       throw SyntaxError(
         'Missing Intents in Discord Client\n - GUILDS || Intents.FLAGS.GUILDS',
