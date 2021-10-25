@@ -51,7 +51,7 @@ class StreamPacketGen {
       },
     },
     extractor = 'play-dl',
-    RequestedByUser = undefined,
+    requestedBy = undefined,
   ) {
     StreamCreateOptions.ExtractorStreamOptions = ClassUtils.stablizingoptions(
       StreamCreateOptions.ExtractorStreamOptions,
@@ -59,7 +59,7 @@ class StreamPacketGen {
     );
     const Chunks = await TracksGen.fetch(
       Query,
-      RequestedByUser ?? undefined,
+      requestedBy ?? undefined,
       StreamCreateOptions,
       extractor,
       this.tracks.length > 0
@@ -129,7 +129,7 @@ class StreamPacketGen {
       },
     },
     extractor,
-    RequestedByUser = undefined,
+    requestedBy = undefined,
   ) {
     StreamFetchOptions.ExtractorStreamOptions = ClassUtils.stablizingoptions(
       StreamFetchOptions.ExtractorStreamOptions,
@@ -153,7 +153,7 @@ class StreamPacketGen {
     }
     const Chunk = await TracksGen.fetch(
       Query,
-      RequestedByUser ?? undefined,
+      requestedBy ?? undefined,
       StreamFetchOptions,
       extractor ?? this.extractor,
       this.tracks.length > 0

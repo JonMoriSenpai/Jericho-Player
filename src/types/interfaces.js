@@ -5,7 +5,7 @@ const DefaultExtractorStreamOptions = {
 };
 
 const DefaultStreamCreateOptions = {
-  RequestedByUser: undefined,
+  requestedBy: undefined,
   IgnoreError: true,
   ExtractorStreamOptions: DefaultExtractorStreamOptions,
 };

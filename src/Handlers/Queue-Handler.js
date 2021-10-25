@@ -196,7 +196,7 @@ class Queue {
     if (!this.StreamPacket.tracks[0]) return void this.JerichoPlayer.emit('error', 'Empty Queue', this);
     if (!this.paused) return void this.JerichoPlayer.emit('error', 'Not Paused', this);
     if (this.MusicPlayer) return this.MusicPlayer.unpause();
-    return void null;
+    return true;
   }
 
   async insert(
@@ -358,7 +358,7 @@ class Queue {
   }
 
   get current() {
-    if (!this.playing || !this.destroyed) return undefined;
+    if (!this.playing || this.destroyed) return undefined;
     return this.StreamPacket.searches[0];
   }
 

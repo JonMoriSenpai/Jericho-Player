@@ -69,10 +69,11 @@ export type Track = {
   readonly Id: Number
   readonly url: String
   readonly video_Id: String
-  readonly RequestedByUser: User | undefined
+  readonly requestedBy: User | undefined
   readonly title: String
   readonly description: String
   readonly duration: Number
+  readonly human_duration: String
   readonly thumbnail: String
   readonly channelId: String
   readonly channel_url: String
@@ -101,19 +102,31 @@ export type StreamPacket = {
 }
 
 export type Stream = {
-  readonly Id: Number
+  readonly Id: 0
   readonly url: String
   readonly video_Id: String
-  readonly RequestedByUser: User | undefined
   readonly title: String
+  readonly author: String
+  readonly author_link: String
   readonly description: String
+  readonly custom_extractor: String | 'play-dl' | 'youtube-dl'
+  readonly duration: Number
+  readonly human_duration: String
+  readonly preview_stream_url: String
   readonly stream: String
   readonly stream_type: String
-  readonly volume: Number
-  readonly AudioResource: AudioResource
-  readonly duration: Number
+  readonly stream_duration: Number
+  readonly stream_video_Id: String
+  readonly stream_human_duration: String
+  readonly orignal_extractor:
+    | String
+    | 'youtube'
+    | 'spotify'
+    | 'soundcloud'
+    | 'facebook'
+    | 'arbitrary'
   readonly thumbnail: String
-  readonly channelId: String
+  readonly channelId: String | Number
   readonly channel_url: String
   readonly likes: Number
   readonly is_live: Boolean

@@ -1,7 +1,6 @@
 const EventEmitter = require('events');
 const { FFmpeg } = require('prism-media');
-const Client = require('discord.js/src/client/Client.js');
-const Message = require('discord.js/src/structures/Message.js');
+const { Intents, Client, Message } = require('discord.js');
 const Queue = require('./Queue-Handler.js');
 const ClassUtils = require('../Utilities/Class-Utils');
 const { join } = require('../Utilities/Voice-Utils');
@@ -429,6 +428,29 @@ class JerichoPlayer extends EventEmitter {
     if (!Client) {
       throw Error(
         'Invalid Discord Client has been Detected! | And get some Voice and Channel Intents too',
+      );
+    } else if (
+      !new Intents(this.Client.options.intents).has(
+        Intents.FLAGS.GUILD_VOICE_STATES,
+      )
+      && !new Intents(this.Client.options.intents).has(Intents.FLAGS.GUILDS)
+    ) {
+      throw SyntaxError(
+        'Missing Intents in Discord Client\n - GUILD_VOICE_STATES || Intents.FLAGS.GUILD_VOICE_STATES\n - - GUILDS || Intents.FLAGS.GUILDS',
+      );
+    } else if (
+      !new Intents(this.Client.options.intents).has(
+        Intents.FLAGS.GUILD_VOICE_STATES,
+      )
+    ) {
+      throw SyntaxError(
+        'Missing Intents in Discord Client\n - GUILD_VOICE_STATES || Intents.FLAGS.GUILD_VOICE_STATES',
+      );
+    } else if (
+      !new Intents(this.Client.options.intents).has(Intents.FLAGS.GUILDS)
+    ) {
+      throw SyntaxError(
+        'Missing Intents in Discord Client\n - GUILDS || Intents.FLAGS.GUILDS',
       );
     } else return void null;
   }

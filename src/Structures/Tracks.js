@@ -4,7 +4,7 @@ const { DefaultExtractorStreamOptions } = require('../types/interfaces');
 class TrackGenerator {
   static async fetch(
     Query,
-    RequestedByUser = undefined,
+    requestedBy = undefined,
     FetchOptions = {
       IgnoreError: true,
       ExtractorStreamOptions: {
@@ -60,7 +60,7 @@ class TrackGenerator {
     const Chunks = TrackGenerator.#Track_Id_Placement(
       RawData.tracks,
       CacheLength,
-      RequestedByUser,
+      requestedBy,
     );
     return {
       playlist: RawData.playlist,
@@ -69,14 +69,14 @@ class TrackGenerator {
     };
   }
 
-  static #Track_Id_Placement(Tracks, CacheLength, RequestedByUser = undefined) {
+  static #Track_Id_Placement(Tracks, CacheLength, requestedBy = undefined) {
     const StreamDatas = [];
     const SearchTracks = [];
     for (let count = 0, len = Tracks.length; count < len; ++count) {
       Tracks[count] ? (Tracks[count].Id = ++CacheLength) : undefined;
       Tracks[count]
         ? SearchTracks.push(
-          TrackGenerator.#UserTrackModelGen(Tracks[count], RequestedByUser),
+          TrackGenerator.#UserTrackModelGen(Tracks[count], requestedBy),
         )
         : undefined;
       Tracks[count] ? StreamDatas.push(Tracks[count]) : undefined;
@@ -134,15 +134,16 @@ class TrackGenerator {
     return await StreamDownloader(Query, ExtractorStreamOptions);
   }
 
-  static #UserTrackModelGen(TrackData, RequestedByUser) {
+  static #UserTrackModelGen(TrackData, requestedByUser) {
     return {
       Id: TrackData.Id,
-      RequestedByUser,
+      requestedBy: requestedByUser,
       url: TrackData.url,
-      video_Id: TrackData.video_Id ?? undefined,
+      video_Id: TrackData.video_Id,
       title: TrackData.title,
       description: TrackData.description,
-      duration: TrackData.duration,
+      duration: TrackData.stream_duration,
+      human_duration: TrackData.stream_human_duration,
       thumbnail: TrackData.thumbnail,
       channelId: TrackData.author ?? TrackData.channelId,
       channel_url: TrackData.author_link ?? TrackData.channel_url,
