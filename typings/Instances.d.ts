@@ -46,7 +46,7 @@ export type Queue = {
   play(
     Query: String,
     VoiceChannel: VoiceChannel,
-    RequestedByUser: User | undefined,
+    message: Message | undefined,
     PlayOptions?: PlayOptions
   ): Promise<Boolean> | undefined
   skip(TrackIndex: Number): Boolean | undefined
@@ -56,7 +56,7 @@ export type Queue = {
   insert(
     Query: String,
     TrackIndex: Number,
-    RequestedByUser: User | undefined,
+    message: Message | undefined,
     InsertOptions: PlayOptions
   ): Boolean | undefined
   destroy(connectionTimedout?: Number): Number | Boolean | undefined
