@@ -1,7 +1,5 @@
 const ClassUtils = require('../Utilities/Class-Utils');
-const {
-  DefaultExtractorStreamOptions,
-} = require('../types/interfaces');
+const { DefaultExtractorStreamOptions } = require('../types/interfaces');
 
 class TrackGenerator {
   static async fetch(
@@ -101,35 +99,28 @@ class TrackGenerator {
     },
     extractor = 'play-dl',
   ) {
-    let RawData = (extractor
+    let RawData = extractor
       && extractor.includes('youtube-dl')
       && ClassUtils.ScanDeps('video-extractor')
       ? await TrackGenerator.#YoutubeDLExtractor(Query)
-      : undefined)
-      ?? (ClassUtils.ScanDeps('playdl-music-extractor')
-        ? await TrackGenerator.#PlayDLExtractor(
-          Query,
-          FetchOptions.ExtractorStreamOptions,
-        )
-        : undefined);
-    if (
-      !RawData
+      : undefined;
+    RawData = !RawData
       || (RawData && !RawData.tracks)
       || (RawData && RawData.tracks && !RawData.tracks[0])
-    ) {
-      RawData = (ClassUtils.ScanDeps('playdl-music-extractor')
+      ? ClassUtils.ScanDeps('playdl-music-extractor')
         ? await TrackGenerator.#PlayDLExtractor(
           Query,
           FetchOptions.ExtractorStreamOptions,
         )
-        : undefined)
-        ?? (extractor
-        && extractor.includes('youtube-dl')
-        && ClassUtils.ScanDeps('video-extractor')
-          ? await TrackGenerator.#YoutubeDLExtractor(Query)
-          : undefined);
-      return RawData;
-    }
+        : undefined
+      : RawData;
+    RawData = !RawData
+      || (RawData && !RawData.tracks)
+      || (RawData && RawData.tracks && !RawData.tracks[0])
+      ? ClassUtils.ScanDeps('video-extractor')
+        ? await TrackGenerator.#YoutubeDLExtractor(Query)
+        : undefined
+      : RawData;
     return RawData;
   }
 

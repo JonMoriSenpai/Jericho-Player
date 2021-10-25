@@ -147,6 +147,15 @@ class Queue {
       );
     }
     if (!this.playing || (this.playing && !this.StreamPacket.tracks[1])) return void this.JerichoPlayer.emit('error', 'Empty Queue', this);
+    if (Number(TrackIndex) <= 0 && Number(TrackIndex) >= this.tracks.length) {
+      return void this.JerichoPlayer.emit(
+        'error',
+        'Invalid Index',
+        this.JerichoPlayer.GetQueue(this.guildId),
+        Number(TrackIndex),
+      );
+    }
+
     TrackIndex
     && Number(TrackIndex) > 1
     && Number(TrackIndex) < this.tracks.length
@@ -258,7 +267,7 @@ class Queue {
         'error',
         'Invalid Index',
         this.JerichoPlayer.GetQueue(this.guildId),
-        Index,
+        Number(Index),
       );
     }
     this.StreamPacket = this.StreamPacket.remove(Number(Index), Number(Amount));
@@ -269,7 +278,7 @@ class Queue {
     if (this.destroyed) return void this.JerichoPlayer.emit('error', 'Destroyed Queue', this);
     this.StreamPacket.tracks = [];
     this.StreamPacket.searches = [];
-    this.StreamPacket.volume = 0.8;
+    this.StreamPacket.volume = 0.08;
     this.StreamPacket.AudioResource = undefined;
     const NodeTimeoutId = connectionTimedout || connectionTimedout === 0
       ? disconnect(
@@ -294,13 +303,13 @@ class Queue {
   }
 
   unmute(Volume) {
-    this.volume = Volume ?? 0.8;
+    this.volume = Volume ?? 80;
     return this.volume;
   }
 
   get volume() {
     if (this.destroyed) return void this.JerichoPlayer.emit('error', 'Destroyed Queue', this);
-    return (this.StreamPacket.volume ?? 0.8) * 100;
+    return (this.StreamPacket.volume ?? 0.08) * 1000;
   }
 
   set volume(Volume) {
@@ -318,7 +327,7 @@ class Queue {
         Volume,
       );
     }
-    this.StreamPacket.volume = Number(Volume) / 100;
+    this.StreamPacket.volume = Number(Volume) / 1000;
     if (this.tracks && this.tracks[0] && this.StreamPacket.AudioResource) this.StreamPacket.AudioResource.volume.setVolume(this.StreamPacket.volume);
     return this.StreamPacket.volume;
   }
