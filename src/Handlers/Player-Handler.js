@@ -1,6 +1,7 @@
 const EventEmitter = require('events');
 const { FFmpeg } = require('prism-media');
-const { Client, Message } = require('discord.js/typings/index.js');
+const Client = require('discord.js/src/client/Client.js');
+const Message = require('discord.js/src/structures/Message.js');
 const Queue = require('./Queue-Handler.js');
 const ClassUtils = require('../Utilities/Class-Utils');
 const { join } = require('../Utilities/Voice-Utils');
