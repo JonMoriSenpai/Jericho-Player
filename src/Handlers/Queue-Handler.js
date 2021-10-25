@@ -147,8 +147,13 @@ class Queue {
       );
     }
     if (!this.playing || (this.playing && !this.StreamPacket.tracks[1])) return void this.JerichoPlayer.emit('error', 'Empty Queue', this);
-    TrackIndex && TrackIndex > 1
-      ? this.#__CleaningTrackMess(undefined, TrackIndex - 1 ?? undefined)
+    TrackIndex
+    && Number(TrackIndex) > 1
+    && Number(TrackIndex) < this.tracks.length
+      ? this.#__CleaningTrackMess(
+        undefined,
+        Number(TrackIndex) - 1 ?? undefined,
+      )
       : undefined;
     this.MusicPlayer.stop();
     return true;
@@ -248,7 +253,7 @@ class Queue {
     if (Index && !(typeof Index === 'number' || typeof Index === 'string')) {
       return void this.JerichoPlayer.emit('error', 'Invalid Index', this, Index);
     }
-    if (Number(Index) < -1) {
+    if (Number(Index) < -1 && Number(Index) >= this.tracks.length) {
       return void this.JerichoPlayer.emit(
         'error',
         'Invalid Index',

@@ -143,6 +143,14 @@ class StreamPacketGen {
         this.guildId,
       );
     }
+    if (Number(Index) < -1 && Number(Index) >= this.searches.length) {
+      return void this.JerichoPlayer.emit(
+        'error',
+        'Invalid Index',
+        this.JerichoPlayer.GetQueue(this.guildId),
+        Number(Index),
+      );
+    }
     const Chunk = await TracksGen.fetch(
       Query,
       RequestedByUser ?? undefined,
@@ -157,14 +165,6 @@ class StreamPacketGen {
         'error',
         Chunk.error,
         this.JerichoPlayer.GetQueue(this.guildId),
-      );
-    }
-    if (Number(Index) < -1) {
-      return void this.JerichoPlayer.emit(
-        'error',
-        'Invalid Index',
-        this.JerichoPlayer.GetQueue(this.guildId),
-        Number(Index),
       );
     }
     Chunk.playlist === true || Chunk.playlist
