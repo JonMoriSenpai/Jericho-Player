@@ -1,4 +1,4 @@
-const EventEmitter = require('events');
+const EventEmitter = require('event-emitter');
 const { FFmpeg } = require('prism-media');
 const Client = require('discord.js/src/client/Client.js');
 const Message = require('discord.js/src/structures/Message.js');
@@ -24,7 +24,7 @@ const {
  * @method DeleteQueue<undefined> => Delete Queue from Cache | Destroy Queue Completely and returns undefined
  * @return New Jericho Player Instance
  */
-class JerichoPlayer extends EventEmitter {
+class JerichoPlayer {
   /**
    * @property {Object} QueueCaches => Caches of Queues for per "instanceof Player"
    */
@@ -59,8 +59,6 @@ class JerichoPlayer extends EventEmitter {
       LeaveOnBotOnlyTimedout: 0,
     },
   ) {
-    super();
-
     this.#__buildsandDepschecks(Client);
 
     this.Client = Client;
@@ -435,5 +433,6 @@ class JerichoPlayer extends EventEmitter {
     } else return void null;
   }
 }
+EventEmitter(JerichoPlayer);
 
 module.exports = JerichoPlayer;
