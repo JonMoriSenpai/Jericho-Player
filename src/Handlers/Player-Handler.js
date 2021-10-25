@@ -24,15 +24,7 @@ const {
  * @method DeleteQueue<undefined> => Delete Queue from Cache | Destroy Queue Completely and returns undefined
  * @return New Jericho Player Instance
  */
-class JerichoPlayer extends EventEmitter({
-  wildcard: true,
-  delimiter: '.',
-  newListener: false,
-  removeListener: false,
-  maxListeners: 10,
-  verboseMemoryLeak: true,
-  ignoreErrors: true,
-}) {
+class JerichoPlayer extends EventEmitter {
   /**
    * @property {Object} QueueCaches => Caches of Queues for per "instanceof Player"
    */
