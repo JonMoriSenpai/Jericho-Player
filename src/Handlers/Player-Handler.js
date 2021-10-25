@@ -1,16 +1,44 @@
 const EventEmitter = require('events');
 const { FFmpeg } = require('prism-media');
+const { Client, Message } = require('discord.js/typings/index.js');
 const Queue = require('./Queue-Handler.js');
 const ClassUtils = require('../Utilities/Class-Utils');
 const { join } = require('../Utilities/Voice-Utils');
 const {
   DefaultJerichoPlayerOptions,
-} = require('../../typings/types/interfaces');
+  DefaultQueueCreateOptions,
+} = require('../types/interfaces');
 
+/**
+ * @class JerichoPlayer -> Jericho Player Class for Creating Player Instances for Radio or Music Players
+ * @event "error" => Player.on("error", ErrorMessage , Queue | Player , ExtraContent | undefined ) => { "Handle Error Event" } | Queue can be undefined if Player got Error
+ * @event "tracksAdd" => Player.on("tracksAdd", Queue , tracks[] ) => { } | tracks[] is Tracks from "Query" provided in Queue.play() or Queue.insert()
+ * @event "trackEnd" => Player.on("trackEnd", Queue , track ) => { } | track is Last Played Track with no missing values
+ * @event "trackStart" => Player.on("trackStart", Queue , track ) = > { } | track is Current Track - "Queue.current"
+ * @event "playlistAdd" => Player.on("playlistAdd", Queue , tracks[] ) => { } | tracks[] is Tracks from "Query" provided in Queue.play() or Queue.insert()
+ * @event "botDisconnect" => Player.on("botDisconnect", Queue , VoiceChannel ) => { } | Queue can be undefined , depends on reason of event trigger
+ * @event "channelEmpty" => Player.on("channelEmpty", Queue , VoiceChannel ) => {  } | Voice Channel can be undefined or destroyed if User does .
+ * @method CreateQueue<Queue> => Creates Queue and returns "instanceof Queue"
+ * @method GetQueue<Queue> => Fetch Queue from Cache and returns "instanceof Queue"
+ * @method DeleteQueue<undefined> => Delete Queue from Cache | Destroy Queue Completely and returns undefined
+ * @return New Jericho Player Instance
+ */
 class JerichoPlayer extends EventEmitter {
-  static #QueueCaches = []
+  /**
+   * @property {Object} QueueCaches => Caches of Queues for per "instanceof Player"
+   */
+  static #QueueCaches = {}
 
+  /**
+   * @property {Object} TimedoutIds => Caches of Queue's LeaveOn's Nodejs Timeout Id's for per "instanceof Player"
+   */
   static #TimedoutIds = {}
+
+  /**
+   * @constructor of Jericho Player
+   * @param {Client} Client  Instanceof Discord.js Client
+   * @param {DefaultJerichoPlayerOptions<Object>}  JerichoPlayerOptions  Player Options for Stream Extraction and Voice Connection Moderation
+   */
 
   constructor(
     Client,
@@ -33,17 +61,39 @@ class JerichoPlayer extends EventEmitter {
     super();
 
     this.#__buildsandDepschecks(Client);
+
     this.Client = Client;
     this.JerichoPlayerOptions = ClassUtils.stablizingoptions(
       JerichoPlayerOptions,
       DefaultJerichoPlayerOptions,
     );
-    this.Client.on('voiceStateUpdate', (OldVoiceState, NewVoiceState) => {
+
+    /**
+     * - Voice Events will be Moderated from here Except "LeaveonEnd" Object Value it's Timedout Value
+     * - Node js Timeout Id's as Number will be Cached for Clear Timeout here and in "Queue.#__QueueAudioPlayerStatusManager()"
+     */
+
+    this.Client.on('voiceStateUpdate', async (OldVoiceState, NewVoiceState) => {
+      /**
+       * - QueueInstance Fetched from Private Raw Cache Fetching Method "JerichoPlayer.#QueueCacheFetch(guildId)"
+       * - QueueIntance => will be used to filter Voice Events Related to our Queue or else return undefined for handling
+       */
+
       const QueueInstance = JerichoPlayer.#QueueCacheFetch(
-        (NewVoiceState ? NewVoiceState.guild.id : null)
-          ?? (OldVoiceState ? OldVoiceState.guild.id : null),
+        (NewVoiceState ? NewVoiceState.guild.id : undefined)
+          ?? (OldVoiceState ? OldVoiceState.guild.id : undefined),
       );
+
+      /**
+       * @function clientchecks<Object> => Checks for Client in Voice Channel as Member
+       * @param {Object} member Guild Member < Object | Instance > for Checking its originality about being Client
+       * @returns {Boolean} true if Client has been Found and false if CLient is not Present
+       */
+
       const clientchecks = (member) => member.user.id === this.Client.user.id;
+
+      // - QueueInstance checking if its related to Queue Voice Connection Events
+
       if (
         !QueueInstance
         || (QueueInstance && QueueInstance.destroyed)
@@ -60,47 +110,52 @@ class JerichoPlayer extends EventEmitter {
         && OldVoiceState.channel.id !== NewVoiceState.channel.id
         && NewVoiceState.id === this.Client.user.id
       ) {
-        JerichoPlayer.#QueueCaches[
-          `${
-            (NewVoiceState ? NewVoiceState.guild.id : null)
-            ?? (OldVoiceState ? OldVoiceState.guild.id : null)
-          }`
-        ].StreamPacket.VoiceConnection = join(
-          this.Client,
+        /**
+         * - QueueInstance.StreamPacket.VoiceConnection && QueueInstance.StreamPacket.VoiceChannel changed based on Client has been Moved to Different Channel
+         * - Queue Voice Connection and Channel will be Changed with Resource Subscription will be Changed from the function "this.#__handleVoiceConnectionInterchange()"
+         * - QueueInstance with new Refrence Value will be Cached to Player's Queue Caches
+         */
+
+        await this.#__handleVoiceConnectionInterchange(
+          JerichoPlayer.#QueueCaches[NewVoiceState.guild.id],
           NewVoiceState.channel,
         );
 
-        return void null;
-      }
-      if (!NewVoiceState.channel && OldVoiceState.id !== this.Client.user.id) {
-        JerichoPlayer.#TimedoutIds[
-          `${QueueInstance.guildId}`
-        ] = this.#JerichoPlayerVoiceConnectionManager(
-          JerichoPlayer.#QueueCaches[
-            `${
-              (NewVoiceState ? NewVoiceState.guild.id : null)
-              ?? (OldVoiceState ? OldVoiceState.guild.id : null)
-            }`
-          ],
-          OldVoiceState.channel,
+        /**
+         * - QueueInstance will check for "LeaveOnEmpty" && "LeaveOnBotOnly" state to filter the @discordjs/voice's Player's playing status for the Queue
+         * - Function will return undefined and can take time depends on setTimeout value of if 0 or undefined
+         */
+
+        return this.#__playerVoiceConnectionMainHandler(
+          JerichoPlayer.#QueueCaches[NewVoiceState.guild.id],
+          NewVoiceState.channel,
         );
-        return void null;
       }
       if (
-        NewVoiceState.channel
-        && QueueInstance.StreamPacket
-        && QueueInstance.StreamPacket.VoiceChannel
-        && QueueInstance.StreamPacket.VoiceChannel.id
-          === NewVoiceState.channel.id
-        && NewVoiceState.id !== this.Client.user.id
+        (!NewVoiceState.channel && OldVoiceState.id !== this.Client.user.id)
+        || (NewVoiceState.channel
+          && QueueInstance.StreamPacket
+          && QueueInstance.StreamPacket.VoiceChannel
+          && QueueInstance.StreamPacket.VoiceChannel.id
+            === NewVoiceState.channel.id
+          && NewVoiceState.id !== this.Client.user.id)
       ) {
-        JerichoPlayer.#TimedoutIds[`${QueueInstance.guildId}`] = JerichoPlayer
-          .#TimedoutIds[`${QueueInstance.guildId}`]
-          ? clearTimeout(JerichoPlayer.#TimedoutIds[`${QueueInstance.guildId}`])
-          : null;
-        return void null;
+        /**
+         * - QueueInstance will check for "LeaveOnEmpty" && "LeaveOnBotOnly" state to filter the @discordjs/voice's Player's playing status for the Queue
+         * - Function will return undefined and can take time depends on setTimeout value of if 0 or undefined
+         * - On leave of Users from Voice Channel Player will check stricitly
+         */
+
+        return this.#__playerVoiceConnectionMainHandler(
+          JerichoPlayer.#QueueCaches[OldVoiceState.guild.id],
+          NewVoiceState.channel ?? OldVoiceState.channel,
+        );
       }
       if (!NewVoiceState.channel && OldVoiceState.id === this.Client.user.id) {
+        /**
+         * - event "channelEmpty" and "botDisconnect" will trigger on bot leaving the VC | Timeout will be Handlerd in - "Queue.#__ResourcePlay()"
+         * - events are in order to provide quick response with a minimal checks
+         */
         if (
           OldVoiceState.channel
           && OldVoiceState.channel.members
@@ -110,12 +165,23 @@ class JerichoPlayer extends EventEmitter {
         ) {
           this.emit('channelEmpty', QueueInstance, OldVoiceState.channel);
         }
-        this.emit('botDisconnect', QueueInstance);
+        this.emit(
+          'botDisconnect',
+          QueueInstance,
+          OldVoiceState.channel ?? undefined,
+        );
         return this.DeleteQueue(QueueInstance.guildId);
       }
       return void null;
     });
   }
+
+  /**
+   * @method CreateQueue => Create Queue Instance for Player and per Guild
+   * @param {Message} message Guild Message Only for getting info about guild and guildId
+   * @param {DefaultQueueCreateOptions} QueueCreateOptions => Queue Create Options for Queue Instance ( for making ByDefault Values for Queue.<methods> )
+   * @returns {Queue} Queue Instance => ( for Queue.<methods> like Queue.play() )
+   */
 
   CreateQueue(
     message,
@@ -202,8 +268,8 @@ class JerichoPlayer extends EventEmitter {
         QueueInstance.QueueOptions,
       );
       QueueInstance.destroyed = false;
+      JerichoPlayer.#QueueCaches[`${guildId}`] = QueueInstance;
     }
-    JerichoPlayer.#QueueCaches[`${guildId}`] = QueueInstance;
     return JerichoPlayer.#QueueCaches[`${guildId}`];
   }
 
@@ -221,26 +287,24 @@ class JerichoPlayer extends EventEmitter {
     return void null;
   }
 
-  #JerichoPlayerVoiceConnectionManager(QueueInstance, VoiceChannel) {
-    this.#__buildsandDepschecks(this.Client);
+  #__playerVoiceConnectionMainHandler(QueueInstance, VoiceChannel) {
     const clientchecks = (member) => member.user.id === this.Client.user.id;
     const userchecks = (member) => !member.user.bot;
 
-    JerichoPlayer.#TimedoutIds[`${QueueInstance.guildId}`] = JerichoPlayer
-      .#TimedoutIds[`${QueueInstance.guildId}`]
-      ? clearTimeout(
-        Number(JerichoPlayer.#TimedoutIds[`${QueueInstance.guildId}`]),
-      )
-      : undefined;
     if (
       QueueInstance.QueueOptions.LeaveOnEmpty
       && ((VoiceChannel.members.size === 1
         && VoiceChannel.members.some(clientchecks))
         || VoiceChannel.members.size === 0)
     ) {
-      return QueueInstance.destroy(
-        QueueInstance.QueueOptions.LeaveOnEmptyTimedout ?? 0,
-      );
+      JerichoPlayer.#TimedoutIds[`${QueueInstance.guildId}`]
+        ? clearTimeout(
+          Number(JerichoPlayer.#TimedoutIds[`${QueueInstance.guildId}`]),
+        )
+        : undefined;
+      JerichoPlayer.#TimedoutIds[`${QueueInstance.guildId}`] = QueueInstance.destroy(
+        QueueInstance.QueueOptions.LeaveOnBotOnlyTimedout ?? 0,
+      ) ?? undefined;
     }
     if (
       (QueueInstance.QueueOptions.LeaveOnBotOnly
@@ -251,10 +315,47 @@ class JerichoPlayer extends EventEmitter {
         && !VoiceChannel.members.some(clientchecks)
         && VoiceChannel.members.size <= 1)
     ) {
-      return QueueInstance.destroy(
+      JerichoPlayer.#TimedoutIds[`${QueueInstance.guildId}`] = JerichoPlayer
+        .#TimedoutIds[`${QueueInstance.guildId}`]
+        ? clearTimeout(
+          Number(JerichoPlayer.#TimedoutIds[`${QueueInstance.guildId}`]),
+        )
+        : undefined;
+      JerichoPlayer.#TimedoutIds[`${QueueInstance.guildId}`] = QueueInstance.destroy(
         QueueInstance.QueueOptions.LeaveOnBotOnlyTimedout ?? 0,
+      ) ?? undefined;
+    } else if (
+      VoiceChannel.members.size > 1
+      && QueueInstance.tracks
+      && QueueInstance.tracks[0]
+    ) {
+      JerichoPlayer.#TimedoutIds[`${QueueInstance.guildId}`] = JerichoPlayer
+        .#TimedoutIds[`${QueueInstance.guildId}`]
+        ? clearTimeout(
+          Number(JerichoPlayer.#TimedoutIds[`${QueueInstance.guildId}`]),
+        )
+        : undefined;
+    }
+    return void null;
+  }
+
+  async #__handleVoiceConnectionInterchange(QueueInstance, VoiceChannel) {
+    QueueInstance.StreamPacket.VoiceConnection = await join(
+      this.Client,
+      VoiceChannel,
+    );
+    QueueInstance.StreamPacket.VoiceChannel = VoiceChannel;
+    if (
+      QueueInstance.playing
+      && !QueueInstance.paused
+      && QueueInstance.StreamPacket.subscription
+    ) {
+      QueueInstance.StreamPacket.subscription.unsubscribe();
+      QueueInstance.StreamPacket.subscription = QueueInstance.StreamPacket.VoiceConnection.subscribe(
+        QueueInstance.MusicPlayer,
       );
     }
+    JerichoPlayer.#QueueCaches[QueueInstance.guildId] = QueueInstance;
     return void null;
   }
 

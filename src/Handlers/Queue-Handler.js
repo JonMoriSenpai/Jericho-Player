@@ -71,6 +71,8 @@ class Queue {
         }
         if (!this.destroyed) this.#__CleaningTrackMess();
         this.#__ResourcePlay();
+      } else if (newState && newState.status === AudioPlayerStatus.Playing) {
+        Queue.#TimedoutIds[`${this.guildId}`] = undefined;
       }
     });
   }
@@ -398,13 +400,10 @@ class Queue {
 
   #__QueueAudioPlayerStatusManager() {
     if (this.destroyed) return void null;
-    Queue.#TimedoutIds[`${this.guildId}`] = Queue.#TimedoutIds[
-      `${this.guildId}`
-    ]
-      ? clearTimeout(Number(Queue.#TimedoutIds[`${this.guildId}`]))
-      : undefined;
     if (this.QueueOptions.LeaveOnEnd && !this.tracks[0]) {
-      return this.destroy(this.QueueOptions.LeaveOnEndTimedout ?? 0);
+      return (
+        this.destroy(this.QueueOptions.LeaveOnEndTimedout ?? 0) ?? undefined
+      );
     }
     return void null;
   }

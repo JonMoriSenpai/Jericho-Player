@@ -14,7 +14,13 @@ class VoiceUtils {
     },
   ) {
     let VoiceConnection = getVoiceConnection(Channel.guild.id);
-    if (VoiceConnection && !JoinChannelOptions.force) return VoiceConnection;
+    if (
+      VoiceConnection
+      && VoiceConnection.state
+      && VoiceConnection.state.status !== VoiceConnectionStatus.Destroyed
+      && VoiceConnection.state.status !== VoiceConnectionStatus.Disconnected
+      && !JoinChannelOptions.force
+    ) return VoiceConnection;
 
     VoiceConnection = joinVoiceChannel({
       channelId: Channel.id,
