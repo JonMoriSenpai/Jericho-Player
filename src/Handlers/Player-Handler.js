@@ -228,7 +228,6 @@ class JerichoPlayer extends EventEmitter {
   }
 
   DeleteQueue(guildId) {
-    this.#__buildsandDepschecks(this.Client);
     if (
       !guildId
       || !(guildId && (typeof guildId === 'string' || typeof guildId === 'number'))
@@ -244,7 +243,6 @@ class JerichoPlayer extends EventEmitter {
   }
 
   GetQueue(guildId) {
-    this.#__buildsandDepschecks(this.Client);
     if (
       !guildId
       || !(guildId && (typeof guildId === 'string' || typeof guildId === 'number'))

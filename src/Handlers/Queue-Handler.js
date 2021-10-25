@@ -62,7 +62,7 @@ class Queue {
       if (newState.status === AudioPlayerStatus.Idle) {
         if (
           this.StreamPacket
-          && this.track
+          && this.tracks
           && this.tracks[0]
           && this.StreamPacket.AudioResource
         ) {
