@@ -1,8 +1,9 @@
 import { Guild, Client, Message, Snowflake, VoiceChannel } from 'discord.js'
 import { Queue, PlayerOptions, QueueOptions } from './instances'
 import { VoiceConnection } from '@discordjs/voice'
+import { EventEmitter2 } from'eventemitter2'
 
-export class JerichoPlayer {
+export class JerichoPlayer extends EventEmitter2 {
   public constructor (Client: Client, PlayerOptions?: PlayerOptions)
   public readonly Client: Client
   public readonly PlayerOptions: PlayerOptions
