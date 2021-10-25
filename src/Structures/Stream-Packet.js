@@ -4,7 +4,7 @@ const VoiceUtils = require('../Utilities/Voice-Utils');
 const ClassUtils = require('../Utilities/Class-Utils');
 const {
   DefaultExtractorStreamOptions,
-} = require('../../typings/types/interfaces');
+} = require('../types/interfaces');
 
 class StreamPacketGen {
   constructor(

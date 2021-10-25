@@ -7,7 +7,7 @@ const {
 const StreamPacketGen = require('../Structures/Stream-Packet');
 const ClassUtils = require('../Utilities/Class-Utils');
 const { disconnect } = require('../Utilities/Voice-Utils');
-const { DefaultQueueCreateOptions } = require('../../typings/types/interfaces');
+const { DefaultQueueCreateOptions } = require('../types/interfaces');
 
 class Queue {
   static #TimedoutIds = {}

@@ -1,7 +1,7 @@
 const ClassUtils = require('../Utilities/Class-Utils');
 const {
   DefaultExtractorStreamOptions,
-} = require('../../typings/types/interfaces');
+} = require('../types/interfaces');
 
 class TrackGenerator {
   static async fetch(
