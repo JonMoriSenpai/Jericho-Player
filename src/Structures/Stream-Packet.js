@@ -35,7 +35,7 @@ class StreamPacketGen {
     );
     this.IgnoreError = IgnoreError ?? true;
     this.JerichoPlayer = JerichoPlayer;
-    this.volume = 0.8;
+    this.volume = 0.095;
     this.AudioResource = undefined;
   }
 
@@ -216,7 +216,7 @@ class StreamPacketGen {
         inlineVolume: true,
       });
       this.AudioResource = AudioResource;
-      AudioResource.volume.setVolume(this.volume ?? 0.8);
+      AudioResource.volume.setVolume(this.volume ?? 0.095);
       return this.AudioResource;
     } catch (error) {
       this.AudioResource = undefined;

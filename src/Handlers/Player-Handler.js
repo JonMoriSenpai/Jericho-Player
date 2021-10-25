@@ -1,4 +1,4 @@
-const EventEmitter = require('eventemitter2').EventEmitter2;
+const EventEmitter = require('events');
 const { FFmpeg } = require('prism-media');
 const Client = require('discord.js/src/client/Client.js');
 const Message = require('discord.js/src/structures/Message.js');
