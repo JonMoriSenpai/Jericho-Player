@@ -35,7 +35,7 @@ class StreamPacketGen {
     this.JerichoPlayer = JerichoPlayer;
     this.volume = 0.095;
     this.AudioResource = undefined;
-    this.previousTracks = undefined;
+    this.previousTracks = [];
     this.TimedoutId = undefined;
   }
 
