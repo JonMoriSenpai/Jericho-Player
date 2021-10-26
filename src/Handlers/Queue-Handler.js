@@ -329,9 +329,8 @@ class Queue {
   }
 
   async back(
-    TracksBackward = 1,
+    TracksBackwardIndex = 0,
     requestedBy = undefined,
-    VoiceChannel = undefined,
     backPlayoptions = {
       IgnoreError: true,
       extractor: 'play-dl',
@@ -342,6 +341,7 @@ class Queue {
         Proxy: undefined,
       },
     },
+    forceback = true,
   ) {
     if (this.destroyed) return void this.JerichoPlayer.emit('error', 'Destroyed Queue', this);
     if (!this.previousTrack) {
@@ -351,46 +351,26 @@ class Queue {
         this,
       );
     }
-    if (
-      !VoiceChannel
-      || !(
-        VoiceChannel
-        && VoiceChannel.id
-        && VoiceChannel.guild
-        && VoiceChannel.guild.id
-        && VoiceChannel.type
-        && ['guild_voice', 'guild_stage_voice'].includes(
-          VoiceChannel.type.toLowerCase().trim(),
-        )
-      )
-    ) {
-      throw Error(
-        'Invalid Guild VoiceChannel , Please Provide Correct Guild VoiceChannel Correctly',
-      );
-    }
     backPlayoptions = ClassUtils.stablizingoptions(
       backPlayoptions,
       this.QueueOptions,
     );
     if (
-      Number(TracksBackward) < 1
-      && Number(TracksBackward) > this.StreamPacket.previousTracks.length
+      Number(TracksBackwardIndex) < 0
+      && Number(TracksBackwardIndex) > this.StreamPacket.previousTracks.length
     ) {
       return void this.JerichoPlayer.emit(
         'error',
         'Previous Track Limit Exceeding',
         this,
-        Number(TracksBackward),
+        Number(TracksBackwardIndex),
       );
     }
-    const PreviousTrackRecord = this.StreamPacket.previousTracks[
-      Number(TracksBackward) - 1
-    ];
-    return await this.play(
-      PreviousTrackRecord.url,
-      VoiceChannel ?? this.StreamPacket.VoiceChannel,
-      requestedBy ?? PreviousTrackRecord.requestedBy ?? undefined,
+    return await this.StreamPacket.back(
+      TracksBackwardIndex,
+      requestedBy ?? undefined,
       backPlayoptions ?? this.QueueOptions,
+      forceback,
     );
   }
 

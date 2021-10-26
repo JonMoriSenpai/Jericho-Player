@@ -67,10 +67,10 @@ export type Queue = {
   unmute(Volume?: Number): Boolean | Number | undefined
   clear(TracksAmount?: Number): Boolean | undefined
   back(
-    TracksBackward: Number,
+    TracksBackwardIndex: Number,
     requestedBy: User,
-    VoiceChannel: VoiceChannel,
-    backPlayoptions: PlayerOptions
+    backPlayoptions: PlayerOptions,
+    forceback?: Boolean
   ): Promise<Boolean> | Promise<undefined> | undefined
 }
 

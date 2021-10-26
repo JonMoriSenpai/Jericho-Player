@@ -191,19 +191,44 @@ class StreamPacketGen {
     return this;
   }
 
-  #__HandleInsertion(Index = -1, Chunk) {
-    if (!Index || (Index && Index < 0)) {
-      this.searches = this.searches.concat(Chunk.tracks);
-      this.tracks = this.tracks.concat(Chunk.streamdatas);
-    } else {
-      let GarbageFirstPhase = this.searches.splice(0, Index);
-      let GarbageSecondPhase = GarbageFirstPhase.concat(Chunk.tracks);
-      this.searches = GarbageSecondPhase.concat(this.searches);
-      GarbageFirstPhase = this.tracks.splice(0, Index);
-      GarbageSecondPhase = GarbageFirstPhase.concat(Chunk.streamdatas);
-      this.tracks = GarbageSecondPhase.concat(this.tracks);
+  async back(
+    TracksBackwardIndex,
+    requestedBy = undefined,
+    backPlayoptions,
+    forceback,
+  ) {
+    if (
+      !this.JerichoPlayer.GetQueue(this.guildId)
+      || (this.JerichoPlayer.GetQueue(this.guildId)
+        && this.JerichoPlayer.GetQueue(this.guildId).destroyed)
+    ) return void null;
+
+    const Chunks = await TracksGen.fetch(
+      this.previousTracks[this.previousTracks.length - TracksBackwardIndex - 1]
+        .url,
+      requestedBy
+        ?? this.previousTracks[
+          this.previousTracks.length - TracksBackwardIndex - 1
+        ].requestedBy,
+      backPlayoptions,
+      backPlayoptions.extractor,
+      this.tracks.length > 0
+        ? Number(this.tracks[this.tracks.length - 1].Id)
+        : 0,
+    );
+    if (Chunks.error) {
+      return void this.JerichoPlayer.emit(
+        'error',
+        Chunks.error,
+        this.JerichoPlayer.GetQueue(this.guildId),
+      );
     }
-    return void null;
+
+    this.previousTracks.splice(this.previousTracks.length - 1, 1);
+    this.tracks.splice(forceback ? 1 : 0, 0, Chunks.streamdatas[0]);
+    this.searches.splice(forceback ? 1 : 0, 0, Chunks.tracks[0]);
+    forceback ? this.JerichoPlayer.GetQueue(this.guildId).skip() : undefined;
+    return true;
   }
 
   async StreamAudioResourceExtractor(Track) {
@@ -228,6 +253,21 @@ class StreamPacketGen {
         this.guildId,
       );
     }
+  }
+
+  #__HandleInsertion(Index = -1, Chunk) {
+    if (!Index || (Index && Index < 0)) {
+      this.searches = this.searches.concat(Chunk.tracks);
+      this.tracks = this.tracks.concat(Chunk.streamdatas);
+    } else {
+      let GarbageFirstPhase = this.searches.splice(0, Index);
+      let GarbageSecondPhase = GarbageFirstPhase.concat(Chunk.tracks);
+      this.searches = GarbageSecondPhase.concat(this.searches);
+      GarbageFirstPhase = this.tracks.splice(0, Index);
+      GarbageSecondPhase = GarbageFirstPhase.concat(Chunk.streamdatas);
+      this.tracks = GarbageSecondPhase.concat(this.tracks);
+    }
+    return void null;
   }
 }
 
