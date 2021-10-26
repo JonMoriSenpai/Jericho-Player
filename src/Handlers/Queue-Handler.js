@@ -65,7 +65,10 @@ class Queue {
           && this.StreamPacket.AudioResource
         ) {
           this.StreamPacket.AudioResource = undefined;
-          this.StreamPacket.previousTracks.push(this.tracks[0]);
+          this.StreamPacket.previousTracks.push({
+            search: this.StreamPacket.searches[0],
+            track: this.StreamPacket.tracks[0],
+          });
           this.JerichoPlayer.emit('trackEnd', this, this.tracks[0]);
         }
         if (!this.destroyed) this.#__CleaningTrackMess();
@@ -328,21 +331,7 @@ class Queue {
     return true;
   }
 
-  async back(
-    TracksBackwardIndex = 0,
-    requestedBy = undefined,
-    backPlayoptions = {
-      IgnoreError: true,
-      extractor: 'play-dl',
-      metadata: this.metadata,
-      ExtractorStreamOptions: {
-        Limit: 1,
-        Quality: 'high',
-        Proxy: undefined,
-      },
-    },
-    forceback = true,
-  ) {
+  async back(TracksBackwardIndex = 0, forceback = true) {
     if (this.destroyed) return void this.JerichoPlayer.emit('error', 'Destroyed Queue', this);
     if (!this.previousTrack) {
       return void this.JerichoPlayer.emit(
@@ -351,10 +340,6 @@ class Queue {
         this,
       );
     }
-    backPlayoptions = ClassUtils.stablizingoptions(
-      backPlayoptions,
-      this.QueueOptions,
-    );
     if (
       Number(TracksBackwardIndex) < 0
       && Number(TracksBackwardIndex) > this.StreamPacket.previousTracks.length
@@ -366,12 +351,7 @@ class Queue {
         Number(TracksBackwardIndex),
       );
     }
-    return await this.StreamPacket.back(
-      TracksBackwardIndex,
-      requestedBy ?? undefined,
-      backPlayoptions ?? this.QueueOptions,
-      forceback,
-    );
+    return await this.StreamPacket.back(TracksBackwardIndex, forceback);
   }
 
   get volume() {
@@ -432,7 +412,7 @@ class Queue {
     if (this.StreamPacket.previousTracks.length < 1) return void null;
     return this.StreamPacket.previousTracks[
       this.StreamPacket.previousTracks.length - 1
-    ];
+    ].search;
   }
 
   async #__ResourcePlay() {
