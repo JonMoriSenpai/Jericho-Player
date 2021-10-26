@@ -1,4 +1,4 @@
-import { Guild, Client, Message, Snowflake, VoiceChannel } from 'discord.js'
+import { Guild, Client, Message, Snowflake, VoiceChannel, Interaction } from 'discord.js'
 import { Queue, PlayerOptions, QueueOptions } from './instances'
 import { VoiceConnection } from '@discordjs/voice'
 import { EventEmitter } from'events'
@@ -8,7 +8,7 @@ export class JerichoPlayer extends EventEmitter {
   public readonly Client: Client
   public readonly PlayerOptions: PlayerOptions
   public CreateQueue (
-    message: Message,
+    message: Message | Interaction,
     QueueCreateOptions: QueueOptions
   ): Queue | undefined
   public GetQueue (guildId: Guild['id'] | Snowflake | String): Queue | undefined
