@@ -1,6 +1,6 @@
 const EventEmitter = require('events');
 const { FFmpeg } = require('prism-media');
-const { Intents, Client, Message } = require('discord.js');
+const { Intents, Client, Message, Interaction } = require('discord.js');
 const Queue = require('./Queue-Handler.js');
 const ClassUtils = require('../Utilities/Class-Utils');
 const { join } = require('../Utilities/Voice-Utils');
@@ -178,7 +178,7 @@ class JerichoPlayer extends EventEmitter {
 
   /**
    * @method CreateQueue => Create Queue Instance for Player and per Guild
-   * @param {Message} message Guild Message Only for getting info about guild and guildId
+   * @param {Message | Interaction} message Guild Message Only for getting info about guild and guildId
    * @param {DefaultQueueCreateOptions} QueueCreateOptions => Queue Create Options for Queue Instance ( for making ByDefault Values for Queue.<methods> )
    * @returns {Queue} Queue Instance => ( for Queue.<methods> like Queue.play() )
    */
