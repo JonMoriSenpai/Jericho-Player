@@ -65,10 +65,7 @@ class Queue {
           && this.StreamPacket.AudioResource
         ) {
           this.StreamPacket.AudioResource = undefined;
-          this.StreamPacket.previousTracks.push({
-            search: this.StreamPacket.searches[0],
-            track: this.StreamPacket.tracks[0],
-          });
+          this.StreamPacket.previousTracks.push(this.StreamPacket.searches[0]);
           this.JerichoPlayer.emit('trackEnd', this, this.tracks[0]);
         }
         if (!this.destroyed) this.#__CleaningTrackMess();
@@ -334,6 +331,16 @@ class Queue {
   async back(
     TracksBackwardIndex = 0,
     requestedBy = undefined,
+    PlayOptions = {
+      IgnoreError: true,
+      extractor: 'play-dl',
+      metadata: this.metadata,
+      ExtractorStreamOptions: {
+        Limit: 1,
+        Quality: 'high',
+        Proxy: undefined,
+      },
+    },
     forceback = true,
   ) {
     if (this.destroyed) return void this.JerichoPlayer.emit('error', 'Destroyed Queue', this);
@@ -355,9 +362,11 @@ class Queue {
         Number(TracksBackwardIndex),
       );
     }
+    PlayOptions = ClassUtils.stablizingoptions(PlayOptions, this.QueueOptions);
     return await this.StreamPacket.back(
       TracksBackwardIndex,
       requestedBy,
+      PlayOptions,
       forceback,
     );
   }
@@ -420,7 +429,7 @@ class Queue {
     if (this.StreamPacket.previousTracks.length < 1) return void null;
     return this.StreamPacket.previousTracks[
       this.StreamPacket.previousTracks.length - 1
-    ].search;
+    ];
   }
 
   async #__ResourcePlay() {

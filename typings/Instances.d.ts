@@ -69,6 +69,7 @@ export type Queue = {
   back(
     TracksBackwardIndex: Number,
     requestedBy: User,
+    PlayOptions: PlayOptions,
     forceback?: Boolean
   ): Promise<Boolean> | Promise<undefined> | undefined
 }
@@ -109,7 +110,7 @@ export type StreamPacket = {
   readonly JerichoPlayer: JerichoPlayer
   readonly volume: Number
   readonly AudioResource: AudioResource
-  readonly previousTracks: { track: Stream; search: Track }[] | undefined
+  readonly previousTracks: Track[] | undefined
   readonly TimedoutId: Number | undefined
 }
 

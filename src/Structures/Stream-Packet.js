@@ -191,30 +191,49 @@ class StreamPacketGen {
     return this;
   }
 
-  async back(TracksBackwardIndex, requestedBy, forceback) {
+  async back(
+    TracksBackwardIndex,
+    requestedBy,
+    StreamCreateOptions = {
+      IgnoreError: true,
+      ExtractorStreamOptions: {
+        Limit: 1,
+        Quality: 'high',
+        Proxy: undefined,
+      },
+    },
+    forceback,
+  ) {
     if (
       !this.JerichoPlayer.GetQueue(this.guildId)
       || (this.JerichoPlayer.GetQueue(this.guildId)
         && this.JerichoPlayer.GetQueue(this.guildId).destroyed)
     ) return void null;
 
-    requestedBy
-      ? (this.previousTracks[
-        this.previousTracks.length - TracksBackwardIndex - 1
-      ].search.requestedBy = requestedBy)
-      : undefined;
-    this.tracks.splice(
-      forceback ? 1 : 0,
-      0,
+    const Chunks = await TracksGen.fetch(
       this.previousTracks[this.previousTracks.length - TracksBackwardIndex - 1]
-        .track,
+        .url,
+      requestedBy
+        ?? this.previousTracks[
+          this.previousTracks.length - TracksBackwardIndex - 1
+        ].requestedBy
+        ?? undefined,
+      StreamCreateOptions,
+      StreamCreateOptions.extractor,
+      this.tracks.length > 0
+        ? Number(this.tracks[this.tracks.length - 1].Id)
+        : 0,
     );
-    this.searches.splice(
-      forceback ? 1 : 0,
-      0,
-      this.previousTracks[this.previousTracks.length - TracksBackwardIndex - 1]
-        .search,
-    );
+    if (Chunks.error) {
+      return void this.JerichoPlayer.emit(
+        'error',
+        Chunks.error,
+        this.JerichoPlayer.GetQueue(this.guildId),
+      );
+    }
+
+    this.tracks.splice(forceback ? 1 : 0, 0, Chunks.streamdatas[0]);
+    this.searches.splice(forceback ? 1 : 0, 0, Chunks.tracks[0]);
     forceback ? this.searches.splice(2, 0, this.searches[0]) : undefined;
     forceback ? this.tracks.splice(2, 0, this.tracks[0]) : undefined;
     this.previousTracks.splice(
