@@ -68,6 +68,7 @@ export type Queue = {
   clear(TracksAmount?: Number): Boolean | undefined
   back(
     TracksBackwardIndex: Number,
+    requestedBy: User,
     forceback?: Boolean
   ): Promise<Boolean> | Promise<undefined> | undefined
 }

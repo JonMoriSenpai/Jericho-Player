@@ -331,7 +331,11 @@ class Queue {
     return true;
   }
 
-  async back(TracksBackwardIndex = 0, forceback = true) {
+  async back(
+    TracksBackwardIndex = 0,
+    requestedBy = undefined,
+    forceback = true,
+  ) {
     if (this.destroyed) return void this.JerichoPlayer.emit('error', 'Destroyed Queue', this);
     if (!this.previousTrack) {
       return void this.JerichoPlayer.emit(
@@ -351,7 +355,11 @@ class Queue {
         Number(TracksBackwardIndex),
       );
     }
-    return await this.StreamPacket.back(TracksBackwardIndex, forceback);
+    return await this.StreamPacket.back(
+      TracksBackwardIndex,
+      requestedBy,
+      forceback,
+    );
   }
 
   get volume() {

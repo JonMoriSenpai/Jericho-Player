@@ -191,13 +191,18 @@ class StreamPacketGen {
     return this;
   }
 
-  async back(TracksBackwardIndex, forceback) {
+  async back(TracksBackwardIndex, requestedBy, forceback) {
     if (
       !this.JerichoPlayer.GetQueue(this.guildId)
       || (this.JerichoPlayer.GetQueue(this.guildId)
         && this.JerichoPlayer.GetQueue(this.guildId).destroyed)
     ) return void null;
 
+    requestedBy
+      ? (this.previousTracks[
+        this.previousTracks.length - TracksBackwardIndex - 1
+      ].search.requestedBy = requestedBy)
+      : undefined;
     this.tracks.splice(
       forceback ? 1 : 0,
       0,
