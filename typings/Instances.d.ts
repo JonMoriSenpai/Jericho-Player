@@ -7,6 +7,7 @@ import {
 import {
   Client,
   Guild,
+  Interaction,
   Message,
   Snowflake,
   User,
@@ -32,7 +33,7 @@ export type Queue = {
     readonly LeaveOnEndTimedout: Number | 'Time in Seconds'
     readonly LeaveOnBotOnlyTimedout: Number | 'Time in Seconds'
   }
-  message: Message
+  message: Message | Interaction
   metadata: any
   volume: Number
   readonly tracks: Array<Track>
@@ -46,7 +47,7 @@ export type Queue = {
   play(
     Query: String,
     VoiceChannel: VoiceChannel,
-    message: Message | undefined,
+    User: User | undefined,
     PlayOptions?: PlayOptions
   ): Promise<Boolean> | undefined
   skip(TrackIndex: Number): Boolean | undefined
@@ -56,7 +57,7 @@ export type Queue = {
   insert(
     Query: String,
     TrackIndex: Number,
-    message: Message | undefined,
+    User: User | undefined,
     InsertOptions: PlayOptions
   ): Boolean | undefined
   destroy(connectionTimedout?: Number): Number | Boolean | undefined
@@ -90,7 +91,7 @@ export type StreamPacket = {
   readonly tracks: Array<Stream>
   readonly subscription: PlayerSubscription
   readonly VoiceConnection: VoiceConnection
-  metadata: any
+  readonly metadata: any
   readonly guildId: Guild['id'] | Snowflake | String
   readonly ExtractorStreamOptions: {
     Limit: Number
@@ -99,6 +100,8 @@ export type StreamPacket = {
   }
   readonly IgnoreError: Boolean
   readonly JerichoPlayer: JerichoPlayer
+  readonly volume: Number
+  readonly AudioResource: AudioResource
 }
 
 export type Stream = {
@@ -134,44 +137,44 @@ export type Stream = {
 }
 
 export type PlayerOptions = {
-  extractor: String | 'play-dl' | 'youtube-dl'
-  ExtractorStreamOptions?: {
-    Limit: Number
-    Quality: String | 'high' | 'low' | 'medium'
-    Proxy: String | Array<String> | 'IPAdress:PortNumber'
+  readonly extractor: String | 'play-dl' | 'youtube-dl'
+  readonly ExtractorStreamOptions?: {
+    readonly Limit: Number
+    readonly Quality: String | 'high' | 'low' | 'medium'
+    readonly Proxy: String | Array<String> | 'IPAdress:PortNumber'
   }
-  IgnoreError: Boolean
-  LeaveOnEmpty: Boolean
-  LeaveOnEnd: Boolean
-  LeaveOnBotOnly: Boolean
-  LeaveOnEmptyTimedout: Number | 'Time in Seconds'
-  LeaveOnEndTimedout: Number | 'Time in Seconds'
-  LeaveOnBotOnlyTimedout: Number | 'Time in Seconds'
+  readonly IgnoreError: Boolean
+  readonly LeaveOnEmpty: Boolean
+  readonly LeaveOnEnd: Boolean
+  readonly LeaveOnBotOnly: Boolean
+  readonly readonlyLeaveOnEmptyTimedout: Number | 'Time in Seconds'
+  readonly LeaveOnEndTimedout: Number | 'Time in Seconds'
+  readonly LeaveOnBotOnlyTimedout: Number | 'Time in Seconds'
 }
 export type PlayOptions = {
-  extractor: String | 'play-dl' | 'youtube-dl'
-  metadata: any
-  ExtractorStreamOptions?: {
-    Limit: Number
-    Quality: String | 'high' | 'low' | 'medium'
-    Proxy: String | Array<String> | 'IPAdress:PortNumber'
+  readonly extractor: String | 'play-dl' | 'youtube-dl'
+  readonly metadata: any
+  readonly ExtractorStreamOptions?: {
+    readonly Limit: Number
+    readonly Quality: String | 'high' | 'low' | 'medium'
+    readonly Proxy: String | Array<String> | 'IPAdress:PortNumber'
   }
-  IgnoreError: Boolean
+  readonly IgnoreError: Boolean
 }
 
 export type QueueOptions = {
-  extractor: String | 'play-dl' | 'youtube-dl'
+  readonly extractor: String | 'play-dl' | 'youtube-dl'
   metadata: any
-  IgnoreError: Boolean
-  ExtractorStreamOptions?: {
-    Limit: Number
-    Quality: String | 'high' | 'low' | 'medium'
-    Proxy: String | Array<String> | 'IPAdress:PortNumber'
+  readonly IgnoreError: Boolean
+  readonly ExtractorStreamOptions?: {
+    readonly Limit: Number
+    readonly Quality: String | 'high' | 'low' | 'medium'
+    readonly Proxy: String | Array<String> | 'IPAdress:PortNumber'
   }
-  LeaveOnEmpty: Boolean
-  LeaveOnEnd: Boolean
-  LeaveOnBotOnly: Boolean
-  LeaveOnEmptyTimedout: Number | 'Time in Seconds'
-  LeaveOnEndTimedout: Number | 'Time in Seconds'
-  LeaveOnBotOnlyTimedout: Number | 'Time in Seconds'
+  readonly LeaveOnEmpty: Boolean
+  readonly LeaveOnEnd: Boolean
+  readonly LeaveOnBotOnly: Boolean
+  readonly LeaveOnEmptyTimedout: Number | 'Time in Seconds'
+  readonly LeaveOnEndTimedout: Number | 'Time in Seconds'
+  readonly LeaveOnBotOnlyTimedout: Number | 'Time in Seconds'
 }

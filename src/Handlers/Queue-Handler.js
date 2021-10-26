@@ -80,7 +80,7 @@ class Queue {
   async play(
     Query,
     VoiceChannel,
-    message,
+    User,
     PlayOptions = {
       IgnoreError: true,
       extractor: 'play-dl',
@@ -126,7 +126,7 @@ class Queue {
       VoiceChannel,
       PlayOptions,
       PlayOptions.extractor,
-      message ? message.author : undefined ?? undefined,
+      User ?? undefined,
     )) ?? this.StreamPacket;
     this.tracks = this.StreamPacket.searches;
     if (!this.playing && !this.paused && this.tracks && this.tracks[0]) await this.#__ResourcePlay();
@@ -202,7 +202,7 @@ class Queue {
   async insert(
     Query,
     TrackIndex = -1,
-    message,
+    User,
     InsertOptions = {
       IgnoreError: true,
       extractor: 'play-dl',
@@ -245,7 +245,7 @@ class Queue {
       Query,
       InsertOptions.ExtractorStreamOptions,
       InsertOptions.extractor,
-      message ? message.author : undefined ?? undefined,
+      User ?? undefined,
     )) ?? this.StreamPacket;
     this.tracks = this.StreamPacket.searches;
     return true;
