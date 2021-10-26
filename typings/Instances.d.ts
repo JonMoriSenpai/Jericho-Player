@@ -44,12 +44,13 @@ export type Queue = {
   readonly paused: Boolean
   readonly IgnoreError: Boolean
   readonly MusicPlayer: AudioPlayer
+  readonly previousTrack: Track | undefined
   play(
     Query: String,
     VoiceChannel: VoiceChannel,
     User: User | undefined,
     PlayOptions?: PlayOptions
-  ): Promise<Boolean> | undefined
+  ): Promise<Boolean> | Promise<undefined> | undefined
   skip(TrackIndex: Number): Boolean | undefined
   stop(): Boolean | undefined
   pause(): Boolean | undefined
@@ -59,11 +60,18 @@ export type Queue = {
     TrackIndex: Number,
     User: User | undefined,
     InsertOptions: PlayOptions
-  ): Boolean | undefined
+  ): Promise<Boolean> | Promise<undefined> | undefined
   destroy(connectionTimedout?: Number): Number | Boolean | undefined
   remove(Index?: Number, Amount?: Number): Boolean | undefined
   mute(): Boolean | undefined
   unmute(Volume?: Number): Boolean | Number | undefined
+  clear(TracksAmount?: Number): Boolean | undefined
+  back(
+    TracksBackward: Number,
+    requestedBy: User,
+    VoiceChannel: VoiceChannel,
+    backPlayoptions: PlayerOptions
+  ): Promise<Boolean> | Promise<undefined> | undefined
 }
 
 export type Track = {
@@ -94,14 +102,16 @@ export type StreamPacket = {
   readonly metadata: any
   readonly guildId: Guild['id'] | Snowflake | String
   readonly ExtractorStreamOptions: {
-    Limit: Number
-    Quality: String | 'high' | 'low' | 'medium'
-    Proxy: String | Array<String> | 'IPAdress:PortNumber'
+    readonly Limit: Number
+    readonly Quality: String | 'high' | 'low' | 'medium'
+    readonly Proxy: String | Array<String> | 'IPAdress:PortNumber'
   }
   readonly IgnoreError: Boolean
   readonly JerichoPlayer: JerichoPlayer
   readonly volume: Number
   readonly AudioResource: AudioResource
+  readonly previousTracks: Track[] | undefined
+  readonly TimedoutId: Number | undefined
 }
 
 export type Stream = {

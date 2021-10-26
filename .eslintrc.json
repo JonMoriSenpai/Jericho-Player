@@ -26,6 +26,7 @@
     "no-unused-expressions": "off",
     "no-multi-assign": "off",
     "import/no-dynamic-require": "off",
-    "no-nested-ternary": "off"
+    "no-nested-ternary": "off",
+    "prefer-destructuring": "off"
   }
 }

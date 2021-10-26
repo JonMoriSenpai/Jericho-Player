@@ -1,6 +1,8 @@
 const EventEmitter = require('events');
 const { FFmpeg } = require('prism-media');
-const { Intents, Client, Message, Interaction } = require('discord.js');
+const {
+  Intents, Client, Message, Interaction,
+} = require('discord.js');
 const Queue = require('./Queue-Handler.js');
 const ClassUtils = require('../Utilities/Class-Utils');
 const { join } = require('../Utilities/Voice-Utils');
@@ -30,11 +32,6 @@ class JerichoPlayer extends EventEmitter {
   static #QueueCaches = {}
 
   /**
-   * @property {Object} TimedoutIds => Caches of Queue's LeaveOn's Nodejs Timeout Id's for per "instanceof Player"
-   */
-  static #TimedoutIds = {}
-
-  /**
    * @constructor of Jericho Player
    * @param {Client} Client  Instanceof Discord.js Client
    * @param {DefaultJerichoPlayerOptions<Object>}  JerichoPlayerOptions  Player Options for Stream Extraction and Voice Connection Moderation
@@ -52,7 +49,7 @@ class JerichoPlayer extends EventEmitter {
       IgnoreError: true,
       LeaveOnEmpty: true,
       LeaveOnEnd: true,
-      LeaveOnBotOnly: false,
+      LeaveOnBotOnly: true,
       LeaveOnEmptyTimedout: 0,
       LeaveOnEndTimedout: 0,
       LeaveOnBotOnlyTimedout: 0,
@@ -196,7 +193,7 @@ class JerichoPlayer extends EventEmitter {
       IgnoreError: true,
       LeaveOnEmpty: true,
       LeaveOnEnd: true,
-      LeaveOnBotOnly: false,
+      LeaveOnBotOnly: true,
       LeaveOnEmptyTimedout: 0,
       LeaveOnEndTimedout: 0,
       LeaveOnBotOnlyTimedout: 0,
@@ -295,12 +292,10 @@ class JerichoPlayer extends EventEmitter {
         && VoiceChannel.members.some(clientchecks))
         || VoiceChannel.members.size === 0)
     ) {
-      JerichoPlayer.#TimedoutIds[`${QueueInstance.guildId}`]
-        ? clearTimeout(
-          Number(JerichoPlayer.#TimedoutIds[`${QueueInstance.guildId}`]),
-        )
+      QueueInstance.StreamPacket.TimedoutId
+        ? clearTimeout(Number(QueueInstance.StreamPacket.TimedoutId))
         : undefined;
-      JerichoPlayer.#TimedoutIds[`${QueueInstance.guildId}`] = QueueInstance.destroy(
+      QueueInstance.StreamPacket.TimedoutId = QueueInstance.destroy(
         QueueInstance.QueueOptions.LeaveOnBotOnlyTimedout ?? 0,
       ) ?? undefined;
     }
@@ -313,26 +308,13 @@ class JerichoPlayer extends EventEmitter {
         && !VoiceChannel.members.some(clientchecks)
         && VoiceChannel.members.size <= 1)
     ) {
-      JerichoPlayer.#TimedoutIds[`${QueueInstance.guildId}`] = JerichoPlayer
-        .#TimedoutIds[`${QueueInstance.guildId}`]
-        ? clearTimeout(
-          Number(JerichoPlayer.#TimedoutIds[`${QueueInstance.guildId}`]),
-        )
+      QueueInstance.StreamPacket.TimedoutId = QueueInstance.StreamPacket
+        .TimedoutId
+        ? clearTimeout(Number(QueueInstance.StreamPacket.TimedoutId))
         : undefined;
-      JerichoPlayer.#TimedoutIds[`${QueueInstance.guildId}`] = QueueInstance.destroy(
+      QueueInstance.StreamPacket.TimedoutId = QueueInstance.destroy(
         QueueInstance.QueueOptions.LeaveOnBotOnlyTimedout ?? 0,
       ) ?? undefined;
-    } else if (
-      VoiceChannel.members.size > 1
-      && QueueInstance.tracks
-      && QueueInstance.tracks[0]
-    ) {
-      JerichoPlayer.#TimedoutIds[`${QueueInstance.guildId}`] = JerichoPlayer
-        .#TimedoutIds[`${QueueInstance.guildId}`]
-        ? clearTimeout(
-          Number(JerichoPlayer.#TimedoutIds[`${QueueInstance.guildId}`]),
-        )
-        : undefined;
     }
     return void null;
   }
@@ -439,16 +421,12 @@ class JerichoPlayer extends EventEmitter {
         'Missing Intents in Discord Client\n - GUILD_VOICE_STATES || Intents.FLAGS.GUILD_VOICE_STATES\n - - GUILDS || Intents.FLAGS.GUILDS',
       );
     } else if (
-      !new Intents(Client.options.intents).has(
-        Intents.FLAGS.GUILD_VOICE_STATES,
-      )
+      !new Intents(Client.options.intents).has(Intents.FLAGS.GUILD_VOICE_STATES)
     ) {
       throw SyntaxError(
         'Missing Intents in Discord Client\n - GUILD_VOICE_STATES || Intents.FLAGS.GUILD_VOICE_STATES',
       );
-    } else if (
-      !new Intents(Client.options.intents).has(Intents.FLAGS.GUILDS)
-    ) {
+    } else if (!new Intents(Client.options.intents).has(Intents.FLAGS.GUILDS)) {
       throw SyntaxError(
         'Missing Intents in Discord Client\n - GUILDS || Intents.FLAGS.GUILDS',
       );

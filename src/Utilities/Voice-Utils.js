@@ -74,6 +74,7 @@ class VoiceUtils {
         }
         return void QueueInstance.JerichoPlayer.emit(
           'connectionError',
+          QueueInstance.JerichoPlayer.GetQueue(QueueInstance.guildId),
           VoiceConnection,
           guildId,
         );
@@ -100,6 +101,7 @@ class VoiceUtils {
     }
     return void QueueInstance.JerichoPlayer.emit(
       'connectionError',
+      QueueInstance.JerichoPlayer.GetQueue(QueueInstance.guildId),
       VoiceConnection,
       guildId,
     );

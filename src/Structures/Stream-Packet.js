@@ -2,9 +2,7 @@ const { createAudioResource, StreamType } = require('@discordjs/voice');
 const TracksGen = require('./Tracks');
 const VoiceUtils = require('../Utilities/Voice-Utils');
 const ClassUtils = require('../Utilities/Class-Utils');
-const {
-  DefaultExtractorStreamOptions,
-} = require('../types/interfaces');
+const { DefaultExtractorStreamOptions } = require('../types/interfaces');
 
 class StreamPacketGen {
   constructor(
@@ -37,6 +35,8 @@ class StreamPacketGen {
     this.JerichoPlayer = JerichoPlayer;
     this.volume = 0.095;
     this.AudioResource = undefined;
+    this.previousTracks = undefined;
+    this.TimedoutId = undefined;
   }
 
   async create(
@@ -103,6 +103,7 @@ class StreamPacketGen {
     } else if (!VoiceChannel && !this.VoiceChannel && !this.VoiceConnection) {
       return void this.JerichoPlayer.emit(
         'connectionError',
+        this.JerichoPlayer.GetQueue(this.guildId),
         this.VoiceConnection,
         this.guildId,
       );
@@ -143,7 +144,7 @@ class StreamPacketGen {
         this.guildId,
       );
     }
-    if (Number(Index) < -1 && Number(Index) >= this.searches.length) {
+    if (Number(Index) <= -1 && Number(Index) >= this.searches.length) {
       return void this.JerichoPlayer.emit(
         'error',
         'Invalid Index',
@@ -220,7 +221,12 @@ class StreamPacketGen {
       return this.AudioResource;
     } catch (error) {
       this.AudioResource = undefined;
-      return void null;
+      return void this.JerichoPlayer.emit(
+        'connectionError',
+        this.JerichoPlayer.GetQueue(this.guildId),
+        this.VoiceConnection,
+        this.guildId,
+      );
     }
   }
 }
