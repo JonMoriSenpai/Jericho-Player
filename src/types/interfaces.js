@@ -1,6 +1,8 @@
 const DefaultExtractorStreamOptions = {
   Limit: 1,
   Quality: 'high',
+  Cookies: undefined,
+  YoutubeDLCookiesFilePath: undefined,
   Proxy: undefined,
 };
 

@@ -10,6 +10,8 @@ class TrackGenerator {
       ExtractorStreamOptions: {
         Limit: 1,
         Quality: 'high',
+        Cookies: undefined,
+        YoutubeDLCookiesFilePath: undefined,
         Proxy: undefined,
       },
     },
@@ -54,7 +56,9 @@ class TrackGenerator {
         playlist: false,
         streamdatas: [],
         tracks: [],
-        error: 'Search Not Found',
+        error:
+          (RawData.error && RawData.error.message ? RawData.error.message : `${RawData.error}`)
+          ?? 'Search Not Found',
       };
     }
     const Chunks = TrackGenerator.#Track_Id_Placement(
@@ -94,6 +98,8 @@ class TrackGenerator {
       ExtractorStreamOptions: {
         Limit: 1,
         Quality: 'high',
+        Cookies: undefined,
+        YoutubeDLCookiesFilePath: undefined,
         Proxy: undefined,
       },
     },
@@ -112,21 +118,28 @@ class TrackGenerator {
           Query,
           FetchOptions.ExtractorStreamOptions,
         )
-        : undefined
-      : RawData;
+        : { playlist: false, tracks: [], error: RawData.error }
+      : undefined;
     RawData = !RawData
       || (RawData && !RawData.tracks)
       || (RawData && RawData.tracks && !RawData.tracks[0])
       ? ClassUtils.ScanDeps('video-extractor')
         ? await TrackGenerator.#YoutubeDLExtractor(Query)
-        : undefined
-      : RawData;
+        : { playlist: false, tracks: [], error: RawData.error }
+      : { playlist: false, tracks: [], error: RawData.error };
     return RawData;
   }
 
-  static async #YoutubeDLExtractor(Query) {
+  static async #YoutubeDLExtractor(Query, ExtractorStreamOptions) {
     const { StreamDownloader } = require('video-extractor');
-    return await StreamDownloader(Query);
+    return await StreamDownloader(Query, {
+      Proxy:
+        typeof ExtractorStreamOptions.Proxy === 'object'
+          ? ExtractorStreamOptions.Proxy[0]
+          : undefined,
+      YTCookies: ExtractorStreamOptions.Cookies,
+      YoutubeDLCookiesFilePath: ExtractorStreamOptions.YoutubeDLCookiesFilePath,
+    });
   }
 
   static async #PlayDLExtractor(Query, ExtractorStreamOptions) {

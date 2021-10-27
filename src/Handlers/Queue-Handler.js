@@ -19,6 +19,8 @@ class Queue {
       ExtractorStreamOptions: {
         Limit: undefined,
         Quality: undefined,
+        Cookies: undefined,
+        YoutubeDLCookiesFilePath: undefined,
         Proxy: undefined,
       },
       IgnoreError: undefined,
@@ -88,6 +90,8 @@ class Queue {
       ExtractorStreamOptions: {
         Limit: 1,
         Quality: 'high',
+        Cookies: undefined,
+        YoutubeDLCookiesFilePath: undefined,
         Proxy: undefined,
       },
     },
@@ -218,6 +222,8 @@ class Queue {
       ExtractorStreamOptions: {
         Limit: 1,
         Quality: 'high',
+        Cookies: undefined,
+        YoutubeDLCookiesFilePath: undefined,
         Proxy: undefined,
       },
     },
@@ -351,6 +357,8 @@ class Queue {
       ExtractorStreamOptions: {
         Limit: 1,
         Quality: 'high',
+        Cookies: undefined,
+        YoutubeDLCookiesFilePath: undefined,
         Proxy: undefined,
       },
     },

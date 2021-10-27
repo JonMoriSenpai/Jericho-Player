@@ -44,6 +44,8 @@ class JerichoPlayer extends EventEmitter {
       ExtractorStreamOptions: {
         Limit: 1,
         Quality: 'high',
+        Cookies: undefined,
+        YoutubeDLCookiesFilePath: undefined,
         Proxy: undefined,
       },
       IgnoreError: true,
@@ -200,6 +202,8 @@ class JerichoPlayer extends EventEmitter {
       ExtractorStreamOptions: {
         Limit: undefined,
         Quality: undefined,
+        Cookies: undefined,
+        YoutubeDLCookiesFilePath: undefined,
         Proxy: undefined,
       },
       IgnoreError: undefined,

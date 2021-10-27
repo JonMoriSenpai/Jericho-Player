@@ -13,6 +13,8 @@ class StreamPacketGen {
     ExtractorStreamOptions = {
       Limit: 1,
       Quality: 'high',
+      Cookies: undefined,
+      YoutubeDLCookiesFilePath: undefined,
       Proxy: undefined,
     },
     JerichoPlayer = undefined,
@@ -48,6 +50,8 @@ class StreamPacketGen {
       ExtractorStreamOptions: {
         Limit: 1,
         Quality: 'high',
+        Cookies: undefined,
+        YoutubeDLCookiesFilePath: undefined,
         Proxy: undefined,
       },
     },
@@ -127,6 +131,8 @@ class StreamPacketGen {
       ExtractorStreamOptions: {
         Limit: 1,
         Quality: 'high',
+        Cookies: undefined,
+        YoutubeDLCookiesFilePath: undefined,
         Proxy: undefined,
       },
     },
@@ -200,6 +206,8 @@ class StreamPacketGen {
       ExtractorStreamOptions: {
         Limit: 1,
         Quality: 'high',
+        Cookies: undefined,
+        YoutubeDLCookiesFilePath: undefined,
         Proxy: undefined,
       },
     },
@@ -313,7 +321,8 @@ class StreamPacketGen {
           }`);
       }
       return ProcessedString.trim();
-    } if (Type2) {
+    }
+    if (Type2) {
       const TimeData = new Date(Type2.Time);
       const days = TimeData.getUTCDate() - 1;
       const hours = TimeData.getUTCHours();
@@ -338,7 +347,8 @@ class StreamPacketGen {
         )
         : undefined;
       return TimeString.join(':');
-    } return '0 Seconds';
+    }
+    return '0 Seconds';
   }
 
   #__HandleInsertion(Index = -1, Chunk) {

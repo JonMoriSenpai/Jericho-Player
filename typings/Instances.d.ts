@@ -25,6 +25,8 @@ export type Queue = {
     readonly ExtractorStreamOptions: {
       Limit: Number
       Quality: String | 'high' | 'low' | 'medium'
+      Cookies: String | 'YTCookies'
+      YoutubeDLCookiesFilePath: String | '/path/to/Cookie.txt'
       Proxy: String | Array<String> | 'IPAdress:PortNumber'
     }
     readonly LeaveOnEmpty: Boolean
@@ -132,6 +134,8 @@ export type StreamPacket = {
   readonly ExtractorStreamOptions: {
     readonly Limit: Number
     readonly Quality: String | 'high' | 'low' | 'medium'
+    readonly Cookies: String | 'YTCookies'
+    readonly YoutubeDLCookiesFilePath: String | '/path/to/Cookie.txt'
     readonly Proxy: String | Array<String> | 'IPAdress:PortNumber'
   }
   readonly IgnoreError: Boolean
@@ -185,6 +189,8 @@ export type PlayerOptions = {
   readonly ExtractorStreamOptions?: {
     readonly Limit: Number
     readonly Quality: String | 'high' | 'low' | 'medium'
+    readonly Cookies: String | 'YTCookies'
+    readonly YoutubeDLCookiesFilePath: String | '/path/to/Cookie.txt'
     readonly Proxy: String | Array<String> | 'IPAdress:PortNumber'
   }
   readonly IgnoreError: Boolean
@@ -201,6 +207,8 @@ export type PlayOptions = {
   readonly ExtractorStreamOptions?: {
     readonly Limit: Number
     readonly Quality: String | 'high' | 'low' | 'medium'
+    readonly Cookies: String | 'YTCookies'
+    readonly YoutubeDLCookiesFilePath: String | '/path/to/Cookie.txt'
     readonly Proxy: String | Array<String> | 'IPAdress:PortNumber'
   }
   readonly IgnoreError: Boolean
@@ -213,6 +221,8 @@ export type QueueOptions = {
   readonly ExtractorStreamOptions?: {
     readonly Limit: Number
     readonly Quality: String | 'high' | 'low' | 'medium'
+    readonly Cookies: String | 'YTCookies'
+    readonly YoutubeDLCookiesFilePath: String | '/path/to/Cookie.txt'
     readonly Proxy: String | Array<String> | 'IPAdress:PortNumber'
   }
   readonly LeaveOnEmpty: Boolean
