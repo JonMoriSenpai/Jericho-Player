@@ -98,6 +98,18 @@ class JerichoPlayer extends EventEmitter {
         || (NewVoiceState.channel
           && OldVoiceState.channel
           && OldVoiceState.channel.id === NewVoiceState.channel.id)
+        || !(
+          (NewVoiceState.channel
+            && QueueInstance.StreamPacket
+            && QueueInstance.StreamPacket.VoiceChannel
+            && QueueInstance.StreamPacket.VoiceChannel.id
+              === NewVoiceState.channel.id)
+          || (OldVoiceState.channel
+            && QueueInstance.StreamPacket
+            && QueueInstance.StreamPacket.VoiceChannel
+            && QueueInstance.StreamPacket.VoiceChannel.id
+              === OldVoiceState.channel.id)
+        )
       ) {
         return void null;
       }
@@ -308,8 +320,7 @@ class JerichoPlayer extends EventEmitter {
         && !VoiceChannel.members.some(clientchecks)
         && VoiceChannel.members.size <= 1)
     ) {
-      QueueInstance.StreamPacket.TimedoutId = QueueInstance.StreamPacket
-        .TimedoutId
+      QueueInstance.StreamPacket.TimedoutId
         ? clearTimeout(Number(QueueInstance.StreamPacket.TimedoutId))
         : undefined;
       QueueInstance.StreamPacket.TimedoutId = QueueInstance.destroy(

@@ -495,6 +495,9 @@ class Queue {
   #__QueueAudioPlayerStatusManager() {
     if (this.destroyed) return void null;
     if (this.QueueOptions.LeaveOnEnd && !this.tracks[0]) {
+      this.StreamPacket.TimedoutId
+        ? clearTimeout(Number(this.StreamPacket.TimedoutId))
+        : undefined;
       return (
         this.destroy(this.QueueOptions.LeaveOnEndTimedout ?? 0) ?? undefined
       );

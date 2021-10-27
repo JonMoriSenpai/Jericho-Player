@@ -209,7 +209,10 @@ class StreamPacketGen {
       || (this.JerichoPlayer.GetQueue(this.guildId)
         && this.JerichoPlayer.GetQueue(this.guildId).destroyed)
     ) return void null;
-
+    StreamCreateOptions.ExtractorStreamOptions = ClassUtils.stablizingoptions(
+      StreamCreateOptions.ExtractorStreamOptions,
+      this.ExtractorStreamOptions,
+    );
     const Chunks = await TracksGen.fetch(
       this.previousTracks[this.previousTracks.length - TracksBackwardIndex - 1]
         .url,
