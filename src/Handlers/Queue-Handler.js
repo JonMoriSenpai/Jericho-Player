@@ -410,24 +410,24 @@ class Queue {
         if (!this.StreamPacket.tracks[0]) return void this.JerichoPlayer.emit('error', 'Nothing Playing', this);
         return this.#__StructureProgressBar(
           Bar,
-          this.currentTimestamp.track_ms,
-          this.currentTimestamp.totaltrack_ms,
+          Number(this.currentTimestamp.track_ms),
+          Number(this.currentTimestamp.totaltrack_ms),
           DefaultType,
         );
       case 'queue':
         if (!this.StreamPacket.tracks[0] || !this.StreamPacket.tracks[1]) return void this.JerichoPlayer.emit('error', 'Empty Queue', this);
         return this.#__StructureProgressBar(
           Bar,
-          this.currentTimestamp.queue_ms,
-          this.currentTimestamp.totalqueue_ms,
+          Number(this.currentTimestamp.queue_ms),
+          Number(this.currentTimestamp.totalqueue_ms),
           DefaultType,
         );
       case 'tracks':
         if (!this.StreamPacket.tracks[0] || !this.StreamPacket.tracks[1]) return void this.JerichoPlayer.emit('error', 'Empty Queue', this);
         return this.#__StructureProgressBar(
           Bar,
-          this.currentTimestamp.track_ms,
-          this.currentTimestamp.queue_ms,
+          Number(this.currentTimestamp.track_ms),
+          Number(this.currentTimestamp.queue_ms),
           DefaultType,
         );
       case 'previousTracks':
@@ -440,16 +440,16 @@ class Queue {
         }
         return this.#__StructureProgressBar(
           Bar,
-          this.currentTimestamp.previoustracks_ms,
-          this.currentTimestamp.totalqueue_ms,
+          Number(this.currentTimestamp.previoustracks_ms),
+          Number(this.currentTimestamp.totalqueue_ms),
           DefaultType,
         );
       default:
         if (!this.StreamPacket.tracks[0]) return void this.JerichoPlayer.emit('error', 'Nothing Playing', this);
         return this.#__StructureProgressBar(
           Bar,
-          this.currentTimestamp.track_ms,
-          this.currentTimestamp.totaltrack_ms,
+          Number(this.currentTimestamp.track_ms),
+          Number(this.currentTimestamp.totaltrack_ms),
           DefaultType,
         );
     }

@@ -323,7 +323,7 @@ class StreamPacketGen {
       return ProcessedString.trim();
     }
     if (Type2) {
-      const TimeData = new Date(Type2.Time);
+      const TimeData = new Date(Number(Type2.Time));
       const days = TimeData.getUTCDate() - 1;
       const hours = TimeData.getUTCHours();
       const minutes = TimeData.getUTCMinutes();

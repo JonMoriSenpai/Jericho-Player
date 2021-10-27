@@ -57,8 +57,9 @@ class TrackGenerator {
         streamdatas: [],
         tracks: [],
         error:
-          (RawData.error && RawData.error.message ? RawData.error.message : `${RawData.error}`)
-          ?? 'Search Not Found',
+          (RawData.error && RawData.error.message
+            ? RawData.error.message
+            : `${RawData.error}`) ?? 'Search Not Found',
       };
     }
     const Chunks = TrackGenerator.#Track_Id_Placement(
@@ -108,7 +109,10 @@ class TrackGenerator {
     let RawData = extractor
       && extractor.includes('youtube-dl')
       && ClassUtils.ScanDeps('video-extractor')
-      ? await TrackGenerator.#YoutubeDLExtractor(Query)
+      ? await TrackGenerator.#YoutubeDLExtractor(
+        Query,
+        FetchOptions.ExtractorStreamOptions,
+      )
       : undefined;
     RawData = !RawData
       || (RawData && !RawData.tracks)
@@ -124,7 +128,10 @@ class TrackGenerator {
       || (RawData && !RawData.tracks)
       || (RawData && RawData.tracks && !RawData.tracks[0])
       ? ClassUtils.ScanDeps('video-extractor')
-        ? await TrackGenerator.#YoutubeDLExtractor(Query)
+        ? await TrackGenerator.#YoutubeDLExtractor(
+          Query,
+          FetchOptions.ExtractorStreamOptions,
+        )
         : { playlist: false, tracks: [], error: RawData.error }
       : { playlist: false, tracks: [], error: RawData.error };
     return RawData;
