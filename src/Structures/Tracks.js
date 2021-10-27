@@ -147,9 +147,9 @@ class TrackGenerator {
       thumbnail: TrackData.thumbnail,
       channelId: TrackData.author ?? TrackData.channelId,
       channel_url: TrackData.author_link ?? TrackData.channel_url,
-      likes: 0,
-      is_live: false,
-      dislikes: 0,
+      likes: TrackData.likes,
+      is_live: TrackData.is_live,
+      dislikes: TrackData.dislikes,
     };
   }
 }

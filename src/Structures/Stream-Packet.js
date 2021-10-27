@@ -37,6 +37,7 @@ class StreamPacketGen {
     this.AudioResource = undefined;
     this.previousTracks = [];
     this.TimedoutId = undefined;
+    this.TrackTimeStamp = { Starting: undefined, Paused: undefined };
   }
 
   async create(
@@ -269,6 +270,75 @@ class StreamPacketGen {
         this.guildId,
       );
     }
+  }
+
+  HumanTimeConversion(Type1 = undefined, Type2 = undefined) {
+    if (Type1) {
+      const DurationMilliSeconds = Type1 / 1000;
+      let ProcessedString = '';
+      for (
+        let DurationArray = [
+            [Math.floor(DurationMilliSeconds / 31536e3), 'Years'],
+            [Math.floor((DurationMilliSeconds % 31536e3) / 86400), 'Days'],
+            [
+              Math.floor(((DurationMilliSeconds % 31536e3) % 86400) / 3600),
+              'Hours',
+            ],
+            [
+              Math.floor(
+                (((DurationMilliSeconds % 31536e3) % 86400) % 3600) / 60,
+              ),
+              'Minutes',
+            ],
+            [
+              Math.floor(
+                (((DurationMilliSeconds % 31536e3) % 86400) % 3600) % 60,
+              ),
+              'Seconds',
+            ],
+          ],
+          SideArray = 0,
+          GarbageValue = DurationArray.length;
+        SideArray < GarbageValue;
+        SideArray++
+      ) {
+        DurationArray[SideArray][0] !== 0
+          && (ProcessedString += ` ${DurationArray[SideArray][0]} ${
+            DurationArray[SideArray][0] === 1
+              ? DurationArray[SideArray][1].substr(
+                0,
+                DurationArray[SideArray][1].length - 1,
+              )
+              : DurationArray[SideArray][1]
+          }`);
+      }
+      return ProcessedString.trim();
+    } if (Type2) {
+      const TimeData = new Date(Type2.Time);
+      const days = TimeData.getUTCDate() - 1;
+      const hours = TimeData.getUTCHours();
+      const minutes = TimeData.getUTCMinutes();
+      const seconds = TimeData.getUTCSeconds();
+      const milliseconds = TimeData.getUTCMilliseconds();
+
+      const TimeString = [];
+      if (days) TimeString.push(days);
+      if (hours && !Type2.ignore.includes('hour')) TimeString.push(hours < 10 && days > 0 ? `0${hours}` : hours);
+      !Type2.ignore.includes('min')
+        ? TimeString.push(minutes < 10 && hours > 0 ? `0${minutes}` : minutes)
+        : undefined;
+      !Type2.ignore.includes('sec')
+        ? TimeString.push(seconds < 10 && minutes > 0 ? `0${seconds}` : seconds)
+        : undefined;
+      !Type2.ignore.includes('milliseconds')
+        ? TimeString.push(
+          milliseconds < 10 && seconds > 0
+            ? `0${milliseconds}`
+            : milliseconds,
+        )
+        : undefined;
+      return TimeString.join(':');
+    } return '0 Seconds';
   }
 
   #__HandleInsertion(Index = -1, Chunk) {

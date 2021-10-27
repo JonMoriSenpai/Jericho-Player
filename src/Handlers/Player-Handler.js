@@ -195,20 +195,20 @@ class JerichoPlayer extends EventEmitter {
   CreateQueue(
     message,
     QueueCreateOptions = {
-      extractor: 'play-dl',
+      extractor: undefined,
       metadata: null,
       ExtractorStreamOptions: {
-        Limit: 1,
-        Quality: 'high',
+        Limit: undefined,
+        Quality: undefined,
         Proxy: undefined,
       },
-      IgnoreError: true,
-      LeaveOnEmpty: true,
-      LeaveOnEnd: true,
-      LeaveOnBotOnly: true,
-      LeaveOnEmptyTimedout: 0,
-      LeaveOnEndTimedout: 0,
-      LeaveOnBotOnlyTimedout: 0,
+      IgnoreError: undefined,
+      LeaveOnEmpty: undefined,
+      LeaveOnEnd: undefined,
+      LeaveOnBotOnly: undefined,
+      LeaveOnEmptyTimedout: undefined,
+      LeaveOnEndTimedout: undefined,
+      LeaveOnBotOnlyTimedout: undefined,
     },
   ) {
     this.#__buildsandDepschecks(this.Client);

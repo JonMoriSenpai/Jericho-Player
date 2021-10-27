@@ -7,6 +7,7 @@ import {
 import {
   Client,
   Guild,
+  GuildMember,
   Interaction,
   Message,
   Snowflake,
@@ -45,10 +46,24 @@ export type Queue = {
   readonly IgnoreError: Boolean
   readonly MusicPlayer: AudioPlayer
   readonly previousTrack: Track | undefined
+  readonly currentTimestamp: {
+    track_ms: String
+    totaltrack_ms: String
+    previoustracks_ms: String
+    totalqueue_ms: String
+    queue_ms: String
+    remainqueue_ms: String
+    human_track: String
+    human_totaltrack: String
+    human_previoustracks: String
+    human_totalqueue: String
+    human_queue: String
+    human_remainqueue: String
+  }
   play(
     Query: String,
     VoiceChannel: VoiceChannel,
-    User: User | undefined,
+    User: User | GuildMember | undefined,
     PlayOptions?: PlayOptions
   ): Promise<Boolean> | Promise<undefined> | undefined
   skip(TrackIndex: Number): Boolean | undefined
@@ -58,7 +73,7 @@ export type Queue = {
   insert(
     Query: String,
     TrackIndex: Number,
-    User: User | undefined,
+    User: User | GuildMember | undefined,
     InsertOptions: PlayOptions
   ): Promise<Boolean> | Promise<undefined> | undefined
   destroy(connectionTimedout?: Number): Number | Boolean | undefined
@@ -68,17 +83,30 @@ export type Queue = {
   clear(TracksAmount?: Number): Boolean | undefined
   back(
     TracksBackwardIndex: Number,
-    requestedBy: User,
+    requestedBy: User | GuildMember | undefined,
     PlayOptions: PlayOptions,
     forceback?: Boolean
   ): Promise<Boolean> | Promise<undefined> | undefined
+  createProgressBar(
+    Work: String | undefined | 'track' | 'queue' | 'previousTracks',
+    DefaultType: Number | String | undefined | '1' | '3',
+    Bar:
+      | {
+          CompleteIcon: String | '▬'
+          TargetIcon: String | '🔘'
+          RemainingIcon: String | '▬'
+          StartingIcon: String | undefined
+          EndIcon: String | undefined
+        }
+      | undefined
+  ): String | undefined
 }
 
 export type Track = {
   readonly Id: Number
   readonly url: String
   readonly video_Id: String
-  readonly requestedBy: User | undefined
+  readonly requestedBy: User | GuildMember | undefined
   readonly title: String
   readonly description: String
   readonly duration: Number
@@ -112,6 +140,12 @@ export type StreamPacket = {
   readonly AudioResource: AudioResource
   readonly previousTracks: Track[] | undefined
   readonly TimedoutId: Number | undefined
+  readonly TrackTimeStamp:
+    | {
+        readonly Starting: Number | undefined
+        readonly Paused: Number | undefined
+      }
+    | undefined
 }
 
 export type Stream = {

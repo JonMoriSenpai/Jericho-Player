@@ -14,20 +14,20 @@ class Queue {
     Client,
     message,
     QueueOptions = {
-      extractor: 'play-dl',
+      extractor: undefined,
       metadata: null,
       ExtractorStreamOptions: {
-        Limit: 1,
-        Quality: 'high',
+        Limit: undefined,
+        Quality: undefined,
         Proxy: undefined,
       },
-      IgnoreError: true,
-      LeaveOnEmpty: true,
-      LeaveOnEnd: true,
-      LeaveOnBotOnly: true,
-      LeaveOnEmptyTimedout: 0,
-      LeaveOnEndTimedout: 0,
-      LeaveOnBotOnlyTimedout: 0,
+      IgnoreError: undefined,
+      LeaveOnEmpty: undefined,
+      LeaveOnEnd: undefined,
+      LeaveOnBotOnly: undefined,
+      LeaveOnEmptyTimedout: undefined,
+      LeaveOnEndTimedout: undefined,
+      LeaveOnBotOnlyTimedout: undefined,
     },
     JerichoPlayer = undefined,
   ) {
@@ -71,6 +71,7 @@ class Queue {
         if (!this.destroyed) this.#__CleaningTrackMess();
         this.#__ResourcePlay();
       } else if (newState && newState.status === AudioPlayerStatus.Playing) {
+        this.StreamPacket.TrackTimeStamp.Starting = new Date().getTime();
         this.StreamPacket.TimedoutId = undefined;
       }
     });
@@ -82,7 +83,7 @@ class Queue {
     User,
     PlayOptions = {
       IgnoreError: true,
-      extractor: 'play-dl',
+      extractor: undefined,
       metadata: this.metadata,
       ExtractorStreamOptions: {
         Limit: 1,
@@ -186,7 +187,11 @@ class Queue {
     if (this.destroyed) return void this.JerichoPlayer.emit('error', 'Destroyed Queue', this);
     if (!this.playing) return void this.JerichoPlayer.emit('error', 'Not Playing', this);
     if (!this.StreamPacket.tracks[0]) return void this.JerichoPlayer.emit('error', 'Empty Queue', this);
-    return this.MusicPlayer.pause(true);
+    if (this.MusicPlayer.pause(true)) {
+      this.StreamPacket.TrackTimeStamp.Paused = new Date().getTime();
+      return true;
+    }
+    return false;
   }
 
   resume() {
@@ -194,7 +199,11 @@ class Queue {
     if (!this.playing) return void this.JerichoPlayer.emit('error', 'Not Playing', this);
     if (!this.StreamPacket.tracks[0]) return void this.JerichoPlayer.emit('error', 'Empty Queue', this);
     if (!this.paused) return void this.JerichoPlayer.emit('error', 'Not Paused', this);
-    if (this.MusicPlayer) return this.MusicPlayer.unpause();
+    if (this.MusicPlayer.unpause()) {
+      this.StreamPacket.TrackTimeStamp.Starting
+        += new Date().getTime() - this.StreamPacket.TrackTimeStamp.Paused;
+      return true;
+    }
     return true;
   }
 
@@ -204,7 +213,7 @@ class Queue {
     User,
     InsertOptions = {
       IgnoreError: true,
-      extractor: 'play-dl',
+      extractor: undefined,
       metadata: this.metadata,
       ExtractorStreamOptions: {
         Limit: 1,
@@ -276,6 +285,10 @@ class Queue {
     this.StreamPacket.volume = 0.095;
     this.StreamPacket.AudioResource = undefined;
     this.StreamPacket.previousTracks = [];
+    this.StreamPacket.TrackTimeStamp = {
+      Starting: undefined,
+      Paused: undefined,
+    };
     const NodeTimeoutId = connectionTimedout || connectionTimedout === 0
       ? disconnect(
         this.guildId,
@@ -333,7 +346,7 @@ class Queue {
     requestedBy = undefined,
     PlayOptions = {
       IgnoreError: true,
-      extractor: 'play-dl',
+      extractor: undefined,
       metadata: this.metadata,
       ExtractorStreamOptions: {
         Limit: 1,
@@ -369,6 +382,69 @@ class Queue {
       PlayOptions,
       forceback,
     );
+  }
+
+  createProgressBar(
+    Work = 'track',
+    DefaultType = undefined,
+    Bar = {
+      CompleteIcon: '▬',
+      TargetIcon: '🔘',
+      RemainingIcon: '▬',
+      StartingIcon: undefined,
+      EndIcon: undefined,
+    },
+  ) {
+    if (this.destroyed) return void this.JerichoPlayer.emit('error', 'Destroyed Queue', this);
+
+    switch (Work.toLowerCase().trim()) {
+      case 'track':
+        if (!this.StreamPacket.tracks[0]) return void this.JerichoPlayer.emit('error', 'Nothing Playing', this);
+        return this.#__StructureProgressBar(
+          Bar,
+          this.currentTimestamp.track_ms,
+          this.currentTimestamp.totaltrack_ms,
+          DefaultType,
+        );
+      case 'queue':
+        if (!this.StreamPacket.tracks[0] || !this.StreamPacket.tracks[1]) return void this.JerichoPlayer.emit('error', 'Empty Queue', this);
+        return this.#__StructureProgressBar(
+          Bar,
+          this.currentTimestamp.queue_ms,
+          this.currentTimestamp.totalqueue_ms,
+          DefaultType,
+        );
+      case 'tracks':
+        if (!this.StreamPacket.tracks[0] || !this.StreamPacket.tracks[1]) return void this.JerichoPlayer.emit('error', 'Empty Queue', this);
+        return this.#__StructureProgressBar(
+          Bar,
+          this.currentTimestamp.track_ms,
+          this.currentTimestamp.queue_ms,
+          DefaultType,
+        );
+      case 'previousTracks':
+        if (!this.previousTrack) {
+          return void this.JerichoPlayer.emit(
+            'error',
+            'Empty Previous Tracks',
+            this,
+          );
+        }
+        return this.#__StructureProgressBar(
+          Bar,
+          this.currentTimestamp.previoustracks_ms,
+          this.currentTimestamp.totalqueue_ms,
+          DefaultType,
+        );
+      default:
+        if (!this.StreamPacket.tracks[0]) return void this.JerichoPlayer.emit('error', 'Nothing Playing', this);
+        return this.#__StructureProgressBar(
+          Bar,
+          this.currentTimestamp.track_ms,
+          this.currentTimestamp.totaltrack_ms,
+          DefaultType,
+        );
+    }
   }
 
   get volume() {
@@ -422,6 +498,72 @@ class Queue {
   get current() {
     if (!this.playing || this.destroyed) return undefined;
     return this.StreamPacket.searches[0];
+  }
+
+  get currentTimestamp() {
+    if (this.destroyed) return void this.JerichoPlayer.emit('error', 'Destroyed Queue', this);
+    if (!this.StreamPacket.tracks[0]) return void this.JerichoPlayer.emit('error', 'Empty Queue', this);
+
+    const TimeStamp = {
+      track_ms: `${
+        this.paused
+          ? this.StreamPacket.TrackTimeStamp.Paused
+            - this.StreamPacket.TrackTimeStamp.Starting
+          : new Date().getTime() - this.StreamPacket.TrackTimeStamp.Starting
+      }`,
+      totaltrack_ms: `${this.StreamPacket.tracks[0].duration}`,
+      previoustracks_ms: `${
+        this.StreamPacket.previousTracks && this.StreamPacket.previousTracks[0]
+          ? this.StreamPacket.previousTracks.reduce(
+            (TotalValue, CurrentTrack) => TotalValue.duration + CurrentTrack.duration,
+          )
+          : 0
+      }`,
+      totalqueue_ms: `${
+        (this.StreamPacket.previousTracks && this.StreamPacket.previousTracks[0]
+          ? this.StreamPacket.previousTracks.reduce(
+            (TotalValue, CurrentTrack) => TotalValue.duration + CurrentTrack.duration,
+          )
+          : 0)
+        + this.StreamPacket.tracks.reduce(
+          (TotalValue, CurrentTrack) => TotalValue.duration + CurrentTrack.duration,
+        )
+      }`,
+
+      queue_ms: `${
+        this.StreamPacket.tracks && this.StreamPacket.tracks[0]
+          ? this.StreamPacket.tracks.reduce(
+            (TotalValue, CurrentTrack) => TotalValue.duration + CurrentTrack.duration,
+          )
+          : 0
+      }`,
+      remainqueue_ms: `${
+        this.StreamPacket.tracks.reduce(
+          (TotalValue, CurrentTrack) => TotalValue.duration + CurrentTrack.duration,
+        )
+        - (this.paused
+          ? this.StreamPacket.TrackTimeStamp.Paused
+            - this.StreamPacket.TrackTimeStamp.Starting
+          : new Date().getTime() - this.StreamPacket.TrackTimeStamp.Starting)
+      }`,
+    };
+    return {
+      ...TimeStamp,
+      human_track: this.StreamPacket.HumanTimeConversion(TimeStamp.track_ms),
+      human_totaltrack: this.StreamPacket.HumanTimeConversion(
+        TimeStamp.totaltrack_ms,
+      ),
+      human_previoustracks: this.StreamPacket.HumanTimeConversion(
+        TimeStamp.previoustracks_ms,
+      ),
+      human_totalqueue: this.StreamPacket.HumanTimeConversion(
+        TimeStamp.totalqueue_ms,
+      ),
+      human_queue: this.StreamPacket.HumanTimeConversion(TimeStamp.queue_ms),
+      human_remainqueue: this.StreamPacket.HumanTimeConversion(
+        TimeStamp.remainqueue_ms,
+      ),
+    };
   }
 
   get previousTrack() {
@@ -503,6 +645,133 @@ class Queue {
       );
     }
     return void null;
+  }
+
+  #__StructureProgressBar(Credentials, FirstValue, TotalValue, DefaultType) {
+    if (DefaultType || DefaultType === 0) {
+      switch (`${DefaultType}`) {
+        case '1':
+          Credentials.CompleteIcon = Credentials.CompleteIcon ?? '●';
+          Credentials.TargetIcon = Credentials.TargetIcon ?? '●';
+          Credentials.RemainingIcon = Credentials.RemainingIcon ?? '○';
+          Credentials.StartingIcon = Credentials.StartingIcon
+            ?? `${this.StreamPacket.HumanTimeConversion(undefined, {
+              Time: FirstValue,
+              ignore: ['milli'],
+            })} |  `;
+          Credentials.EndIcon = Credentials.EndIcon
+            ?? `  | ${this.StreamPacket.HumanTimeConversion(undefined, {
+              Time: TotalValue,
+              ignore: ['milli'],
+            })}`;
+          break;
+        case '2':
+          Credentials.CompleteIcon = Credentials.CompleteIcon ?? '○';
+          Credentials.TargetIcon = Credentials.TargetIcon ?? '●';
+          Credentials.RemainingIcon = Credentials.RemainingIcon ?? '○';
+          Credentials.StartingIcon = Credentials.StartingIcon
+            ?? `${this.StreamPacket.HumanTimeConversion(undefined, {
+              Time: FirstValue,
+              ignore: ['milli'],
+            })} |  `;
+          Credentials.EndIcon = Credentials.EndIcon
+            ?? `  | ${this.StreamPacket.HumanTimeConversion(undefined, {
+              Time: TotalValue,
+              ignore: ['milli'],
+            })}`;
+          break;
+        case '3':
+          Credentials.CompleteIcon = Credentials.CompleteIcon ?? '○';
+          Credentials.TargetIcon = Credentials.TargetIcon ?? '◉';
+          Credentials.RemainingIcon = Credentials.RemainingIcon ?? '○';
+          Credentials.StartingIcon = Credentials.StartingIcon
+            ?? `${this.StreamPacket.HumanTimeConversion(undefined, {
+              Time: FirstValue,
+              ignore: ['milli'],
+            })} |  `;
+          Credentials.EndIcon = Credentials.EndIcon
+            ?? `  | ${this.StreamPacket.HumanTimeConversion(undefined, {
+              Time: TotalValue,
+              ignore: ['milli'],
+            })}`;
+          break;
+        case '4':
+          Credentials.CompleteIcon = Credentials.CompleteIcon ?? '■';
+          Credentials.TargetIcon = Credentials.TargetIcon ?? '■';
+          Credentials.RemainingIcon = Credentials.RemainingIcon ?? '□';
+          Credentials.StartingIcon = Credentials.StartingIcon
+            ?? `${this.StreamPacket.HumanTimeConversion(undefined, {
+              Time: FirstValue,
+              ignore: ['milli'],
+            })} |  `;
+          Credentials.EndIcon = Credentials.EndIcon
+            ?? `  | ${this.StreamPacket.HumanTimeConversion(undefined, {
+              Time: TotalValue,
+              ignore: ['milli'],
+            })}`;
+          break;
+        case '5':
+          Credentials.CompleteIcon = Credentials.CompleteIcon ?? '◉';
+          Credentials.TargetIcon = Credentials.TargetIcon ?? '◉';
+          Credentials.RemainingIcon = Credentials.RemainingIcon ?? '○';
+          Credentials.StartingIcon = Credentials.StartingIcon
+            ?? `${this.StreamPacket.HumanTimeConversion(undefined, {
+              Time: FirstValue,
+              ignore: ['milli'],
+            })} |  `;
+          Credentials.EndIcon = Credentials.EndIcon
+            ?? `  | ${this.StreamPacket.HumanTimeConversion(undefined, {
+              Time: TotalValue,
+              ignore: ['milli'],
+            })}`;
+          break;
+        default:
+          Credentials.CompleteIcon = Credentials.CompleteIcon ?? '▬';
+          Credentials.TargetIcon = Credentials.TargetIcon ?? '🔘';
+          Credentials.RemainingIcon = Credentials.RemainingIcon ?? '▬';
+          Credentials.StartingIcon = Credentials.StartingIcon
+            ?? `${this.StreamPacket.HumanTimeConversion(undefined, {
+              Time: FirstValue,
+              ignore: ['milli'],
+            })} |  `;
+          Credentials.EndIcon = Credentials.EndIcon
+            ?? `  | ${this.StreamPacket.HumanTimeConversion(undefined, {
+              Time: TotalValue,
+              ignore: ['milli'],
+            })}`;
+          break;
+      }
+    }
+    const Size = Number(
+      parseInt(
+        (
+          parseFloat(parseInt(FirstValue * 100) / parseInt(TotalValue)) / 10
+        ).toFixed(1),
+      ) + 1,
+    );
+    const ProgressBar = [];
+    for (let count = 1; count <= 10; count += 1) {
+      if (count === Size) ProgressBar.push(Credentials.TargetIcon);
+      else if (count === 1) {
+        ProgressBar.push(
+          Credentials.StartingIcon
+            ?? `${this.StreamPacket.HumanTimeConversion(undefined, {
+              Time: FirstValue,
+              ignore: ['milli'],
+            })} |  `,
+        );
+      } else if (count < Size) ProgressBar.push(Credentials.CompleteIcon);
+      else ProgressBar.push(Credentials.RemainingIcon);
+    }
+    if (Size >= 11) ProgressBar.push(Credentials.TargetIcon);
+    ProgressBar.push(
+      Credentials.EndIcon
+        ?? `  | ${this.StreamPacket.HumanTimeConversion(undefined, {
+          Time: TotalValue,
+          ignore: ['milli'],
+        })}`,
+    );
+    return ProgressBar.join('').trim();
   }
 }
 
