@@ -515,31 +515,36 @@ class Queue {
       previoustracks_ms: `${
         this.StreamPacket.previousTracks && this.StreamPacket.previousTracks[0]
           ? this.StreamPacket.previousTracks.reduce(
-            (TotalValue, CurrentTrack) => TotalValue.duration + CurrentTrack.duration,
+            (TotalValue, CurrentTrack) => TotalValue + CurrentTrack.duration,
+            0,
           )
           : 0
       }`,
       totalqueue_ms: `${
         (this.StreamPacket.previousTracks && this.StreamPacket.previousTracks[0]
           ? this.StreamPacket.previousTracks.reduce(
-            (TotalValue, CurrentTrack) => TotalValue.duration + CurrentTrack.duration,
+            (TotalValue, CurrentTrack) => TotalValue + CurrentTrack.duration,
+            0,
           )
           : 0)
         + this.StreamPacket.tracks.reduce(
-          (TotalValue, CurrentTrack) => TotalValue.duration + CurrentTrack.duration,
+          (TotalValue, CurrentTrack) => TotalValue + CurrentTrack.duration,
+          0,
         )
       }`,
 
       queue_ms: `${
         this.StreamPacket.tracks && this.StreamPacket.tracks[0]
           ? this.StreamPacket.tracks.reduce(
-            (TotalValue, CurrentTrack) => TotalValue.duration + CurrentTrack.duration,
+            (TotalValue, CurrentTrack) => TotalValue + CurrentTrack.duration,
+            0,
           )
           : 0
       }`,
       remainqueue_ms: `${
         this.StreamPacket.tracks.reduce(
-          (TotalValue, CurrentTrack) => TotalValue.duration + CurrentTrack.duration,
+          (TotalValue, CurrentTrack) => TotalValue + CurrentTrack.duration,
+          0,
         )
         - (this.paused
           ? this.StreamPacket.TrackTimeStamp.Paused
