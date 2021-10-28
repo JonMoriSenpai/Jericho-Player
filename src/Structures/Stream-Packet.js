@@ -337,14 +337,10 @@ class StreamPacketGen {
         ? TimeString.push(minutes < 10 && hours > 0 ? `0${minutes}` : minutes)
         : undefined;
       !Type2.ignore.includes('sec')
-        ? TimeString.push(seconds < 10 && minutes > 0 ? `0${seconds}` : seconds)
+        ? TimeString.push(seconds < 10 ? `0${seconds}` : seconds)
         : undefined;
       !Type2.ignore.includes('milliseconds')
-        ? TimeString.push(
-          milliseconds < 10 && seconds > 0
-            ? `0${milliseconds}`
-            : milliseconds,
-        )
+        ? TimeString.push(milliseconds < 10 ? `0${milliseconds}` : milliseconds)
         : undefined;
       return TimeString.join(':');
     }

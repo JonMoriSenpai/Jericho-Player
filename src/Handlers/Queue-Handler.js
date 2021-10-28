@@ -671,12 +671,12 @@ class Queue {
           Credentials.StartingIcon = Credentials.StartingIcon
             ?? `${this.StreamPacket.HumanTimeConversion(undefined, {
               Time: FirstValue,
-              ignore: ['milli'],
+              ignore: ['milliseconds'],
             })} |  `;
           Credentials.EndIcon = Credentials.EndIcon
             ?? `  | ${this.StreamPacket.HumanTimeConversion(undefined, {
               Time: TotalValue,
-              ignore: ['milli'],
+              ignore: ['milliseconds'],
             })}`;
           break;
         case '2':
@@ -686,12 +686,12 @@ class Queue {
           Credentials.StartingIcon = Credentials.StartingIcon
             ?? `${this.StreamPacket.HumanTimeConversion(undefined, {
               Time: FirstValue,
-              ignore: ['milli'],
+              ignore: ['milliseconds'],
             })} |  `;
           Credentials.EndIcon = Credentials.EndIcon
             ?? `  | ${this.StreamPacket.HumanTimeConversion(undefined, {
               Time: TotalValue,
-              ignore: ['milli'],
+              ignore: ['milliseconds'],
             })}`;
           break;
         case '3':
@@ -701,12 +701,12 @@ class Queue {
           Credentials.StartingIcon = Credentials.StartingIcon
             ?? `${this.StreamPacket.HumanTimeConversion(undefined, {
               Time: FirstValue,
-              ignore: ['milli'],
+              ignore: ['milliseconds'],
             })} |  `;
           Credentials.EndIcon = Credentials.EndIcon
             ?? `  | ${this.StreamPacket.HumanTimeConversion(undefined, {
               Time: TotalValue,
-              ignore: ['milli'],
+              ignore: ['milliseconds'],
             })}`;
           break;
         case '4':
@@ -716,12 +716,12 @@ class Queue {
           Credentials.StartingIcon = Credentials.StartingIcon
             ?? `${this.StreamPacket.HumanTimeConversion(undefined, {
               Time: FirstValue,
-              ignore: ['milli'],
+              ignore: ['milliseconds'],
             })} |  `;
           Credentials.EndIcon = Credentials.EndIcon
             ?? `  | ${this.StreamPacket.HumanTimeConversion(undefined, {
               Time: TotalValue,
-              ignore: ['milli'],
+              ignore: ['milliseconds'],
             })}`;
           break;
         case '5':
@@ -731,12 +731,12 @@ class Queue {
           Credentials.StartingIcon = Credentials.StartingIcon
             ?? `${this.StreamPacket.HumanTimeConversion(undefined, {
               Time: FirstValue,
-              ignore: ['milli'],
+              ignore: ['milliseconds'],
             })} |  `;
           Credentials.EndIcon = Credentials.EndIcon
             ?? `  | ${this.StreamPacket.HumanTimeConversion(undefined, {
               Time: TotalValue,
-              ignore: ['milli'],
+              ignore: ['milliseconds'],
             })}`;
           break;
         default:
@@ -746,35 +746,35 @@ class Queue {
           Credentials.StartingIcon = Credentials.StartingIcon
             ?? `${this.StreamPacket.HumanTimeConversion(undefined, {
               Time: FirstValue,
-              ignore: ['milli'],
+              ignore: ['milliseconds'],
             })} |  `;
           Credentials.EndIcon = Credentials.EndIcon
             ?? `  | ${this.StreamPacket.HumanTimeConversion(undefined, {
               Time: TotalValue,
-              ignore: ['milli'],
+              ignore: ['milliseconds'],
             })}`;
           break;
       }
     }
-    const Size = Number(
-      parseInt(
-        (
-          parseFloat(parseInt(FirstValue * 100) / parseInt(TotalValue)) / 10
-        ).toFixed(1),
-      ) + 1,
-    );
+    const Size = Math.floor(
+      (
+        parseFloat(parseInt(FirstValue * 100) / parseInt(TotalValue)) / 10
+      ).toFixed(1),
+    ) + 1;
     const ProgressBar = [];
-    for (let count = 1; count <= 10; count += 1) {
-      if (count === Size) ProgressBar.push(Credentials.TargetIcon);
-      else if (count === 1) {
+    const TargetHit = undefined;
+    for (let count = 0.7; count <= 10.5; count += 0.7) {
+      if (count === 0.7) {
         ProgressBar.push(
           Credentials.StartingIcon
             ?? `${this.StreamPacket.HumanTimeConversion(undefined, {
               Time: FirstValue,
-              ignore: ['milli'],
+              ignore: ['milliseconds'],
             })} |  `,
         );
-      } else if (count < Size) ProgressBar.push(Credentials.CompleteIcon);
+      }
+      if (count <= Size && count >= Size - 0.7 && TargetHit) ProgressBar.push(Credentials.TargetIcon);
+      else if (count < Size) ProgressBar.push(Credentials.CompleteIcon);
       else ProgressBar.push(Credentials.RemainingIcon);
     }
     if (Size >= 11) ProgressBar.push(Credentials.TargetIcon);
@@ -782,7 +782,7 @@ class Queue {
       Credentials.EndIcon
         ?? `  | ${this.StreamPacket.HumanTimeConversion(undefined, {
           Time: TotalValue,
-          ignore: ['milli'],
+          ignore: ['milliseconds'],
         })}`,
     );
     return ProgressBar.join('').trim();
