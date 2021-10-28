@@ -11,6 +11,7 @@ class TrackGenerator {
         Limit: 1,
         Quality: 'high',
         Cookies: undefined,
+        ByPassYoutubeDLRatelimit: undefined,
         YoutubeDLCookiesFilePath: undefined,
         Proxy: undefined,
       },
@@ -58,8 +59,10 @@ class TrackGenerator {
         tracks: [],
         error:
           (RawData.error && RawData.error.message
-            ? RawData.error.message
-            : `${RawData.error}`) ?? 'Search Not Found',
+            ? RawData.error ?? RawData.error.message
+            : undefined)
+          ?? (RawData.error && RawData.error[0] ? RawData.error[0] : undefined)
+          ?? 'Search Not Found',
       };
     }
     const Chunks = TrackGenerator.#Track_Id_Placement(
@@ -100,6 +103,7 @@ class TrackGenerator {
         Limit: 1,
         Quality: 'high',
         Cookies: undefined,
+        ByPassYoutubeDLRatelimit: undefined,
         YoutubeDLCookiesFilePath: undefined,
         Proxy: undefined,
       },
@@ -145,6 +149,8 @@ class TrackGenerator {
           ? ExtractorStreamOptions.Proxy[0]
           : undefined,
       YTCookies: ExtractorStreamOptions.Cookies,
+      BypassRatelimit:
+        ExtractorStreamOptions.ByPassYoutubeDLRatelimit ?? undefined,
       YoutubeDLCookiesFilePath: ExtractorStreamOptions.YoutubeDLCookiesFilePath,
     });
   }
