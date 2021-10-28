@@ -588,8 +588,10 @@ class Queue {
   }
 
   async #__ResourcePlay() {
+    if (this.destroyed) return void null;
     if (
-      !(
+      this.StreamPacket
+      && !(
         this.StreamPacket
         && this.StreamPacket.tracks
         && this.StreamPacket.tracks[0]
@@ -598,7 +600,6 @@ class Queue {
       this.StreamPacket.TimedoutId = this.#__QueueAudioPlayerStatusManager();
       return void this.JerichoPlayer.emit('queueEnd', this);
     }
-    if (this.destroyed) return void null;
     this.StreamPacket.TimedoutId = this.StreamPacket.TimedoutId
       ? clearTimeout(Number(this.StreamPacket.TimedoutId))
       : undefined;

@@ -133,7 +133,7 @@ class TrackGenerator {
           FetchOptions.ExtractorStreamOptions,
         )
         : { playlist: false, tracks: [], error: RawData.error }
-      : { playlist: false, tracks: [], error: RawData.error };
+      : RawData;
     return RawData;
   }
 
