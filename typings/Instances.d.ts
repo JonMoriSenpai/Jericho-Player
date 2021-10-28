@@ -53,12 +53,14 @@ export type Queue = {
     totaltrack_ms: String
     previoustracks_ms: String
     totalqueue_ms: String
+    saved_queue_ms: String
     queue_ms: String
     remainqueue_ms: String
     human_track: String
     human_totaltrack: String
     human_previoustracks: String
     human_totalqueue: String
+    human_saved_queue: String
     human_queue: String
     human_remainqueue: String
   }

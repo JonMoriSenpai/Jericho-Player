@@ -535,19 +535,40 @@ class Queue {
             0,
           )
           : 0)
-        + this.StreamPacket.tracks.reduce(
-          (TotalValue, CurrentTrack) => TotalValue + CurrentTrack.duration,
-          0,
-        )
+        + (this.StreamPacket.tracks && this.StreamPacket.tracks[0]
+          ? this.paused
+            ? this.StreamPacket.TrackTimeStamp.Paused
+              - this.StreamPacket.TrackTimeStamp.Starting
+            : new Date().getTime() - this.StreamPacket.TrackTimeStamp.Starting
+          : 0)
+        + (this.StreamPacket.tracks && this.StreamPacket.tracks[1]
+          ? this.StreamPacket.tracks
+            .splice(1, this.StreamPacket.tracks.length)
+            .reduce(
+              (TotalValue, CurrentTrack) => TotalValue + CurrentTrack.duration,
+              0,
+            )
+          : 0)
       }`,
-
+      saved_queue_ms: `${this.StreamPacket.tracks.reduce(
+        (TotalValue, CurrentTrack) => TotalValue + CurrentTrack.duration,
+        0,
+      )}`,
       queue_ms: `${
-        this.StreamPacket.tracks && this.StreamPacket.tracks[0]
-          ? this.StreamPacket.tracks.reduce(
-            (TotalValue, CurrentTrack) => TotalValue + CurrentTrack.duration,
-            0,
-          )
-          : 0
+        (this.StreamPacket.tracks && this.StreamPacket.tracks[0]
+          ? this.paused
+            ? this.StreamPacket.TrackTimeStamp.Paused
+              - this.StreamPacket.TrackTimeStamp.Starting
+            : new Date().getTime() - this.StreamPacket.TrackTimeStamp.Starting
+          : 0)
+        + (this.StreamPacket.tracks && this.StreamPacket.tracks[1]
+          ? this.StreamPacket.tracks
+            .splice(1, this.StreamPacket.tracks.length)
+            .reduce(
+              (TotalValue, CurrentTrack) => TotalValue + CurrentTrack.duration,
+              0,
+            )
+          : 0)
       }`,
       remainqueue_ms: `${
         this.StreamPacket.tracks.reduce(
@@ -571,6 +592,9 @@ class Queue {
       ),
       human_totalqueue: this.StreamPacket.HumanTimeConversion(
         TimeStamp.totalqueue_ms,
+      ),
+      human_saved_queue: this.StreamPacket.HumanTimeConversion(
+        TimeStamp.saved_queue_ms,
       ),
       human_queue: this.StreamPacket.HumanTimeConversion(TimeStamp.queue_ms),
       human_remainqueue: this.StreamPacket.HumanTimeConversion(

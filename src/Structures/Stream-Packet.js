@@ -334,7 +334,7 @@ class StreamPacketGen {
       if (days) TimeString.push(days);
       if (hours && !Type2.ignore.includes('hour')) TimeString.push(hours < 10 && days > 0 ? `0${hours}` : hours);
       !Type2.ignore.includes('min')
-        ? TimeString.push(minutes < 10 && hours > 0 ? `0${minutes}` : minutes)
+        ? TimeString.push(minutes < 10 ? `0${minutes}` : minutes)
         : undefined;
       !Type2.ignore.includes('sec')
         ? TimeString.push(seconds < 10 ? `0${seconds}` : seconds)
