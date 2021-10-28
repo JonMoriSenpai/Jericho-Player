@@ -26,6 +26,7 @@ export type Queue = {
       Limit: Number
       Quality: String | 'high' | 'low' | 'medium'
       Cookies: String | 'YTCookies'
+      ByPassYoutubeDLRatelimit: Boolean | undefined
       YoutubeDLCookiesFilePath: String | '/path/to/Cookie.txt'
       Proxy: String | Array<String> | 'IPAdress:PortNumber'
     }
@@ -137,6 +138,7 @@ export type StreamPacket = {
     readonly Limit: Number
     readonly Quality: String | 'high' | 'low' | 'medium'
     readonly Cookies: String | 'YTCookies'
+    readonly ByPassYoutubeDLRatelimit: Boolean | undefined
     readonly YoutubeDLCookiesFilePath: String | '/path/to/Cookie.txt'
     readonly Proxy: String | Array<String> | 'IPAdress:PortNumber'
   }
@@ -192,6 +194,7 @@ export type PlayerOptions = {
     readonly Limit: Number
     readonly Quality: String | 'high' | 'low' | 'medium'
     readonly Cookies: String | 'YTCookies'
+    readonly ByPassYoutubeDLRatelimit: Boolean | undefined
     readonly YoutubeDLCookiesFilePath: String | '/path/to/Cookie.txt'
     readonly Proxy: String | Array<String> | 'IPAdress:PortNumber'
   }
@@ -210,6 +213,7 @@ export type PlayOptions = {
     readonly Limit: Number
     readonly Quality: String | 'high' | 'low' | 'medium'
     readonly Cookies: String | 'YTCookies'
+    readonly ByPassYoutubeDLRatelimit: Boolean | undefined
     readonly YoutubeDLCookiesFilePath: String | '/path/to/Cookie.txt'
     readonly Proxy: String | Array<String> | 'IPAdress:PortNumber'
   }
@@ -224,6 +228,7 @@ export type QueueOptions = {
     readonly Limit: Number
     readonly Quality: String | 'high' | 'low' | 'medium'
     readonly Cookies: String | 'YTCookies'
+    readonly ByPassYoutubeDLRatelimit: Boolean | undefined
     readonly YoutubeDLCookiesFilePath: String | '/path/to/Cookie.txt'
     readonly Proxy: String | Array<String> | 'IPAdress:PortNumber'
   }
