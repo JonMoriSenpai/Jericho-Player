@@ -24,7 +24,7 @@
     "commit:push": "git add . && npm run commit && git push"
   },
   "devDependencies": {
-    "@babel/eslint-parser": "^7.15.8",
+    "@babel/eslint-parser": "^7.16.0",
     "@babel/preset-env": "^7.15.8",
     "cz-conventional-changelog": "^3.3.0",
     "eslint": "^8.1.0",
