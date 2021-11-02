@@ -3,9 +3,22 @@ const {
   getVoiceConnection,
   VoiceConnectionStatus,
   entersState,
+  VoiceConnection,
 } = require('@discordjs/voice');
+const { Client, VoiceChannel, StageChannel } = require('discord.js');
+const {
+  DefaultDisconnectChannelOptions,
+  DefaultJoinChannelOptions,
+} = require('../types/interfaces');
 
 class VoiceUtils {
+  /**
+   * @method join() -> Join Channel function for Voice Utils with Client and Channel and JoinChannelOptions Credentials
+   * @param {Client} Client Discord Client Instance
+   * @param {VoiceChannel|StageChannel} Channel Guild Voice Channel | Guild Stage Channel
+   * @param {DefaultJoinChannelOptions<Object>|undefined} JoinChannelOptions Options for Joining Voice Channel
+   * @returns {Promise<VoiceConnection>|undefined} Returns Voice Connection Made by the
+   */
   static async join(
     Client,
     Channel,
@@ -42,6 +55,15 @@ class VoiceUtils {
     }
     return VoiceConnection;
   }
+
+  /**
+   * @method disconnect() -> Disconnect Voice Channel and even destroy Voice Connection if Option.destroy =? true
+   * @param {Guild["id"]|String|Number} guildId Guild's id as Snowflake
+   * @param {DefaultDisconnectChannelOptions<Object>|undefined} DisconnectChannelOptions Disconnect Options for Connection
+   * @param {Number|String|undefined} Timedout Nodejs Timedout duration if delay has been issues
+   * @param {Queue} QueueInstance Queue Instance for fetching Player and Stream Packet
+   * @returns {undefined|Number|String} Returns Nodejs Timedout for Delays and undefined on completion or errors
+   */
 
   static disconnect(
     guildId,

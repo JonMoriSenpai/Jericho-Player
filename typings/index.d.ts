@@ -9,7 +9,7 @@ export class JerichoPlayer extends EventEmitter {
   public readonly PlayerOptions: PlayerOptions
   public CreateQueue (
     message: Message | Interaction,
-    QueueCreateOptions: QueueOptions
+    QueueCreateOptions?: QueueOptions
   ): Queue | undefined
   public GetQueue (guildId: Guild['id'] | Snowflake | String): Queue | undefined
   public DeleteQueue (guildId: Guild['id'] | Snowflake | String): undefined

@@ -1,10 +1,44 @@
-const { createAudioResource, StreamType } = require('@discordjs/voice');
+const {
+  createAudioResource,
+  StreamType,
+  AudioPlayer,
+  AudioResource,
+  PlayerSubscription,
+} = require('@discordjs/voice');
+const {
+  User,
+  Client,
+  GuildMember,
+  VoiceChannel,
+  StageChannel,
+  Guild,
+} = require('discord.js');
+const JerichoPlayer = require('../Handlers/Player-Handler');
 const TracksGen = require('./Tracks');
 const VoiceUtils = require('../Utilities/Voice-Utils');
 const ClassUtils = require('../Utilities/Class-Utils');
-const { DefaultExtractorStreamOptions } = require('../types/interfaces');
+const {
+  DefaultExtractorStreamOptions,
+  DefaultTrack,
+  DefaultStream,
+  DefaultChunk,
+} = require('../types/interfaces');
+
+/**
+ * @class StreamPacketGen -> Stream Packet Generator for Connection and Internal Workflows
+ * Stream packet is meant to untouched by Users as it can distortion or runtime Bugs and errors during playing except when you are debugging them
+ */
 
 class StreamPacketGen {
+  /**
+   * @param {Client} Client Discord Client Instance
+   * @param {Guild["id"]|String|Number} guildId Guild's ID for fetching Queue from Queue's Cache
+   * @param {String|Number|Object|undefined} MetadataValue metadata value from user for Tracks|Queue
+   * @param {String|Boolean|undefined} extractor extractor to be used as "play-dl" or "youtube-dl"
+   * @param {DefaultExtractorStreamOptions<Object>} ExtractorStreamOptions Streaming options
+   * @param {AudioPlayer} JerichoPlayer Audio-Player for playing Songs
+   * @param {Boolean|undefined} IgnoreError IgnoreError or else throw on major bugs
+   */
   constructor(
     Client,
     guildId,
@@ -21,27 +55,104 @@ class StreamPacketGen {
     JerichoPlayer = undefined,
     IgnoreError = true,
   ) {
+    /**
+     * @param {Client} Client Discord Client Instance
+     */
     this.Client = Client;
+
+    /**
+     * @param {VoiceChannel|StageChannel} VoiceChannel Voice Channel Instance from Guild's Voice Channel
+     */
     this.VoiceChannel = null;
+
+    /**
+     * @param {String|undefined} extractor Extractor name as "play-dl" OR "youtube-dl"
+     */
     this.extractor = extractor;
+
+    /**
+     * @param {DefaultTrack[]|[]} searches User Readable Tracks
+     */
     this.searches = [];
+
+    /**
+     * @param {DefaultStream[]|[]} tracks Stream Datas from Extractors and then parent Data of searches
+     */
     this.tracks = [];
+
+    /**
+     * @param {VoiceConnection|undefined} VoiceConnection Voice Connection Value designed by "@discordjs/voice"
+     */
     this.VoiceConnection = null;
+
+    /**
+     * @param {Object|undefined} metadata Metadata value in Streampacket for Audio Resources
+     */
     this.metadata = MetadataValue;
+
+    /**
+     * @param {PlayerSubscription} subscription Player Subscription Socket to Subscribe or Subscription is ON
+     */
     this.subscription = undefined;
+
+    /**
+     * @param {Guild["id"]|String|Number} guildId Guild's id Object cached from new constructor's guild value
+     */
     this.guildId = guildId;
+
+    /**
+     * @param {DefaultExtractorStreamOptions<Object>|undefined} ExtractorStreamOptions Extractor Fetching Options
+     */
     this.ExtractorStreamOptions = ExtractorStreamOptions = ClassUtils.stablizingoptions(
       ExtractorStreamOptions,
       DefaultExtractorStreamOptions,
     );
-    this.IgnoreError = IgnoreError ?? true;
+
+    /**
+     * @param {Boolean|undefined} IgnoreError IgnoreError's true Value if its required
+     */
+    this.IgnoreError = !!IgnoreError ?? true;
+
+    /**
+     * @param {JerichoPlayer} JerichoPlayer Player's Instance for further operations
+     */
     this.JerichoPlayer = JerichoPlayer;
+
+    /**
+     * @param {Number} volume Volume of the Music Player
+     */
     this.volume = 0.095;
+
+    /**
+     * @param {AudioResource|undefined} AudioResource Track's Audio Resource
+     */
     this.AudioResource = undefined;
+
+    /**
+     * @param {DefaultTrack[]|[]} previousTracks Previous Tracks Cache
+     */
     this.previousTracks = [];
+
+    /**
+     * @param {String|Number|undefined|Boolean} TimedoutId Queue Timedout ID value or undefined
+     */
     this.TimedoutId = undefined;
+
+    /**
+     * @param {Object} TrackTimeStamp Track's Live Status and Storing Value of the Time
+     */
     this.TrackTimeStamp = { Starting: undefined, Paused: undefined };
   }
+
+  /**
+   * @method create() Create Stream Packet for specific time for Queue
+   * @param {String} Query Query like URls or Youtube Searches | Default Extractor accept 5 supported and big websites like youtube , spotify , soundcloud , retribution , facebook and for "youtube-dl" , it accept any follows official "youtube" searches
+   * @param {VoiceChannel|StageChannel} VoiceChannel Voice Channel to connect Discord Client and getConnections
+   * @param {DefaultExtractorStreamOptions<Object} StreamCreateOptions Stream Options for TracksGen methods
+   * @param {String|Boolean|undefined} extractor extractor to be used as "play-dl" or "youtube-dl"
+   * @param {User|GuildMember|undefined} requestedBy user Data as who requested if given during insert or play method of Queue Instance
+   * @returns {Promise<this|undefined>|undefined} Returns Stream-Packet with Updated values of tracks
+   */
 
   async create(
     Query,
@@ -119,11 +230,28 @@ class StreamPacketGen {
     return this;
   }
 
+  /**
+   * @method remove() -> Remove Track from Tracks Cache
+   * @param {String|Number|undefined} Index Tracks Remove Stream packet method but works internally
+   * @param {String|Number|undefined} Amount Tracks Amount to Delete
+   * @returns {this} Returns StreamPacket Class Instance
+   */
+
   remove(Index = -1, Amount = 1) {
     this.tracks.splice(Index, Amount);
     this.searches.splice(Index, Amount);
     return this;
   }
+
+  /**
+   * @method insert() -> Insertion of Track in Tracks Cache with all workings of shifting
+   * @param {Number|String|undefined} Index Track's Index where new Track will be inserted
+   * @param {String} Query Query like URls or Youtube Searches | Default Extractor accept 5 supported and big websites like youtube , spotify , soundcloud , retribution , facebook and for "youtube-dl" , it accept any follows official "youtube" searches
+   * @param {DefaultExtractorStreamOptions<Object>} StreamFetchOptions Streaming Options from extractor
+   * @param {String|Boolean|undefined} extractor extractor to be used as "play-dl" or "youtube-dl"
+   * @param {User|GuildMember|undefined} requestedBy User or GuildMember for requestedBy value for Track
+   * @returns {Promise<this|undefined>} Returns StreamPacket Instance of the Queue
+   */
 
   async insert(
     Index = -1,
@@ -201,8 +329,17 @@ class StreamPacketGen {
     return this;
   }
 
+  /**
+   * @method back() -> back command for Internal finishing of previous Tracks streaming
+   * @param {String|Number|undefined} TracksBackwardIndex Track Index from previous Tracks Data
+   * @param {User|GuildMember|undefined} requestedBy for changigng exisitng requestedBy Value
+   * @param {DefaultExtractorStreamOptions<Object>} StreamCreateOptions Stream Create Optiosn from Track Class
+   * @param {Boolen|undefined} forceback Forcefully skip to requested Track as true or false
+   * @returns {Promise<Boolean|undefined>} true if operation went green or else undefined for errors
+   */
+
   async back(
-    TracksBackwardIndex,
+    TracksBackwardIndex = 0,
     requestedBy,
     StreamCreateOptions = {
       IgnoreError: true,
@@ -260,7 +397,13 @@ class StreamPacketGen {
     return true;
   }
 
-  async StreamAudioResourceExtractor(Track) {
+  /**
+   * @method StreamAudioResourceExtractor() -> Fetch Audio Resource to Stream in Music Player for Jericho Player
+   * @param {DefaultTrack<Object>} Track Track Credentials for Streaming value
+   * @returns {AudioResource} Audio Resource from Stream of Tracks
+   */
+
+  StreamAudioResourceExtractor(Track) {
     try {
       const AudioResource = createAudioResource(Track.stream, {
         inputType: Track.stream_type ?? StreamType.Arbitrary,
@@ -284,72 +427,12 @@ class StreamPacketGen {
     }
   }
 
-  HumanTimeConversion(Type1 = undefined, Type2 = undefined) {
-    if (Type1) {
-      const DurationMilliSeconds = Type1 / 1000;
-      let ProcessedString = '';
-      for (
-        let DurationArray = [
-            [Math.floor(DurationMilliSeconds / 31536e3), 'Years'],
-            [Math.floor((DurationMilliSeconds % 31536e3) / 86400), 'Days'],
-            [
-              Math.floor(((DurationMilliSeconds % 31536e3) % 86400) / 3600),
-              'Hours',
-            ],
-            [
-              Math.floor(
-                (((DurationMilliSeconds % 31536e3) % 86400) % 3600) / 60,
-              ),
-              'Minutes',
-            ],
-            [
-              Math.floor(
-                (((DurationMilliSeconds % 31536e3) % 86400) % 3600) % 60,
-              ),
-              'Seconds',
-            ],
-          ],
-          SideArray = 0,
-          GarbageValue = DurationArray.length;
-        SideArray < GarbageValue;
-        SideArray++
-      ) {
-        DurationArray[SideArray][0] !== 0
-          && (ProcessedString += ` ${DurationArray[SideArray][0]} ${
-            DurationArray[SideArray][0] === 1
-              ? DurationArray[SideArray][1].substr(
-                0,
-                DurationArray[SideArray][1].length - 1,
-              )
-              : DurationArray[SideArray][1]
-          }`);
-      }
-      return ProcessedString.trim();
-    }
-    if (Type2) {
-      const TimeData = new Date(Number(Type2.Time));
-      const days = TimeData.getUTCDate() - 1;
-      const hours = TimeData.getUTCHours();
-      const minutes = TimeData.getUTCMinutes();
-      const seconds = TimeData.getUTCSeconds();
-      const milliseconds = TimeData.getUTCMilliseconds();
-
-      const TimeString = [];
-      if (days) TimeString.push(days);
-      if (hours && !Type2.ignore.includes('hour')) TimeString.push(hours < 10 && days > 0 ? `0${hours}` : hours);
-      !Type2.ignore.includes('min')
-        ? TimeString.push(minutes < 10 ? `0${minutes}` : minutes)
-        : undefined;
-      !Type2.ignore.includes('sec')
-        ? TimeString.push(seconds < 10 ? `0${seconds}` : seconds)
-        : undefined;
-      !Type2.ignore.includes('milliseconds')
-        ? TimeString.push(milliseconds < 10 ? `0${milliseconds}` : milliseconds)
-        : undefined;
-      return TimeString.join(':');
-    }
-    return '0 Seconds';
-  }
+  /**
+   * @private #__HandleInsertion -> Private Method for handling Insertion correctly without distrubing other tracks
+   * @param {Number|undefined} Index Track Index to insert Tracks from spefic position
+   * @param {DefaultChunk<Object>} Chunk Chunk value from Tracksgen.fetch() including tracks and streams value
+   * @returns {undefined} as it's a One-go process
+   */
 
   #__HandleInsertion(Index = -1, Chunk) {
     if (!Index || (Index && Index < 0)) {

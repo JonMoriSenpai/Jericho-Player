@@ -1,7 +1,13 @@
 const EventEmitter = require('events');
 const { FFmpeg } = require('prism-media');
 const {
-  Intents, Client, Message, Interaction,
+  Intents,
+  Client,
+  Message,
+  Interaction,
+  GuildMember,
+  VoiceChannel,
+  StageChannel,
 } = require('discord.js');
 const Queue = require('./Queue-Handler.js');
 const ClassUtils = require('../Utilities/Class-Utils');
@@ -27,9 +33,9 @@ const {
  */
 class JerichoPlayer extends EventEmitter {
   /**
-   * @property {Object} QueueCaches => Caches of Queues for per "instanceof Player"
+   * @property {Object} QueueCaches -> Caches of Queues for per "instanceof Player"
    */
-  static #QueueCaches = {}
+  static #QueueCaches = {};
 
   /**
    * @constructor of Jericho Player
@@ -62,7 +68,15 @@ class JerichoPlayer extends EventEmitter {
 
     this.#__buildsandDepschecks(Client);
 
+    /**
+     * @param {Client} Client Discord Client Instance
+     */
     this.Client = Client;
+
+    /**
+     * @param {DefaultJerichoPlayerOptions<Object>} JerichoPlayerOptions Jericho Player Default Options Saved for Class Utils Comparing and Fixing
+     */
+
     this.JerichoPlayerOptions = ClassUtils.stablizingoptions(
       JerichoPlayerOptions,
       DefaultJerichoPlayerOptions,
@@ -86,7 +100,7 @@ class JerichoPlayer extends EventEmitter {
 
       /**
        * @function clientchecks<Object> => Checks for Client in Voice Channel as Member
-       * @param {Object} member Guild Member < Object | Instance > for Checking its originality about being Client
+       * @param {GuildMember} member Guild Member < Object | Instance > for Checking its originality about being Client
        * @returns {Boolean} true if Client has been Found and false if CLient is not Present
        */
 
@@ -191,7 +205,7 @@ class JerichoPlayer extends EventEmitter {
   /**
    * @method CreateQueue => Create Queue Instance for Player and per Guild
    * @param {Message | Interaction} message Guild Message Only for getting info about guild and guildId
-   * @param {DefaultQueueCreateOptions} QueueCreateOptions => Queue Create Options for Queue Instance ( for making ByDefault Values for Queue.<methods> )
+   * @param {DefaultQueueCreateOptions<Object>|undefined} QueueCreateOptions => Queue Create Options for Queue Instance ( for making ByDefault Values for Queue.<methods> )
    * @returns {Queue} Queue Instance => ( for Queue.<methods> like Queue.play() )
    */
 
@@ -217,6 +231,8 @@ class JerichoPlayer extends EventEmitter {
       LeaveOnBotOnlyTimedout: undefined,
     },
   ) {
+    // this.#__buildsandDepschecks() -> Checks for Invalid Client , Missing Dependencies with Missing Discord Client Voice Intents
+
     this.#__buildsandDepschecks(this.Client);
     if (
       !message
@@ -228,50 +244,78 @@ class JerichoPlayer extends EventEmitter {
         && message.channel.id
       )
     ) {
-      throw Error(
-        'Invalid Guild Message , Please Provide Correct Guild Message Correctly',
-      );
+      // Throw Error in Player Events as "error" event for Invalid Guild's Message
+
+      return void this.emit('error', 'Invalid Guild Message', this, message);
     }
+
+    // Picking up valid and user defined options if any and comparing them with Player Default Options
+
     QueueCreateOptions = ClassUtils.stablizingoptions(
       QueueCreateOptions,
       this.JerichoPlayerOptions,
     );
+
+    // To Avoid excess use of memory and Space in Large bots , We will always Cache Queue and Create one if is Deleted by DeleteQueue() method
     const QueueInstance = JerichoPlayer.#QueueCacheFetch(message.guild.id, QueueCreateOptions)
       ?? new Queue(this.Client, message, QueueCreateOptions, this);
     return JerichoPlayer.#QueueCacheAdd(QueueInstance);
   }
+
+  /**
+   * @method DeleteQueue -> Delete's Cached Queue (forced way to erase Queue's Existence)
+   * @param {String|Number} guildId Guild["id"] OR guild.id is required to fetch queue from the Cache
+   * @returns {undefined} Returns "undefined"
+   */
 
   DeleteQueue(guildId) {
     if (
       !guildId
       || !(guildId && (typeof guildId === 'string' || typeof guildId === 'number'))
     ) {
-      throw Error(
-        'Invalid Guild Id , Please Provide Correct Guild Id Correctly',
-      );
+      return void this.emit('error', 'Invalid Guild Id', this, guildId);
     }
+    // Checks for Queue in Cache doesn't matter if its Connection was destroyed | Cache only fetch its Existence to avoid excess CPU load
     if (JerichoPlayer.#QueueCacheFetch(guildId)) {
       return void JerichoPlayer.#QueueCacheRemove(guildId);
     }
     return void this.emit('error', 'Destroyed Queue', undefined);
   }
 
+  /**
+   * @method GetQueue -> Fetch Queue (Instance) from Cache or else returns undefined
+   * @param {String|Number} guildId Guild["id"] OR guild.id is required to fetch queue from the Cache
+   * @returns {Queue|undefined} Returns Queue Instance or else "undefined"
+   */
   GetQueue(guildId) {
     if (
       !guildId
       || !(guildId && (typeof guildId === 'string' || typeof guildId === 'number'))
     ) {
-      throw Error(
-        'Invalid Guild Id , Please Provide Correct Guild Id Correctly',
-      );
+      return void this.emit('error', 'Invalid Guild Id', this, guildId);
     }
     return JerichoPlayer.#QueueCacheFetch(guildId);
   }
+
+  /**
+   * @static Player Class Defined Method
+   * @method #QueueCacheAdd -> Private Method for Player's Workload to Add Queue Cache Easily without using any Player's Instance
+   * @param {Queue} QueueInstance Queue Instance made from "Queue" class to work around with many <Queue>.methods() for a guild
+   * @returns {Queue} QueueInstance , To reperesnt the Work Complete Signal
+   */
 
   static #QueueCacheAdd(QueueInstance) {
     JerichoPlayer.#QueueCaches[`${QueueInstance.guildId}`] = QueueInstance;
     return QueueInstance;
   }
+
+  /**
+   * @static Player Class Defined Method
+   * @method #QueueCacheFetch -> Private Method for Player's Workload to Fetch Queue Cache Easily without using any Player's Instance
+   * @param {String|Number} guildId Guild["id"] OR guild.id is required to fetch queue from the Cache
+   * @param {DefaultQueueCreateOptions<Object>} QueueCreateOptions QueueCreateOptions for if Queue "connection" is destroyed , then it requires Options to remake whole infrastructure
+   * @returns {Queue|undefined} QueueInstance , To reperesnt the Work Complete Signal
+   */
 
   static #QueueCacheFetch(guildId, QueueCreateOptions = null) {
     const QueueInstance = JerichoPlayer.#QueueCaches[`${guildId}`];
@@ -280,11 +324,19 @@ class JerichoPlayer extends EventEmitter {
         QueueCreateOptions,
         QueueInstance.QueueOptions,
       );
+      if (typeof QueueInstance.destroyed !== 'boolean') clearTimeout(QueueInstance.destroyed);
       QueueInstance.destroyed = false;
       JerichoPlayer.#QueueCaches[`${guildId}`] = QueueInstance;
     }
     return JerichoPlayer.#QueueCaches[`${guildId}`];
   }
+
+  /**
+   * @static Player Class Defined Method
+   * @method #QueueCacheRemove -> Private Method for Player's Workload to Remove Queue Cache Easily without using any Player's Instance
+   * @param {String|Number} guildId Guild["id"] OR guild.id is required to fetch queue from the Cache
+   * @returns {undefined} undefined , To reperesnt the Work Complete Signal as Queue will be destroyed so , we can't return Queue
+   */
 
   static #QueueCacheRemove(guildId) {
     if (!this.#QueueCacheFetch(guildId)) return false;
@@ -300,6 +352,13 @@ class JerichoPlayer extends EventEmitter {
     return void null;
   }
 
+  /**
+   * @static Player Class Defined Method
+   * @method #__playerVoiceConnectionMainHandler -> Private Method for Player's Voice Connection "Manager" to Filter out Connection Decisions frpm Queue | Player 's Connection Options from User
+   * @param {Queue} QueueInstance Queue Instance made from "Queue" class to work around
+   * @param {VoiceChannel|StageChannel} VoiceChannel Simple Discord Voice Channel | Stage Channel Value
+   * @returns {undefined} undefined, As these Private method only meant for Voice Handling with Options
+   */
   #__playerVoiceConnectionMainHandler(QueueInstance, VoiceChannel) {
     const clientchecks = (member) => member.user.id === this.Client.user.id;
     const userchecks = (member) => !member.user.bot;
@@ -336,6 +395,14 @@ class JerichoPlayer extends EventEmitter {
     return void null;
   }
 
+  /**
+   * @static Player Class Defined Method
+   * @method #__handleVoiceConnectionInterchange -> Private Method for Player's Voice Destroy Connection
+   * @param {Queue} QueueInstance Queue Instance made from "Queue" class to work around
+   * @param {VoiceChannel|StageChannel} VoiceChannel Simple Discord Voice Channel | Stage Channel Value
+   * @returns {undefined} undefined, As these Private method only meant for Voice Handling with Options
+   */
+
   async #__handleVoiceConnectionInterchange(QueueInstance, VoiceChannel) {
     QueueInstance.StreamPacket.VoiceConnection = await join(
       this.Client,
@@ -355,6 +422,13 @@ class JerichoPlayer extends EventEmitter {
     JerichoPlayer.#QueueCaches[QueueInstance.guildId] = QueueInstance;
     return void null;
   }
+
+  /**
+   * @static Player Class Defined Method
+   * @method #__buildsandDepschecks -> Private Method for Checks for Dependencies , Intents to avoid Internal value errors or package bugs
+   * @param {Client} Client Discord Client Instance for Operating as a Bot
+   * @returns {undefined} undefined, As these Private method only meant for Voice Handling with Options
+   */
 
   #__buildsandDepschecks(Client) {
     let FmpeggGarbage;

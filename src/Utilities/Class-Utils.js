@@ -1,7 +1,17 @@
 const { resolve, dirname } = require('path');
 const { FFmpeg } = require('prism-media');
 
+/**
+ * @class ClassUtils -> Class Util's methods are for Class's Support and helping basic or extract support neccassity tools
+ */
 class ClassUtils {
+  /**
+   * @method stablizingoptions() -> Stabilizing Local and Parent Options with accuracy 80%
+   * @param {Object} Local Local function/method options
+   * @param {Object} Parent Parent function/method options
+   * @returns {Object} Finaliize Options
+   */
+
   static stablizingoptions(Local, Parent) {
     if (!Local) return Parent;
     if (!Parent) return Local;
@@ -26,6 +36,12 @@ class ClassUtils {
     }
     return ProcessOptions;
   }
+
+  /**
+   * @method ScanDeps() -> Scanning Dependencies in package.json or node_modules for package or versions list
+   * @param {String|undefined} packageName Package name for publishing it sversion in project
+   * @returns {String|undefined} Publish Data whaich was requested for
+   */
 
   static ScanDeps(packageName) {
     if (!packageName) {
@@ -81,6 +97,12 @@ class ClassUtils {
     );
   }
 
+  /**
+   * @private #__versioning() -> Searching Versions of Packages
+   * @param {String} name NPM Package Name
+   * @returns {String|undefined} Returns Package Version
+   */
+
   static #__versioning(name) {
     try {
       const pkg = name === '@discordjs/voice'
@@ -95,6 +117,13 @@ class ClassUtils {
       return undefined;
     }
   }
+  /**
+   * @private #__SearchPackageJson() -> Searching Every package.json with deps
+   * @param {String} dir Directory name | value
+   * @param {String} packageName NPM Package Name
+   * @param {Number} depth Depth to go in Directories or outward
+   * @returns {Object} pacakge.json file with accurate versions
+   */
 
   static #__SearchPackageJson(dir, packageName, depth) {
     if (depth === 0) return undefined;
@@ -110,6 +139,80 @@ class ClassUtils {
         depth - 1,
       );
     }
+  }
+
+  /**
+   * @method HumanTimeConversion() -> Human Time Conversion Function with two categories
+   * @param {String|Number|undefined} Type1 Convert Milliseconds to Human Time Language
+   * @param {Object[]|undefined} Type2 Convert Milliseconds to Human Time variables
+   * @returns {String|undefined} Returns String with desired value
+   */
+
+  static HumanTimeConversion(Type1 = undefined, Type2 = undefined) {
+    if (Type1) {
+      const DurationMilliSeconds = Type1 / 1000;
+      let ProcessedString = '';
+      for (
+        let DurationArray = [
+            [Math.floor(DurationMilliSeconds / 31536e3), 'Years'],
+            [Math.floor((DurationMilliSeconds % 31536e3) / 86400), 'Days'],
+            [
+              Math.floor(((DurationMilliSeconds % 31536e3) % 86400) / 3600),
+              'Hours',
+            ],
+            [
+              Math.floor(
+                (((DurationMilliSeconds % 31536e3) % 86400) % 3600) / 60,
+              ),
+              'Minutes',
+            ],
+            [
+              Math.floor(
+                (((DurationMilliSeconds % 31536e3) % 86400) % 3600) % 60,
+              ),
+              'Seconds',
+            ],
+          ],
+          SideArray = 0,
+          GarbageValue = DurationArray.length;
+        SideArray < GarbageValue;
+        SideArray++
+      ) {
+        DurationArray[SideArray][0] !== 0
+          && (ProcessedString += ` ${DurationArray[SideArray][0]} ${
+            DurationArray[SideArray][0] === 1
+              ? DurationArray[SideArray][1].substr(
+                0,
+                DurationArray[SideArray][1].length - 1,
+              )
+              : DurationArray[SideArray][1]
+          }`);
+      }
+      return ProcessedString.trim();
+    }
+    if (Type2) {
+      const TimeData = new Date(Number(Type2.Time));
+      const days = TimeData.getUTCDate() - 1;
+      const hours = TimeData.getUTCHours();
+      const minutes = TimeData.getUTCMinutes();
+      const seconds = TimeData.getUTCSeconds();
+      const milliseconds = TimeData.getUTCMilliseconds();
+
+      const TimeString = [];
+      if (days) TimeString.push(days);
+      if (hours && !Type2.ignore.includes('hour')) TimeString.push(hours < 10 && days > 0 ? `0${hours}` : hours);
+      !Type2.ignore.includes('min')
+        ? TimeString.push(minutes < 10 ? `0${minutes}` : minutes)
+        : undefined;
+      !Type2.ignore.includes('sec')
+        ? TimeString.push(seconds < 10 ? `0${seconds}` : seconds)
+        : undefined;
+      !Type2.ignore.includes('milliseconds')
+        ? TimeString.push(milliseconds < 10 ? `0${milliseconds}` : milliseconds)
+        : undefined;
+      return TimeString.join(':');
+    }
+    return '0 Seconds';
   }
 }
 

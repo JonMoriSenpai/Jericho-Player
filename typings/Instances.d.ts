@@ -42,7 +42,7 @@ export type Queue = {
   volume: Number
   readonly tracks: Array<Track>
   readonly guildId: Guild['id'] | Snowflake | String
-  readonly destroyed: Boolean
+  readonly destroyed: Boolean | Number
   readonly JerichoPlayer: JerichoPlayer
   readonly playing: Boolean
   readonly paused: Boolean
@@ -87,15 +87,15 @@ export type Queue = {
   unmute(Volume?: Number): Boolean | Number | undefined
   clear(TracksAmount?: Number): Boolean | undefined
   back(
-    TracksBackwardIndex: Number,
-    requestedBy: User | GuildMember | undefined,
-    PlayOptions: PlayOptions,
+    TracksBackwardIndex?: Number,
+    requestedBy?: User | GuildMember | undefined,
+    PlayOptions?: PlayOptions,
     forceback?: Boolean
   ): Promise<Boolean> | Promise<undefined> | undefined
   createProgressBar(
-    Work: String | undefined | 'track' | 'queue' | 'previousTracks',
-    DefaultType: Number | String | undefined | '1' | '3',
-    Bar:
+    Work?: String | undefined | 'track' | 'queue' | 'previousTracks',
+    DefaultType?: Number | String | undefined | '1' | '3',
+    Bar?:
       | {
           CompleteIcon: String | '▬'
           TargetIcon: String | '🔘'

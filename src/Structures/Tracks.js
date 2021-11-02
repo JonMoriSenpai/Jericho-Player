@@ -1,7 +1,27 @@
 const ClassUtils = require('../Utilities/Class-Utils');
-const { DefaultExtractorStreamOptions } = require('../types/interfaces');
+const {
+  DefaultExtractorStreamOptions,
+  DefaultChunk,
+  DefaultStream,
+  DefaultTrack,
+  DefaultFetchOptions,
+  DefaultExtractorData,
+} = require('../types/interfaces');
 
+/**
+ * @class TrackGenerator -> these class helps to genreate Tracks from Query and Stream options using methods
+ * Tracks sometimes went wrong if Query doesn't match or Ratelimited and error event will trigger
+ */
 class TrackGenerator {
+  /**
+   * @method fetch() -> Fetch method , fetches Streams for Stream packet
+   * @param {String} Query Query like URls or Youtube Searches | Default Extractor accept 5 supported and big websites like youtube , spotify , soundcloud , retribution , facebook and for "youtube-dl" , it accept any follows official "youtube" searches
+   * @param {User|GuildMember|undefined} requestedBy user Data as who requested if given during insert or play method of Queue Instance
+   * @param {DefaultExtractorStreamOptions<Object>} FetchOptions Extractor Options for Track Download from Extractors
+   * @param {String|Boolean|undefined} extractor extractor to be used as "play-dl" or "youtube-dl"
+   * @param {Nummber|String|undefined} CacheLength Last Track ID value
+   * @returns {Promise<DefaultChunk<Object>>} returns Chunk value | like a packet of tracks and streamdata values
+   */
   static async fetch(
     Query,
     requestedBy = undefined,
@@ -77,6 +97,14 @@ class TrackGenerator {
     };
   }
 
+  /**
+   * @private #Track_Id_Placement -> Track Placement in Tracks Cache with Differing as stream tracks and normal tracks for users
+   * @param {DefaultStream[]} Tracks Stream Tracks to be converted User fetchable
+   * @param {Number|undefined} CacheLength last Cached Track's ID
+   * @param {User|GuildMember|undefined} requestedBy RequestedBy User Object value for Track
+   * @returns {DefaultChunk<Object>} Chunk Vlaue for Tracks Cache
+   */
+
   static #Track_Id_Placement(Tracks, CacheLength, requestedBy = undefined) {
     const StreamDatas = [];
     const SearchTracks = [];
@@ -94,6 +122,14 @@ class TrackGenerator {
       tracks: SearchTracks[0] ? SearchTracks : [],
     };
   }
+
+  /**
+   * @method #SongsFetching() -> Raw Track Data Fetching from various extractors like "play-dl" | "youtube-dl"
+   * @param {String} Query Query like URls or Youtube Searches | Default Extractor accept 5 supported and big websites like youtube , spotify , soundcloud , retribution , facebook and for "youtube-dl" , it accept any follows official "youtube" searches
+   * @param {DefaultFetchOptions<Object>} FetchOptions Fetching Options for Extractors
+   * @param {String|Boolean|undefined} extractor extractor to be used as "play-dl" or "youtube-dl"
+   * @returns {Promise<DefaultExtractorData<Object>>} Returns Extractor Value with no edits
+   */
 
   static async #SongsFetching(
     Query,
@@ -141,6 +177,13 @@ class TrackGenerator {
     return RawData;
   }
 
+  /**
+   * @private #YoutubeDLExtractor -> Youtube-Dl Extractor for player
+   * @param {String} Query Query like URls or Youtube Searches | Default Extractor accept 5 supported and big websites like youtube , spotify , soundcloud , retribution , facebook and for "youtube-dl" , it accept any follows official "youtube" searches
+   * @param {DefaultExtractorStreamOptions<Object>} ExtractorStreamOptions Extractor Fetching Options
+   * @returns {Promise<DefaultExtractorData<Object>>} Returns Extractor Value with no edits
+   */
+
   static async #YoutubeDLExtractor(Query, ExtractorStreamOptions) {
     const { StreamDownloader } = require('video-extractor');
     return await StreamDownloader(Query, {
@@ -155,10 +198,24 @@ class TrackGenerator {
     });
   }
 
+  /**
+   * @private #PlayDLExtractor -> Play-Dl Extractor for player
+   * @param {String} Query Query like URls or Youtube Searches | Default Extractor accept 5 supported and big websites like youtube , spotify , soundcloud , retribution , facebook and for "youtube-dl" , it accept any follows official "youtube" searches
+   * @param {DefaultExtractorStreamOptions<Object>} ExtractorStreamOptions Extractor Fetching Options
+   * @returns {Promise<DefaultExtractorData<Object>>} Returns Extractor Value with no edits
+   */
+
   static async #PlayDLExtractor(Query, ExtractorStreamOptions) {
     const { StreamDownloader } = require('playdl-music-extractor');
     return await StreamDownloader(Query, ExtractorStreamOptions);
   }
+
+  /**
+   * @private #UserTrackModelGen -> Transfering Normal Stream Data to user readable Track
+   * @param {DefaultStream} TrackData Stream Data about the Track
+   * @param {User|GuildMember|undefined} requestedByUser Requested user for Track Object
+   * @returns {DefaultTrack} Track Value for Queue.tracks[]
+   */
 
   static #UserTrackModelGen(TrackData, requestedByUser) {
     return {
