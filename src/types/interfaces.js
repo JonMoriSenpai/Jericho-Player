@@ -30,7 +30,7 @@ const DefaultExtractorStreamOptions = {
   Limit: 1,
   Quality: 'high',
   Cookies: undefined,
-  ByPassYoutubeDLRatelimit: undefined,
+  ByPassYoutubeDLRatelimit: true,
   YoutubeDLCookiesFilePath: undefined,
   Proxy: undefined,
 };
