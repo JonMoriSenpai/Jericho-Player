@@ -24,7 +24,7 @@ const {
   DefaultTrack,
   DefaultStream,
   DefaultChunk,
-  DefaultModesBody,
+  DefaultModesType,
   DefaultModesName,
 } = require('../types/interfaces');
 const Queue = require('../Handlers/Queue-Handler');
@@ -414,35 +414,35 @@ class StreamPacketGen {
   /**
    * @method setMode() -> Set Mode of the Music Player between "loop","repeat","autoplay"
    * @param {String} ModeName Mode's Names for Setting Mode
-   * @param {String|Boolean|undefined} ModeBody Mode's Value for Setting which to operated
+   * @param {String|Boolean|undefined} ModeType Mode's Value for Setting which to operated
    * @param {String|Number|undefined} Times Extra Data from Queue.methods as Times
    * @returns {Boolean|undefined} returns true if operation went gree signal ro undefined on errors
    */
 
-  setMode(ModeName, ModeBody, Times) {
+  setMode(ModeName, ModeType, Times) {
     if (
       ModeName === DefaultModesName.Loop
-      && (!ModeBody || (ModeBody && ModeBody === DefaultModesBody.Track))
+      && (!ModeType || (ModeType && ModeType === DefaultModesType.Track))
     ) {
       this.MusicPlayerMode = {
-        Loop: DefaultModesBody.Track,
+        Loop: DefaultModesType.Track,
       };
       return true;
     }
     if (
       ModeName === DefaultModesName.Loop
-      && ModeBody
-      && ModeBody === DefaultModesBody.Queue
+      && ModeType
+      && ModeType === DefaultModesType.Queue
     ) {
       this.MusicPlayerMode = {
-        Loop: DefaultModesBody.Queue,
+        Loop: DefaultModesType.Queue,
       };
       return true;
     }
     if (
       ModeName === DefaultModesName.Loop
-      && ModeBody
-      && ModeBody === DefaultModesBody.Off
+      && ModeType
+      && ModeType === DefaultModesType.Off
     ) {
       this.MusicPlayerMode = {
         Loop: undefined,
@@ -451,27 +451,27 @@ class StreamPacketGen {
     }
     if (
       ModeName === DefaultModesName.Repeat
-      && (!ModeBody || (ModeBody && ModeBody === DefaultModesBody.Track))
+      && (!ModeType || (ModeType && ModeType === DefaultModesType.Track))
     ) {
       this.MusicPlayerMode = {
-        Repeat: [DefaultModesBody.Track, Number(Times)],
+        Repeat: [DefaultModesType.Track, Number(Times)],
       };
       return true;
     }
     if (
       ModeName === DefaultModesName.Repeat
-      && ModeBody
-      && ModeBody === DefaultModesBody.Queue
+      && ModeType
+      && ModeType === DefaultModesType.Queue
     ) {
       this.MusicPlayerMode = {
-        Repeat: [DefaultModesBody.Queue, Number(Times)],
+        Repeat: [DefaultModesType.Queue, Number(Times)],
       };
       return true;
     }
     if (
       ModeName === DefaultModesName.Repeat
-      && ModeBody
-      && ModeBody === DefaultModesBody.Off
+      && ModeType
+      && ModeType === DefaultModesType.Off
     ) {
       this.MusicPlayerMode = {
         Repeat: undefined,
@@ -480,8 +480,8 @@ class StreamPacketGen {
     }
     if (
       ModeName === DefaultModesName.Autoplay
-      && ModeBody
-      && ModeBody === DefaultModesBody.Off
+      && ModeType
+      && ModeType === DefaultModesType.Off
     ) {
       this.MusicPlayerMode = {
         Autoplay: undefined,
@@ -490,7 +490,7 @@ class StreamPacketGen {
     }
     if (ModeName === DefaultModesName.Autoplay) {
       this.MusicPlayerMode = {
-        Autoplay: ModeBody,
+        Autoplay: ModeType,
       };
       return true;
     }
@@ -536,12 +536,12 @@ class StreamPacketGen {
   async __handleMusicPlayerModes(QueueInstance) {
     if (!QueueInstance.playerMode) return void null;
     const ModeName = QueueInstance.playerMode.mode;
-    const ModeBody = QueueInstance.playerMode.value;
+    const ModeType = QueueInstance.playerMode.value;
     const ModeTimes = Number(QueueInstance.playerMode.times ?? 0);
     let CacheTracks = [];
     if (
       ModeName === DefaultModesName.Loop
-      && (!ModeBody || (ModeBody && ModeBody === DefaultModesBody.Track))
+      && (!ModeType || (ModeType && ModeType === DefaultModesType.Track))
     ) {
       const Chunks = await TracksGen.fetch(
         this.searches[0].url,
@@ -556,8 +556,8 @@ class StreamPacketGen {
     }
     if (
       ModeName === DefaultModesName.Loop
-      && ModeBody
-      && ModeBody === DefaultModesBody.Queue
+      && ModeType
+      && ModeType === DefaultModesType.Queue
     ) {
       CacheTracks = [...this.previousTracks].reverse();
       await Promise.all(
@@ -577,7 +577,7 @@ class StreamPacketGen {
     }
     if (
       ModeName === DefaultModesName.Repeat
-      && (!ModeBody || (ModeBody && ModeBody === DefaultModesBody.Track))
+      && (!ModeType || (ModeType && ModeType === DefaultModesType.Track))
     ) {
       const Chunks = await TracksGen.fetch(
         this.searches[0].url,
@@ -588,13 +588,13 @@ class StreamPacketGen {
       );
       this.tracks.splice(1, 0, Chunks.streamdatas[0]);
       this.searches.splice(1, 0, Chunks.tracks[0]);
-      this.MusicPlayerMode.Repeat = ModeTimes && ModeTimes > 1 ? [ModeBody, ModeTimes - 1] : undefined;
+      this.MusicPlayerMode.Repeat = ModeTimes && ModeTimes > 1 ? [ModeType, ModeTimes - 1] : undefined;
       return true;
     }
     if (
       ModeName === DefaultModesName.Repeat
-      && ModeBody
-      && ModeBody === DefaultModesBody.Queue
+      && ModeType
+      && ModeType === DefaultModesType.Queue
     ) {
       CacheTracks = [...this.previousTracks].reverse();
       await Promise.all(
@@ -610,7 +610,7 @@ class StreamPacketGen {
           this.searches.push(Chunks.tracks[0]);
         }),
       );
-      this.MusicPlayerMode.Repeat = ModeTimes && ModeTimes > 1 ? [ModeBody, ModeTimes - 1] : undefined;
+      this.MusicPlayerMode.Repeat = ModeTimes && ModeTimes > 1 ? [ModeType, ModeTimes - 1] : undefined;
       return true;
     }
     if (ModeName === DefaultModesName.Autoplay) {

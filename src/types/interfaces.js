@@ -29,9 +29,9 @@ const DefaultModesName = {
 };
 
 /**
- * @param {Object} DefaultModesBody -> Default Modes Bodies for Setting Music Player Mode's Values
+ * @param {Object} DefaultModesType -> Default Modes Bodies for Setting Music Player Mode's Values
  */
-const DefaultModesBody = {
+const DefaultModesType = {
   Track: 'track',
   Queue: 'queue',
   Off: 'off',
@@ -225,6 +225,6 @@ module.exports = {
   DefaultExtractorData,
   DefaultFetchOptions,
   DefaultModesName,
-  DefaultModesBody,
+  DefaultModesType,
   DefaultPlayerMode,
 };

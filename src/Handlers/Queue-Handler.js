@@ -24,7 +24,7 @@ const {
   DefaultStreamPacket,
   DefaultModesName,
   DefaultPlayerMode,
-  DefaultModesBody,
+  DefaultModesType,
 } = require('../types/interfaces');
 const TrackGenerator = require('../Structures/Tracks');
 
@@ -694,11 +694,11 @@ class Queue {
 
   /**
    * @method loop() -> Loop Single Track or Queue
-   * @param {DefaultModesBody{}|undefined} Choice Mode Choice , like "track" | "queue" | "off"
+   * @param {DefaultModesType{}|undefined} Choice Mode Choice , like "track" | "queue" | "off"
    * @returns {Boolean|undefined} returns true for green signal operation and undefined for errors
    */
 
-  loop(Choice = DefaultModesBody.Track) {
+  loop(Choice = DefaultModesType.Track) {
     if (this.destroyed) return void this.JerichoPlayer.emit('error', 'Destroyed Queue', this);
     if (!this.StreamPacket) return void this.JerichoPlayer.emit('error', 'Destroyed Queue', this);
     return this.StreamPacket.setMode(DefaultModesName.Loop, Choice);
@@ -706,12 +706,12 @@ class Queue {
 
   /**
    * @method repeat() -> Repeat Track or Queue with "n" Times given by User
-   * @param {DefaultModesBody{}|String|undefined} Choice Mode Choice , like "track" | "queue" | "off"
+   * @param {DefaultModesType{}|String|undefined} Choice Mode Choice , like "track" | "queue" | "off"
    * @param {String|undefined} Times Number of Repeat Track or Queue with "n" Times given by User
    * @returns {Boolean|undefined} returns true for green signal operation and undefined for errors
    */
 
-  repeat(Choice = DefaultModesBody.Track, Times = 1) {
+  repeat(Choice = DefaultModesType.Track, Times = 1) {
     if (this.destroyed) return void this.JerichoPlayer.emit('error', 'Destroyed Queue', this);
     if (!this.StreamPacket) return void this.JerichoPlayer.emit('error', 'Destroyed Queue', this);
     return this.StreamPacket.setMode(
@@ -723,7 +723,7 @@ class Queue {
 
   /**
    * @method autoplay() -> Autplay Songs with the help of last Played Track or Query given
-   * @param {DefaultModesBody{}|String|undefined} ChoiceORQuery Mode Choice , like "off" | OR else give Query or Url for autoplay songs with respect to specified query
+   * @param {DefaultModesType{}|String|undefined} ChoiceORQuery Mode Choice , like "off" | OR else give Query or Url for autoplay songs with respect to specified query
    * @returns {Boolean|undefined} returns true for green signal operation and undefined for errors
    */
 

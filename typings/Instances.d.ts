@@ -257,7 +257,7 @@ export type PlayerMode = {
   times: String | Number | undefined
 }
 
-export type DefaultModesBody = {
+export type DefaultModesType = {
   Track: 'track'
   Queue: 'queue'
   Off: 'off'
