@@ -10,6 +10,27 @@ const DefaultProgressBar = {
 };
 
 /**
+ * Default Current TimeStamp Structure
+ */
+
+const DefaultcurrentTimestamp = {
+  track_ms: '',
+  totaltrack_ms: '',
+  previoustracks_ms: '',
+  totalqueue_ms: '',
+  saved_queue_ms: '',
+  queue_ms: '',
+  remainqueue_ms: '',
+  human_track: '',
+  human_totaltrack: '',
+  human_previoustracks: '',
+  human_totalqueue: '',
+  human_saved_queue: '',
+  human_queue: '',
+  human_remainqueue: '',
+};
+
+/**
  * Default Player Mode Objects
  */
 
@@ -228,4 +249,5 @@ module.exports = {
   DefaultModesName,
   DefaultModesType,
   DefaultPlayerMode,
+  DefaultcurrentTimestamp,
 };

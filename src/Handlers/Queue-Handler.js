@@ -25,6 +25,7 @@ const {
   DefaultModesName,
   DefaultPlayerMode,
   DefaultModesType,
+  DefaultcurrentTimestamp,
 } = require('../types/interfaces');
 const TrackGenerator = require('../Structures/Tracks');
 
@@ -849,7 +850,7 @@ class Queue {
 
   /**
    * CurrentTimeStamp -> TimeStamp of tracks , queue and e.t.c in milliseconds and human readable format
-   * @returns {String|Number|undefined} Time in milliseconds and Human Readable format
+   * @returns {DefaultcurrentTimestamp<Object>|undefined} Time in milliseconds and Human Readable format
    */
 
   get currentTimestamp() {
