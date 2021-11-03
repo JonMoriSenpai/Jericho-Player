@@ -655,7 +655,7 @@ class Queue {
         if (!this.StreamPacket.tracks[0]) return void this.JerichoPlayer.emit('error', 'Empty Queue', this);
         return this.#__StructureProgressBar(
           Bar,
-          Number(this.currentTimestamp.queue_ms),
+          Number(this.currentTimestamp.queue_ms) - Number(this.currentTimestamp.remainqueue_ms),
           Number(this.currentTimestamp.totalqueue_ms),
           DefaultType,
         );
