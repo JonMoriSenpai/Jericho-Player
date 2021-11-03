@@ -531,7 +531,7 @@ class StreamPacketGen {
   /**
    * @method __handleMusicPlayerModes() -> Private Method for Handling complex Music Player's Modes with internal tracks
    * @param {Queue} QueueInstance Queue Instance of per Guild
-   * @returns {Boolean|undefined} returns true if operation went gree signal ro undefined on errors
+   * @returns {Boolean|undefined|Promise<Boolean|undefined>} returns true if operation went gree signal ro undefined on errors
    */
   async __handleMusicPlayerModes(QueueInstance) {
     if (!QueueInstance.playerMode) return void null;
@@ -614,14 +614,20 @@ class StreamPacketGen {
       return true;
     }
     if (ModeName === DefaultModesName.Autoplay) {
+      const Garbage = await Extractor(this.MusicPlayerMode.Autoplay);
+      if (Garbage.error) {
+        return void this.JerichoPlayer.emit(
+          'error',
+          Chunks.error,
+          this.JerichoPlayer.GetQueue(this.guildId),
+        );
+      }
       const Chunks = await TracksGen.fetch(
         await suggestions(
-          (await Extractor()(
-            this.MusicPlayerMode.Autoplay
-              && typeof this.MusicPlayerMode.Autoplay === 'string'
-              ? (await Extractor(this.MusicPlayerMode.Autoplay)).tracks[0].title
-              : undefined,
-          )) ?? this.searches[0].title,
+          (this.MusicPlayerMode.Autoplay
+          && typeof this.MusicPlayerMode.Autoplay === 'string'
+            ? Garbage.tracks[0].title
+            : undefined) ?? this.searches[0].title,
         ),
         this.searches[0].requestedBy,
         this.ExtractorStreamOptions,

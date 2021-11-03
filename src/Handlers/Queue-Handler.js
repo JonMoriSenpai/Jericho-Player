@@ -133,7 +133,7 @@ class Queue {
     /**
      * "statechange" Voice Event for Audio Player for quick filtered Decision making
      */
-    this.MusicPlayer.on('stateChange', (oldState, newState) => {
+    this.MusicPlayer.on('stateChange', async (oldState, newState) => {
       if (newState.status === AudioPlayerStatus.Idle) {
         if (
           this.StreamPacket
@@ -144,7 +144,7 @@ class Queue {
           this.StreamPacket.AudioResource = undefined;
           if (
             this.StreamPacket
-            && !this.StreamPacket.__handleMusicPlayerModes(this)
+            && !(await this.StreamPacket.__handleMusicPlayerModes(this))
           ) this.StreamPacket.previousTracks.push(this.StreamPacket.searches[0]);
           this.JerichoPlayer.emit('trackEnd', this, this.tracks[0]);
         }
@@ -997,11 +997,9 @@ class Queue {
         && this.StreamPacket.tracks
         && this.StreamPacket.tracks[0]
       )
+      && !(await this.StreamPacket.__handleMusicPlayerModes(this))
     ) {
-      if (
-        this.StreamPacket
-        && !this.StreamPacket.__handleMusicPlayerModes(this)
-      ) this.StreamPacket.TimedoutId = this.#__QueueAudioPlayerStatusManager();
+      this.StreamPacket.TimedoutId = this.#__QueueAudioPlayerStatusManager();
       return void this.JerichoPlayer.emit('queueEnd', this);
     }
     this.StreamPacket.TimedoutId = this.StreamPacket.TimedoutId
