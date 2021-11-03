@@ -253,7 +253,7 @@ export type QueueOptions = {
 
 export type PlayerMode = {
   mode: String
-  value: String | undefined
+  type: String | undefined
   times: String | Number | undefined
 }
 

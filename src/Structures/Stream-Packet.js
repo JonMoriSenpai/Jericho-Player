@@ -536,7 +536,7 @@ class StreamPacketGen {
   async __handleMusicPlayerModes(QueueInstance) {
     if (!QueueInstance.playerMode) return void null;
     const ModeName = QueueInstance.playerMode.mode;
-    const ModeType = QueueInstance.playerMode.value;
+    const ModeType = QueueInstance.playerMode.type;
     const ModeTimes = Number(QueueInstance.playerMode.times ?? 0);
     let CacheTracks = [];
     if (
@@ -544,14 +544,15 @@ class StreamPacketGen {
       && (!ModeType || (ModeType && ModeType === DefaultModesType.Track))
     ) {
       const Chunks = await TracksGen.fetch(
-        this.searches[0].url,
-        this.searches[0].requestedBy,
+        QueueInstance.previousTrack.url,
+        QueueInstance.previousTrack.requestedBy,
         this.ExtractorStreamOptions,
         this.extractor ?? 'play-dl',
-        Number(this.searches[0].Id ?? 0) - 1,
+        Number(QueueInstance.previousTrack.Id ?? 0) - 1,
       );
-      this.tracks.splice(1, 0, Chunks.streamdatas[0]);
-      this.searches.splice(1, 0, Chunks.tracks[0]);
+      this.previousTracks.splice(this.previousTracks.length - 1, 1);
+      this.tracks.splice(0, 0, Chunks.streamdatas[0]);
+      this.searches.splice(0, 0, Chunks.tracks[0]);
       return true;
     }
     if (
@@ -559,9 +560,8 @@ class StreamPacketGen {
       && ModeType
       && ModeType === DefaultModesType.Queue
     ) {
-      CacheTracks = [...this.previousTracks].reverse();
       await Promise.all(
-        CacheTracks.map(async (previousTrack) => {
+        this.previousTracks.map(async (previousTrack) => {
           const Chunks = await TracksGen.fetch(
             previousTrack.url,
             previousTrack.requestedBy,
@@ -573,6 +573,7 @@ class StreamPacketGen {
           this.searches.push(Chunks.tracks[0]);
         }),
       );
+      this.previousTracks = [];
       return true;
     }
     if (
@@ -580,14 +581,15 @@ class StreamPacketGen {
       && (!ModeType || (ModeType && ModeType === DefaultModesType.Track))
     ) {
       const Chunks = await TracksGen.fetch(
-        this.searches[0].url,
-        this.searches[0].requestedBy,
+        QueueInstance.previousTrack.url,
+        QueueInstance.previousTrack.requestedBy,
         this.ExtractorStreamOptions,
         this.extractor ?? 'play-dl',
-        Number(this.searches[0].Id ?? 0) - 1,
+        Number(QueueInstance.previousTrack.Id ?? 0) - 1,
       );
-      this.tracks.splice(1, 0, Chunks.streamdatas[0]);
-      this.searches.splice(1, 0, Chunks.tracks[0]);
+      this.previousTracks.splice(this.previousTracks.length - 1, 1);
+      this.tracks.splice(0, 0, Chunks.streamdatas[0]);
+      this.searches.splice(0, 0, Chunks.tracks[0]);
       this.MusicPlayerMode.Repeat = ModeTimes && ModeTimes > 1 ? [ModeType, ModeTimes - 1] : undefined;
       return true;
     }
@@ -611,17 +613,18 @@ class StreamPacketGen {
         }),
       );
       this.MusicPlayerMode.Repeat = ModeTimes && ModeTimes > 1 ? [ModeType, ModeTimes - 1] : undefined;
+      this.previousTracks = [];
       return true;
     }
-    if (ModeName === DefaultModesName.Autoplay) {
+    if (ModeName === DefaultModesName.Autoplay && this.tracks.length === 0) {
       const Garbage = this.MusicPlayerMode.Autoplay
         && typeof this.MusicPlayerMode.Autoplay === 'string'
         ? await this.JerichoPlayer.getQueue(this.guildId).search(
           this.MusicPlayerMode.Autoplay,
-          this.searches[0].requestedBy,
+          QueueInstance.previousTrack.requestedBy,
           this.ExtractorStreamOptions,
           this.extractor ?? 'play-dl',
-          Number(this.searches[0] ?? 0) - 1,
+          Number(QueueInstance.previousTrack.Id ?? 0) - 1,
         )
         : undefined;
       if (Garbage.error) {
@@ -636,12 +639,12 @@ class StreamPacketGen {
           (this.MusicPlayerMode.Autoplay
           && typeof this.MusicPlayerMode.Autoplay === 'string'
             ? Garbage.tracks[0].title
-            : undefined) ?? this.searches[0].title,
+            : undefined) ?? QueueInstance.previousTrack.title,
         ),
-        this.searches[0].requestedBy,
+        QueueInstance.previousTrack.requestedBy,
         this.ExtractorStreamOptions,
         this.extractor ?? 'play-dl',
-        Number(this.searches[0] ?? 0) - 1,
+        Number(QueueInstance.previousTrack.Id ?? 0) - 1,
       );
       this.tracks.push(Chunks.streamdatas[0]);
       this.searches.push(Chunks.tracks[0]);

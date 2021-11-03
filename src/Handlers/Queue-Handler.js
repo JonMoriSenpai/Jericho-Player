@@ -143,11 +143,10 @@ class Queue {
           && this.StreamPacket.AudioResource
         ) {
           this.StreamPacket.AudioResource = undefined;
-          if (
-            this.StreamPacket
-            && !(await this.StreamPacket.__handleMusicPlayerModes(this))
-          ) this.StreamPacket.previousTracks.push(this.StreamPacket.searches[0]);
-          this.JerichoPlayer.emit('trackEnd', this, this.tracks[0]);
+          this.StreamPacket.previousTracks.push(this.StreamPacket.searches[0]);
+          !(this.playerMode && this.playerMode.type === DefaultModesType.Track)
+            ? this.JerichoPlayer.emit('trackEnd', this, this.tracks[0])
+            : undefined;
         }
         if (!this.destroyed) this.#__CleaningTrackMess();
         this.#__ResourcePlay();
@@ -968,20 +967,20 @@ class Queue {
     if (this.StreamPacket.MusicPlayerMode.Loop) {
       return {
         mode: DefaultModesName.Loop,
-        value: this.StreamPacket.MusicPlayerMode.Loop,
+        type: this.StreamPacket.MusicPlayerMode.Loop,
       };
     }
     if (this.StreamPacket.MusicPlayerMode.Repeat) {
       return {
         mode: DefaultModesName.Repeat,
-        value: this.StreamPacket.MusicPlayerMode.Repeat[0],
+        type: this.StreamPacket.MusicPlayerMode.Repeat[0],
         times: this.StreamPacket.MusicPlayerMode.Repeat[1],
       };
     }
     if (this.StreamPacket.MusicPlayerMode.Autoplay) {
       return {
         mode: DefaultModesName.Autoplay,
-        value: this.StreamPacket.MusicPlayerMode.Autoplay,
+        type: this.StreamPacket.MusicPlayerMode.Autoplay,
       };
     }
     return void null;
@@ -994,6 +993,9 @@ class Queue {
    */
 
   async #__ResourcePlay() {
+    const GarbagePlayerModeHandle = await this.StreamPacket.__handleMusicPlayerModes(
+      this,
+    );
     if (this.destroyed) return void null;
     if (
       this.StreamPacket
@@ -1002,7 +1004,10 @@ class Queue {
         && this.StreamPacket.tracks
         && this.StreamPacket.tracks[0]
       )
-      && !(await this.StreamPacket.__handleMusicPlayerModes(this))
+      && (!this.playerMode
+        || (this.playerMode
+          && this.playerMode.type === DefaultModesType.Queue
+          && !GarbagePlayerModeHandle))
     ) {
       this.StreamPacket.TimedoutId = this.#__QueueAudioPlayerStatusManager();
       return void this.JerichoPlayer.emit('queueEnd', this);

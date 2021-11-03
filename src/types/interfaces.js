@@ -36,7 +36,7 @@ const DefaultcurrentTimestamp = {
 
 const DefaultPlayerMode = {
   mode: undefined,
-  value: undefined,
+  type: undefined,
   times: undefined,
 };
 
