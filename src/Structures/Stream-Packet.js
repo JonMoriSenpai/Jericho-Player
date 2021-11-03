@@ -13,6 +13,8 @@ const {
   StageChannel,
   Guild,
 } = require('discord.js');
+const { suggestions } = require('youtube-suggest-gen');
+const { Extractor } = require('playdl-music-extractor/typings/index.js');
 const JerichoPlayer = require('../Handlers/Player-Handler');
 const TracksGen = require('./Tracks');
 const VoiceUtils = require('../Utilities/Voice-Utils');
@@ -22,7 +24,10 @@ const {
   DefaultTrack,
   DefaultStream,
   DefaultChunk,
+  DefaultModesBody,
+  DefaultModesName,
 } = require('../types/interfaces');
+const Queue = require('../Handlers/Queue-Handler');
 
 /**
  * @class StreamPacketGen -> Stream Packet Generator for Connection and Internal Workflows
@@ -142,6 +147,15 @@ class StreamPacketGen {
      * @param {Object} TrackTimeStamp Track's Live Status and Storing Value of the Time
      */
     this.TrackTimeStamp = { Starting: undefined, Paused: undefined };
+
+    /**
+     * @param {DefaultModesName} MusicPlayerMode Music Player's Modes Cache Signal
+     */
+    this.MusicPlayerMode = {
+      Loop: undefined,
+      Repeat: undefined,
+      Autoplay: undefined,
+    };
   }
 
   /**
@@ -398,6 +412,93 @@ class StreamPacketGen {
   }
 
   /**
+   * @method setMode() -> Set Mode of the Music Player between "loop","repeat","autoplay"
+   * @param {String} ModeName Mode's Names for Setting Mode
+   * @param {String|Boolean|undefined} ModeBody Mode's Value for Setting which to operated
+   * @param {String|Number|undefined} Times Extra Data from Queue.methods as Times
+   * @returns {Boolean|undefined} returns true if operation went gree signal ro undefined on errors
+   */
+
+  setMode(ModeName, ModeBody, Times) {
+    if (
+      ModeName === DefaultModesName.Loop
+      && (!ModeBody || (ModeBody && ModeBody === DefaultModesBody.Track))
+    ) {
+      this.MusicPlayerMode = {
+        Loop: DefaultModesBody.Track,
+      };
+      return true;
+    }
+    if (
+      ModeName === DefaultModesName.Loop
+      && ModeBody
+      && ModeBody === DefaultModesBody.Queue
+    ) {
+      this.MusicPlayerMode = {
+        Loop: DefaultModesBody.Queue,
+      };
+      return true;
+    }
+    if (
+      ModeName === DefaultModesName.Loop
+      && ModeBody
+      && ModeBody === DefaultModesBody.Off
+    ) {
+      this.MusicPlayerMode = {
+        Loop: undefined,
+      };
+      return true;
+    }
+    if (
+      ModeName === DefaultModesName.Repeat
+      && (!ModeBody || (ModeBody && ModeBody === DefaultModesBody.Track))
+    ) {
+      this.MusicPlayerMode = {
+        Repeat: [DefaultModesBody.Track, Number(Times)],
+      };
+      return true;
+    }
+    if (
+      ModeName === DefaultModesName.Repeat
+      && ModeBody
+      && ModeBody === DefaultModesBody.Queue
+    ) {
+      this.MusicPlayerMode = {
+        Repeat: [DefaultModesBody.Queue, Number(Times)],
+      };
+      return true;
+    }
+    if (
+      ModeName === DefaultModesName.Repeat
+      && ModeBody
+      && ModeBody === DefaultModesBody.Off
+    ) {
+      this.MusicPlayerMode = {
+        Repeat: undefined,
+      };
+      return true;
+    }
+    if (
+      ModeName === DefaultModesName.Autoplay
+      && ModeBody
+      && ModeBody === DefaultModesBody.Off
+    ) {
+      this.MusicPlayerMode = {
+        Autoplay: undefined,
+      };
+      return true;
+    }
+    if (ModeName === DefaultModesName.Autoplay) {
+      this.MusicPlayerMode = {
+        Autoplay: ModeBody,
+      };
+      return true;
+    }
+
+    return void null;
+  }
+
+  /**
    * @method StreamAudioResourceExtractor() -> Fetch Audio Resource to Stream in Music Player for Jericho Player
    * @param {DefaultTrack<Object>} Track Track Credentials for Streaming value
    * @returns {AudioResource} Audio Resource from Stream of Tracks
@@ -425,6 +526,114 @@ class StreamPacketGen {
         this.guildId,
       );
     }
+  }
+
+  /**
+   * @method __handleMusicPlayerModes() -> Private Method for Handling complex Music Player's Modes with internal tracks
+   * @param {Queue} QueueInstance Queue Instance of per Guild
+   * @returns {Boolean|undefined} returns true if operation went gree signal ro undefined on errors
+   */
+  async __handleMusicPlayerModes(QueueInstance) {
+    if (!QueueInstance.playerMode) return void null;
+    const ModeName = QueueInstance.playerMode.mode;
+    const ModeBody = QueueInstance.playerMode.value;
+    const ModeTimes = Number(QueueInstance.playerMode.times ?? 0);
+    let CacheTracks = [];
+    if (
+      ModeName === DefaultModesName.Loop
+      && (!ModeBody || (ModeBody && ModeBody === DefaultModesBody.Track))
+    ) {
+      const Chunks = await TracksGen.fetch(
+        this.searches[0].url,
+        this.searches[0].requestedBy,
+        this.ExtractorStreamOptions,
+        this.extractor ?? 'play-dl',
+        Number(this.searches[0].Id ?? 0) - 1,
+      );
+      this.tracks.splice(1, 0, Chunks.streamdatas[0]);
+      this.searches.splice(1, 0, Chunks.tracks[0]);
+      return true;
+    }
+    if (
+      ModeName === DefaultModesName.Loop
+      && ModeBody
+      && ModeBody === DefaultModesBody.Queue
+    ) {
+      CacheTracks = [...this.previousTracks].reverse();
+      await Promise.all(
+        CacheTracks.map(async (previousTrack) => {
+          const Chunks = await TracksGen.fetch(
+            previousTrack.url,
+            previousTrack.requestedBy,
+            this.ExtractorStreamOptions,
+            this.extractor ?? 'play-dl',
+            Number(previousTrack.Id ?? 0) - 1,
+          );
+          this.tracks.push(Chunks.streamdatas[0]);
+          this.searches.push(Chunks.tracks[0]);
+        }),
+      );
+      return true;
+    }
+    if (
+      ModeName === DefaultModesName.Repeat
+      && (!ModeBody || (ModeBody && ModeBody === DefaultModesBody.Track))
+    ) {
+      const Chunks = await TracksGen.fetch(
+        this.searches[0].url,
+        this.searches[0].requestedBy,
+        this.ExtractorStreamOptions,
+        this.extractor ?? 'play-dl',
+        Number(this.searches[0].Id ?? 0) - 1,
+      );
+      this.tracks.splice(1, 0, Chunks.streamdatas[0]);
+      this.searches.splice(1, 0, Chunks.tracks[0]);
+      this.MusicPlayerMode.Repeat = ModeTimes && ModeTimes > 1 ? [ModeBody, ModeTimes - 1] : undefined;
+      return true;
+    }
+    if (
+      ModeName === DefaultModesName.Repeat
+      && ModeBody
+      && ModeBody === DefaultModesBody.Queue
+    ) {
+      CacheTracks = [...this.previousTracks].reverse();
+      await Promise.all(
+        CacheTracks.map(async (previousTrack) => {
+          const Chunks = await TracksGen.fetch(
+            previousTrack.url,
+            previousTrack.requestedBy,
+            this.ExtractorStreamOptions,
+            this.extractor ?? 'play-dl',
+            Number(previousTrack.Id ?? 0) - 1,
+          );
+          this.tracks.push(Chunks.streamdatas[0]);
+          this.searches.push(Chunks.tracks[0]);
+        }),
+      );
+      this.MusicPlayerMode.Repeat = ModeTimes && ModeTimes > 1 ? [ModeBody, ModeTimes - 1] : undefined;
+      return true;
+    }
+    if (ModeName === DefaultModesName.Autoplay) {
+      const Chunks = await TracksGen.fetch(
+        await suggestions(
+          (await Extractor()(
+            this.MusicPlayerMode.Autoplay
+              && typeof this.MusicPlayerMode.Autoplay === 'string'
+              ? (await Extractor(this.MusicPlayerMode.Autoplay)).tracks[0].title
+              : undefined,
+          )) ?? this.searches[0].title,
+        ),
+        this.searches[0].requestedBy,
+        this.ExtractorStreamOptions,
+        this.extractor ?? 'play-dl',
+        Number(this.searches[0] ?? 0) - 1,
+      );
+      this.tracks.push(Chunks.streamdatas[0]);
+      this.searches.push(Chunks.tracks[0]);
+
+      return true;
+    }
+    return void null;
   }
 
   /**

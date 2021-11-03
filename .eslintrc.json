@@ -28,6 +28,7 @@
     "import/no-dynamic-require": "off",
     "no-nested-ternary": "off",
     "prefer-destructuring": "off",
-    "no-underscore-dangle": "off"
+    "no-underscore-dangle": "off",
+    "no-empty": "off"
   }
 }

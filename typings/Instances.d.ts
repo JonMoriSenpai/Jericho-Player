@@ -65,6 +65,7 @@ export type Queue = {
     human_queue: String
     human_remainqueue: String
   }
+  readonly playerMode: PlayerMode | undefined
   play(
     Query: String,
     VoiceChannel: VoiceChannel,
@@ -105,6 +106,22 @@ export type Queue = {
         }
       | undefined
   ): String | undefined
+
+  loop(
+    Choice: 'track' | 'queue' | 'off' | String | undefined
+  ): Boolean | undefined
+  repeat(
+    Choice: 'track' | 'queue' | 'off' | String | undefined,
+    Times: number | String | undefined
+  ): Boolean | undefined
+  autoplay(
+    ChoiceORQuery: 'off' | 'Despacito' | 'Urls' | String | Number | undefined
+  ): Boolean | undefined
+  search(
+    Query: String,
+    User: User,
+    SearchOptions: PlayOptions | undefined
+  ): Promise<{ playlist: Boolean; tracks: Track[] } | undefined> | undefined
 }
 
 export type Track = {
@@ -148,12 +165,6 @@ export type StreamPacket = {
   readonly AudioResource: AudioResource
   readonly previousTracks: Track[] | undefined
   readonly TimedoutId: Number | undefined
-  readonly TrackTimeStamp:
-    | {
-        readonly Starting: Number | undefined
-        readonly Paused: Number | undefined
-      }
-    | undefined
 }
 
 export type Stream = {
@@ -238,4 +249,16 @@ export type QueueOptions = {
   readonly LeaveOnEmptyTimedout: Number | 'Time in Seconds'
   readonly LeaveOnEndTimedout: Number | 'Time in Seconds'
   readonly LeaveOnBotOnlyTimedout: Number | 'Time in Seconds'
+}
+
+export type PlayerMode = {
+  mode: String
+  value: String | undefined
+  times: String | Number | undefined
+}
+
+export type DefaultModesBody = {
+  Track: 'track'
+  Queue: 'queue'
+  Off: 'off'
 }

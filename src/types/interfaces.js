@@ -10,6 +10,34 @@ const DefaultProgressBar = {
 };
 
 /**
+ * Default Player Mode Objects
+ */
+
+const DefaultPlayerMode = {
+  mode: undefined,
+  value: undefined,
+  times: undefined,
+};
+
+/**
+ * @param {Object} DefaultModesName -> Default Modes Names for Setting Music Player Modes
+ */
+const DefaultModesName = {
+  Loop: 'loop',
+  Repeat: 'repeat',
+  Autoplay: 'autoplay',
+};
+
+/**
+ * @param {Object} DefaultModesBody -> Default Modes Bodies for Setting Music Player Mode's Values
+ */
+const DefaultModesBody = {
+  Track: 'track',
+  Queue: 'queue',
+  Off: 'off',
+};
+
+/**
  * @param {Object} JoinChannelOptions ->  Join Channel Credentials/Options
  */
 const DefaultJoinChannelOptions = {
@@ -127,6 +155,7 @@ const DefaultStreamPacket = {
 const DefaultFetchOptions = {
   IgnoreError: true,
   ExtractorStreamOptions: DefaultExtractorStreamOptions,
+  NoStreamif: false,
 };
 
 /**
@@ -195,4 +224,7 @@ module.exports = {
   DefaultJoinChannelOptions,
   DefaultExtractorData,
   DefaultFetchOptions,
+  DefaultModesName,
+  DefaultModesBody,
+  DefaultPlayerMode,
 };

@@ -1,7 +1,19 @@
-import { Guild, Client, Message, Snowflake, VoiceChannel, Interaction } from 'discord.js'
-import { Queue, PlayerOptions, QueueOptions } from './instances'
+import {
+  Guild,
+  Client,
+  Message,
+  Snowflake,
+  VoiceChannel,
+  Interaction
+} from 'discord.js'
+import {
+  Queue,
+  PlayerOptions,
+  QueueOptions,
+  DefaultModesBody
+} from './instances'
 import { VoiceConnection } from '@discordjs/voice'
-import { EventEmitter } from'events'
+import { EventEmitter } from 'events'
 
 export class JerichoPlayer extends EventEmitter {
   public constructor (Client: Client, PlayerOptions?: PlayerOptions)
@@ -38,3 +50,5 @@ export class VoiceUtils {
     Timedout?: Number | String | undefined
   ): undefined
 }
+
+export type PlayerMode = DefaultModesBody

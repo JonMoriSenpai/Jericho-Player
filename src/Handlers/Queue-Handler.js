@@ -22,7 +22,11 @@ const {
   DefaultProgressBar,
   DefaultTrack,
   DefaultStreamPacket,
+  DefaultModesName,
+  DefaultPlayerMode,
+  DefaultModesBody,
 } = require('../types/interfaces');
+const TrackGenerator = require('../Structures/Tracks');
 
 /**
  * @class Queue -> Queue Class for Creating Queue Instances for Guild
@@ -138,7 +142,10 @@ class Queue {
           && this.StreamPacket.AudioResource
         ) {
           this.StreamPacket.AudioResource = undefined;
-          this.StreamPacket.previousTracks.push(this.StreamPacket.searches[0]);
+          if (
+            this.StreamPacket
+            && !this.StreamPacket.__handleMusicPlayerModes(this)
+          ) this.StreamPacket.previousTracks.push(this.StreamPacket.searches[0]);
           this.JerichoPlayer.emit('trackEnd', this, this.tracks[0]);
         }
         if (!this.destroyed) this.#__CleaningTrackMess();
@@ -445,6 +452,7 @@ class Queue {
     this.StreamPacket.volume = 0.095;
     this.StreamPacket.AudioResource = undefined;
     this.StreamPacket.previousTracks = [];
+    this.StreamPacket.MusicPlayerMode = undefined;
     this.StreamPacket.TrackTimeStamp = {
       Starting: undefined,
       Paused: undefined,
@@ -625,6 +633,7 @@ class Queue {
     },
   ) {
     if (this.destroyed) return void this.JerichoPlayer.emit('error', 'Destroyed Queue', this);
+    if (!this.StreamPacket) return void this.JerichoPlayer.emit('error', 'Destroyed Queue', this);
     if (DefaultType && Number.isNaN(DefaultType)) {
       return void this.JerichoPlayer.emit(
         'error',
@@ -681,6 +690,86 @@ class Queue {
           DefaultType,
         );
     }
+  }
+
+  /**
+   * @method loop() -> Loop Single Track or Queue
+   * @param {DefaultModesBody{}|undefined} Choice Mode Choice , like "track" | "queue" | "off"
+   * @returns {Boolean|undefined} returns true for green signal operation and undefined for errors
+   */
+
+  loop(Choice = DefaultModesBody.Track) {
+    if (this.destroyed) return void this.JerichoPlayer.emit('error', 'Destroyed Queue', this);
+    if (!this.StreamPacket) return void this.JerichoPlayer.emit('error', 'Destroyed Queue', this);
+    return this.StreamPacket.setMode(DefaultModesName.Loop, Choice);
+  }
+
+  /**
+   * @method repeat() -> Repeat Track or Queue with "n" Times given by User
+   * @param {DefaultModesBody{}|String|undefined} Choice Mode Choice , like "track" | "queue" | "off"
+   * @param {String|undefined} Times Number of Repeat Track or Queue with "n" Times given by User
+   * @returns {Boolean|undefined} returns true for green signal operation and undefined for errors
+   */
+
+  repeat(Choice = DefaultModesBody.Track, Times = 1) {
+    if (this.destroyed) return void this.JerichoPlayer.emit('error', 'Destroyed Queue', this);
+    if (!this.StreamPacket) return void this.JerichoPlayer.emit('error', 'Destroyed Queue', this);
+    return this.StreamPacket.setMode(
+      DefaultModesName.Repeat,
+      Choice,
+      Number(Times) < 1 ? 1 : Number(Times),
+    );
+  }
+
+  /**
+   * @method autoplay() -> Autplay Songs with the help of last Played Track or Query given
+   * @param {DefaultModesBody{}|String|undefined} ChoiceORQuery Mode Choice , like "off" | OR else give Query or Url for autoplay songs with respect to specified query
+   * @returns {Boolean|undefined} returns true for green signal operation and undefined for errors
+   */
+
+  autoplay(ChoiceORQuery = undefined) {
+    if (this.destroyed) return void this.JerichoPlayer.emit('error', 'Destroyed Queue', this);
+    if (!this.StreamPacket) return void this.JerichoPlayer.emit('error', 'Destroyed Queue', this);
+    return this.StreamPacket.setMode(DefaultModesName.Autoplay, ChoiceORQuery);
+  }
+
+  /**
+   * @method search() -> Searching for Tracks of Query
+   * @param {String} Query Query as URLs or Youtube Searches
+   * @param {GuildMember|User} User user Value for Track.requestedBy Object
+   * @param {DefaultQueueCreateOptions<Object>|undefined} SearchOptions Stream Options for Query Processing | Same as Queue Creation and Play Method
+   * @returns {Promise<DefaultTrack[]|undefined>|undefined} Returns Tracks if operation emits green signal or undefined for errors
+   */
+  async search(
+    Query,
+    User,
+    SearchOptions = {
+      IgnoreError: true,
+      extractor: undefined,
+      metadata: this.metadata,
+      ExtractorStreamOptions: {
+        Limit: 1,
+        Quality: 'high',
+        Cookies: undefined,
+        ByPassYoutubeDLRatelimit: true,
+        YoutubeDLCookiesFilePath: undefined,
+        Proxy: undefined,
+      },
+    },
+  ) {
+    SearchOptions = ClassUtils.stablizingoptions(
+      SearchOptions,
+      this.QueueOptions,
+    );
+    SearchOptions = { ...SearchOptions, NoStreamif: true };
+    const RawDatas = await TrackGenerator.fetch(
+      Query,
+      User,
+      SearchOptions,
+      this.extractor,
+      0,
+    );
+    return { playlist: RawDatas.playlist, tracks: RawDatas.tracks };
   }
 
   /**
@@ -793,7 +882,7 @@ class Queue {
           : 0)
         + (this.StreamPacket.tracks && this.StreamPacket.tracks[1]
           ? this.StreamPacket.tracks
-            .splice(1, this.StreamPacket.tracks.length)
+            .slice(1, this.StreamPacket.tracks.length)
             .reduce(
               (TotalValue, CurrentTrack) => TotalValue + CurrentTrack.duration,
               0,
@@ -813,7 +902,7 @@ class Queue {
           : 0)
         + (this.StreamPacket.tracks && this.StreamPacket.tracks[1]
           ? this.StreamPacket.tracks
-            .splice(1, this.StreamPacket.tracks.length)
+            .slice(1, this.StreamPacket.tracks.length)
             .reduce(
               (TotalValue, CurrentTrack) => TotalValue + CurrentTrack.duration,
               0,
@@ -863,6 +952,37 @@ class Queue {
   }
 
   /**
+   * Player Mode of Music Player like 'Loop','Repeat','AutoPlay'
+   * @returns {DefaultPlayerMode|undefined} Returns Loop Mode in String
+   */
+
+  get playerMode() {
+    if (this.destroyed) return void null;
+    if (this.StreamPacket.previousTracks.length < 1) return void null;
+    if (!this.StreamPacket.MusicPlayerMode) return void null;
+    if (this.StreamPacket.MusicPlayerMode.Loop) {
+      return {
+        mode: DefaultModesName.Loop,
+        value: this.StreamPacket.MusicPlayerMode.Loop,
+      };
+    }
+    if (this.StreamPacket.MusicPlayerMode.Repeat) {
+      return {
+        mode: DefaultModesName.Repeat,
+        value: this.StreamPacket.MusicPlayerMode.Repeat[0],
+        times: this.StreamPacket.MusicPlayerMode.Repeat[1],
+      };
+    }
+    if (this.StreamPacket.MusicPlayerMode.Autoplay) {
+      return {
+        mode: DefaultModesName.Autoplay,
+        value: this.StreamPacket.MusicPlayerMode.Autoplay,
+      };
+    }
+    return void null;
+  }
+
+  /**
    * Audio Resource or Management of Tracks in Queue
    * @private #__ResourcePlay() -> Resource Plays
    * @returns {undefined} Returns undefined , it just completes a one-go process
@@ -878,7 +998,10 @@ class Queue {
         && this.StreamPacket.tracks[0]
       )
     ) {
-      this.StreamPacket.TimedoutId = this.#__QueueAudioPlayerStatusManager();
+      if (
+        this.StreamPacket
+        && !this.StreamPacket.__handleMusicPlayerModes(this)
+      ) this.StreamPacket.TimedoutId = this.#__QueueAudioPlayerStatusManager();
       return void this.JerichoPlayer.emit('queueEnd', this);
     }
     this.StreamPacket.TimedoutId = this.StreamPacket.TimedoutId
