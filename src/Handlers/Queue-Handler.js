@@ -877,7 +877,7 @@ class Queue {
             0,
           )
           : 0)
-        + (this.StreamPacket.tracks && this.StreamPacket.tracks[1]
+        + (this.StreamPacket.tracks && this.StreamPacket.tracks[0]
           ? this.StreamPacket.tracks
             .slice(0, this.StreamPacket.tracks.length)
             .reduce(
@@ -886,10 +886,13 @@ class Queue {
             )
           : 0)
       }`,
-      saved_queue_ms: `${this.StreamPacket.tracks.reduce(
-        (TotalValue, CurrentTrack) => TotalValue + CurrentTrack.duration,
-        0,
-      )}`,
+      saved_queue_ms:
+        this.StreamPacket.tracks && this.StreamPacket.tracks[0]
+          ? `${this.StreamPacket.tracks.reduce(
+            (TotalValue, CurrentTrack) => TotalValue + CurrentTrack.duration,
+            0,
+          )}`
+          : '0',
       queue_ms: `${
         (this.StreamPacket.tracks && this.StreamPacket.tracks[0]
           ? this.paused
@@ -907,10 +910,12 @@ class Queue {
           : 0)
       }`,
       remainqueue_ms: `${
-        this.StreamPacket.tracks.reduce(
-          (TotalValue, CurrentTrack) => TotalValue + CurrentTrack.duration,
-          0,
-        )
+        (this.StreamPacket.tracks && this.StreamPacket.tracks[0]
+          ? this.StreamPacket.tracks.reduce(
+            (TotalValue, CurrentTrack) => TotalValue + CurrentTrack.duration,
+            0,
+          )
+          : 0)
         - (this.paused
           ? this.StreamPacket.TrackTimeStamp.Paused
             - this.StreamPacket.TrackTimeStamp.Starting
