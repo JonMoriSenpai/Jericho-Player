@@ -655,7 +655,9 @@ class Queue {
         if (!this.StreamPacket.tracks[0]) return void this.JerichoPlayer.emit('error', 'Empty Queue', this);
         return this.#__StructureProgressBar(
           Bar,
-          Number(this.currentTimestamp.saved_queue_ms) - Number(this.currentTimestamp.remainqueue_ms) + Number(this.currentTimestamp.previoustracks_ms),
+          Number(this.currentTimestamp.saved_queue_ms)
+            - Number(this.currentTimestamp.remainqueue_ms)
+            + Number(this.currentTimestamp.previoustracks_ms),
           Number(this.currentTimestamp.totalqueue_ms),
           DefaultType,
         );
@@ -1189,7 +1191,7 @@ class Queue {
       ).toFixed(1),
     ) + 1;
     const ProgressBar = [];
-    const TargetHit = undefined;
+    let TargetHit = true;
     for (let count = 0.7; count <= 10.5; count += 0.7) {
       if (count === 0.7) {
         ProgressBar.push(
@@ -1200,8 +1202,10 @@ class Queue {
             })} |  `,
         );
       }
-      if (count <= Size && count >= Size - 0.7 && TargetHit) ProgressBar.push(Credentials.TargetIcon);
-      else if (count < Size) ProgressBar.push(Credentials.CompleteIcon);
+      if (count <= Size && count >= Size - 0.7 && TargetHit) {
+        ProgressBar.push(Credentials.TargetIcon);
+        TargetHit = false;
+      } else if (count < Size) ProgressBar.push(Credentials.CompleteIcon);
       else ProgressBar.push(Credentials.RemainingIcon);
     }
     if (Size >= 11) ProgressBar.push(Credentials.TargetIcon);
