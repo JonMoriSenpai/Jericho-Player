@@ -652,7 +652,7 @@ class Queue {
           DefaultType,
         );
       case 'queue':
-        if (!this.StreamPacket.tracks[0] || !this.StreamPacket.tracks[1]) return void this.JerichoPlayer.emit('error', 'Empty Queue', this);
+        if (!this.StreamPacket.tracks[0]) return void this.JerichoPlayer.emit('error', 'Empty Queue', this);
         return this.#__StructureProgressBar(
           Bar,
           Number(this.currentTimestamp.queue_ms),
@@ -660,7 +660,7 @@ class Queue {
           DefaultType,
         );
       case 'tracks':
-        if (!this.StreamPacket.tracks[0] || !this.StreamPacket.tracks[1]) return void this.JerichoPlayer.emit('error', 'Empty Queue', this);
+        if (!this.StreamPacket.tracks[0]) return void this.JerichoPlayer.emit('error', 'Empty Queue', this);
         return this.#__StructureProgressBar(
           Bar,
           Number(this.currentTimestamp.track_ms),
@@ -762,14 +762,17 @@ class Queue {
       this.QueueOptions,
     );
     SearchOptions = { ...SearchOptions, NoStreamif: true };
-    const RawDatas = await TrackGenerator.fetch(
+    const Chunks = await TrackGenerator.fetch(
       Query,
       User,
       SearchOptions,
       this.extractor,
       0,
     );
-    return { playlist: RawDatas.playlist, tracks: RawDatas.tracks };
+    if (Chunks.error) {
+      return void this.JerichoPlayer.emit('error', Chunks.error, this);
+    }
+    return { playlist: Chunks.playlist, tracks: Chunks.tracks };
   }
 
   /**
@@ -874,15 +877,9 @@ class Queue {
             0,
           )
           : 0)
-        + (this.StreamPacket.tracks && this.StreamPacket.tracks[0]
-          ? this.paused
-            ? this.StreamPacket.TrackTimeStamp.Paused
-              - this.StreamPacket.TrackTimeStamp.Starting
-            : new Date().getTime() - this.StreamPacket.TrackTimeStamp.Starting
-          : 0)
         + (this.StreamPacket.tracks && this.StreamPacket.tracks[1]
           ? this.StreamPacket.tracks
-            .slice(1, this.StreamPacket.tracks.length)
+            .slice(0, this.StreamPacket.tracks.length)
             .reduce(
               (TotalValue, CurrentTrack) => TotalValue + CurrentTrack.duration,
               0,

@@ -96,6 +96,7 @@ class TrackGenerator {
       playlist: RawData.playlist,
       streamdatas: Chunks.streamdatas,
       tracks: Chunks.tracks,
+      error: undefined,
     };
   }
 

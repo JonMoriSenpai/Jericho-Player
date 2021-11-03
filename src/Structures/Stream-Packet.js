@@ -13,8 +13,8 @@ const {
   StageChannel,
   Guild,
 } = require('discord.js');
+const { Extractor } = require('playdl-music-extractor');
 const { suggestions } = require('youtube-suggest-gen');
-const { Extractor } = require('playdl-music-extractor/typings/index.js');
 const JerichoPlayer = require('../Handlers/Player-Handler');
 const TracksGen = require('./Tracks');
 const VoiceUtils = require('../Utilities/Voice-Utils');
@@ -614,7 +614,16 @@ class StreamPacketGen {
       return true;
     }
     if (ModeName === DefaultModesName.Autoplay) {
-      const Garbage = await Extractor(this.MusicPlayerMode.Autoplay);
+      const Garbage = this.MusicPlayerMode.Autoplay
+        && typeof this.MusicPlayerMode.Autoplay === 'string'
+        ? await this.JerichoPlayer.getQueue(this.guildId).search(
+          this.MusicPlayerMode.Autoplay,
+          this.searches[0].requestedBy,
+          this.ExtractorStreamOptions,
+          this.extractor ?? 'play-dl',
+          Number(this.searches[0] ?? 0) - 1,
+        )
+        : undefined;
       if (Garbage.error) {
         return void this.JerichoPlayer.emit(
           'error',

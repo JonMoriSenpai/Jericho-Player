@@ -122,6 +122,7 @@ const DefaultChunk = {
   playlist: false,
   tracks: [DefaultTrack],
   streamdatas: [DefaultStream],
+  error: undefined,
 };
 
 /**
