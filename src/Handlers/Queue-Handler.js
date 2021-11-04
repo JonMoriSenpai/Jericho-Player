@@ -256,7 +256,12 @@ class Queue {
         TrackIndex,
       );
     }
-    if (!this.playing || (this.playing && !this.StreamPacket.tracks[1])) return void this.JerichoPlayer.emit('error', 'Empty Queue', this);
+    if (
+      !this.playing
+      || (this.playing
+        && !this.playerMode
+        && !this.StreamPacket.tracks[1])
+    ) return void this.JerichoPlayer.emit('error', 'Empty Queue', this);
     if (Number(TrackIndex) <= 0 && Number(TrackIndex) >= this.tracks.length) {
       return void this.JerichoPlayer.emit(
         'error',
@@ -1055,6 +1060,14 @@ class Queue {
    */
 
   #__CleaningTrackMess(StartingTrackIndex = 0, DeleteTracksCount) {
+    if (
+      !(
+        this.StreamPacket
+        && this.StreamPacket.tracks
+        && this.StreamPacket.tracks[0]
+        && this.StreamPacket.searches[0]
+      )
+    ) return void null;
     DeleteTracksCount
       ? this.StreamPacket.tracks.splice(
         StartingTrackIndex ?? 0,
