@@ -490,7 +490,7 @@ class StreamPacketGen {
     }
     if (ModeName === DefaultModesName.Autoplay) {
       this.MusicPlayerMode = {
-        Autoplay: ModeType,
+        Autoplay: ModeType ?? true,
       };
       return true;
     }
@@ -616,10 +616,12 @@ class StreamPacketGen {
       this.previousTracks = [];
       return true;
     }
-    if (ModeName === DefaultModesName.Autoplay && this.tracks.length === 0) {
-      const Garbage = this.MusicPlayerMode.Autoplay
-        && typeof this.MusicPlayerMode.Autoplay === 'string'
-        ? await this.JerichoPlayer.getQueue(this.guildId).search(
+    if (
+      ModeName === DefaultModesName.Autoplay
+      && QueueInstance.tracks.length === 0
+    ) {
+      const SearchResults = typeof this.MusicPlayerMode.Autoplay === 'string'
+        ? await QueueInstance.search(
           this.MusicPlayerMode.Autoplay,
           QueueInstance.previousTrack.requestedBy,
           this.ExtractorStreamOptions,
@@ -627,27 +629,48 @@ class StreamPacketGen {
           Number(QueueInstance.previousTrack.Id ?? 0) - 1,
         )
         : undefined;
-      if (Garbage.error) {
+      if (SearchResults && SearchResults.error) {
         return void this.JerichoPlayer.emit(
           'error',
-          Chunks.error,
-          this.JerichoPlayer.GetQueue(this.guildId),
+          SearchResults.error,
+          QueueInstance,
+        );
+      }
+      const GarbageSuggestion = await suggestions(
+        (SearchResults && SearchResults.tracks
+          ? SearchResults.tracks[0].title
+          : undefined) ?? QueueInstance.previousTrack.title,
+      );
+      if (
+        !(
+          GarbageSuggestion
+          && GarbageSuggestion[0]
+          && GarbageSuggestion[0].title
+        )
+      ) {
+        return void this.JerichoPlayer.emit(
+          'error',
+          'No AutoPlay Track Result',
+          QueueInstance,
         );
       }
       const Chunks = await TracksGen.fetch(
-        await suggestions(
-          (this.MusicPlayerMode.Autoplay
-          && typeof this.MusicPlayerMode.Autoplay === 'string'
-            ? Garbage.tracks[0].title
-            : undefined) ?? QueueInstance.previousTrack.title,
-        ),
+        GarbageSuggestion[0].title,
         QueueInstance.previousTrack.requestedBy,
         this.ExtractorStreamOptions,
         this.extractor ?? 'play-dl',
         Number(QueueInstance.previousTrack.Id ?? 0) - 1,
       );
+      if (Chunks && Chunks.error) {
+        return void this.JerichoPlayer.emit(
+          'error',
+          Chunks.error,
+          QueueInstance,
+        );
+      }
       this.tracks.push(Chunks.streamdatas[0]);
       this.searches.push(Chunks.tracks[0]);
+      QueueInstance.tracks[0] = Chunks.tracks[0];
 
       return true;
     }

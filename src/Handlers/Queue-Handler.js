@@ -1006,7 +1006,8 @@ class Queue {
       )
       && (!this.playerMode
         || (this.playerMode
-          && this.playerMode.type === DefaultModesType.Queue
+          && (this.playerMode.type === DefaultModesType.Queue
+            || this.playerMode.mode === DefaultModesName.Autoplay)
           && !GarbagePlayerModeHandle))
     ) {
       this.StreamPacket.TimedoutId = this.#__QueueAudioPlayerStatusManager();
