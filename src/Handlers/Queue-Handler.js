@@ -1037,6 +1037,7 @@ class Queue {
     } catch (error) {
       this.JerichoPlayer.emit(
         'connectionError',
+        `${error.message ?? error ?? 'Audio Resource Streaming Error'}`,
         this,
         this.StreamPacket.VoiceConnection,
         this.guildId,

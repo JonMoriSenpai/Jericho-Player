@@ -96,6 +96,7 @@ class VoiceUtils {
         }
         return void QueueInstance.JerichoPlayer.emit(
           'connectionError',
+          "Voice Connection Can't be destroyed",
           QueueInstance.JerichoPlayer.GetQueue(QueueInstance.guildId),
           VoiceConnection,
           guildId,
@@ -123,6 +124,7 @@ class VoiceUtils {
     }
     return void QueueInstance.JerichoPlayer.emit(
       'connectionError',
+      "Voice Connection Can't be destroyed",
       QueueInstance.JerichoPlayer.GetQueue(QueueInstance.guildId),
       VoiceConnection,
       guildId,

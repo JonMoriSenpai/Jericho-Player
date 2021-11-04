@@ -26,6 +26,7 @@ const {
  * @event "playlistAdd" => Player.on("playlistAdd", Queue , tracks[] ) => { } | tracks[] is Tracks from "Query" provided in Queue.play() or Queue.insert()
  * @event "botDisconnect" => Player.on("botDisconnect", Queue , VoiceChannel ) => { } | Queue can be undefined , depends on reason of event trigger
  * @event "channelEmpty" => Player.on("channelEmpty", Queue , VoiceChannel ) => {  } | Voice Channel can be undefined or destroyed if User does .
+ * @event "connectionError" => Player.on("connectionError", ErrorMessage, Queue , VoiceConnection, guildId ) => {  } | Queue can be Destroyed .
  * @method CreateQueue<Queue> => Creates Queue and returns "instanceof Queue"
  * @method GetQueue<Queue> => Fetch Queue from Cache and returns "instanceof Queue"
  * @method DeleteQueue<undefined> => Delete Queue from Cache | Destroy Queue Completely and returns undefined

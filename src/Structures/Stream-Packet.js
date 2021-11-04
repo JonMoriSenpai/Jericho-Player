@@ -235,6 +235,7 @@ class StreamPacketGen {
     } else if (!VoiceChannel && !this.VoiceChannel && !this.VoiceConnection) {
       return void this.JerichoPlayer.emit(
         'connectionError',
+        'Invalid Voice Connection or Invalid Voice Channel Error',
         this.JerichoPlayer.GetQueue(this.guildId),
         this.VoiceConnection,
         this.guildId,
@@ -521,6 +522,7 @@ class StreamPacketGen {
       this.AudioResource = undefined;
       return void this.JerichoPlayer.emit(
         'connectionError',
+        `${error.message ?? error ?? 'Audio Resource Streaming Error'}`,
         this.JerichoPlayer.GetQueue(this.guildId),
         this.VoiceConnection,
         this.guildId,
