@@ -17,7 +17,7 @@ const StreamPacketGen = require('../Structures/Stream-Packet');
 const ClassUtils = require('../Utilities/Class-Utils');
 const { disconnect } = require('../Utilities/Voice-Utils');
 const JerichoPlayer = require('./Player-Handler');
-const {
+var {
   DefaultQueueCreateOptions,
   DefaultProgressBar,
   DefaultTrack,
@@ -39,7 +39,7 @@ class Queue {
   /**
    * @param {Client} Client Discord Client Instance
    * @param {Message} message Guild's Text Messsage
-   * @param {DefaultQueueCreateOptions<Object>|undefined} QueueOptions Queue Create Options
+   * @param {DefaultQueueCreateOptions|undefined} QueueOptions Queue Create Options
    * @param {JerichoPlayer} JerichoPlayer Jericho Player Instance
    */
   constructor(
@@ -76,7 +76,7 @@ class Queue {
     // overwritting Queue Options with Default Queue Options Saved in Package
     /**
      * QueueOptions Queue Default Options for Upcoming methods operations
-     * @type {DefaultQueueCreateOptions<Object>}
+     * @type {DefaultQueueCreateOptions}
      * @readonly
      */
     this.QueueOptions = QueueOptions = ClassUtils.stablizingoptions(
@@ -181,7 +181,7 @@ class Queue {
    * @param {String} Query Query like URls or Youtube Searches | Default Extractor accept 5 supported and big websites like youtube , spotify , soundcloud , retribution , facebook and for "youtube-dl" , it accept any follows official "youtube" searches
    * @param {VoiceChannel|StageChannel} VoiceChannel Voice Channel from Discord.js
    * @param {User|GuildMember} User Guild Member or Guild User for requestedBy Object in track
-   * @param {DefaultQueueCreateOptions<Object>} PlayOptions Play Options | Queue Create Options | Stream Options for Additional features
+   * @param {DefaultQueueCreateOptions} PlayOptions Play Options | Queue Create Options | Stream Options for Additional features
    * @returns {Promise<Boolean|undefined>|undefined} undefined on successfull attempt or Promise rejection | true if operation went good signal
    */
 
@@ -363,7 +363,7 @@ class Queue {
    * @param {String} Query Query as URLs or Youtube Searches
    * @param {String | Number} TrackIndex Track Index Value to insert at any specific position
    * @param {GuildMember|User} User user Value for Track.requestedBy Object
-   * @param {DefaultQueueCreateOptions<Object>|undefined} InsertOptions Stream Options for Query Processing | Same as Queue Creation and Play Method
+   * @param {DefaultQueueCreateOptions|undefined} InsertOptions Stream Options for Query Processing | Same as Queue Creation and Play Method
    * @returns {Promise<Boolean|undefined>|undefined} true if operation emits green signal or undefined for errors
    */
   async insert(
@@ -480,12 +480,12 @@ class Queue {
       Paused: undefined,
     };
 
-    /**
+    /*
      * Timeout Session and Call for Voice Utils's disconnect method/function
      * Above , Cached Destruction Timeout ID , incase Queue got recovered before destruction to cancel out the destroy Timedout
      * Below is to completely Destroy Stream Packet
      */
-    const NodeTimeoutId = connectionTimedout || connectionTimedout === 0
+    var NodeTimeoutId = connectionTimedout || connectionTimedout === 0
       ? disconnect(
         this.guildId,
         { destroy: true },
@@ -501,7 +501,7 @@ class Queue {
     Garbage.container = this.StreamPacket;
     delete Garbage.container;
     this.StreamPacket = undefined;
-    return NodeTimeoutId ?? undefined;
+    return this.destroyed ?? undefined;
   }
 
   /**
@@ -576,7 +576,7 @@ class Queue {
    * back -> Playing Previous Songs from non-destroyed Queue
    * @param {String|Number} TracksBackwardIndex TrackIndex in PreviousTracks Stack to Play now or else recent ended song will be played
    * @param {User|GuildMember} User User Data if new User is using Back Command
-   * @param {DefaultQueueCreateOptions<Object>} PlayOptions Stream Play Options , Same as Queue Create Options to add more into extraction and other properties
+   * @param {DefaultQueueCreateOptions} PlayOptions Stream Play Options , Same as Queue Create Options to add more into extraction and other properties
    * @param {Boolean|undefined} forceback if User wants to forceibly play previous Tracks without any delay or wait
    * @returns {Promise<Boolean|undefined>|undefined} true if operation emits green signal or undefined for errors
    */
@@ -639,7 +639,7 @@ class Queue {
    * createProgressBar() -> Create progress bar for Queue ,Tracks , PreviousTracks and current track(Track)
    * @param {String|undefined} Work  Queue ,Tracks , PreviousTracks and current track(Track) as its Value
    * @param {String|Number|undefined} DefaultType Default Type Value to create Progress bar Cache Types
-   * @param {DefaultProgressBar<object>} Bar Progress bar Credentials or else ByDefault it will Create one
+   * @param {DefaultProgressBar} Bar Progress bar Credentials or else ByDefault it will Create one
    * @returns {String|undefined} Progress Bar or else undefined if any error occurs
    */
 
@@ -761,7 +761,7 @@ class Queue {
    * search() -> Searching for Tracks of Query
    * @param {String} Query Query as URLs or Youtube Searches
    * @param {GuildMember|User} User user Value for Track.requestedBy Object
-   * @param {DefaultQueueCreateOptions<Object>|undefined} SearchOptions Stream Options for Query Processing | Same as Queue Creation and Play Method
+   * @param {DefaultQueueCreateOptions|undefined} SearchOptions Stream Options for Query Processing | Same as Queue Creation and Play Method
    * @returns {Promise<Objectundefined>|undefined} Returns Tracks if operation emits green signal or undefined for errors
    */
   async search(
@@ -876,7 +876,7 @@ class Queue {
 
   /**
    * CurrentTimeStamp -> TimeStamp of tracks , queue and e.t.c in milliseconds and human readable format
-   * @type {DefaultcurrentTimestamp<Object>|undefined}
+   * @type {DefaultcurrentTimestamp|undefined}
    * @readonly
    */
 

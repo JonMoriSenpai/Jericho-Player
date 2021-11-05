@@ -1,7 +1,7 @@
-/**
- * @param {Object} ProgressBar ->  Progress bar Credentials
+/*
+ * ProgressBar ->  Progress bar Credentials
  */
-const DefaultProgressBar = {
+var DefaultProgressBar = {
   CompleteIcon: '▬',
   TargetIcon: '🔘',
   RemainingIcon: '▬',
@@ -9,11 +9,11 @@ const DefaultProgressBar = {
   EndIcon: undefined,
 };
 
-/**
+/*
  * Default Current TimeStamp Structure
  */
 
-const DefaultcurrentTimestamp = {
+var DefaultcurrentTimestamp = {
   track_ms: '',
   totaltrack_ms: '',
   previoustracks_ms: '',
@@ -30,52 +30,52 @@ const DefaultcurrentTimestamp = {
   human_remainqueue: '',
 };
 
-/**
+/*
  * Default Player Mode Objects
  */
 
-const DefaultPlayerMode = {
+var DefaultPlayerMode = {
   mode: undefined,
   type: undefined,
   times: undefined,
 };
 
-/**
- * @param {Object} DefaultModesName -> Default Modes Names for Setting Music Player Modes
+/*
+ * DefaultModesName -> Default Modes Names for Setting Music Player Modes
  */
-const DefaultModesName = {
+var DefaultModesName = {
   Loop: 'loop',
   Repeat: 'repeat',
   Autoplay: 'autoplay',
 };
 
-/**
- * @param {Object} DefaultModesType -> Default Modes Bodies for Setting Music Player Mode's Values
+/*
+ * DefaultModesType -> Default Modes Bodies for Setting Music Player Mode's Values
  */
-const DefaultModesType = {
+var DefaultModesType = {
   Track: 'track',
   Queue: 'queue',
   Off: 'off',
 };
 
-/**
- * @param {Object} JoinChannelOptions ->  Join Channel Credentials/Options
+/*
+ * JoinChannelOptions ->  Join Channel Credentials/Options
  */
-const DefaultJoinChannelOptions = {
+var DefaultJoinChannelOptions = {
   force: false,
 };
 
-/**
- * @param {Object} DisconnectChannelOptions ->  Disconnect/Destroy Channel Connection Credentials/Options
+/*
+ * DisconnectChannelOptions ->  Disconnect/Destroy Channel Connection Credentials/Options
  */
-const DefaultDisconnectChannelOptions = {
+var DefaultDisconnectChannelOptions = {
   destroy: true,
 };
 
-/**
- * @param {Object} ExtractorStreamOptions ->  Extractor Options to fetch Songs
+/*
+ * ExtractorStreamOptions ->  Extractor Options to fetch Songs
  */
-const DefaultExtractorStreamOptions = {
+var DefaultExtractorStreamOptions = {
   Limit: 1,
   Quality: 'high',
   Cookies: undefined,
@@ -84,11 +84,11 @@ const DefaultExtractorStreamOptions = {
   Proxy: undefined,
 };
 
-/**
- * @param {Object} Track ->  Song Track
+/*
+ * Track ->  Song Track
  */
 
-const DefaultTrack = {
+var DefaultTrack = {
   Id: 0,
   url: undefined,
   video_Id: undefined,
@@ -105,11 +105,11 @@ const DefaultTrack = {
   dislikes: 0,
 };
 
-/**
- * @param {Object} Stream ->  Song Track's STream Data / Raw Data from Extractors
+/*
+ * Stream ->  Song Track's STream Data / Raw Data from Extractors
  */
 
-const DefaultStream = {
+var DefaultStream = {
   Id: 0,
   url: undefined,
   video_Id: undefined,
@@ -135,22 +135,22 @@ const DefaultStream = {
   dislikes: 0,
 };
 
-/**
- * @param {Object} Chunk ->  Song Track's STream Data And Raw Data from Extractors for StreamPacket
+/*
+ * Chunk ->  Song Track's STream Data And Raw Data from Extractors for StreamPacket
  */
 
-const DefaultChunk = {
+var DefaultChunk = {
   playlist: false,
   tracks: [DefaultTrack],
   streamdatas: [DefaultStream],
   error: undefined,
 };
 
-/**
- * @param {Object} StreamPacket ->  StreamPacket Instance for Queue for handlind backend Workloads
+/*
+ * StreamPacket ->  StreamPacket Instance for Queue for handlind backend Workloads
  */
 
-const DefaultStreamPacket = {
+var DefaultStreamPacket = {
   Client: undefined,
   VoiceChannel: undefined,
   extractor: undefined,
@@ -170,40 +170,40 @@ const DefaultStreamPacket = {
   TrackTimeStamp: undefined,
 };
 
-/**
- * @param {Object} FetchOptions ->  Fetch Options for SongFetching function for Extractors
+/*
+ * FetchOptions ->  Fetch Options for SongFetching function for Extractors
  */
 
-const DefaultFetchOptions = {
+var DefaultFetchOptions = {
   IgnoreError: true,
   ExtractorStreamOptions: DefaultExtractorStreamOptions,
   NoStreamif: false,
 };
 
-/**
- * @param {Object} ExtractorData Extractor Data Raw from Extractor Download/Extractor Options
+/*
+ * ExtractorData Extractor Data Raw from Extractor Download/Extractor Options
  */
-const DefaultExtractorData = {
+var DefaultExtractorData = {
   playlist: false,
   tracks: DefaultStream,
   error: undefined,
 };
 
-/**
- * @param {Object} StreamCreateOptions Stream Create Options for Extractors
+/*
+ * StreamCreateOptions Stream Create Options for Extractors
  */
 
-const DefaultStreamCreateOptions = {
+var DefaultStreamCreateOptions = {
   requestedBy: undefined,
   IgnoreError: true,
   ExtractorStreamOptions: DefaultExtractorStreamOptions,
 };
 
-/**
- * @param {Object} JerichoPlayerOptions Jericho Player's Default Options
+/*
+ * JerichoPlayerOptions Jericho Player's Default Options
  */
 
-const DefaultJerichoPlayerOptions = {
+var DefaultJerichoPlayerOptions = {
   extractor: 'play-dl',
   ExtractorStreamOptions: DefaultExtractorStreamOptions,
   IgnoreError: true,
@@ -215,11 +215,11 @@ const DefaultJerichoPlayerOptions = {
   LeaveOnBotOnlyTimedout: 0,
 };
 
-/**
- * @param {Object} QueueCreateOptions Queue's Default Options
+/*
+ * QueueCreateOptions Queue's Default Options
  */
 
-const DefaultQueueCreateOptions = {
+var DefaultQueueCreateOptions = {
   extractor: 'play-dl',
   metadata: null,
   ExtractorStreamOptions: DefaultExtractorStreamOptions,

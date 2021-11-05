@@ -1,5 +1,5 @@
 const ClassUtils = require('../Utilities/Class-Utils');
-const {
+var {
   DefaultExtractorStreamOptions,
   DefaultChunk,
   DefaultStream,
@@ -17,11 +17,11 @@ class TrackGenerator {
    * fetch() -> Fetch method , fetches Streams for Stream packet
    * @param {String} Query Query like URls or Youtube Searches | Default Extractor accept 5 supported and big websites like youtube , spotify , soundcloud , retribution , facebook and for "youtube-dl" , it accept any follows official "youtube" searches
    * @param {User|GuildMember|undefined} requestedBy user Data as who requested if given during insert or play method of Queue Instance
-   * @param {DefaultExtractorStreamOptions<Object>} FetchOptions Extractor Options for Track Download from Extractors
+   * @param {DefaultExtractorStreamOptions} FetchOptions Extractor Options for Track Download from Extractors
    * @param {String|Boolean|undefined} extractor extractor to be used as "play-dl" or "youtube-dl"
    * @param {Nummber|String|undefined} CacheLength Last Track ID value
    * @param {Boolean|undefined} NoStreamif Check if User wants Stream or not
-   * @returns {Promise<DefaultChunk<Object>>} returns Chunk value | like a packet of tracks and streamdata values
+   * @returns {Promise<DefaultChunk>} returns Chunk value | like a packet of tracks and streamdata values
    */
   static async fetch(
     Query,
@@ -105,7 +105,7 @@ class TrackGenerator {
    * @param {DefaultStream[]} Tracks Stream Tracks to be converted User fetchable
    * @param {Number|undefined} CacheLength last Cached Track's ID
    * @param {User|GuildMember|undefined} requestedBy RequestedBy User Object value for Track
-   * @returns {DefaultChunk<Object>} Chunk Vlaue for Tracks Cache
+   * @returns {DefaultChunk} Chunk Vlaue for Tracks Cache
    */
 
   static #Track_Id_Placement(Tracks, CacheLength, requestedBy = undefined) {
@@ -129,9 +129,9 @@ class TrackGenerator {
   /**
    * #SongsFetching() -> Raw Track Data Fetching from various extractors like "play-dl" | "youtube-dl"
    * @param {String} Query Query like URls or Youtube Searches | Default Extractor accept 5 supported and big websites like youtube , spotify , soundcloud , retribution , facebook and for "youtube-dl" , it accept any follows official "youtube" searches
-   * @param {DefaultFetchOptions<Object>} FetchOptions Fetching Options for Extractors
+   * @param {DefaultFetchOptions} FetchOptions Fetching Options for Extractors
    * @param {String|Boolean|undefined} extractor extractor to be used as "play-dl" or "youtube-dl"
-   * @returns {Promise<DefaultExtractorData<Object>>} Returns Extractor Value with no edits
+   * @returns {Promise<DefaultExtractorData>} Returns Extractor Value with no edits
    */
 
   static async #SongsFetching(
@@ -187,9 +187,9 @@ class TrackGenerator {
   /**
    * @private #YoutubeDLExtractor -> Youtube-Dl Extractor for player
    * @param {String} Query Query like URls or Youtube Searches | Default Extractor accept 5 supported and big websites like youtube , spotify , soundcloud , retribution , facebook and for "youtube-dl" , it accept any follows official "youtube" searches
-   * @param {DefaultExtractorStreamOptions<Object>} ExtractorStreamOptions Extractor Fetching Options
+   * @param {DefaultExtractorStreamOptions} ExtractorStreamOptions Extractor Fetching Options
    * @param {Boolean|undefined} NoStreamif Check if User wants Stream or not
-   * @returns {Promise<DefaultExtractorData<Object>>} Returns Extractor Value with no edits
+   * @returns {Promise<DefaultExtractorData>} Returns Extractor Value with no edits
    */
 
   static async #YoutubeDLExtractor(Query, ExtractorStreamOptions, NoStreamif) {
@@ -222,9 +222,9 @@ class TrackGenerator {
   /**
    * @private #PlayDLExtractor -> Play-Dl Extractor for player
    * @param {String} Query Query like URls or Youtube Searches | Default Extractor accept 5 supported and big websites like youtube , spotify , soundcloud , retribution , facebook and for "youtube-dl" , it accept any follows official "youtube" searches
-   * @param {DefaultExtractorStreamOptions<Object>} ExtractorStreamOptions Extractor Fetching Options
+   * @param {DefaultExtractorStreamOptions} ExtractorStreamOptions Extractor Fetching Options
    * @param {Boolean|undefined} NoStreamif Check if User wants Stream or not
-   * @returns {Promise<DefaultExtractorData<Object>>} Returns Extractor Value with no edits
+   * @returns {Promise<DefaultExtractorData>} Returns Extractor Value with no edits
    */
 
   static async #PlayDLExtractor(Query, ExtractorStreamOptions, NoStreamif) {

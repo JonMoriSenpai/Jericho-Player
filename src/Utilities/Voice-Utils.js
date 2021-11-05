@@ -13,10 +13,10 @@ const {
 
 class VoiceUtils {
   /**
-   * @method join() -> Join Channel function for Voice Utils with Client and Channel and JoinChannelOptions Credentials
+   * Join Channel function for Voice Utils with Client and Channel and JoinChannelOptions Credentials
    * @param {Client} Client Discord Client Instance
    * @param {VoiceChannel|StageChannel} Channel Guild Voice Channel | Guild Stage Channel
-   * @param {DefaultJoinChannelOptions<Object>|undefined} JoinChannelOptions Options for Joining Voice Channel
+   * @param {DefaultJoinChannelOptions|undefined} JoinChannelOptions Options for Joining Voice Channel
    * @returns {Promise<VoiceConnection>|undefined} Returns Voice Connection Made by the
    */
   static async join(
@@ -57,9 +57,9 @@ class VoiceUtils {
   }
 
   /**
-   * @method disconnect() -> Disconnect Voice Channel and even destroy Voice Connection if Option.destroy =? true
-   * @param {Guild["id"]|String|Number} guildId Guild's id as Snowflake
-   * @param {DefaultDisconnectChannelOptions<Object>|undefined} DisconnectChannelOptions Disconnect Options for Connection
+   * Disconnect Voice Channel and even destroy Voice Connection if Option.destroy =? true
+   * @param {String|Number} guildId Guild's id as Snowflake
+   * @param {DefaultDisconnectChannelOptions|undefined} DisconnectChannelOptions Disconnect Options for Connection
    * @param {Number|String|undefined} Timedout Nodejs Timedout duration if delay has been issues
    * @param {Queue} QueueInstance Queue Instance for fetching Player and Stream Packet
    * @returns {undefined|Number|String} Returns Nodejs Timedout for Delays and undefined on completion or errors

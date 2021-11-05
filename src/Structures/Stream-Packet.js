@@ -11,18 +11,15 @@ const {
   GuildMember,
   VoiceChannel,
   StageChannel,
-  Guild,
 } = require('discord.js');
-const { Extractor } = require('playdl-music-extractor');
 const { suggestions } = require('youtube-suggest-gen');
 const JerichoPlayer = require('../Handlers/Player-Handler');
 const TracksGen = require('./Tracks');
 const VoiceUtils = require('../Utilities/Voice-Utils');
 const ClassUtils = require('../Utilities/Class-Utils');
-const {
+var {
   DefaultExtractorStreamOptions,
   DefaultTrack,
-  DefaultStream,
   DefaultChunk,
   DefaultModesType,
   DefaultModesName,
@@ -40,7 +37,7 @@ class StreamPacketGen {
    * @param {String|Number} guildId Guild's ID for fetching Queue from Queue's Cache
    * @param {String|Number|Object|undefined} MetadataValue metadata value from user for Tracks|Queue
    * @param {String|Boolean|undefined} extractor extractor to be used as "play-dl" or "youtube-dl"
-   * @param {DefaultExtractorStreamOptions<Object>} ExtractorStreamOptions Streaming options
+   * @param {DefaultExtractorStreamOptions} ExtractorStreamOptions Streaming options
    * @param {AudioPlayer} JerichoPlayer Audio-Player for playing Songs
    * @param {Boolean|undefined} IgnoreError IgnoreError or else throw on major bugs
    */
@@ -124,7 +121,7 @@ class StreamPacketGen {
 
     /**
      * ExtractorStreamOptions Extractor Fetching Options
-     * @type {DefaultExtractorStreamOptions<Object>|undefined}
+     * @type {DefaultExtractorStreamOptions|undefined}
      * @readonly
      */
     this.ExtractorStreamOptions = ExtractorStreamOptions = ClassUtils.stablizingoptions(
@@ -197,7 +194,7 @@ class StreamPacketGen {
    * create() Create Stream Packet for specific time for Queue
    * @param {String} Query Query like URls or Youtube Searches | Default Extractor accept 5 supported and big websites like youtube , spotify , soundcloud , retribution , facebook and for "youtube-dl" , it accept any follows official "youtube" searches
    * @param {VoiceChannel|StageChannel} VoiceChannel Voice Channel to connect Discord Client and getConnections
-   * @param {DefaultExtractorStreamOptions<Object>} StreamCreateOptions Stream Options for TracksGen methods
+   * @param {DefaultExtractorStreamOptions} StreamCreateOptions Stream Options for TracksGen methods
    * @param {String|Boolean|undefined} extractor extractor to be used as "play-dl" or "youtube-dl"
    * @param {User|GuildMember|undefined} requestedBy user Data as who requested if given during insert or play method of Queue Instance
    * @returns {Promise<this|undefined>|undefined} Returns Stream-Packet with Updated values of tracks
@@ -297,7 +294,7 @@ class StreamPacketGen {
    * insert() -> Insertion of Track in Tracks Cache with all workings of shifting
    * @param {Number|String|undefined} Index Track's Index where new Track will be inserted
    * @param {String} Query Query like URls or Youtube Searches | Default Extractor accept 5 supported and big websites like youtube , spotify , soundcloud , retribution , facebook and for "youtube-dl" , it accept any follows official "youtube" searches
-   * @param {DefaultExtractorStreamOptions<Object>} StreamFetchOptions Streaming Options from extractor
+   * @param {DefaultExtractorStreamOptions} StreamFetchOptions Streaming Options from extractor
    * @param {String|Boolean|undefined} extractor extractor to be used as "play-dl" or "youtube-dl"
    * @param {User|GuildMember|undefined} requestedBy User or GuildMember for requestedBy value for Track
    * @returns {Promise<this|undefined>} Returns StreamPacket Instance of the Queue
@@ -383,7 +380,7 @@ class StreamPacketGen {
    * back() -> back command for Internal finishing of previous Tracks streaming
    * @param {String|Number|undefined} TracksBackwardIndex Track Index from previous Tracks Data
    * @param {User|GuildMember|undefined} requestedBy for changigng exisitng requestedBy Value
-   * @param {DefaultExtractorStreamOptions<Object>} StreamCreateOptions Stream Create Optiosn from Track Class
+   * @param {DefaultExtractorStreamOptions} StreamCreateOptions Stream Create Optiosn from Track Class
    * @param {Boolen|undefined} forceback Forcefully skip to requested Track as true or false
    * @returns {Promise<Boolean|undefined>} true if operation went green or else undefined for errors
    */
@@ -536,7 +533,7 @@ class StreamPacketGen {
 
   /**
    * StreamAudioResourceExtractor() -> Fetch Audio Resource to Stream in Music Player for Jericho Player
-   * @param {DefaultTrack<Object>} Track Track Credentials for Streaming value
+   * @param {DefaultTrack} Track Track Credentials for Streaming value
    * @returns {AudioResource} Audio Resource from Stream of Tracks
    */
 
@@ -717,7 +714,7 @@ class StreamPacketGen {
   /**
    * @private #__HandleInsertion -> Private Method for handling Insertion correctly without distrubing other tracks
    * @param {Number|undefined} Index Track Index to insert Tracks from spefic position
-   * @param {DefaultChunk<Object>} Chunk Chunk value from Tracksgen.fetch() including tracks and streams value
+   * @param {DefaultChunk} Chunk Chunk value from Tracksgen.fetch() including tracks and streams value
    * @returns {undefined} as it's a One-go process
    */
 

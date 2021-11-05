@@ -12,7 +12,7 @@ const {
 const Queue = require('./Queue-Handler.js');
 const ClassUtils = require('../Utilities/Class-Utils');
 const { join } = require('../Utilities/Voice-Utils');
-const {
+var {
   DefaultJerichoPlayerOptions,
   DefaultQueueCreateOptions,
 } = require('../types/interfaces');
@@ -28,7 +28,7 @@ class JerichoPlayer extends EventEmitter {
   /**
    * Jericho Player Constructor
    * @param {Client} Client  Instanceof Discord.js Client
-   * @param {DefaultJerichoPlayerOptions<Object>}  JerichoPlayerOptions  Player Options for Stream Extraction and Voice Connection Moderation
+   * @param {DefaultJerichoPlayerOptions}  JerichoPlayerOptions  Player Options for Stream Extraction and Voice Connection Moderation
    */
 
   constructor(
@@ -65,7 +65,7 @@ class JerichoPlayer extends EventEmitter {
 
     /**
      * Jericho Player Default Options Saved for Class Utils Comparing and Fixing
-     * @type {DefaultJerichoPlayerOptions<Object>}
+     * @type {DefaultJerichoPlayerOptions}
      * @readonly
      */
 
@@ -80,23 +80,17 @@ class JerichoPlayer extends EventEmitter {
      */
 
     this.Client.on('voiceStateUpdate', async (OldVoiceState, NewVoiceState) => {
-      /**
+      /*
        * - QueueInstance Fetched from Private Raw Cache Fetching Method "JerichoPlayer.#QueueCacheFetch(guildId)"
        * - QueueIntance => will be used to filter Voice Events Related to our Queue or else return undefined for handling
        */
 
-      const QueueInstance = JerichoPlayer.#QueueCacheFetch(
+      var QueueInstance = JerichoPlayer.#QueueCacheFetch(
         (NewVoiceState ? NewVoiceState.guild.id : undefined)
           ?? (OldVoiceState ? OldVoiceState.guild.id : undefined),
       );
 
-      /**
-       * clientchecks<Object> => Checks for Client in Voice Channel as Member
-       * @param {GuildMember} member Guild Member < Object | Instance > for Checking its originality about being Client
-       * @returns {Boolean} true if Client has been Found and false if CLient is not Present
-       */
-
-      const clientchecks = (member) => member.user.id === this.Client.user.id;
+      var clientchecks = (member) => member.user.id === this.Client.user.id;
 
       // - QueueInstance checking if its related to Queue Voice Connection Events
 
@@ -197,7 +191,7 @@ class JerichoPlayer extends EventEmitter {
   /**
    * CreateQueue => Create Queue Instance for Player and per Guild
    * @param {Message | Interaction} message Guild Message Only for getting info about guild and guildId
-   * @param {DefaultQueueCreateOptions<Object>|undefined} QueueCreateOptions => Queue Create Options for Queue Instance ( for making ByDefault Values for Queue.<methods> )
+   * @param {DefaultQueueCreateOptions|undefined} QueueCreateOptions => Queue Create Options for Queue Instance ( for making ByDefault Values for Queue.<methods> )
    * @returns {Queue} Queue Instance => ( for Queue.<methods> like Queue.play() )
    */
 
@@ -249,7 +243,7 @@ class JerichoPlayer extends EventEmitter {
     );
 
     // To Avoid excess use of memory and Space in Large bots , We will always Cache Queue and Create one if is Deleted by DeleteQueue() method
-    const QueueInstance = JerichoPlayer.#QueueCacheFetch(message.guild.id, QueueCreateOptions)
+    var QueueInstance = JerichoPlayer.#QueueCacheFetch(message.guild.id, QueueCreateOptions)
       ?? new Queue(this.Client, message, QueueCreateOptions, this);
     return JerichoPlayer.#QueueCacheAdd(QueueInstance);
   }
@@ -305,12 +299,12 @@ class JerichoPlayer extends EventEmitter {
    * @private Player Class Defined Method
    * #QueueCacheFetch -> Private Method for Player's Workload to Fetch Queue Cache Easily without using any Player's Instance
    * @param {String|Number} guildId Guild["id"] OR guild.id is required to fetch queue from the Cache
-   * @param {DefaultQueueCreateOptions<Object>} QueueCreateOptions QueueCreateOptions for if Queue "connection" is destroyed , then it requires Options to remake whole infrastructure
+   * @param {DefaultQueueCreateOptions} QueueCreateOptions QueueCreateOptions for if Queue "connection" is destroyed , then it requires Options to remake whole infrastructure
    * @returns {Queue|undefined} QueueInstance , To reperesnt the Work Complete Signal
    */
 
   static #QueueCacheFetch(guildId, QueueCreateOptions = null) {
-    const QueueInstance = JerichoPlayer.#QueueCaches[`${guildId}`];
+    var QueueInstance = JerichoPlayer.#QueueCaches[`${guildId}`];
     if (QueueCreateOptions && QueueInstance) {
       QueueInstance.QueueOptions = ClassUtils.stablizingoptions(
         QueueCreateOptions,
@@ -332,7 +326,7 @@ class JerichoPlayer extends EventEmitter {
 
   static #QueueCacheRemove(guildId) {
     if (!this.#QueueCacheFetch(guildId)) return false;
-    const QueueInstance = JerichoPlayer.#QueueCaches[`${guildId}`];
+    var QueueInstance = JerichoPlayer.#QueueCaches[`${guildId}`];
     if (JerichoPlayer.#QueueCaches[`${guildId}`].playing) {
       JerichoPlayer.#QueueCaches[`${guildId}`].stop();
     }
