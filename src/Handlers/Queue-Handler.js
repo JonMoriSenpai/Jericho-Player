@@ -67,13 +67,17 @@ class Queue {
     JerichoPlayer = undefined,
   ) {
     /**
-     * @param {Client} Client Discord Client Instance
+     * Client Discord Client Instance
+     * @type {Client} Client Discord Client Instance
+     * @readonly
      */
     this.Client = Client;
 
     // overwritting Queue Options with Default Queue Options Saved in Package
     /**
-     * @param {DefaultQueueCreateOptions<Object>} QueueOptions Queue Default Options for Upcoming methods operations
+     * QueueOptions Queue Default Options for Upcoming methods operations
+     * @type {DefaultQueueCreateOptions<Object>}
+     * @readonly
      */
     this.QueueOptions = QueueOptions = ClassUtils.stablizingoptions(
       QueueOptions,
@@ -81,7 +85,9 @@ class Queue {
     );
 
     /**
-     * @param {DefaultStreamPacket} StreamPacket Stream packet for Queue | Simply Handling Voice Connections and Tracks/Streams
+     * StreamPacket Stream packet for Queue | Simply Handling Voice Connections and Tracks/Streams
+     * @type {DefaultStreamPacket}
+     * @readonly
      */
     this.StreamPacket = new StreamPacketGen(
       Client,
@@ -93,32 +99,43 @@ class Queue {
     );
 
     /**
-     * @param {Message} message Guild Text Channel's message instance
+     * Guild Text Channel's message instance
+     * @type {Message}
+     * @readonly
      */
     this.message = message;
 
     /**
-     * @param {Object|undefined} metadata Metadata value in Queue for Audio Resources
+     * Metadata value in Queue for Audio Resources
+     * @type {Object|undefined}
      */
     this.metadata = QueueOptions.metadata;
 
     /**
-     * @param {DefaultTrack[]|Object[]} tracks Queue.tracks[] holds all the Queue's tracks Cache
+     * Queue.tracks[] holds all the Queue's tracks Cache
+     * @type {Object[]}
+     * @readonly
      */
     this.tracks = [];
 
     /**
-     * @param {Guild["id"]|String|Number} guildId Guild's id Object cached from new constructor's guild value
+     * Guild's id Object cached from new constructor's guild value
+     * @type {String|Number}
+     * @readonly
      */
     this.guildId = message.guild.id;
 
     /**
-     * @param {Boolean|Number} destroyed Queue has been destroyed with Queue.destroy() respond with Boolean or else in delay for destruction will return Timedout ID for clearInterval fucntion
+     * Queue has been destroyed with Queue.destroy() respond with Boolean or else in delay for destruction will return Timedout ID for clearInterval fucntion
+     * @type {Boolean|Number}
+     * @readonly
      */
     this.destroyed = false;
 
     /**
-     * @param {AudioPlayer} MusicPlayer New Music Player for the Queue Instance to carry out the Basic Stream Operations
+     * MusicPlayer New Music Player for the Queue Instance to carry out the Basic Stream Operations
+     * @type {AudioPlayer}
+     * @readonly
      */
     this.MusicPlayer = createAudioPlayer({
       behaviors: {
@@ -127,7 +144,9 @@ class Queue {
     });
 
     /**
-     * @param {JerichoPlayer} JerichoPlayer Player's Instance for fetching Queue from Cache , Just in case it is required
+     * JerichoPlayer Player's Instance for fetching Queue from Cache , Just in case it is required
+     * @type {JerichoPlayer}
+     * @readonly
      */
     this.JerichoPlayer = JerichoPlayer;
 
@@ -158,7 +177,7 @@ class Queue {
   }
 
   /**
-   * @method play() ->  Play Options for Queue Instance , Accept any kind of URL if extractor is "youtube-dl" or set undefined | "play-dl" to fetch from custom extractor
+   * play() ->  Play Options for Queue Instance , Accept any kind of URL if extractor is "youtube-dl" or set undefined | "play-dl" to fetch from custom extractor
    * @param {String} Query Query like URls or Youtube Searches | Default Extractor accept 5 supported and big websites like youtube , spotify , soundcloud , retribution , facebook and for "youtube-dl" , it accept any follows official "youtube" searches
    * @param {VoiceChannel|StageChannel} VoiceChannel Voice Channel from Discord.js
    * @param {User|GuildMember} User Guild Member or Guild User for requestedBy Object in track
@@ -185,7 +204,7 @@ class Queue {
     },
   ) {
     // Watch for Queue.destroyed Property for ignoring Invalid operation and further un-wanted Errors
-    if (this.destroyed) return void this.JerichoPlayer.emit('error', 'Destroyed Queue', this);
+    if (this.destroyed) { return void this.JerichoPlayer.emit('error', 'Destroyed Queue', this); }
     // Checks for Valid Voice Channel Type to avoid further meaningless operations
     if (
       !VoiceChannel
@@ -233,18 +252,18 @@ class Queue {
     this.tracks = this.StreamPacket.searches;
 
     // __ResourcePlay() is quite powerfull and shouldbe placed after double checks as it is the main component for Playing Streams
-    if (!this.playing && !this.paused && this.tracks && this.tracks[0]) await this.#__ResourcePlay();
+    if (!this.playing && !this.paused && this.tracks && this.tracks[0]) { await this.#__ResourcePlay(); }
     return true;
   }
 
   /**
-   * @method skip() ->  Skips the Curren Song if Index is undefined | 0 , or else act as skipTo Type where Next song will play what has been Mentioned
+   * skip() ->  Skips the Curren Song if Index is undefined | 0 , or else act as skipTo Type where Next song will play what has been Mentioned
    * @param {String|Number|undefined} TrackIndex Track's Index (0,1,2,..) To Skip to Specified Track or else undefined to skip current and play song now
    * @returns {Boolean|undefined} true if operation went signal Green or else undefined for error event triggers
    */
 
   skip(TrackIndex) {
-    if (this.destroyed) return void this.JerichoPlayer.emit('error', 'Destroyed Queue', this);
+    if (this.destroyed) { return void this.JerichoPlayer.emit('error', 'Destroyed Queue', this); }
     if (
       TrackIndex
       && !(typeof TrackIndex === 'number' || typeof TrackIndex === 'string')
@@ -258,10 +277,8 @@ class Queue {
     }
     if (
       !this.playing
-      || (this.playing
-        && !this.playerMode
-        && !this.StreamPacket.tracks[1])
-    ) return void this.JerichoPlayer.emit('error', 'Empty Queue', this);
+      || (this.playing && !this.playerMode && !this.StreamPacket.tracks[1])
+    ) { return void this.JerichoPlayer.emit('error', 'Empty Queue', this); }
     if (Number(TrackIndex) <= 0 && Number(TrackIndex) >= this.tracks.length) {
       return void this.JerichoPlayer.emit(
         'error',
@@ -286,14 +303,14 @@ class Queue {
   }
 
   /**
-   * @method stop() -> Stops the Player and Clean the Tracks
+   * stop() -> Stops the Player and Clean the Tracks
    * @returns {Boolean|undefined} true if operation emits green signal or undefined for errors
    */
 
   stop() {
-    if (this.destroyed) return void this.JerichoPlayer.emit('error', 'Destroyed Queue', this);
-    if (!this.playing) return void this.JerichoPlayer.emit('error', 'Not Playing', this);
-    if (!this.StreamPacket.tracks[0]) return void this.JerichoPlayer.emit('error', 'Empty Queue', this);
+    if (this.destroyed) { return void this.JerichoPlayer.emit('error', 'Destroyed Queue', this); }
+    if (!this.playing) { return void this.JerichoPlayer.emit('error', 'Not Playing', this); }
+    if (!this.StreamPacket.tracks[0]) { return void this.JerichoPlayer.emit('error', 'Empty Queue', this); }
     this.#__CleaningTrackMess(
       0,
       (this.StreamPacket.tracks.length > 1
@@ -302,20 +319,20 @@ class Queue {
     );
 
     // Extra Cleanup for Music Player to avoid certain leaks
-    this.StreamPacket.subscription.unsubscribe();
+    this.StreamPacket.subscription ? this.StreamPacket.subscription.unsubscribe() : undefined;
     this.MusicPlayer.stop();
     return true;
   }
 
   /**
-   * @method pause() -> pause the Player and freeze  Track Manulpulation and Stream tooo
+   * pause() -> pause the Player and freeze  Track Manulpulation and Stream tooo
    * @returns {Boolean|undefined} true if operation emits green signal or undefined for errors
    */
 
   pause() {
-    if (this.destroyed) return void this.JerichoPlayer.emit('error', 'Destroyed Queue', this);
-    if (!this.playing) return void this.JerichoPlayer.emit('error', 'Not Playing', this);
-    if (!this.StreamPacket.tracks[0]) return void this.JerichoPlayer.emit('error', 'Empty Queue', this);
+    if (this.destroyed) { return void this.JerichoPlayer.emit('error', 'Destroyed Queue', this); }
+    if (!this.playing) { return void this.JerichoPlayer.emit('error', 'Not Playing', this); }
+    if (!this.StreamPacket.tracks[0]) { return void this.JerichoPlayer.emit('error', 'Empty Queue', this); }
     if (this.MusicPlayer.pause(true)) {
       this.StreamPacket.TrackTimeStamp.Paused = new Date().getTime();
       return true;
@@ -324,15 +341,15 @@ class Queue {
   }
 
   /**
-   * @method resume() -> Resume the Paused Player and Unfreeze Track's Functions in Queue/StreamPacket
+   * resume() -> Resume the Paused Player and Unfreeze Track's Functions in Queue/StreamPacket
    * @returns {Boolean|undefined} true if operation emits green signal or undefined for errors
    */
 
   resume() {
-    if (this.destroyed) return void this.JerichoPlayer.emit('error', 'Destroyed Queue', this);
-    if (!this.playing) return void this.JerichoPlayer.emit('error', 'Not Playing', this);
-    if (!this.StreamPacket.tracks[0]) return void this.JerichoPlayer.emit('error', 'Empty Queue', this);
-    if (!this.paused) return void this.JerichoPlayer.emit('error', 'Not Paused', this);
+    if (this.destroyed) { return void this.JerichoPlayer.emit('error', 'Destroyed Queue', this); }
+    if (!this.playing) { return void this.JerichoPlayer.emit('error', 'Not Playing', this); }
+    if (!this.StreamPacket.tracks[0]) { return void this.JerichoPlayer.emit('error', 'Empty Queue', this); }
+    if (!this.paused) { return void this.JerichoPlayer.emit('error', 'Not Paused', this); }
     if (this.MusicPlayer.unpause()) {
       this.StreamPacket.TrackTimeStamp.Starting
         += new Date().getTime() - this.StreamPacket.TrackTimeStamp.Paused;
@@ -342,7 +359,7 @@ class Queue {
   }
 
   /**
-   * @method insert() -> Insertion of Query into Track's Cache in Queue
+   * insert() -> Insertion of Query into Track's Cache in Queue
    * @param {String} Query Query as URLs or Youtube Searches
    * @param {String | Number} TrackIndex Track Index Value to insert at any specific position
    * @param {GuildMember|User} User user Value for Track.requestedBy Object
@@ -367,7 +384,7 @@ class Queue {
       },
     },
   ) {
-    if (this.destroyed) return void this.JerichoPlayer.emit('error', 'Destroyed Queue', this);
+    if (this.destroyed) { return void this.JerichoPlayer.emit('error', 'Destroyed Queue', this); }
     if (
       TrackIndex
       && !(typeof TrackIndex === 'number' || typeof TrackIndex === 'string')
@@ -409,7 +426,7 @@ class Queue {
   }
 
   /**
-   * @method remove() -> Remove method to Remove Song/Track from Queue/Tracks Cache
+   * remove() -> Remove method to Remove Song/Track from Queue/Tracks Cache
    * @param {String|Number|undefined} Index Track Index to Remove from Queue.tracks
    * @param {Number|undefined} Amount Amount of Tracks to Remove from Queue OR Queue.tracks
    * @returns {Boolean|undefined} true if operation emits green signal or undefined for errors
@@ -445,13 +462,13 @@ class Queue {
   }
 
   /**
-   * @method destroy() -> Destroy Queue | Also Destroy Connection with it , method is quite powerfull
+   * destroy() -> Destroy Queue | Also Destroy Connection with it , method is quite powerfull
    * @param {Number|undefined} connectionTimedout NodejsTimeout Number to destroy with a timer
    * @returns {Boolean|undefined} true if operation emits green signal or undefined for errors
    */
 
   destroy(connectionTimedout = 0) {
-    if (this.destroyed) return void this.JerichoPlayer.emit('error', 'Destroyed Queue', this);
+    if (this.destroyed) { return void this.JerichoPlayer.emit('error', 'Destroyed Queue', this); }
     this.StreamPacket.tracks = [];
     this.StreamPacket.searches = [];
     this.StreamPacket.volume = 0.095;
@@ -488,28 +505,28 @@ class Queue {
   }
 
   /**
-   * @method mute() -> Mute Music Player
+   * mute() -> Mute Music Player
    * @returns {Boolean|undefined} true if operation emits green signal or undefined for errors
    */
 
   mute() {
-    if (this.destroyed) return void this.JerichoPlayer.emit('error', 'Destroyed Queue', this);
-    if (!this.playing) return void this.JerichoPlayer.emit('error', 'Not Playing', this);
-    if (!this.StreamPacket.tracks[0]) return void this.JerichoPlayer.emit('error', 'Empty Queue', this);
+    if (this.destroyed) { return void this.JerichoPlayer.emit('error', 'Destroyed Queue', this); }
+    if (!this.playing) { return void this.JerichoPlayer.emit('error', 'Not Playing', this); }
+    if (!this.StreamPacket.tracks[0]) { return void this.JerichoPlayer.emit('error', 'Empty Queue', this); }
     this.volume = 0;
     return true;
   }
 
   /**
-   * @method unmute() -> Un-Mute Music Player
+   * unmute() -> Un-Mute Music Player
    * @param {String|Number|undefined} Volume Volume of the Track or Music Player
    * @returns {Number|undefined} Returns Volume Value if operation went green or else , returns undefined if error occurs
    */
 
   unmute(Volume) {
-    if (this.destroyed) return void this.JerichoPlayer.emit('error', 'Destroyed Queue', this);
-    if (!this.playing) return void this.JerichoPlayer.emit('error', 'Not Playing', this);
-    if (!this.StreamPacket.tracks[0]) return void this.JerichoPlayer.emit('error', 'Empty Queue', this);
+    if (this.destroyed) { return void this.JerichoPlayer.emit('error', 'Destroyed Queue', this); }
+    if (!this.playing) { return void this.JerichoPlayer.emit('error', 'Not Playing', this); }
+    if (!this.StreamPacket.tracks[0]) { return void this.JerichoPlayer.emit('error', 'Empty Queue', this); }
     if (Volume && Number.isNaN(Volume)) {
       return void this.JerichoPlayer.emit(
         'error',
@@ -523,15 +540,15 @@ class Queue {
   }
 
   /**
-   * @method clear() -> Clear Tracks from Queue and Stream Packet
+   * clear() -> Clear Tracks from Queue and Stream Packet
    * @param {Number|String} TracksAmount Tracks Size in Queue
    * @returns {Boolean|undefined} true if operation emits green signal or undefined for errors
    */
 
   clear(TracksAmount = this.tracks.length - 1) {
-    if (this.destroyed) return void this.JerichoPlayer.emit('error', 'Destroyed Queue', this);
-    if (!this.playing) return void this.JerichoPlayer.emit('error', 'Not Playing', this);
-    if (!this.StreamPacket.tracks[0] || !this.StreamPacket.tracks[1]) return void this.JerichoPlayer.emit('error', 'Empty Queue', this);
+    if (this.destroyed) { return void this.JerichoPlayer.emit('error', 'Destroyed Queue', this); }
+    if (!this.playing) { return void this.JerichoPlayer.emit('error', 'Not Playing', this); }
+    if (!this.StreamPacket.tracks[0] || !this.StreamPacket.tracks[1]) { return void this.JerichoPlayer.emit('error', 'Empty Queue', this); }
     if (TracksAmount && Number.isNaN(TracksAmount)) {
       return void this.JerichoPlayer.emit(
         'error',
@@ -556,7 +573,7 @@ class Queue {
   }
 
   /**
-   * @method back -> Playing Previous Songs from non-destroyed Queue
+   * back -> Playing Previous Songs from non-destroyed Queue
    * @param {String|Number} TracksBackwardIndex TrackIndex in PreviousTracks Stack to Play now or else recent ended song will be played
    * @param {User|GuildMember} User User Data if new User is using Back Command
    * @param {DefaultQueueCreateOptions<Object>} PlayOptions Stream Play Options , Same as Queue Create Options to add more into extraction and other properties
@@ -582,7 +599,7 @@ class Queue {
     },
     forceback = true,
   ) {
-    if (this.destroyed) return void this.JerichoPlayer.emit('error', 'Destroyed Queue', this);
+    if (this.destroyed) { return void this.JerichoPlayer.emit('error', 'Destroyed Queue', this); }
     if (!this.previousTrack) {
       return void this.JerichoPlayer.emit(
         'error',
@@ -619,7 +636,7 @@ class Queue {
   }
 
   /**
-   * @method createProgressBar() -> Create progress bar for Queue ,Tracks , PreviousTracks and current track(Track)
+   * createProgressBar() -> Create progress bar for Queue ,Tracks , PreviousTracks and current track(Track)
    * @param {String|undefined} Work  Queue ,Tracks , PreviousTracks and current track(Track) as its Value
    * @param {String|Number|undefined} DefaultType Default Type Value to create Progress bar Cache Types
    * @param {DefaultProgressBar<object>} Bar Progress bar Credentials or else ByDefault it will Create one
@@ -637,8 +654,8 @@ class Queue {
       EndIcon: undefined,
     },
   ) {
-    if (this.destroyed) return void this.JerichoPlayer.emit('error', 'Destroyed Queue', this);
-    if (!this.StreamPacket) return void this.JerichoPlayer.emit('error', 'Destroyed Queue', this);
+    if (this.destroyed) { return void this.JerichoPlayer.emit('error', 'Destroyed Queue', this); }
+    if (!this.StreamPacket) { return void this.JerichoPlayer.emit('error', 'Destroyed Queue', this); }
     if (DefaultType && Number.isNaN(DefaultType)) {
       return void this.JerichoPlayer.emit(
         'error',
@@ -649,7 +666,7 @@ class Queue {
     }
     switch (Work.toLowerCase().trim()) {
       case 'track':
-        if (!this.StreamPacket.tracks[0]) return void this.JerichoPlayer.emit('error', 'Nothing Playing', this);
+        if (!this.StreamPacket.tracks[0]) { return void this.JerichoPlayer.emit('error', 'Nothing Playing', this); }
         return this.#__StructureProgressBar(
           Bar,
           Number(this.currentTimestamp.track_ms),
@@ -657,7 +674,7 @@ class Queue {
           DefaultType,
         );
       case 'queue':
-        if (!this.StreamPacket.tracks[0]) return void this.JerichoPlayer.emit('error', 'Empty Queue', this);
+        if (!this.StreamPacket.tracks[0]) { return void this.JerichoPlayer.emit('error', 'Empty Queue', this); }
         return this.#__StructureProgressBar(
           Bar,
           Number(this.currentTimestamp.saved_queue_ms)
@@ -667,7 +684,7 @@ class Queue {
           DefaultType,
         );
       case 'tracks':
-        if (!this.StreamPacket.tracks[0]) return void this.JerichoPlayer.emit('error', 'Empty Queue', this);
+        if (!this.StreamPacket.tracks[0]) { return void this.JerichoPlayer.emit('error', 'Empty Queue', this); }
         return this.#__StructureProgressBar(
           Bar,
           Number(this.currentTimestamp.track_ms),
@@ -689,7 +706,7 @@ class Queue {
           DefaultType,
         );
       default:
-        if (!this.StreamPacket.tracks[0]) return void this.JerichoPlayer.emit('error', 'Nothing Playing', this);
+        if (!this.StreamPacket.tracks[0]) { return void this.JerichoPlayer.emit('error', 'Nothing Playing', this); }
         return this.#__StructureProgressBar(
           Bar,
           Number(this.currentTimestamp.track_ms),
@@ -700,27 +717,27 @@ class Queue {
   }
 
   /**
-   * @method loop() -> Loop Single Track or Queue
-   * @param {DefaultModesType{}|undefined} Choice Mode Choice , like "track" | "queue" | "off"
+   * loop() -> Loop Single Track or Queue
+   * @param {String|undefined} Choice Mode Choice , like "track" | "queue" | "off"
    * @returns {Boolean|undefined} returns true for green signal operation and undefined for errors
    */
 
   loop(Choice = DefaultModesType.Track) {
-    if (this.destroyed) return void this.JerichoPlayer.emit('error', 'Destroyed Queue', this);
-    if (!this.StreamPacket) return void this.JerichoPlayer.emit('error', 'Destroyed Queue', this);
+    if (this.destroyed) { return void this.JerichoPlayer.emit('error', 'Destroyed Queue', this); }
+    if (!this.StreamPacket) { return void this.JerichoPlayer.emit('error', 'Destroyed Queue', this); }
     return this.StreamPacket.setMode(DefaultModesName.Loop, Choice);
   }
 
   /**
-   * @method repeat() -> Repeat Track or Queue with "n" Times given by User
-   * @param {DefaultModesType{}|String|undefined} Choice Mode Choice , like "track" | "queue" | "off"
+   * repeat() -> Repeat Track or Queue with "n" Times given by User
+   * @param {String|String|undefined} Choice Mode Choice , like "track" | "queue" | "off"
    * @param {String|undefined} Times Number of Repeat Track or Queue with "n" Times given by User
    * @returns {Boolean|undefined} returns true for green signal operation and undefined for errors
    */
 
   repeat(Choice = DefaultModesType.Track, Times = 1) {
-    if (this.destroyed) return void this.JerichoPlayer.emit('error', 'Destroyed Queue', this);
-    if (!this.StreamPacket) return void this.JerichoPlayer.emit('error', 'Destroyed Queue', this);
+    if (this.destroyed) { return void this.JerichoPlayer.emit('error', 'Destroyed Queue', this); }
+    if (!this.StreamPacket) { return void this.JerichoPlayer.emit('error', 'Destroyed Queue', this); }
     return this.StreamPacket.setMode(
       DefaultModesName.Repeat,
       Choice,
@@ -729,23 +746,23 @@ class Queue {
   }
 
   /**
-   * @method autoplay() -> Autplay Songs with the help of last Played Track or Query given
-   * @param {DefaultModesType{}|String|undefined} ChoiceORQuery Mode Choice , like "off" | OR else give Query or Url for autoplay songs with respect to specified query
+   * autoplay() -> Autplay Songs with the help of last Played Track or Query given
+   * @param {String|String|undefined} ChoiceORQuery Mode Choice , like "off" | OR else give Query or Url for autoplay songs with respect to specified query
    * @returns {Boolean|undefined} returns true for green signal operation and undefined for errors
    */
 
   autoplay(ChoiceORQuery = undefined) {
-    if (this.destroyed) return void this.JerichoPlayer.emit('error', 'Destroyed Queue', this);
-    if (!this.StreamPacket) return void this.JerichoPlayer.emit('error', 'Destroyed Queue', this);
+    if (this.destroyed) { return void this.JerichoPlayer.emit('error', 'Destroyed Queue', this); }
+    if (!this.StreamPacket) { return void this.JerichoPlayer.emit('error', 'Destroyed Queue', this); }
     return this.StreamPacket.setMode(DefaultModesName.Autoplay, ChoiceORQuery);
   }
 
   /**
-   * @method search() -> Searching for Tracks of Query
+   * search() -> Searching for Tracks of Query
    * @param {String} Query Query as URLs or Youtube Searches
    * @param {GuildMember|User} User user Value for Track.requestedBy Object
    * @param {DefaultQueueCreateOptions<Object>|undefined} SearchOptions Stream Options for Query Processing | Same as Queue Creation and Play Method
-   * @returns {Promise<DefaultTrack[]|undefined>|undefined} Returns Tracks if operation emits green signal or undefined for errors
+   * @returns {Promise<Objectundefined>|undefined} Returns Tracks if operation emits green signal or undefined for errors
    */
   async search(
     Query,
@@ -784,6 +801,8 @@ class Queue {
 
   /**
    * Volume of the Music Player Currently OR to set new Volume for Music Player
+   * @type {Number|undefined}
+   * @readonly
    */
 
   get volume() {
@@ -792,7 +811,7 @@ class Queue {
   }
 
   set volume(Volume = 0) {
-    if (this.destroyed) return void this.JerichoPlayer.emit('error', 'Destroyed Queue', this);
+    if (this.destroyed) { return void this.JerichoPlayer.emit('error', 'Destroyed Queue', this); }
     if (
       !(typeof Volume === 'number' || typeof Volume === 'string')
       && (Number(Volume) > 200 || Number(Volume) < 0)
@@ -805,13 +824,14 @@ class Queue {
       );
     }
     this.StreamPacket.volume = Number(Volume) / 1000;
-    if (this.tracks && this.tracks[0] && this.StreamPacket.AudioResource) this.StreamPacket.AudioResource.volume.setVolume(this.StreamPacket.volume);
+    if (this.tracks && this.tracks[0] && this.StreamPacket.AudioResource) { this.StreamPacket.AudioResource.volume.setVolume(this.StreamPacket.volume); }
     return this.StreamPacket.volume;
   }
 
   /**
-   * pause Status of the Queue
-   * @return {Boolean} MusicPlayer's Paused's Status as Boolean
+   * MusicPlayer's Paused's Status as Boolean
+   * @type {Boolean|undefined}
+   * @readonly
    */
   get paused() {
     if (
@@ -820,7 +840,7 @@ class Queue {
         && this.MusicPlayer.state
         && this.MusicPlayer.state.status
       )
-    ) return false;
+    ) { return false; }
     return (
       this.MusicPlayer.state.status === AudioPlayerStatus.Paused
       || this.MusicPlayer.state.status === AudioPlayerStatus.AutoPaused
@@ -828,8 +848,9 @@ class Queue {
   }
 
   /**
-   * Playing/Activity Status of the Queue
-   * @return {Boolean} MusicPlayer's Playing/Activity's Status as Boolean
+   * MusicPlayer's Playing/Activity's Status as Boolean
+   * @type {Boolean}
+   * @readonly
    */
 
   get playing() {
@@ -839,13 +860,14 @@ class Queue {
         && this.MusicPlayer.state
         && this.MusicPlayer.state.status
       )
-    ) return false;
+    ) { return false; }
     return this.MusicPlayer.state.status !== AudioPlayerStatus.Idle;
   }
 
   /**
    * Returns Current Track Cached in Stream Packet or Queue.tracks
-   * @returns {DefaultTrack|undefined} Track
+   * @type {DefaultTrack|undefined}
+   * @readonly
    */
   get current() {
     if (!this.playing || this.destroyed) return undefined;
@@ -854,12 +876,13 @@ class Queue {
 
   /**
    * CurrentTimeStamp -> TimeStamp of tracks , queue and e.t.c in milliseconds and human readable format
-   * @returns {DefaultcurrentTimestamp<Object>|undefined} Time in milliseconds and Human Readable format
+   * @type {DefaultcurrentTimestamp<Object>|undefined}
+   * @readonly
    */
 
   get currentTimestamp() {
-    if (this.destroyed) return void this.JerichoPlayer.emit('error', 'Destroyed Queue', this);
-    if (!this.StreamPacket.tracks[0]) return void this.JerichoPlayer.emit('error', 'Empty Queue', this);
+    if (this.destroyed) { return void this.JerichoPlayer.emit('error', 'Destroyed Queue', this); }
+    if (!this.StreamPacket.tracks[0]) { return void this.JerichoPlayer.emit('error', 'Empty Queue', this); }
 
     const TimeStamp = {
       track_ms: `${
@@ -949,7 +972,8 @@ class Queue {
 
   /**
    * Previous Track Data | Same as Queue.current , But Data of previous track
-   * @returns {DefaultTrack|undefined} Track if present or undefined
+   * @type {DefaultTrack|undefined}
+   * @readonly
    */
 
   get previousTrack() {
@@ -962,7 +986,8 @@ class Queue {
 
   /**
    * Player Mode of Music Player like 'Loop','Repeat','AutoPlay'
-   * @returns {DefaultPlayerMode|undefined} Returns Loop Mode in String
+   * @type {DefaultPlayerMode|undefined}
+   * @readonly
    */
 
   get playerMode() {
@@ -1067,7 +1092,7 @@ class Queue {
         && this.StreamPacket.tracks[0]
         && this.StreamPacket.searches[0]
       )
-    ) return void null;
+    ) { return void null; }
     DeleteTracksCount
       ? this.StreamPacket.tracks.splice(
         StartingTrackIndex ?? 0,

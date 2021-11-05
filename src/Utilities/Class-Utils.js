@@ -6,7 +6,7 @@ const { FFmpeg } = require('prism-media');
  */
 class ClassUtils {
   /**
-   * @method stablizingoptions() -> Stabilizing Local and Parent Options with accuracy 80%
+   * stablizingoptions() -> Stabilizing Local and Parent Options with accuracy 80%
    * @param {Object} Local Local function/method options
    * @param {Object} Parent Parent function/method options
    * @returns {Object} Finaliize Options
@@ -38,7 +38,7 @@ class ClassUtils {
   }
 
   /**
-   * @method ScanDeps() -> Scanning Dependencies in package.json or node_modules for package or versions list
+   * ScanDeps() -> Scanning Dependencies in package.json or node_modules for package or versions list
    * @param {String|undefined} packageName Package name for publishing it sversion in project
    * @returns {String|undefined} Publish Data whaich was requested for
    */
@@ -142,7 +142,7 @@ class ClassUtils {
   }
 
   /**
-   * @method HumanTimeConversion() -> Human Time Conversion Function with two categories
+   * HumanTimeConversion() -> Human Time Conversion Function with two categories
    * @param {String|Number|undefined} Type1 Convert Milliseconds to Human Time Language
    * @param {Object[]|undefined} Type2 Convert Milliseconds to Human Time variables
    * @returns {String|undefined} Returns String with desired value

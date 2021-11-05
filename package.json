@@ -21,11 +21,14 @@
     "lint:fix": "eslint ./src --fix",
     "commit": "git-cz",
     "semantic-release": "semantic-release --branches main",
-    "commit:push": "git add . && npm run commit && git push"
+    "commit:push": "git add . && npm run commit && git push",
+    "docs": "docgen --source src --custom docs/index.yml --output docs/docs.json",
+    "docs:test": "docgen --source src --custom docs/index.yml"
   },
   "devDependencies": {
     "@babel/eslint-parser": "^7.16.0",
     "@babel/preset-env": "^7.16.0",
+    "@discordjs/docgen": "^0.10.0",
     "cz-conventional-changelog": "^3.3.0",
     "eslint": "^8.1.0",
     "eslint-config-airbnb-base": "^14.2.1",

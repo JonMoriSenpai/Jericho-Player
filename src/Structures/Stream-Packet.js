@@ -37,7 +37,7 @@ const Queue = require('../Handlers/Queue-Handler');
 class StreamPacketGen {
   /**
    * @param {Client} Client Discord Client Instance
-   * @param {Guild["id"]|String|Number} guildId Guild's ID for fetching Queue from Queue's Cache
+   * @param {String|Number} guildId Guild's ID for fetching Queue from Queue's Cache
    * @param {String|Number|Object|undefined} MetadataValue metadata value from user for Tracks|Queue
    * @param {String|Boolean|undefined} extractor extractor to be used as "play-dl" or "youtube-dl"
    * @param {DefaultExtractorStreamOptions<Object>} ExtractorStreamOptions Streaming options
@@ -61,52 +61,71 @@ class StreamPacketGen {
     IgnoreError = true,
   ) {
     /**
-     * @param {Client} Client Discord Client Instance
+     * Client Discord Client Instance
+     * @type {Client}
+     * @readonly
      */
     this.Client = Client;
 
     /**
-     * @param {VoiceChannel|StageChannel} VoiceChannel Voice Channel Instance from Guild's Voice Channel
+     * VoiceChannel Voice Channel Instance from Guild's Voice Channel
+     * @type {VoiceChannel|StageChannel}
+     * @readonly
      */
     this.VoiceChannel = null;
 
     /**
-     * @param {String|undefined} extractor Extractor name as "play-dl" OR "youtube-dl"
+     * Extractor Extractor name as "play-dl" OR "youtube-dl"
+     * @type {String|undefined}
+     * @readonly
      */
     this.extractor = extractor;
 
     /**
-     * @param {DefaultTrack[]|[]} searches User Readable Tracks
+     * searches User Readable Tracks
+     * @type {Object[]}
+     * @readonly
      */
     this.searches = [];
 
     /**
-     * @param {DefaultStream[]|[]} tracks Stream Datas from Extractors and then parent Data of searches
+     * Tracks Stream Datas from Extractors and then parent Data of searches
+     * @type {Object[]}
+     * @readonly
      */
     this.tracks = [];
 
     /**
-     * @param {VoiceConnection|undefined} VoiceConnection Voice Connection Value designed by "@discordjs/voice"
+     * VoiceConnection Voice Connection Value designed by "@discordjs/voice"
+     * @type {VoiceConnection|undefined}
+     * @readonly
      */
     this.VoiceConnection = null;
 
     /**
-     * @param {Object|undefined} metadata Metadata value in Streampacket for Audio Resources
+     * Metadata Metadata value in Streampacket for Audio Resources
+     * @type {Object|undefined}
      */
     this.metadata = MetadataValue;
 
     /**
-     * @param {PlayerSubscription} subscription Player Subscription Socket to Subscribe or Subscription is ON
+     * subscription Player Subscription Socket to Subscribe or Subscription is ON
+     * @type {PlayerSubscription}
+     * @readonly
      */
     this.subscription = undefined;
 
     /**
-     * @param {Guild["id"]|String|Number} guildId Guild's id Object cached from new constructor's guild value
+     * Guild's id Object cached from new constructor's guild value
+     * @type {String|Number}
+     * @readonly
      */
     this.guildId = guildId;
 
     /**
-     * @param {DefaultExtractorStreamOptions<Object>|undefined} ExtractorStreamOptions Extractor Fetching Options
+     * ExtractorStreamOptions Extractor Fetching Options
+     * @type {DefaultExtractorStreamOptions<Object>|undefined}
+     * @readonly
      */
     this.ExtractorStreamOptions = ExtractorStreamOptions = ClassUtils.stablizingoptions(
       ExtractorStreamOptions,
@@ -114,42 +133,58 @@ class StreamPacketGen {
     );
 
     /**
-     * @param {Boolean|undefined} IgnoreError IgnoreError's true Value if its required
+     * IgnoreError IgnoreError's true Value if its required
+     * @type {Boolean|undefined}
+     * @readonly
      */
     this.IgnoreError = !!IgnoreError ?? true;
 
     /**
-     * @param {JerichoPlayer} JerichoPlayer Player's Instance for further operations
+     * Player's Instance for further operations
+     * @type {JerichoPlayer}
+     * @readonly
      */
     this.JerichoPlayer = JerichoPlayer;
 
     /**
-     * @param {Number} volume Volume of the Music Player
+     * volume Volume of the Music Player
+     * @type {Number}
+     * @readonly
      */
     this.volume = 0.095;
 
     /**
-     * @param {AudioResource|undefined} AudioResource Track's Audio Resource
+     * AudioResource Track's Audio Resource
+     * @type {AudioResource|undefined}
+     * @readonly
      */
     this.AudioResource = undefined;
 
     /**
-     * @param {DefaultTrack[]|[]} previousTracks Previous Tracks Cache
+     * previousTracks Previous Tracks Cache
+     * @type {Object[]}
+     * @readonly
      */
     this.previousTracks = [];
 
     /**
-     * @param {String|Number|undefined|Boolean} TimedoutId Queue Timedout ID value or undefined
+     * TimedoutId Queue Timedout ID value or undefined
+     * @type {String|Number|undefined|Boolean}
+     * @readonly
      */
     this.TimedoutId = undefined;
 
     /**
-     * @param {Object} TrackTimeStamp Track's Live Status and Storing Value of the Time
+     * TrackTimeStamp Track's Live Status and Storing Value of the Time
+     * @type {Object}
+     * @readonly
      */
     this.TrackTimeStamp = { Starting: undefined, Paused: undefined };
 
     /**
-     * @param {DefaultModesName} MusicPlayerMode Music Player's Modes Cache Signal
+     * MusicPlayerMode Music Player's Modes Cache Signal
+     * @type {DefaultModesName}
+     * @readonly
      */
     this.MusicPlayerMode = {
       Loop: undefined,
@@ -159,10 +194,10 @@ class StreamPacketGen {
   }
 
   /**
-   * @method create() Create Stream Packet for specific time for Queue
+   * create() Create Stream Packet for specific time for Queue
    * @param {String} Query Query like URls or Youtube Searches | Default Extractor accept 5 supported and big websites like youtube , spotify , soundcloud , retribution , facebook and for "youtube-dl" , it accept any follows official "youtube" searches
    * @param {VoiceChannel|StageChannel} VoiceChannel Voice Channel to connect Discord Client and getConnections
-   * @param {DefaultExtractorStreamOptions<Object} StreamCreateOptions Stream Options for TracksGen methods
+   * @param {DefaultExtractorStreamOptions<Object>} StreamCreateOptions Stream Options for TracksGen methods
    * @param {String|Boolean|undefined} extractor extractor to be used as "play-dl" or "youtube-dl"
    * @param {User|GuildMember|undefined} requestedBy user Data as who requested if given during insert or play method of Queue Instance
    * @returns {Promise<this|undefined>|undefined} Returns Stream-Packet with Updated values of tracks
@@ -246,7 +281,7 @@ class StreamPacketGen {
   }
 
   /**
-   * @method remove() -> Remove Track from Tracks Cache
+   * remove() -> Remove Track from Tracks Cache
    * @param {String|Number|undefined} Index Tracks Remove Stream packet method but works internally
    * @param {String|Number|undefined} Amount Tracks Amount to Delete
    * @returns {this} Returns StreamPacket Class Instance
@@ -259,7 +294,7 @@ class StreamPacketGen {
   }
 
   /**
-   * @method insert() -> Insertion of Track in Tracks Cache with all workings of shifting
+   * insert() -> Insertion of Track in Tracks Cache with all workings of shifting
    * @param {Number|String|undefined} Index Track's Index where new Track will be inserted
    * @param {String} Query Query like URls or Youtube Searches | Default Extractor accept 5 supported and big websites like youtube , spotify , soundcloud , retribution , facebook and for "youtube-dl" , it accept any follows official "youtube" searches
    * @param {DefaultExtractorStreamOptions<Object>} StreamFetchOptions Streaming Options from extractor
@@ -345,7 +380,7 @@ class StreamPacketGen {
   }
 
   /**
-   * @method back() -> back command for Internal finishing of previous Tracks streaming
+   * back() -> back command for Internal finishing of previous Tracks streaming
    * @param {String|Number|undefined} TracksBackwardIndex Track Index from previous Tracks Data
    * @param {User|GuildMember|undefined} requestedBy for changigng exisitng requestedBy Value
    * @param {DefaultExtractorStreamOptions<Object>} StreamCreateOptions Stream Create Optiosn from Track Class
@@ -413,7 +448,7 @@ class StreamPacketGen {
   }
 
   /**
-   * @method setMode() -> Set Mode of the Music Player between "loop","repeat","autoplay"
+   * setMode() -> Set Mode of the Music Player between "loop","repeat","autoplay"
    * @param {String} ModeName Mode's Names for Setting Mode
    * @param {String|Boolean|undefined} ModeType Mode's Value for Setting which to operated
    * @param {String|Number|undefined} Times Extra Data from Queue.methods as Times
@@ -500,7 +535,7 @@ class StreamPacketGen {
   }
 
   /**
-   * @method StreamAudioResourceExtractor() -> Fetch Audio Resource to Stream in Music Player for Jericho Player
+   * StreamAudioResourceExtractor() -> Fetch Audio Resource to Stream in Music Player for Jericho Player
    * @param {DefaultTrack<Object>} Track Track Credentials for Streaming value
    * @returns {AudioResource} Audio Resource from Stream of Tracks
    */
@@ -531,7 +566,7 @@ class StreamPacketGen {
   }
 
   /**
-   * @method __handleMusicPlayerModes() -> Private Method for Handling complex Music Player's Modes with internal tracks
+   * __handleMusicPlayerModes() -> Private Method for Handling complex Music Player's Modes with internal tracks
    * @param {Queue} QueueInstance Queue Instance of per Guild
    * @returns {Boolean|undefined|Promise<Boolean|undefined>} returns true if operation went gree signal ro undefined on errors
    */

@@ -14,7 +14,7 @@ const {
  */
 class TrackGenerator {
   /**
-   * @method fetch() -> Fetch method , fetches Streams for Stream packet
+   * fetch() -> Fetch method , fetches Streams for Stream packet
    * @param {String} Query Query like URls or Youtube Searches | Default Extractor accept 5 supported and big websites like youtube , spotify , soundcloud , retribution , facebook and for "youtube-dl" , it accept any follows official "youtube" searches
    * @param {User|GuildMember|undefined} requestedBy user Data as who requested if given during insert or play method of Queue Instance
    * @param {DefaultExtractorStreamOptions<Object>} FetchOptions Extractor Options for Track Download from Extractors
@@ -127,7 +127,7 @@ class TrackGenerator {
   }
 
   /**
-   * @method #SongsFetching() -> Raw Track Data Fetching from various extractors like "play-dl" | "youtube-dl"
+   * #SongsFetching() -> Raw Track Data Fetching from various extractors like "play-dl" | "youtube-dl"
    * @param {String} Query Query like URls or Youtube Searches | Default Extractor accept 5 supported and big websites like youtube , spotify , soundcloud , retribution , facebook and for "youtube-dl" , it accept any follows official "youtube" searches
    * @param {DefaultFetchOptions<Object>} FetchOptions Fetching Options for Extractors
    * @param {String|Boolean|undefined} extractor extractor to be used as "play-dl" or "youtube-dl"

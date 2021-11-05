@@ -83,14 +83,14 @@ class VoiceUtils {
         ) {
           if (QueueInstance && !QueueInstance.destroyed) {
             QueueInstance.MusicPlayer.stop();
-            QueueInstance.StreamPacket.subscription.unsubscribe();
+            QueueInstance.StreamPacket.subscription ? QueueInstance.StreamPacket.subscription.unsubscribe() : undefined;
           }
           return void VoiceConnection.destroy(true);
         }
         if (VoiceConnection) {
           if (QueueInstance && !QueueInstance.destroyed) {
             QueueInstance.MusicPlayer.stop();
-            QueueInstance.StreamPacket.subscription.unsubscribe();
+            QueueInstance.StreamPacket.subscription ? QueueInstance.StreamPacket.subscription.unsubscribe() : undefined;
           }
           return void VoiceConnection.disconnect();
         }
@@ -111,14 +111,14 @@ class VoiceUtils {
     ) {
       if (QueueInstance && !QueueInstance.destroyed) {
         QueueInstance.MusicPlayer.stop();
-        QueueInstance.StreamPacket.subscription.unsubscribe();
+        QueueInstance.StreamPacket.subscription ? QueueInstance.StreamPacket.subscription.unsubscribe() : undefined;
       }
       return void VoiceConnection.destroy(true);
     }
     if (VoiceConnection) {
       if (QueueInstance && !QueueInstance.destroyed) {
         QueueInstance.MusicPlayer.stop();
-        QueueInstance.StreamPacket.subscription.unsubscribe();
+        QueueInstance.StreamPacket.subscription ? QueueInstance.StreamPacket.subscription.unsubscribe() : undefined;
       }
       return void VoiceConnection.disconnect();
     }

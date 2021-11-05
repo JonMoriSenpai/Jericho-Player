@@ -17,29 +17,16 @@ const {
   DefaultQueueCreateOptions,
 } = require('../types/interfaces');
 
-/**
- * @class JerichoPlayer -> Jericho Player Class for Creating Player Instances for Radio or Music Players
- * @event "error" => Player.on("error", ErrorMessage , Queue | Player , ExtraContent | undefined ) => { "Handle Error Event" } | Queue can be undefined if Player got Error
- * @event "tracksAdd" => Player.on("tracksAdd", Queue , tracks[] ) => { } | tracks[] is Tracks from "Query" provided in Queue.play() or Queue.insert()
- * @event "trackEnd" => Player.on("trackEnd", Queue , track ) => { } | track is Last Played Track with no missing values
- * @event "trackStart" => Player.on("trackStart", Queue , track ) = > { } | track is Current Track - "Queue.current"
- * @event "playlistAdd" => Player.on("playlistAdd", Queue , tracks[] ) => { } | tracks[] is Tracks from "Query" provided in Queue.play() or Queue.insert()
- * @event "botDisconnect" => Player.on("botDisconnect", Queue , VoiceChannel ) => { } | Queue can be undefined , depends on reason of event trigger
- * @event "channelEmpty" => Player.on("channelEmpty", Queue , VoiceChannel ) => {  } | Voice Channel can be undefined or destroyed if User does .
- * @event "connectionError" => Player.on("connectionError", ErrorMessage, Queue , VoiceConnection, guildId ) => {  } | Queue can be Destroyed .
- * @method CreateQueue<Queue> => Creates Queue and returns "instanceof Queue"
- * @method GetQueue<Queue> => Fetch Queue from Cache and returns "instanceof Queue"
- * @method DeleteQueue<undefined> => Delete Queue from Cache | Destroy Queue Completely and returns undefined
- * @return New Jericho Player Instance
- */
 class JerichoPlayer extends EventEmitter {
   /**
-   * @property {Object} QueueCaches -> Caches of Queues for per "instanceof Player"
+   * @private QueueCaches -> Caches of Queues for per "instanceof Player"
+   * @type {Object}
+   * @readonly
    */
   static #QueueCaches = {};
 
   /**
-   * @constructor of Jericho Player
+   * Jericho Player Constructor
    * @param {Client} Client  Instanceof Discord.js Client
    * @param {DefaultJerichoPlayerOptions<Object>}  JerichoPlayerOptions  Player Options for Stream Extraction and Voice Connection Moderation
    */
@@ -70,12 +57,16 @@ class JerichoPlayer extends EventEmitter {
     this.#__buildsandDepschecks(Client);
 
     /**
-     * @param {Client} Client Discord Client Instance
+     * Client Discord Client Instance
+     * @type {Client}
+     * @readonly
      */
     this.Client = Client;
 
     /**
-     * @param {DefaultJerichoPlayerOptions<Object>} JerichoPlayerOptions Jericho Player Default Options Saved for Class Utils Comparing and Fixing
+     * Jericho Player Default Options Saved for Class Utils Comparing and Fixing
+     * @type {DefaultJerichoPlayerOptions<Object>}
+     * @readonly
      */
 
     this.JerichoPlayerOptions = ClassUtils.stablizingoptions(
@@ -100,7 +91,7 @@ class JerichoPlayer extends EventEmitter {
       );
 
       /**
-       * @function clientchecks<Object> => Checks for Client in Voice Channel as Member
+       * clientchecks<Object> => Checks for Client in Voice Channel as Member
        * @param {GuildMember} member Guild Member < Object | Instance > for Checking its originality about being Client
        * @returns {Boolean} true if Client has been Found and false if CLient is not Present
        */
@@ -204,7 +195,7 @@ class JerichoPlayer extends EventEmitter {
   }
 
   /**
-   * @method CreateQueue => Create Queue Instance for Player and per Guild
+   * CreateQueue => Create Queue Instance for Player and per Guild
    * @param {Message | Interaction} message Guild Message Only for getting info about guild and guildId
    * @param {DefaultQueueCreateOptions<Object>|undefined} QueueCreateOptions => Queue Create Options for Queue Instance ( for making ByDefault Values for Queue.<methods> )
    * @returns {Queue} Queue Instance => ( for Queue.<methods> like Queue.play() )
@@ -264,7 +255,7 @@ class JerichoPlayer extends EventEmitter {
   }
 
   /**
-   * @method DeleteQueue -> Delete's Cached Queue (forced way to erase Queue's Existence)
+   * DeleteQueue -> Delete's Cached Queue (forced way to erase Queue's Existence)
    * @param {String|Number} guildId Guild["id"] OR guild.id is required to fetch queue from the Cache
    * @returns {undefined} Returns "undefined"
    */
@@ -284,7 +275,7 @@ class JerichoPlayer extends EventEmitter {
   }
 
   /**
-   * @method GetQueue -> Fetch Queue (Instance) from Cache or else returns undefined
+   * GetQueue -> Fetch Queue (Instance) from Cache or else returns undefined
    * @param {String|Number} guildId Guild["id"] OR guild.id is required to fetch queue from the Cache
    * @returns {Queue|undefined} Returns Queue Instance or else "undefined"
    */
@@ -299,8 +290,8 @@ class JerichoPlayer extends EventEmitter {
   }
 
   /**
-   * @static Player Class Defined Method
-   * @method #QueueCacheAdd -> Private Method for Player's Workload to Add Queue Cache Easily without using any Player's Instance
+   * @private Player Class Defined Method
+   * #QueueCacheAdd -> Private Method for Player's Workload to Add Queue Cache Easily without using any Player's Instance
    * @param {Queue} QueueInstance Queue Instance made from "Queue" class to work around with many <Queue>.methods() for a guild
    * @returns {Queue} QueueInstance , To reperesnt the Work Complete Signal
    */
@@ -311,8 +302,8 @@ class JerichoPlayer extends EventEmitter {
   }
 
   /**
-   * @static Player Class Defined Method
-   * @method #QueueCacheFetch -> Private Method for Player's Workload to Fetch Queue Cache Easily without using any Player's Instance
+   * @private Player Class Defined Method
+   * #QueueCacheFetch -> Private Method for Player's Workload to Fetch Queue Cache Easily without using any Player's Instance
    * @param {String|Number} guildId Guild["id"] OR guild.id is required to fetch queue from the Cache
    * @param {DefaultQueueCreateOptions<Object>} QueueCreateOptions QueueCreateOptions for if Queue "connection" is destroyed , then it requires Options to remake whole infrastructure
    * @returns {Queue|undefined} QueueInstance , To reperesnt the Work Complete Signal
@@ -333,8 +324,8 @@ class JerichoPlayer extends EventEmitter {
   }
 
   /**
-   * @static Player Class Defined Method
-   * @method #QueueCacheRemove -> Private Method for Player's Workload to Remove Queue Cache Easily without using any Player's Instance
+   * @private Player Class Defined Method
+   * #QueueCacheRemove -> Private Method for Player's Workload to Remove Queue Cache Easily without using any Player's Instance
    * @param {String|Number} guildId Guild["id"] OR guild.id is required to fetch queue from the Cache
    * @returns {undefined} undefined , To reperesnt the Work Complete Signal as Queue will be destroyed so , we can't return Queue
    */
@@ -354,8 +345,8 @@ class JerichoPlayer extends EventEmitter {
   }
 
   /**
-   * @static Player Class Defined Method
-   * @method #__playerVoiceConnectionMainHandler -> Private Method for Player's Voice Connection "Manager" to Filter out Connection Decisions frpm Queue | Player 's Connection Options from User
+   * @private Player Class Defined Method
+   * #__playerVoiceConnectionMainHandler -> Private Method for Player's Voice Connection "Manager" to Filter out Connection Decisions frpm Queue | Player 's Connection Options from User
    * @param {Queue} QueueInstance Queue Instance made from "Queue" class to work around
    * @param {VoiceChannel|StageChannel} VoiceChannel Simple Discord Voice Channel | Stage Channel Value
    * @returns {undefined} undefined, As these Private method only meant for Voice Handling with Options
@@ -397,8 +388,8 @@ class JerichoPlayer extends EventEmitter {
   }
 
   /**
-   * @static Player Class Defined Method
-   * @method #__handleVoiceConnectionInterchange -> Private Method for Player's Voice Destroy Connection
+   * @private Player Class Defined Method
+   * #__handleVoiceConnectionInterchange -> Private Method for Player's Voice Destroy Connection
    * @param {Queue} QueueInstance Queue Instance made from "Queue" class to work around
    * @param {VoiceChannel|StageChannel} VoiceChannel Simple Discord Voice Channel | Stage Channel Value
    * @returns {undefined} undefined, As these Private method only meant for Voice Handling with Options
@@ -425,8 +416,8 @@ class JerichoPlayer extends EventEmitter {
   }
 
   /**
-   * @static Player Class Defined Method
-   * @method #__buildsandDepschecks -> Private Method for Checks for Dependencies , Intents to avoid Internal value errors or package bugs
+   * @private Player Class Defined Method
+   * #__buildsandDepschecks -> Private Method for Checks for Dependencies , Intents to avoid Internal value errors or package bugs
    * @param {Client} Client Discord Client Instance for Operating as a Bot
    * @returns {undefined} undefined, As these Private method only meant for Voice Handling with Options
    */
