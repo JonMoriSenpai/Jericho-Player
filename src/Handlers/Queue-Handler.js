@@ -27,6 +27,7 @@ const {
   DefaultModesType,
   DefaultcurrentTimestamp,
 } = require('../types/interfaces');
+const { Track } = require('../../typings/Instances')
 const TrackGenerator = require('../Structures/Tracks');
 
 /**
@@ -86,7 +87,7 @@ class Queue {
 
     /**
      * StreamPacket Stream packet for Queue | Simply Handling Voice Connections and Tracks/Streams
-     * @type {DefaultStreamPacket}
+     * @type {StreamPacketGen}
      * @readonly
      */
     this.StreamPacket = new StreamPacketGen(
@@ -113,7 +114,7 @@ class Queue {
 
     /**
      * Queue.tracks[] holds all the Queue's tracks Cache
-     * @type {Object[]}
+     * @type {Track[]}
      * @readonly
      */
     this.tracks = [];
