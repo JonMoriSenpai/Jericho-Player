@@ -25,3 +25,4 @@ jobs:
         with:
           personal_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./docs
+          cname: jericho-player.js.org
