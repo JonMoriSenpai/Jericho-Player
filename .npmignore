@@ -11,3 +11,4 @@ example/
 .babelrc
 .eslintignore
 .npmrc
+.jsdoc.json
