@@ -4,7 +4,7 @@
         "dictionaries": ["jsdoc"]
     },
     "source": {
-        "include": ["index.js", "package.json", "README.md", "src"],
+        "include": ["index.js", "package.json", "README.md", "Handlers","Utilities"],
         "includePattern": ".js$",
         "excludePattern": "(node_modules/|docs|tests/)"
     },
@@ -12,20 +12,20 @@
         "plugins/markdown"
     ],
     "templates": {
-        "cleverLinks": false,
+        "cleverLinks": true,
         "monospaceLinks": true,
-        "useLongnameInNav": false,
+        "useLongnameInNav": true,
         "showInheritedInNav": true,
         "default": {
-            "outputSourceFiles": false,
-            "includeDate": false
+            "outputSourceFiles": true,
+            "includeDate": true
         }
     },
     "opts": {
-        "destination": "./docs/",
+        "destination": "./gh-pages/",
         "encoding": "utf8",
-        "private": true,
-        "recurse": true,
+        "private": false,
+        "recurse": false,
         "template": "./node_modules/jsdoc-skyceil"
     }
 }

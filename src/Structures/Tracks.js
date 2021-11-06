@@ -9,6 +9,7 @@ const {
 } = require('../types/interfaces');
 
 /**
+ * @private
  * @class TrackGenerator -> these class helps to genreate Tracks from Query and Stream options using methods
  * Tracks sometimes went wrong if Query doesn't match or Ratelimited and error event will trigger
  */

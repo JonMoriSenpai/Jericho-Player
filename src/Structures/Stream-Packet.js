@@ -27,6 +27,7 @@ const {
 const Queue = require('../Handlers/Queue-Handler');
 
 /**
+ * @private
  * @class StreamPacketGen -> Stream Packet Generator for Connection and Internal Workflows
  * Stream packet is meant to untouched by Users as it can distortion or runtime Bugs and errors during playing except when you are debugging them
  */
