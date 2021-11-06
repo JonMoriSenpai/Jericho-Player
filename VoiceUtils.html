@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>Class: ClassUtils</title>
+    <title>Class: VoiceUtils</title>
 
     <script src="scripts/prettify/prettify.js"></script>
     <script src="scripts/prettify/lang-css.js"></script>
@@ -27,7 +27,7 @@
         <div class="burger-line-3"></div>
     </div>
 
-    <h1 class="page-title">Class: ClassUtils</h1>
+    <h1 class="page-title">Class: VoiceUtils</h1>
 
     
 
@@ -38,9 +38,7 @@
 <header>
     <hr>
     
-        <h2><span class="attribs"><span class="type-signature"></span></span>ClassUtils<span class="signature">()</span><span class="type-signature"></span></h2>
-        
-            <div class="class-description"><p>ClassUtils -&gt; Class Util's methods are for Class's Support and helping basic or extract support neccassity tools</p></div>
+        <h2><span class="attribs"><span class="type-signature">(private) </span></span>VoiceUtils<span class="signature">()</span><span class="type-signature"></span></h2>
         
     
 </header>
@@ -51,11 +49,9 @@
         
 
     
-    <h2>Constructor</h2>
-    
 
     
-    <h4 class="name" id="ClassUtils"><span class="type-signature"></span>new ClassUtils<span class="signature">()</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="VoiceUtils"><span class="type-signature">(private) </span>new VoiceUtils<span class="signature">()</span><span class="type-signature"></span></h4>
     
 
     
@@ -103,7 +99,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Utilities_Class-Utils.js.html">Utilities/Class-Utils.js</a>, <a href="Utilities_Class-Utils.js.html#line7">line 7</a>
+        <a href="Utilities_Voice-Utils.js.html">Utilities/Voice-Utils.js</a>, <a href="Utilities_Voice-Utils.js.html#line18">line 18</a>
     </li></ul></dd>
     
 
@@ -160,12 +156,16 @@
     
 
     
-    <h4 class="name" id=".__SearchPackageJson"><span class="type-signature">(private, static) </span>__SearchPackageJson<span class="signature">(dir, packageName, depth)</span><span class="type-signature"> &rarr; {Object}</span></h4>
+    <h4 class="name" id=".disconnect"><span class="type-signature">(static) </span>disconnect<span class="signature">(guildId, DisconnectChannelOptions, Timedout, QueueInstance)</span><span class="type-signature"> &rarr; {undefined|Number|String}</span></h4>
     
 
     
 
 
+
+<div class="description">
+    <p>Disconnect Voice Channel and even destroy Voice Connection if Option.destroy =? true</p>
+</div>
 
 
 
@@ -191,6 +191,8 @@
             
 
             
+            <th>Default</th>
+            
 
             <th class="last">Description</th>
         </tr>
@@ -201,58 +203,15 @@
 
             <tr>
                 
-                    <td class="name"><code>dir</code></td>
+                    <td class="name"><code>guildId</code></td>
                 
 
                 <td class="type">
                 
                     
 <span class="param-type">String</span>
+|
 
-
-                
-                </td>
-
-                
-
-                
-
-                <td class="description last"><p>Directory name | value</p></td>
-            </tr>
-
-        
-
-            <tr>
-                
-                    <td class="name"><code>packageName</code></td>
-                
-
-                <td class="type">
-                
-                    
-<span class="param-type">String</span>
-
-
-                
-                </td>
-
-                
-
-                
-
-                <td class="description last"><p>NPM Package Name</p></td>
-            </tr>
-
-        
-
-            <tr>
-                
-                    <td class="name"><code>depth</code></td>
-                
-
-                <td class="type">
-                
-                    
 <span class="param-type">Number</span>
 
 
@@ -262,153 +221,28 @@
                 
 
                 
+                    <td class="default">
+                    
+                    </td>
+                
 
-                <td class="description last"><p>Depth to go in Directories or outward</p></td>
+                <td class="description last"><p>Guild's id as Snowflake</p></td>
             </tr>
 
-        
-        </tbody>
-    </table>
-</div>
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Utilities_Class-Utils.js.html">Utilities/Class-Utils.js</a>, <a href="Utilities_Class-Utils.js.html#line128">line 128</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h5>Returns:</h5>
-
-        
-<div class="param-desc">
-    <p>pacakge.json file with accurate versions</p>
-</div>
-
-
-
-<ul>
-    <li>
-        Type: <span class="simple-code">
-<span class="param-type">Object</span>
-
-</span>
-    </li>
-</ul>
-
-    
-
-
-
-
-
-<hr>
-        
-            
-
-    
-
-    
-    <h4 class="name" id=".__versioning"><span class="type-signature">(private, static) </span>__versioning<span class="signature">(name)</span><span class="type-signature"> &rarr; {String|undefined}</span></h4>
-    
-
-    
-
-
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<div class="table-box">
-    <table class="params">
-        <thead>
-        <tr>
-            
-            <th>Name</th>
-            
-
-            <th>Type</th>
-
-            
-
-            
-
-            <th class="last">Description</th>
-        </tr>
-        </thead>
-
-        <tbody>
         
 
             <tr>
                 
-                    <td class="name"><code>name</code></td>
+                    <td class="name"><code>DisconnectChannelOptions</code></td>
                 
 
                 <td class="type">
                 
                     
-<span class="param-type">String</span>
+<span class="param-type">DefaultDisconnectChannelOptions</span>
+|
+
+<span class="param-type">undefined</span>
 
 
                 
@@ -417,8 +251,74 @@
                 
 
                 
+                    <td class="default">
+                    
+                    </td>
+                
 
-                <td class="description last"><p>NPM Package Name</p></td>
+                <td class="description last"><p>Disconnect Options for Connection</p></td>
+            </tr>
+
+        
+
+            <tr>
+                
+                    <td class="name"><code>Timedout</code></td>
+                
+
+                <td class="type">
+                
+                    
+<span class="param-type">Number</span>
+|
+
+<span class="param-type">String</span>
+|
+
+<span class="param-type">undefined</span>
+
+
+                
+                </td>
+
+                
+
+                
+                    <td class="default">
+                    
+                        0
+                    
+                    </td>
+                
+
+                <td class="description last"><p>Nodejs Timedout duration if delay has been issues</p></td>
+            </tr>
+
+        
+
+            <tr>
+                
+                    <td class="name"><code>QueueInstance</code></td>
+                
+
+                <td class="type">
+                
+                    
+<span class="param-type"><a href="Queue.html">Queue</a></span>
+
+
+                
+                </td>
+
+                
+
+                
+                    <td class="default">
+                    
+                    </td>
+                
+
+                <td class="description last"><p>Queue Instance for fetching Player and Stream Packet</p></td>
             </tr>
 
         
@@ -460,7 +360,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Utilities_Class-Utils.js.html">Utilities/Class-Utils.js</a>, <a href="Utilities_Class-Utils.js.html#line106">line 106</a>
+        <a href="Utilities_Voice-Utils.js.html">Utilities/Voice-Utils.js</a>, <a href="Utilities_Voice-Utils.js.html#line73">line 73</a>
     </li></ul></dd>
     
 
@@ -489,7 +389,7 @@
 
         
 <div class="param-desc">
-    <p>Returns Package Version</p>
+    <p>Returns Nodejs Timedout for Delays and undefined on completion or errors</p>
 </div>
 
 
@@ -497,204 +397,13 @@
 <ul>
     <li>
         Type: <span class="simple-code">
-<span class="param-type">String</span>
-|
-
 <span class="param-type">undefined</span>
-
-</span>
-    </li>
-</ul>
-
-    
-
-
-
-
-
-<hr>
-        
-            
-
-    
-
-    
-    <h4 class="name" id=".HumanTimeConversion"><span class="type-signature">(static) </span>HumanTimeConversion<span class="signature">(Type1, Type2)</span><span class="type-signature"> &rarr; {String|undefined}</span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    <p>HumanTimeConversion() -&gt; Human Time Conversion Function with two categories</p>
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<div class="table-box">
-    <table class="params">
-        <thead>
-        <tr>
-            
-            <th>Name</th>
-            
-
-            <th>Type</th>
-
-            
-
-            
-
-            <th class="last">Description</th>
-        </tr>
-        </thead>
-
-        <tbody>
-        
-
-            <tr>
-                
-                    <td class="name"><code>Type1</code></td>
-                
-
-                <td class="type">
-                
-                    
-<span class="param-type">String</span>
 |
 
 <span class="param-type">Number</span>
 |
 
-<span class="param-type">undefined</span>
-
-
-                
-                </td>
-
-                
-
-                
-
-                <td class="description last"><p>Convert Milliseconds to Human Time Language</p></td>
-            </tr>
-
-        
-
-            <tr>
-                
-                    <td class="name"><code>Type2</code></td>
-                
-
-                <td class="type">
-                
-                    
-<span class="param-type">Array.&lt;Object></span>
-|
-
-<span class="param-type">undefined</span>
-
-
-                
-                </td>
-
-                
-
-                
-
-                <td class="description last"><p>Convert Milliseconds to Human Time variables</p></td>
-            </tr>
-
-        
-        </tbody>
-    </table>
-</div>
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Utilities_Class-Utils.js.html">Utilities/Class-Utils.js</a>, <a href="Utilities_Class-Utils.js.html#line151">line 151</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h5>Returns:</h5>
-
-        
-<div class="param-desc">
-    <p>Returns String with desired value</p>
-</div>
-
-
-
-<ul>
-    <li>
-        Type: <span class="simple-code">
 <span class="param-type">String</span>
-|
-
-<span class="param-type">undefined</span>
 
 </span>
     </li>
@@ -713,7 +422,7 @@
     
 
     
-    <h4 class="name" id=".ScanDeps"><span class="type-signature">(static) </span>ScanDeps<span class="signature">(packageName)</span><span class="type-signature"> &rarr; {String|undefined}</span></h4>
+    <h4 class="name" id=".join"><span class="type-signature">(async, static) </span>join<span class="signature">(Client, Channel, JoinChannelOptions)</span><span class="type-signature"> &rarr; {Promise.&lt;VoiceConnection>|undefined}</span></h4>
     
 
     
@@ -721,7 +430,7 @@
 
 
 <div class="description">
-    <p>ScanDeps() -&gt; Scanning Dependencies in package.json or node_modules for package or versions list</p>
+    <p>Join Channel function for Voice Utils with Client and Channel and JoinChannelOptions Credentials</p>
 </div>
 
 
@@ -758,13 +467,62 @@
 
             <tr>
                 
-                    <td class="name"><code>packageName</code></td>
+                    <td class="name"><code>Client</code></td>
                 
 
                 <td class="type">
                 
                     
-<span class="param-type">String</span>
+<span class="param-type">Client</span>
+
+
+                
+                </td>
+
+                
+
+                
+
+                <td class="description last"><p>Discord Client Instance</p></td>
+            </tr>
+
+        
+
+            <tr>
+                
+                    <td class="name"><code>Channel</code></td>
+                
+
+                <td class="type">
+                
+                    
+<span class="param-type">VoiceChannel</span>
+|
+
+<span class="param-type">StageChannel</span>
+
+
+                
+                </td>
+
+                
+
+                
+
+                <td class="description last"><p>Guild Voice Channel | Guild Stage Channel</p></td>
+            </tr>
+
+        
+
+            <tr>
+                
+                    <td class="name"><code>JoinChannelOptions</code></td>
+                
+
+                <td class="type">
+                
+                    
+<span class="param-type">DefaultJoinChannelOptions</span>
 |
 
 <span class="param-type">undefined</span>
@@ -777,7 +535,7 @@
 
                 
 
-                <td class="description last"><p>Package name for publishing it sversion in project</p></td>
+                <td class="description last"><p>Options for Joining Voice Channel</p></td>
             </tr>
 
         
@@ -819,7 +577,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Utilities_Class-Utils.js.html">Utilities/Class-Utils.js</a>, <a href="Utilities_Class-Utils.js.html#line46">line 46</a>
+        <a href="Utilities_Voice-Utils.js.html">Utilities/Voice-Utils.js</a>, <a href="Utilities_Voice-Utils.js.html#line27">line 27</a>
     </li></ul></dd>
     
 
@@ -848,7 +606,7 @@
 
         
 <div class="param-desc">
-    <p>Publish Data whaich was requested for</p>
+    <p>Returns Voice Connection Made by the</p>
 </div>
 
 
@@ -856,192 +614,10 @@
 <ul>
     <li>
         Type: <span class="simple-code">
-<span class="param-type">String</span>
+<span class="param-type">Promise.&lt;VoiceConnection></span>
 |
 
 <span class="param-type">undefined</span>
-
-</span>
-    </li>
-</ul>
-
-    
-
-
-
-
-
-<hr>
-        
-            
-
-    
-
-    
-    <h4 class="name" id=".stablizingoptions"><span class="type-signature">(static) </span>stablizingoptions<span class="signature">(Local, Parent)</span><span class="type-signature"> &rarr; {Object}</span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    <p>stablizingoptions() -&gt; Stabilizing Local and Parent Options with accuracy 80%</p>
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<div class="table-box">
-    <table class="params">
-        <thead>
-        <tr>
-            
-            <th>Name</th>
-            
-
-            <th>Type</th>
-
-            
-
-            
-
-            <th class="last">Description</th>
-        </tr>
-        </thead>
-
-        <tbody>
-        
-
-            <tr>
-                
-                    <td class="name"><code>Local</code></td>
-                
-
-                <td class="type">
-                
-                    
-<span class="param-type">Object</span>
-
-
-                
-                </td>
-
-                
-
-                
-
-                <td class="description last"><p>Local function/method options</p></td>
-            </tr>
-
-        
-
-            <tr>
-                
-                    <td class="name"><code>Parent</code></td>
-                
-
-                <td class="type">
-                
-                    
-<span class="param-type">Object</span>
-
-
-                
-                </td>
-
-                
-
-                
-
-                <td class="description last"><p>Parent function/method options</p></td>
-            </tr>
-
-        
-        </tbody>
-    </table>
-</div>
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Utilities_Class-Utils.js.html">Utilities/Class-Utils.js</a>, <a href="Utilities_Class-Utils.js.html#line15">line 15</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h5>Returns:</h5>
-
-        
-<div class="param-desc">
-    <p>Finaliize Options</p>
-</div>
-
-
-
-<ul>
-    <li>
-        Type: <span class="simple-code">
-<span class="param-type">Object</span>
 
 </span>
     </li>

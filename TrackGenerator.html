@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>Class: ClassUtils</title>
+    <title>Class: TrackGenerator</title>
 
     <script src="scripts/prettify/prettify.js"></script>
     <script src="scripts/prettify/lang-css.js"></script>
@@ -27,7 +27,7 @@
         <div class="burger-line-3"></div>
     </div>
 
-    <h1 class="page-title">Class: ClassUtils</h1>
+    <h1 class="page-title">Class: TrackGenerator</h1>
 
     
 
@@ -38,9 +38,10 @@
 <header>
     <hr>
     
-        <h2><span class="attribs"><span class="type-signature"></span></span>ClassUtils<span class="signature">()</span><span class="type-signature"></span></h2>
+        <h2><span class="attribs"><span class="type-signature">(private) </span></span>TrackGenerator<span class="signature">()</span><span class="type-signature"></span></h2>
         
-            <div class="class-description"><p>ClassUtils -&gt; Class Util's methods are for Class's Support and helping basic or extract support neccassity tools</p></div>
+            <div class="class-description"><p>TrackGenerator -&gt; these class helps to genreate Tracks from Query and Stream options using methods
+Tracks sometimes went wrong if Query doesn't match or Ratelimited and error event will trigger</p></div>
         
     
 </header>
@@ -55,7 +56,7 @@
     
 
     
-    <h4 class="name" id="ClassUtils"><span class="type-signature"></span>new ClassUtils<span class="signature">()</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="TrackGenerator"><span class="type-signature">(private) </span>new TrackGenerator<span class="signature">()</span><span class="type-signature"></span></h4>
     
 
     
@@ -103,7 +104,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Utilities_Class-Utils.js.html">Utilities/Class-Utils.js</a>, <a href="Utilities_Class-Utils.js.html#line7">line 7</a>
+        <a href="Structures_Tracks.js.html">Structures/Tracks.js</a>, <a href="Structures_Tracks.js.html#line16">line 16</a>
     </li></ul></dd>
     
 
@@ -160,7 +161,332 @@
     
 
     
-    <h4 class="name" id=".__SearchPackageJson"><span class="type-signature">(private, static) </span>__SearchPackageJson<span class="signature">(dir, packageName, depth)</span><span class="type-signature"> &rarr; {Object}</span></h4>
+    <h4 class="name" id=".fetch"><span class="type-signature">(async, static) </span>fetch<span class="signature">(Query, requestedBy, FetchOptions, extractor, CacheLength, NoStreamif)</span><span class="type-signature"> &rarr; {Promise.&lt;DefaultChunk>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>fetch() -&gt; Fetch method , fetches Streams for Stream packet</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<div class="table-box">
+    <table class="params">
+        <thead>
+        <tr>
+            
+            <th>Name</th>
+            
+
+            <th>Type</th>
+
+            
+
+            
+            <th>Default</th>
+            
+
+            <th class="last">Description</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        
+
+            <tr>
+                
+                    <td class="name"><code>Query</code></td>
+                
+
+                <td class="type">
+                
+                    
+<span class="param-type">String</span>
+
+
+                
+                </td>
+
+                
+
+                
+                    <td class="default">
+                    
+                    </td>
+                
+
+                <td class="description last"><p>Query like URls or Youtube Searches | Default Extractor accept 5 supported and big websites like youtube , spotify , soundcloud , retribution , facebook and for &quot;youtube-dl&quot; , it accept any follows official &quot;youtube&quot; searches</p></td>
+            </tr>
+
+        
+
+            <tr>
+                
+                    <td class="name"><code>requestedBy</code></td>
+                
+
+                <td class="type">
+                
+                    
+<span class="param-type">User</span>
+|
+
+<span class="param-type">GuildMember</span>
+|
+
+<span class="param-type">undefined</span>
+
+
+                
+                </td>
+
+                
+
+                
+                    <td class="default">
+                    
+                    </td>
+                
+
+                <td class="description last"><p>user Data as who requested if given during insert or play method of Queue Instance</p></td>
+            </tr>
+
+        
+
+            <tr>
+                
+                    <td class="name"><code>FetchOptions</code></td>
+                
+
+                <td class="type">
+                
+                    
+<span class="param-type">DefaultExtractorStreamOptions</span>
+
+
+                
+                </td>
+
+                
+
+                
+                    <td class="default">
+                    
+                    </td>
+                
+
+                <td class="description last"><p>Extractor Options for Track Download from Extractors</p></td>
+            </tr>
+
+        
+
+            <tr>
+                
+                    <td class="name"><code>extractor</code></td>
+                
+
+                <td class="type">
+                
+                    
+<span class="param-type">String</span>
+|
+
+<span class="param-type">Boolean</span>
+|
+
+<span class="param-type">undefined</span>
+
+
+                
+                </td>
+
+                
+
+                
+                    <td class="default">
+                    
+                        play-dl
+                    
+                    </td>
+                
+
+                <td class="description last"><p>extractor to be used as &quot;play-dl&quot; or &quot;youtube-dl&quot;</p></td>
+            </tr>
+
+        
+
+            <tr>
+                
+                    <td class="name"><code>CacheLength</code></td>
+                
+
+                <td class="type">
+                
+                    
+<span class="param-type">Nummber</span>
+|
+
+<span class="param-type">String</span>
+|
+
+<span class="param-type">undefined</span>
+
+
+                
+                </td>
+
+                
+
+                
+                    <td class="default">
+                    
+                        0
+                    
+                    </td>
+                
+
+                <td class="description last"><p>Last Track ID value</p></td>
+            </tr>
+
+        
+
+            <tr>
+                
+                    <td class="name"><code>NoStreamif</code></td>
+                
+
+                <td class="type">
+                
+                    
+<span class="param-type">Boolean</span>
+|
+
+<span class="param-type">undefined</span>
+
+
+                
+                </td>
+
+                
+
+                
+                    <td class="default">
+                    
+                    </td>
+                
+
+                <td class="description last"><p>Check if User wants Stream or not</p></td>
+            </tr>
+
+        
+        </tbody>
+    </table>
+</div>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Structures_Tracks.js.html">Structures/Tracks.js</a>, <a href="Structures_Tracks.js.html#line27">line 27</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>returns Chunk value | like a packet of tracks and streamdata values</p>
+</div>
+
+
+
+<ul>
+    <li>
+        Type: <span class="simple-code">
+<span class="param-type">Promise.&lt;DefaultChunk></span>
+
+</span>
+    </li>
+</ul>
+
+    
+
+
+
+
+
+<hr>
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".PlayDLExtractor"><span class="type-signature">(async, private, static) </span>PlayDLExtractor<span class="signature">(Query, ExtractorStreamOptions, NoStreamif)</span><span class="type-signature"> &rarr; {Promise.&lt;DefaultExtractorData>}</span></h4>
     
 
     
@@ -201,7 +527,7 @@
 
             <tr>
                 
-                    <td class="name"><code>dir</code></td>
+                    <td class="name"><code>Query</code></td>
                 
 
                 <td class="type">
@@ -217,14 +543,201 @@
 
                 
 
-                <td class="description last"><p>Directory name | value</p></td>
+                <td class="description last"><p>Query like URls or Youtube Searches | Default Extractor accept 5 supported and big websites like youtube , spotify , soundcloud , retribution , facebook and for &quot;youtube-dl&quot; , it accept any follows official &quot;youtube&quot; searches</p></td>
             </tr>
 
         
 
             <tr>
                 
-                    <td class="name"><code>packageName</code></td>
+                    <td class="name"><code>ExtractorStreamOptions</code></td>
+                
+
+                <td class="type">
+                
+                    
+<span class="param-type">DefaultExtractorStreamOptions</span>
+
+
+                
+                </td>
+
+                
+
+                
+
+                <td class="description last"><p>Extractor Fetching Options</p></td>
+            </tr>
+
+        
+
+            <tr>
+                
+                    <td class="name"><code>NoStreamif</code></td>
+                
+
+                <td class="type">
+                
+                    
+<span class="param-type">Boolean</span>
+|
+
+<span class="param-type">undefined</span>
+
+
+                
+                </td>
+
+                
+
+                
+
+                <td class="description last"><p>Check if User wants Stream or not</p></td>
+            </tr>
+
+        
+        </tbody>
+    </table>
+</div>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Structures_Tracks.js.html">Structures/Tracks.js</a>, <a href="Structures_Tracks.js.html#line231">line 231</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>Returns Extractor Value with no edits</p>
+</div>
+
+
+
+<ul>
+    <li>
+        Type: <span class="simple-code">
+<span class="param-type">Promise.&lt;DefaultExtractorData></span>
+
+</span>
+    </li>
+</ul>
+
+    
+
+
+
+
+
+<hr>
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".SongsFetching"><span class="type-signature">(async, static) </span>SongsFetching<span class="signature">(Query, FetchOptions, extractor)</span><span class="type-signature"> &rarr; {Promise.&lt;DefaultExtractorData>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>SongsFetching() -&gt; Raw Track Data Fetching from various extractors like &quot;play-dl&quot; | &quot;youtube-dl&quot;</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<div class="table-box">
+    <table class="params">
+        <thead>
+        <tr>
+            
+            <th>Name</th>
+            
+
+            <th>Type</th>
+
+            
+
+            
+            <th>Default</th>
+            
+
+            <th class="last">Description</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        
+
+            <tr>
+                
+                    <td class="name"><code>Query</code></td>
                 
 
                 <td class="type">
@@ -239,21 +752,245 @@
                 
 
                 
+                    <td class="default">
+                    
+                    </td>
+                
 
-                <td class="description last"><p>NPM Package Name</p></td>
+                <td class="description last"><p>Query like URls or Youtube Searches | Default Extractor accept 5 supported and big websites like youtube , spotify , soundcloud , retribution , facebook and for &quot;youtube-dl&quot; , it accept any follows official &quot;youtube&quot; searches</p></td>
             </tr>
 
         
 
             <tr>
                 
-                    <td class="name"><code>depth</code></td>
+                    <td class="name"><code>FetchOptions</code></td>
+                
+
+                <td class="type">
+                
+                    
+<span class="param-type">DefaultFetchOptions</span>
+
+
+                
+                </td>
+
+                
+
+                
+                    <td class="default">
+                    
+                    </td>
+                
+
+                <td class="description last"><p>Fetching Options for Extractors</p></td>
+            </tr>
+
+        
+
+            <tr>
+                
+                    <td class="name"><code>extractor</code></td>
+                
+
+                <td class="type">
+                
+                    
+<span class="param-type">String</span>
+|
+
+<span class="param-type">Boolean</span>
+|
+
+<span class="param-type">undefined</span>
+
+
+                
+                </td>
+
+                
+
+                
+                    <td class="default">
+                    
+                        play-dl
+                    
+                    </td>
+                
+
+                <td class="description last"><p>extractor to be used as &quot;play-dl&quot; or &quot;youtube-dl&quot;</p></td>
+            </tr>
+
+        
+        </tbody>
+    </table>
+</div>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Structures_Tracks.js.html">Structures/Tracks.js</a>, <a href="Structures_Tracks.js.html#line138">line 138</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>Returns Extractor Value with no edits</p>
+</div>
+
+
+
+<ul>
+    <li>
+        Type: <span class="simple-code">
+<span class="param-type">Promise.&lt;DefaultExtractorData></span>
+
+</span>
+    </li>
+</ul>
+
+    
+
+
+
+
+
+<hr>
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".Track_Id_Placement"><span class="type-signature">(private, static) </span>Track_Id_Placement<span class="signature">(Tracks, CacheLength, requestedBy)</span><span class="type-signature"> &rarr; {DefaultChunk}</span></h4>
+    
+
+    
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<div class="table-box">
+    <table class="params">
+        <thead>
+        <tr>
+            
+            <th>Name</th>
+            
+
+            <th>Type</th>
+
+            
+
+            
+
+            <th class="last">Description</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        
+
+            <tr>
+                
+                    <td class="name"><code>Tracks</code></td>
+                
+
+                <td class="type">
+                
+                    
+<span class="param-type">Array.&lt;DefaultStream></span>
+
+
+                
+                </td>
+
+                
+
+                
+
+                <td class="description last"><p>Stream Tracks to be converted User fetchable</p></td>
+            </tr>
+
+        
+
+            <tr>
+                
+                    <td class="name"><code>CacheLength</code></td>
                 
 
                 <td class="type">
                 
                     
 <span class="param-type">Number</span>
+|
+
+<span class="param-type">undefined</span>
 
 
                 
@@ -263,7 +1000,36 @@
 
                 
 
-                <td class="description last"><p>Depth to go in Directories or outward</p></td>
+                <td class="description last"><p>last Cached Track's ID</p></td>
+            </tr>
+
+        
+
+            <tr>
+                
+                    <td class="name"><code>requestedBy</code></td>
+                
+
+                <td class="type">
+                
+                    
+<span class="param-type">User</span>
+|
+
+<span class="param-type">GuildMember</span>
+|
+
+<span class="param-type">undefined</span>
+
+
+                
+                </td>
+
+                
+
+                
+
+                <td class="description last"><p>RequestedBy User Object value for Track</p></td>
             </tr>
 
         
@@ -305,7 +1071,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Utilities_Class-Utils.js.html">Utilities/Class-Utils.js</a>, <a href="Utilities_Class-Utils.js.html#line128">line 128</a>
+        <a href="Structures_Tracks.js.html">Structures/Tracks.js</a>, <a href="Structures_Tracks.js.html#line112">line 112</a>
     </li></ul></dd>
     
 
@@ -334,7 +1100,7 @@
 
         
 <div class="param-desc">
-    <p>pacakge.json file with accurate versions</p>
+    <p>Chunk Vlaue for Tracks Cache</p>
 </div>
 
 
@@ -342,7 +1108,7 @@
 <ul>
     <li>
         Type: <span class="simple-code">
-<span class="param-type">Object</span>
+<span class="param-type">DefaultChunk</span>
 
 </span>
     </li>
@@ -361,7 +1127,7 @@
     
 
     
-    <h4 class="name" id=".__versioning"><span class="type-signature">(private, static) </span>__versioning<span class="signature">(name)</span><span class="type-signature"> &rarr; {String|undefined}</span></h4>
+    <h4 class="name" id=".UserTrackModelGen"><span class="type-signature">(private, static) </span>UserTrackModelGen<span class="signature">(TrackData, requestedByUser)</span><span class="type-signature"> &rarr; {DefaultTrack}</span></h4>
     
 
     
@@ -402,13 +1168,13 @@
 
             <tr>
                 
-                    <td class="name"><code>name</code></td>
+                    <td class="name"><code>TrackData</code></td>
                 
 
                 <td class="type">
                 
                     
-<span class="param-type">String</span>
+<span class="param-type">DefaultStream</span>
 
 
                 
@@ -418,7 +1184,36 @@
 
                 
 
-                <td class="description last"><p>NPM Package Name</p></td>
+                <td class="description last"><p>Stream Data about the Track</p></td>
+            </tr>
+
+        
+
+            <tr>
+                
+                    <td class="name"><code>requestedByUser</code></td>
+                
+
+                <td class="type">
+                
+                    
+<span class="param-type">User</span>
+|
+
+<span class="param-type">GuildMember</span>
+|
+
+<span class="param-type">undefined</span>
+
+
+                
+                </td>
+
+                
+
+                
+
+                <td class="description last"><p>Requested user for Track Object</p></td>
             </tr>
 
         
@@ -460,7 +1255,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Utilities_Class-Utils.js.html">Utilities/Class-Utils.js</a>, <a href="Utilities_Class-Utils.js.html#line106">line 106</a>
+        <a href="Structures_Tracks.js.html">Structures/Tracks.js</a>, <a href="Structures_Tracks.js.html#line246">line 246</a>
     </li></ul></dd>
     
 
@@ -489,7 +1284,7 @@
 
         
 <div class="param-desc">
-    <p>Returns Package Version</p>
+    <p>Track Value for Queue.tracks[]</p>
 </div>
 
 
@@ -497,10 +1292,7 @@
 <ul>
     <li>
         Type: <span class="simple-code">
-<span class="param-type">String</span>
-|
-
-<span class="param-type">undefined</span>
+<span class="param-type">DefaultTrack</span>
 
 </span>
     </li>
@@ -519,16 +1311,12 @@
     
 
     
-    <h4 class="name" id=".HumanTimeConversion"><span class="type-signature">(static) </span>HumanTimeConversion<span class="signature">(Type1, Type2)</span><span class="type-signature"> &rarr; {String|undefined}</span></h4>
+    <h4 class="name" id=".YoutubeDLExtractor"><span class="type-signature">(async, private, static) </span>YoutubeDLExtractor<span class="signature">(Query, ExtractorStreamOptions, NoStreamif)</span><span class="type-signature"> &rarr; {Promise.&lt;DefaultExtractorData>}</span></h4>
     
 
     
 
 
-
-<div class="description">
-    <p>HumanTimeConversion() -&gt; Human Time Conversion Function with two categories</p>
-</div>
 
 
 
@@ -564,19 +1352,13 @@
 
             <tr>
                 
-                    <td class="name"><code>Type1</code></td>
+                    <td class="name"><code>Query</code></td>
                 
 
                 <td class="type">
                 
                     
 <span class="param-type">String</span>
-|
-
-<span class="param-type">Number</span>
-|
-
-<span class="param-type">undefined</span>
 
 
                 
@@ -586,20 +1368,43 @@
 
                 
 
-                <td class="description last"><p>Convert Milliseconds to Human Time Language</p></td>
+                <td class="description last"><p>Query like URls or Youtube Searches | Default Extractor accept 5 supported and big websites like youtube , spotify , soundcloud , retribution , facebook and for &quot;youtube-dl&quot; , it accept any follows official &quot;youtube&quot; searches</p></td>
             </tr>
 
         
 
             <tr>
                 
-                    <td class="name"><code>Type2</code></td>
+                    <td class="name"><code>ExtractorStreamOptions</code></td>
                 
 
                 <td class="type">
                 
                     
-<span class="param-type">Array.&lt;Object></span>
+<span class="param-type">DefaultExtractorStreamOptions</span>
+
+
+                
+                </td>
+
+                
+
+                
+
+                <td class="description last"><p>Extractor Fetching Options</p></td>
+            </tr>
+
+        
+
+            <tr>
+                
+                    <td class="name"><code>NoStreamif</code></td>
+                
+
+                <td class="type">
+                
+                    
+<span class="param-type">Boolean</span>
 |
 
 <span class="param-type">undefined</span>
@@ -612,7 +1417,7 @@
 
                 
 
-                <td class="description last"><p>Convert Milliseconds to Human Time variables</p></td>
+                <td class="description last"><p>Check if User wants Stream or not</p></td>
             </tr>
 
         
@@ -654,7 +1459,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Utilities_Class-Utils.js.html">Utilities/Class-Utils.js</a>, <a href="Utilities_Class-Utils.js.html#line151">line 151</a>
+        <a href="Structures_Tracks.js.html">Structures/Tracks.js</a>, <a href="Structures_Tracks.js.html#line196">line 196</a>
     </li></ul></dd>
     
 
@@ -683,7 +1488,7 @@
 
         
 <div class="param-desc">
-    <p>Returns String with desired value</p>
+    <p>Returns Extractor Value with no edits</p>
 </div>
 
 
@@ -691,357 +1496,7 @@
 <ul>
     <li>
         Type: <span class="simple-code">
-<span class="param-type">String</span>
-|
-
-<span class="param-type">undefined</span>
-
-</span>
-    </li>
-</ul>
-
-    
-
-
-
-
-
-<hr>
-        
-            
-
-    
-
-    
-    <h4 class="name" id=".ScanDeps"><span class="type-signature">(static) </span>ScanDeps<span class="signature">(packageName)</span><span class="type-signature"> &rarr; {String|undefined}</span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    <p>ScanDeps() -&gt; Scanning Dependencies in package.json or node_modules for package or versions list</p>
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<div class="table-box">
-    <table class="params">
-        <thead>
-        <tr>
-            
-            <th>Name</th>
-            
-
-            <th>Type</th>
-
-            
-
-            
-
-            <th class="last">Description</th>
-        </tr>
-        </thead>
-
-        <tbody>
-        
-
-            <tr>
-                
-                    <td class="name"><code>packageName</code></td>
-                
-
-                <td class="type">
-                
-                    
-<span class="param-type">String</span>
-|
-
-<span class="param-type">undefined</span>
-
-
-                
-                </td>
-
-                
-
-                
-
-                <td class="description last"><p>Package name for publishing it sversion in project</p></td>
-            </tr>
-
-        
-        </tbody>
-    </table>
-</div>
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Utilities_Class-Utils.js.html">Utilities/Class-Utils.js</a>, <a href="Utilities_Class-Utils.js.html#line46">line 46</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h5>Returns:</h5>
-
-        
-<div class="param-desc">
-    <p>Publish Data whaich was requested for</p>
-</div>
-
-
-
-<ul>
-    <li>
-        Type: <span class="simple-code">
-<span class="param-type">String</span>
-|
-
-<span class="param-type">undefined</span>
-
-</span>
-    </li>
-</ul>
-
-    
-
-
-
-
-
-<hr>
-        
-            
-
-    
-
-    
-    <h4 class="name" id=".stablizingoptions"><span class="type-signature">(static) </span>stablizingoptions<span class="signature">(Local, Parent)</span><span class="type-signature"> &rarr; {Object}</span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    <p>stablizingoptions() -&gt; Stabilizing Local and Parent Options with accuracy 80%</p>
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<div class="table-box">
-    <table class="params">
-        <thead>
-        <tr>
-            
-            <th>Name</th>
-            
-
-            <th>Type</th>
-
-            
-
-            
-
-            <th class="last">Description</th>
-        </tr>
-        </thead>
-
-        <tbody>
-        
-
-            <tr>
-                
-                    <td class="name"><code>Local</code></td>
-                
-
-                <td class="type">
-                
-                    
-<span class="param-type">Object</span>
-
-
-                
-                </td>
-
-                
-
-                
-
-                <td class="description last"><p>Local function/method options</p></td>
-            </tr>
-
-        
-
-            <tr>
-                
-                    <td class="name"><code>Parent</code></td>
-                
-
-                <td class="type">
-                
-                    
-<span class="param-type">Object</span>
-
-
-                
-                </td>
-
-                
-
-                
-
-                <td class="description last"><p>Parent function/method options</p></td>
-            </tr>
-
-        
-        </tbody>
-    </table>
-</div>
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Utilities_Class-Utils.js.html">Utilities/Class-Utils.js</a>, <a href="Utilities_Class-Utils.js.html#line15">line 15</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h5>Returns:</h5>
-
-        
-<div class="param-desc">
-    <p>Finaliize Options</p>
-</div>
-
-
-
-<ul>
-    <li>
-        Type: <span class="simple-code">
-<span class="param-type">Object</span>
+<span class="param-type">Promise.&lt;DefaultExtractorData></span>
 
 </span>
     </li>
