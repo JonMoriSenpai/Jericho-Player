@@ -53,8 +53,8 @@
 
 
     <section>
-        <article><h1>Discord Player</h1>
-<p>Complete framework to facilitate music commands using <strong><a href="https://discord.js.org">discord.js</a></strong>.</p>
+        <article><h1>Jericho Player</h1>
+<p>LightWeight Framework for  <strong><a href="https://discord.js.org">discord.js v13</a></strong> Music Bots and Radio Bots with fast moderation with commands and no memory leak.</p>
 <p><a href="https://npmjs.com/jericho-player"><img src="https://img.shields.io/npm/dt/jericho-player?style=for-the-badge" alt="downloadsBadge"></a>
 <a href="https://npmjs.com/jericho-player"><img src="https://img.shields.io/npm/v/jericho-player?style=for-the-badge" alt="versionBadge"></a>
 <a href="https://discord.gg/MfME24sJ2a"><img src="https://img.shields.io/discord/795434308005134406?style=for-the-badge&amp;color=7289da" alt="discordBadge"></a></p>
@@ -64,6 +64,9 @@
 </code></pre>
 <h3>Install <strong><a href="https://npmjs.com/package/@discordjs/opus">@discordjs/opus</a></strong></h3>
 <pre class="prettyprint source lang-sh"><code>$ npm install --save @discordjs/opus
+</code></pre>
+<h3>Install <strong><a href="https://npmjs.com/package/@discordjs/voice">@discordjs/voice</a></strong></h3>
+<pre class="prettyprint source lang-sh"><code>$ npm install --save @discordjs/voice
 </code></pre>
 <h3>Install FFmpeg or Avconv</h3>
 <ul>
@@ -81,140 +84,42 @@
 <ul>
 <li>Simple &amp; easy to use 🤘</li>
 <li>Beginner friendly 😱</li>
-<li>Audio filters 🎸</li>
+<li>Auto Proxy Feature</li>
 <li>Lightweight 🛬</li>
-<li>Custom extractors support 🌌</li>
-<li>Lyrics 📃</li>
+<li>play-dl or youtube-dl extractors support 🌌</li>
 <li>Multiple sources support ✌</li>
 <li>Play in multiple servers at the same time 🚗</li>
 </ul>
-<h2><a href="https://discord-player.js.org">Documentation</a></h2>
-<h2>Getting Started</h2>
-<p>First of all, you will need to register slash commands:</p>
-<pre class="prettyprint source lang-js"><code>const { REST } = require(&quot;@discordjs/rest&quot;);
-const { Routes } = require(&quot;discord-api-types/v9&quot;);
-
-const commands = [{
-    name: &quot;play&quot;,
-    description: &quot;Plays a song!&quot;,
-    options: [
-        {
-            name: &quot;query&quot;,
-            type: &quot;STRING&quot;,
-            description: &quot;The song you want to play&quot;,
-            required: true
-        }
-    ]
-}]; 
-
-const rest = new REST({ version: &quot;9&quot; }).setToken(process.env.DISCORD_TOKEN);
-
-(async () => {
-  try {
-    console.log(&quot;Started refreshing application [/] commands.&quot;);
-
-    await rest.put(
-      Routes.applicationGuildCommands(CLIENT_ID, GUILD_ID),
-      { body: commands },
-    );
-
-    console.log(&quot;Successfully reloaded application [/] commands.&quot;);
-  } catch (error) {
-    console.error(error);
-  }
-})();
-</code></pre>
-<p>Now you can implement your bot's logic:</p>
-<pre class="prettyprint source lang-js"><code>const { Client, Intents } = require(&quot;discord.js&quot;);
-const client = new Discord.Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_VOICE_STATES] });
-const { Player } = require(&quot;discord-player&quot;);
-
-// Create a new Player (you don't need any API Key)
-const player = new Player(client);
-
-// add the trackStart event so when a song will be played this message will be sent
-player.on(&quot;trackStart&quot;, (queue, track) => queue.metadata.channel.send(`🎶 | Now playing **${track.title}**!`))
-
-client.once(&quot;ready&quot;, () => {
-    console.log(&quot;I'm ready !&quot;);
-});
-
-client.on(&quot;interactionCreate&quot;, async (interaction) => {
-    if (!interaction.isCommand()) return;
-
-    // /play Despacito
-    // will play &quot;Despacito&quot; in the voice channel
-    if (interaction.commandName === &quot;play&quot;) {
-        if (!interaction.member.voice.channelId) return await interaction.reply({ content: &quot;You are not in a voice channel!&quot;, ephemeral: true });
-        if (interaction.guild.me.voice.channelId && interaction.member.voice.channelId !== interaction.guild.me.voice.channelId) return await interaction.reply({ content: &quot;You are not in my voice channel!&quot;, ephemeral: true });
-        const query = interaction.options.get(&quot;query&quot;).value;
-        const queue = player.createQueue(interaction.guild, {
-            metadata: {
-                channel: interaction.channel
-            }
-        });
-        
-        // verify vc connection
-        try {
-            if (!queue.connection) await queue.connect(interaction.member.voice.channel);
-        } catch {
-            queue.destroy();
-            return await interaction.reply({ content: &quot;Could not join your voice channel!&quot;, ephemeral: true });
-        }
-
-        await interaction.deferReply();
-        const track = await player.search(query, {
-            requestedBy: interaction.user
-        }).then(x => x.tracks[0]);
-        if (!track) return await interaction.followUp({ content: `❌ | Track **${query}** not found!` });
-
-        queue.play(track);
-
-        return await interaction.followUp({ content: `⏱️ | Loading track **${track.title}**!` });
-    }
-});
-
-client.login(process.env.DISCORD_TOKEN);
-</code></pre>
+<h2><a href="https://jericho-player.js.org">Documentation</a></h2>
 <h2>Supported websites</h2>
-<p>By default, discord-player supports <strong>YouTube</strong>, <strong>Spotify</strong> and <strong>SoundCloud</strong> streams only.</p>
+<p>By default, jericho-player supports <strong>YouTube</strong>, <strong>Spotify</strong>, <strong>facebook</strong> and <strong>SoundCloud</strong> streams only.</p>
 <h3>Optional dependencies</h3>
-<p>Discord Player provides an <strong>Extractor API</strong> that enables you to use your custom stream extractor with it. Some packages have been made by the community to add new features using this API.</p>
-<h4><a href="https://github.com/Snowflake107/discord-player-extractors">@discord-player/extractor</a> (optional)</h4>
-<p>Optional package that adds support for <code>vimeo</code>, <code>reverbnation</code>, <code>facebook</code>, <code>attachment links</code> and <code>lyrics</code>.
-You just need to install it using <code>npm i --save @discord-player/extractor</code> (discord-player will automatically detect and use it).</p>
-<h4><a href="https://github.com/DevSnowflake/discord-player-downloader">@discord-player/downloader</a> (optional)</h4>
-<p><code>@discord-player/downloader</code> is an optional package that brings support for +700 websites. The documentation is available <a href="https://github.com/DevSnowflake/discord-player-downloader">here</a>.</p>
-<h2>Examples of bots made with Discord Player</h2>
+<p>Jericho Player got some <strong>Custom Extractors</strong> that enables you to use and fast Extraction. Some packages have been made by the Sid is Live YT to add new features using this Extractors.</p>
+<h4><a href="https://npmjs.com/package/playdl-music-extractor">playdl-music-extractor</a> (optional)</h4>
+<p>Optional package that adds support for <code>vimeo</code>, <code>reverbnation</code>, <code>facebook</code>, <code>attachment links</code>.
+You just need to install it using <code>npm i --save video-extractor</code> (jericho-player will automatically detect and use it).</p>
+<h4><a href="https://npmjs.com/package/video-extractor">video-extractor</a> (optional)</h4>
+<p><code>video-extractor</code> is an optional package that brings support for +700 websites. The documentation is available <a href="https://npmjs.com/package/video-extractor">here</a>.</p>
+<h2>Examples of bots made with Jericho Player</h2>
 <p>These bots are made by the community, they can help you build your own!</p>
 <ul>
-<li><strong><a href="https://github.com/Androz2091/discord-music-bot">Discord Music Bot</a></strong> by <a href="https://github.com/Androz2091">Androz2091</a></li>
-<li><a href="https://github.com/Androz2091/AtlantaBot">AtlantaBot</a> by <a href="https://github.com/Androz2091">Androz2091</a> (<strong>outdated</strong>)</li>
-<li><a href="https://github.com/inhydrox/discord-music">Discord-Music</a> by <a href="https://github.com/inhydrox">inhydrox</a> (<strong>outdated</strong>)</li>
-<li><a href="https://github.com/ZerioDev/Music-bot">Music-bot</a> by <a href="https://github.com/ZerioDev">ZerioDev</a> (<strong>outdated</strong>)</li>
+<li><strong><a href="https://github.com/SidisLiveYT/Jericho-Player-Discord-Bot">Fairy Tale - Jericho Player</a></strong> by <a href="https://github.com/SidisLiveYT">SidisLiveYT</a></li>
 </ul>
 <h2>Advanced</h2>
 <h3>Use cookies</h3>
-<pre class="prettyprint source lang-js"><code>const player = new Player(client, {
-    ytdlOptions: {
-        requestOptions: {
-            headers: {
-                cookie: &quot;YOUR_YOUTUBE_COOKIE&quot;
-            }
-        }
+<pre class="prettyprint source lang-js"><code>const player = new JerichoPlayer(client, {
+    ExtractorStreamOptions: {
+        Cookies: //Youtube Cookies String Value
     }
 });
 </code></pre>
 <h3>Use custom proxies</h3>
-<pre class="prettyprint source lang-js"><code>const HttpsProxyAgent = require(&quot;https-proxy-agent&quot;);
-
-// Remove &quot;user:pass@&quot; if you don't need to authenticate to your proxy.
+<pre class="prettyprint source lang-js"><code>// Remove &quot;user:pass@&quot; if you don't need to authenticate to your proxy.
 const proxy = &quot;http://user:pass@111.111.111.111:8080&quot;;
-const agent = HttpsProxyAgent(proxy);
 
-const player = new Player(client, {
-    ytdlOptions: {
-        requestOptions: { agent }
+const player = new JerichoPlayer(client, {
+    ExtractorStreamOptions: {
+        Proxy: [proxy] //Proxy Value from Array
     }
 });
 </code></pre></article>
@@ -231,7 +136,7 @@ const player = new Player(client, {
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.4</a> on Sat Nov 06 2021 15:02:16 GMT+0000 (Coordinated Universal Time) using <a href="https://github.com/zyrouge/jsdoc-skyceil">Skyceil Theme</a>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.4</a> on Sat Nov 06 2021 15:47:24 GMT+0000 (Coordinated Universal Time) using <a href="https://github.com/zyrouge/jsdoc-skyceil">Skyceil Theme</a>
 </footer>
 
 <script>prettyPrint();</script>
