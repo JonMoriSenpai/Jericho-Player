@@ -13,6 +13,11 @@ const {
 
 class VoiceUtils {
   /**
+   * @private
+   */
+  constructor() {}
+
+  /**
    * Join Channel function for Voice Utils with Client and Channel and JoinChannelOptions Credentials
    * @param {Client} Client Discord Client Instance
    * @param {VoiceChannel|StageChannel} Channel Guild Voice Channel | Guild Stage Channel
@@ -33,7 +38,7 @@ class VoiceUtils {
       && VoiceConnection.state.status !== VoiceConnectionStatus.Destroyed
       && VoiceConnection.state.status !== VoiceConnectionStatus.Disconnected
       && !JoinChannelOptions.force
-    ) return VoiceConnection;
+    ) { return VoiceConnection; }
 
     VoiceConnection = joinVoiceChannel({
       channelId: Channel.id,
@@ -83,14 +88,18 @@ class VoiceUtils {
         ) {
           if (QueueInstance && !QueueInstance.destroyed) {
             QueueInstance.MusicPlayer.stop();
-            QueueInstance.StreamPacket.subscription ? QueueInstance.StreamPacket.subscription.unsubscribe() : undefined;
+            QueueInstance.StreamPacket.subscription
+              ? QueueInstance.StreamPacket.subscription.unsubscribe()
+              : undefined;
           }
           return void VoiceConnection.destroy(true);
         }
         if (VoiceConnection) {
           if (QueueInstance && !QueueInstance.destroyed) {
             QueueInstance.MusicPlayer.stop();
-            QueueInstance.StreamPacket.subscription ? QueueInstance.StreamPacket.subscription.unsubscribe() : undefined;
+            QueueInstance.StreamPacket.subscription
+              ? QueueInstance.StreamPacket.subscription.unsubscribe()
+              : undefined;
           }
           return void VoiceConnection.disconnect();
         }
@@ -111,14 +120,18 @@ class VoiceUtils {
     ) {
       if (QueueInstance && !QueueInstance.destroyed) {
         QueueInstance.MusicPlayer.stop();
-        QueueInstance.StreamPacket.subscription ? QueueInstance.StreamPacket.subscription.unsubscribe() : undefined;
+        QueueInstance.StreamPacket.subscription
+          ? QueueInstance.StreamPacket.subscription.unsubscribe()
+          : undefined;
       }
       return void VoiceConnection.destroy(true);
     }
     if (VoiceConnection) {
       if (QueueInstance && !QueueInstance.destroyed) {
         QueueInstance.MusicPlayer.stop();
-        QueueInstance.StreamPacket.subscription ? QueueInstance.StreamPacket.subscription.unsubscribe() : undefined;
+        QueueInstance.StreamPacket.subscription
+          ? QueueInstance.StreamPacket.subscription.unsubscribe()
+          : undefined;
       }
       return void VoiceConnection.disconnect();
     }

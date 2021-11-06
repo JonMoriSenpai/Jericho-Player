@@ -47,7 +47,7 @@ class ClassUtils {
     if (!packageName) {
       const report = [];
       const addVersion = (name) => report.push(
-        `- ${name}: ${ClassUtils.#__versioning(name) ?? 'not found'}`,
+        `- ${name}: ${ClassUtils.__versioning(name) ?? 'not found'}`,
       );
       // general
       report.push('Core Dependencies');
@@ -92,22 +92,22 @@ class ClassUtils {
       return ['-'.repeat(50), ...report, '-'.repeat(50)].join('\n');
     }
     return (
-      ClassUtils.#__versioning(packageName)
-      ?? ClassUtils.#__versioning(packageName.toLowerCase().trim())
+      ClassUtils.__versioning(packageName)
+      ?? ClassUtils.__versioning(packageName.toLowerCase().trim())
     );
   }
 
   /**
-   * @private #__versioning() -> Searching Versions of Packages
+   * @private __versioning() -> Searching Versions of Packages
    * @param {String} name NPM Package Name
    * @returns {String|undefined} Returns Package Version
    */
 
-  static #__versioning(name) {
+  static __versioning(name) {
     try {
       const pkg = name === '@discordjs/voice'
         ? require('../../package.json')
-        : ClassUtils.#__SearchPackageJson(
+        : ClassUtils.__SearchPackageJson(
           dirname(require.resolve(name)),
           name,
           8,
@@ -118,14 +118,14 @@ class ClassUtils {
     }
   }
   /**
-   * @private #__SearchPackageJson() -> Searching Every package.json with deps
+   * @private __SearchPackageJson() -> Searching Every package.json with deps
    * @param {String} dir Directory name | value
    * @param {String} packageName NPM Package Name
    * @param {Number} depth Depth to go in Directories or outward
    * @returns {Object} pacakge.json file with accurate versions
    */
 
-  static #__SearchPackageJson(dir, packageName, depth) {
+  static __SearchPackageJson(dir, packageName, depth) {
     if (depth === 0) return undefined;
     const attemptedPath = resolve(dir, './package.json');
     try {
@@ -133,7 +133,7 @@ class ClassUtils {
       if (pkg.name !== packageName) throw new Error('package.json does not match');
       return pkg;
     } catch (err) {
-      return ClassUtils.#__SearchPackageJson(
+      return ClassUtils.__SearchPackageJson(
         resolve(dir, '..'),
         packageName,
         depth - 1,

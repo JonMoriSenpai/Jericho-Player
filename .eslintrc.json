@@ -29,6 +29,8 @@
     "no-nested-ternary": "off",
     "prefer-destructuring": "off",
     "no-underscore-dangle": "off",
-    "no-empty": "off"
+    "no-empty": "off",
+    "no-useless-constructor": "off",
+    "no-empty-function": "off"
   }
 }

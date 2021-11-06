@@ -12,7 +12,7 @@ const {
 const Queue = require('./Queue-Handler.js');
 const ClassUtils = require('../Utilities/Class-Utils');
 const { join } = require('../Utilities/Voice-Utils');
-var {
+const {
   DefaultJerichoPlayerOptions,
   DefaultQueueCreateOptions,
 } = require('../types/interfaces');
@@ -81,16 +81,16 @@ class JerichoPlayer extends EventEmitter {
 
     this.Client.on('voiceStateUpdate', async (OldVoiceState, NewVoiceState) => {
       /*
-       * - QueueInstance Fetched from Private Raw Cache Fetching Method "JerichoPlayer.#QueueCacheFetch(guildId)"
+       * - QueueInstance Fetched from Private Raw Cache Fetching Method "JerichoPlayer.QueueCacheFetch(guildId)"
        * - QueueIntance => will be used to filter Voice Events Related to our Queue or else return undefined for handling
        */
 
-      var QueueInstance = JerichoPlayer.#QueueCacheFetch(
+      const QueueInstance = JerichoPlayer.QueueCacheFetch(
         (NewVoiceState ? NewVoiceState.guild.id : undefined)
           ?? (OldVoiceState ? OldVoiceState.guild.id : undefined),
       );
 
-      var clientchecks = (member) => member.user.id === this.Client.user.id;
+      const clientchecks = (member) => member.user.id === this.Client.user.id;
 
       // - QueueInstance checking if its related to Queue Voice Connection Events
 
@@ -243,9 +243,9 @@ class JerichoPlayer extends EventEmitter {
     );
 
     // To Avoid excess use of memory and Space in Large bots , We will always Cache Queue and Create one if is Deleted by DeleteQueue() method
-    var QueueInstance = JerichoPlayer.#QueueCacheFetch(message.guild.id, QueueCreateOptions)
+    const QueueInstance = JerichoPlayer.QueueCacheFetch(message.guild.id, QueueCreateOptions)
       ?? new Queue(this.Client, message, QueueCreateOptions, this);
-    return JerichoPlayer.#QueueCacheAdd(QueueInstance);
+    return JerichoPlayer.QueueCacheAdd(QueueInstance);
   }
 
   /**
@@ -262,8 +262,8 @@ class JerichoPlayer extends EventEmitter {
       return void this.emit('error', 'Invalid Guild Id', this, guildId);
     }
     // Checks for Queue in Cache doesn't matter if its Connection was destroyed | Cache only fetch its Existence to avoid excess CPU load
-    if (JerichoPlayer.#QueueCacheFetch(guildId)) {
-      return void JerichoPlayer.#QueueCacheRemove(guildId);
+    if (JerichoPlayer.QueueCacheFetch(guildId)) {
+      return void JerichoPlayer.QueueCacheRemove(guildId);
     }
     return void this.emit('error', 'Destroyed Queue', undefined);
   }
@@ -280,31 +280,31 @@ class JerichoPlayer extends EventEmitter {
     ) {
       return void this.emit('error', 'Invalid Guild Id', this, guildId);
     }
-    return JerichoPlayer.#QueueCacheFetch(guildId);
+    return JerichoPlayer.QueueCacheFetch(guildId);
   }
 
   /**
    * @private Player Class Defined Method
-   * #QueueCacheAdd -> Private Method for Player's Workload to Add Queue Cache Easily without using any Player's Instance
+   * QueueCacheAdd -> Private Method for Player's Workload to Add Queue Cache Easily without using any Player's Instance
    * @param {Queue} QueueInstance Queue Instance made from "Queue" class to work around with many <Queue>.methods() for a guild
    * @returns {Queue} QueueInstance , To reperesnt the Work Complete Signal
    */
 
-  static #QueueCacheAdd(QueueInstance) {
+  static QueueCacheAdd(QueueInstance) {
     JerichoPlayer.#QueueCaches[`${QueueInstance.guildId}`] = QueueInstance;
     return QueueInstance;
   }
 
   /**
    * @private Player Class Defined Method
-   * #QueueCacheFetch -> Private Method for Player's Workload to Fetch Queue Cache Easily without using any Player's Instance
+   * QueueCacheFetch -> Private Method for Player's Workload to Fetch Queue Cache Easily without using any Player's Instance
    * @param {String|Number} guildId Guild["id"] OR guild.id is required to fetch queue from the Cache
    * @param {DefaultQueueCreateOptions} QueueCreateOptions QueueCreateOptions for if Queue "connection" is destroyed , then it requires Options to remake whole infrastructure
    * @returns {Queue|undefined} QueueInstance , To reperesnt the Work Complete Signal
    */
 
-  static #QueueCacheFetch(guildId, QueueCreateOptions = null) {
-    var QueueInstance = JerichoPlayer.#QueueCaches[`${guildId}`];
+  static QueueCacheFetch(guildId, QueueCreateOptions = null) {
+    const QueueInstance = JerichoPlayer.#QueueCaches[`${guildId}`];
     if (QueueCreateOptions && QueueInstance) {
       QueueInstance.QueueOptions = ClassUtils.stablizingoptions(
         QueueCreateOptions,
@@ -319,14 +319,14 @@ class JerichoPlayer extends EventEmitter {
 
   /**
    * @private Player Class Defined Method
-   * #QueueCacheRemove -> Private Method for Player's Workload to Remove Queue Cache Easily without using any Player's Instance
+   * QueueCacheRemove -> Private Method for Player's Workload to Remove Queue Cache Easily without using any Player's Instance
    * @param {String|Number} guildId Guild["id"] OR guild.id is required to fetch queue from the Cache
    * @returns {undefined} undefined , To reperesnt the Work Complete Signal as Queue will be destroyed so , we can't return Queue
    */
 
-  static #QueueCacheRemove(guildId) {
-    if (!this.#QueueCacheFetch(guildId)) return false;
-    var QueueInstance = JerichoPlayer.#QueueCaches[`${guildId}`];
+  static QueueCacheRemove(guildId) {
+    if (!this.QueueCacheFetch(guildId)) return false;
+    const QueueInstance = JerichoPlayer.#QueueCaches[`${guildId}`];
     if (JerichoPlayer.#QueueCaches[`${guildId}`].playing) {
       JerichoPlayer.#QueueCaches[`${guildId}`].stop();
     }

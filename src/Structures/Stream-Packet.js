@@ -17,7 +17,7 @@ const JerichoPlayer = require('../Handlers/Player-Handler');
 const TracksGen = require('./Tracks');
 const VoiceUtils = require('../Utilities/Voice-Utils');
 const ClassUtils = require('../Utilities/Class-Utils');
-var {
+const {
   DefaultExtractorStreamOptions,
   DefaultTrack,
   DefaultChunk,

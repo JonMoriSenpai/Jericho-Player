@@ -1,5 +1,5 @@
 const ClassUtils = require('../Utilities/Class-Utils');
-var {
+const {
   DefaultExtractorStreamOptions,
   DefaultChunk,
   DefaultStream,
@@ -65,7 +65,7 @@ class TrackGenerator {
           '\'Extractors : "playdl-music-extractor" and "video-extractor" are not Present , Use "Utils.ScanDeps()" to See and Do - "npm i packageName"',
       };
     }
-    const RawData = await TrackGenerator.#SongsFetching(
+    const RawData = await TrackGenerator.SongsFetching(
       Query,
       FetchOptions,
       extractor,
@@ -87,7 +87,7 @@ class TrackGenerator {
           ?? 'Search Not Found',
       };
     }
-    const Chunks = TrackGenerator.#Track_Id_Placement(
+    const Chunks = TrackGenerator.Track_Id_Placement(
       RawData.tracks,
       CacheLength,
       requestedBy,
@@ -101,21 +101,21 @@ class TrackGenerator {
   }
 
   /**
-   * @private #Track_Id_Placement -> Track Placement in Tracks Cache with Differing as stream tracks and normal tracks for users
+   * @private Track_Id_Placement -> Track Placement in Tracks Cache with Differing as stream tracks and normal tracks for users
    * @param {DefaultStream[]} Tracks Stream Tracks to be converted User fetchable
    * @param {Number|undefined} CacheLength last Cached Track's ID
    * @param {User|GuildMember|undefined} requestedBy RequestedBy User Object value for Track
    * @returns {DefaultChunk} Chunk Vlaue for Tracks Cache
    */
 
-  static #Track_Id_Placement(Tracks, CacheLength, requestedBy = undefined) {
+  static Track_Id_Placement(Tracks, CacheLength, requestedBy = undefined) {
     const StreamDatas = [];
     const SearchTracks = [];
     for (let count = 0, len = Tracks.length; count < len; ++count) {
       Tracks[count] ? (Tracks[count].Id = ++CacheLength) : undefined;
       Tracks[count]
         ? SearchTracks.push(
-          TrackGenerator.#UserTrackModelGen(Tracks[count], requestedBy),
+          TrackGenerator.UserTrackModelGen(Tracks[count], requestedBy),
         )
         : undefined;
       Tracks[count] ? StreamDatas.push(Tracks[count]) : undefined;
@@ -127,14 +127,14 @@ class TrackGenerator {
   }
 
   /**
-   * #SongsFetching() -> Raw Track Data Fetching from various extractors like "play-dl" | "youtube-dl"
+   * SongsFetching() -> Raw Track Data Fetching from various extractors like "play-dl" | "youtube-dl"
    * @param {String} Query Query like URls or Youtube Searches | Default Extractor accept 5 supported and big websites like youtube , spotify , soundcloud , retribution , facebook and for "youtube-dl" , it accept any follows official "youtube" searches
    * @param {DefaultFetchOptions} FetchOptions Fetching Options for Extractors
    * @param {String|Boolean|undefined} extractor extractor to be used as "play-dl" or "youtube-dl"
    * @returns {Promise<DefaultExtractorData>} Returns Extractor Value with no edits
    */
 
-  static async #SongsFetching(
+  static async SongsFetching(
     Query,
     FetchOptions = {
       IgnoreError: true,
@@ -153,7 +153,7 @@ class TrackGenerator {
     let RawData = extractor
       && extractor.includes('youtube-dl')
       && ClassUtils.ScanDeps('video-extractor')
-      ? await TrackGenerator.#YoutubeDLExtractor(
+      ? await TrackGenerator.YoutubeDLExtractor(
         Query,
         FetchOptions.ExtractorStreamOptions,
         FetchOptions.NoStreamif,
@@ -163,7 +163,7 @@ class TrackGenerator {
       || (RawData && !RawData.tracks)
       || (RawData && RawData.tracks && !RawData.tracks[0])
       ? ClassUtils.ScanDeps('playdl-music-extractor')
-        ? await TrackGenerator.#PlayDLExtractor(
+        ? await TrackGenerator.PlayDLExtractor(
           Query,
           FetchOptions.ExtractorStreamOptions,
           FetchOptions.NoStreamif,
@@ -174,7 +174,7 @@ class TrackGenerator {
       || (RawData && !RawData.tracks)
       || (RawData && RawData.tracks && !RawData.tracks[0])
       ? ClassUtils.ScanDeps('video-extractor')
-        ? await TrackGenerator.#YoutubeDLExtractor(
+        ? await TrackGenerator.YoutubeDLExtractor(
           Query,
           FetchOptions.ExtractorStreamOptions,
           FetchOptions.NoStreamif,
@@ -185,14 +185,14 @@ class TrackGenerator {
   }
 
   /**
-   * @private #YoutubeDLExtractor -> Youtube-Dl Extractor for player
+   * @private YoutubeDLExtractor -> Youtube-Dl Extractor for player
    * @param {String} Query Query like URls or Youtube Searches | Default Extractor accept 5 supported and big websites like youtube , spotify , soundcloud , retribution , facebook and for "youtube-dl" , it accept any follows official "youtube" searches
    * @param {DefaultExtractorStreamOptions} ExtractorStreamOptions Extractor Fetching Options
    * @param {Boolean|undefined} NoStreamif Check if User wants Stream or not
    * @returns {Promise<DefaultExtractorData>} Returns Extractor Value with no edits
    */
 
-  static async #YoutubeDLExtractor(Query, ExtractorStreamOptions, NoStreamif) {
+  static async YoutubeDLExtractor(Query, ExtractorStreamOptions, NoStreamif) {
     const { StreamDownloader, Extractor } = require('video-extractor');
     if (NoStreamif) {
       return await Extractor(Query, {
@@ -220,14 +220,14 @@ class TrackGenerator {
   }
 
   /**
-   * @private #PlayDLExtractor -> Play-Dl Extractor for player
+   * @private PlayDLExtractor -> Play-Dl Extractor for player
    * @param {String} Query Query like URls or Youtube Searches | Default Extractor accept 5 supported and big websites like youtube , spotify , soundcloud , retribution , facebook and for "youtube-dl" , it accept any follows official "youtube" searches
    * @param {DefaultExtractorStreamOptions} ExtractorStreamOptions Extractor Fetching Options
    * @param {Boolean|undefined} NoStreamif Check if User wants Stream or not
    * @returns {Promise<DefaultExtractorData>} Returns Extractor Value with no edits
    */
 
-  static async #PlayDLExtractor(Query, ExtractorStreamOptions, NoStreamif) {
+  static async PlayDLExtractor(Query, ExtractorStreamOptions, NoStreamif) {
     const { StreamDownloader, Extractor } = require('playdl-music-extractor');
     if (NoStreamif) {
       return await Extractor(Query, ExtractorStreamOptions);
@@ -236,13 +236,13 @@ class TrackGenerator {
   }
 
   /**
-   * @private #UserTrackModelGen -> Transfering Normal Stream Data to user readable Track
+   * @private UserTrackModelGen -> Transfering Normal Stream Data to user readable Track
    * @param {DefaultStream} TrackData Stream Data about the Track
    * @param {User|GuildMember|undefined} requestedByUser Requested user for Track Object
    * @returns {DefaultTrack} Track Value for Queue.tracks[]
    */
 
-  static #UserTrackModelGen(TrackData, requestedByUser) {
+  static UserTrackModelGen(TrackData, requestedByUser) {
     return {
       Id: TrackData.Id,
       requestedBy: requestedByUser,

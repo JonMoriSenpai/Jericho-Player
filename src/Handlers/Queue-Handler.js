@@ -17,7 +17,7 @@ const StreamPacketGen = require('../Structures/Stream-Packet');
 const ClassUtils = require('../Utilities/Class-Utils');
 const { disconnect } = require('../Utilities/Voice-Utils');
 const JerichoPlayer = require('./Player-Handler');
-var {
+const {
   DefaultQueueCreateOptions,
   DefaultProgressBar,
   DefaultTrack,
@@ -485,7 +485,7 @@ class Queue {
      * Above , Cached Destruction Timeout ID , incase Queue got recovered before destruction to cancel out the destroy Timedout
      * Below is to completely Destroy Stream Packet
      */
-    var NodeTimeoutId = connectionTimedout || connectionTimedout === 0
+    const NodeTimeoutId = connectionTimedout || connectionTimedout === 0
       ? disconnect(
         this.guildId,
         { destroy: true },

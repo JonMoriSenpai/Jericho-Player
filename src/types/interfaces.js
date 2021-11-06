@@ -1,7 +1,7 @@
 /*
  * ProgressBar ->  Progress bar Credentials
  */
-var DefaultProgressBar = {
+const DefaultProgressBar = {
   CompleteIcon: '▬',
   TargetIcon: '🔘',
   RemainingIcon: '▬',
@@ -13,7 +13,7 @@ var DefaultProgressBar = {
  * Default Current TimeStamp Structure
  */
 
-var DefaultcurrentTimestamp = {
+const DefaultcurrentTimestamp = {
   track_ms: '',
   totaltrack_ms: '',
   previoustracks_ms: '',
@@ -34,7 +34,7 @@ var DefaultcurrentTimestamp = {
  * Default Player Mode Objects
  */
 
-var DefaultPlayerMode = {
+const DefaultPlayerMode = {
   mode: undefined,
   type: undefined,
   times: undefined,
@@ -43,7 +43,7 @@ var DefaultPlayerMode = {
 /*
  * DefaultModesName -> Default Modes Names for Setting Music Player Modes
  */
-var DefaultModesName = {
+const DefaultModesName = {
   Loop: 'loop',
   Repeat: 'repeat',
   Autoplay: 'autoplay',
@@ -52,7 +52,7 @@ var DefaultModesName = {
 /*
  * DefaultModesType -> Default Modes Bodies for Setting Music Player Mode's Values
  */
-var DefaultModesType = {
+const DefaultModesType = {
   Track: 'track',
   Queue: 'queue',
   Off: 'off',
@@ -61,21 +61,21 @@ var DefaultModesType = {
 /*
  * JoinChannelOptions ->  Join Channel Credentials/Options
  */
-var DefaultJoinChannelOptions = {
+const DefaultJoinChannelOptions = {
   force: false,
 };
 
 /*
  * DisconnectChannelOptions ->  Disconnect/Destroy Channel Connection Credentials/Options
  */
-var DefaultDisconnectChannelOptions = {
+const DefaultDisconnectChannelOptions = {
   destroy: true,
 };
 
 /*
  * ExtractorStreamOptions ->  Extractor Options to fetch Songs
  */
-var DefaultExtractorStreamOptions = {
+const DefaultExtractorStreamOptions = {
   Limit: 1,
   Quality: 'high',
   Cookies: undefined,
@@ -88,7 +88,7 @@ var DefaultExtractorStreamOptions = {
  * Track ->  Song Track
  */
 
-var DefaultTrack = {
+const DefaultTrack = {
   Id: 0,
   url: undefined,
   video_Id: undefined,
@@ -109,7 +109,7 @@ var DefaultTrack = {
  * Stream ->  Song Track's STream Data / Raw Data from Extractors
  */
 
-var DefaultStream = {
+const DefaultStream = {
   Id: 0,
   url: undefined,
   video_Id: undefined,
@@ -139,7 +139,7 @@ var DefaultStream = {
  * Chunk ->  Song Track's STream Data And Raw Data from Extractors for StreamPacket
  */
 
-var DefaultChunk = {
+const DefaultChunk = {
   playlist: false,
   tracks: [DefaultTrack],
   streamdatas: [DefaultStream],
@@ -150,7 +150,7 @@ var DefaultChunk = {
  * StreamPacket ->  StreamPacket Instance for Queue for handlind backend Workloads
  */
 
-var DefaultStreamPacket = {
+const DefaultStreamPacket = {
   Client: undefined,
   VoiceChannel: undefined,
   extractor: undefined,
@@ -174,7 +174,7 @@ var DefaultStreamPacket = {
  * FetchOptions ->  Fetch Options for SongFetching function for Extractors
  */
 
-var DefaultFetchOptions = {
+const DefaultFetchOptions = {
   IgnoreError: true,
   ExtractorStreamOptions: DefaultExtractorStreamOptions,
   NoStreamif: false,
@@ -183,7 +183,7 @@ var DefaultFetchOptions = {
 /*
  * ExtractorData Extractor Data Raw from Extractor Download/Extractor Options
  */
-var DefaultExtractorData = {
+const DefaultExtractorData = {
   playlist: false,
   tracks: DefaultStream,
   error: undefined,
@@ -193,7 +193,7 @@ var DefaultExtractorData = {
  * StreamCreateOptions Stream Create Options for Extractors
  */
 
-var DefaultStreamCreateOptions = {
+const DefaultStreamCreateOptions = {
   requestedBy: undefined,
   IgnoreError: true,
   ExtractorStreamOptions: DefaultExtractorStreamOptions,
@@ -203,7 +203,7 @@ var DefaultStreamCreateOptions = {
  * JerichoPlayerOptions Jericho Player's Default Options
  */
 
-var DefaultJerichoPlayerOptions = {
+const DefaultJerichoPlayerOptions = {
   extractor: 'play-dl',
   ExtractorStreamOptions: DefaultExtractorStreamOptions,
   IgnoreError: true,
@@ -219,7 +219,7 @@ var DefaultJerichoPlayerOptions = {
  * QueueCreateOptions Queue's Default Options
  */
 
-var DefaultQueueCreateOptions = {
+const DefaultQueueCreateOptions = {
   extractor: 'play-dl',
   metadata: null,
   ExtractorStreamOptions: DefaultExtractorStreamOptions,
