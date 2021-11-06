@@ -1,0 +1,922 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Class: JerichoPlayer</title>
+
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <script src="scripts/nav.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/skyceil.css">
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+</head>
+
+<body>
+
+<nav class="navbar">
+    <h4><a href="index.html">Home</a></h4><h5 class="no-bottom must-underline">Classes</h5><ul><li><span class="small-icon C">C</span><b><a href="ClassUtils.html">ClassUtils</a></b><ul class="has-class-methods"><li><span class="small-icon F">F</span><a href="ClassUtils.html#.HumanTimeConversion">HumanTimeConversion</a></li><li><span class="small-icon F">F</span><a href="ClassUtils.html#.ScanDeps">ScanDeps</a></li><li><span class="small-icon F">F</span><a href="ClassUtils.html#.stablizingoptions">stablizingoptions</a></li></ul></li><li><span class="small-icon C">C</span><b><a href="JerichoPlayer.html">JerichoPlayer</a></b><ul class="has-class-methods"><li><span class="small-icon F">F</span><a href="JerichoPlayer.html#CreateQueue">CreateQueue</a></li><li><span class="small-icon F">F</span><a href="JerichoPlayer.html#DeleteQueue">DeleteQueue</a></li><li><span class="small-icon F">F</span><a href="JerichoPlayer.html#GetQueue">GetQueue</a></li><li><span class="small-icon M">M</span><a href="JerichoPlayer.html#Client">Client</a></li><li><span class="small-icon M">M</span><a href="JerichoPlayer.html#JerichoPlayerOptions">JerichoPlayerOptions</a></li></ul></li><li><span class="small-icon C">C</span><b><a href="Queue.html">Queue</a></b><ul class="has-class-methods"><li><span class="small-icon F">F</span><a href="Queue.html#autoplay">autoplay</a></li><li><span class="small-icon F">F</span><a href="Queue.html#back">back</a></li><li><span class="small-icon F">F</span><a href="Queue.html#clear">clear</a></li><li><span class="small-icon F">F</span><a href="Queue.html#createProgressBar">createProgressBar</a></li><li><span class="small-icon F">F</span><a href="Queue.html#destroy">destroy</a></li><li><span class="small-icon F">F</span><a href="Queue.html#insert">insert</a></li><li><span class="small-icon F">F</span><a href="Queue.html#loop">loop</a></li><li><span class="small-icon F">F</span><a href="Queue.html#mute">mute</a></li><li><span class="small-icon F">F</span><a href="Queue.html#pause">pause</a></li><li><span class="small-icon F">F</span><a href="Queue.html#play">play</a></li><li><span class="small-icon F">F</span><a href="Queue.html#remove">remove</a></li><li><span class="small-icon F">F</span><a href="Queue.html#repeat">repeat</a></li><li><span class="small-icon F">F</span><a href="Queue.html#resume">resume</a></li><li><span class="small-icon F">F</span><a href="Queue.html#search">search</a></li><li><span class="small-icon F">F</span><a href="Queue.html#skip">skip</a></li><li><span class="small-icon F">F</span><a href="Queue.html#stop">stop</a></li><li><span class="small-icon F">F</span><a href="Queue.html#unmute">unmute</a></li><li><span class="small-icon M">M</span><a href="Queue.html#Client">Client</a></li><li><span class="small-icon M">M</span><a href="Queue.html#current">current</a></li><li><span class="small-icon M">M</span><a href="Queue.html#currentTimestamp">currentTimestamp</a></li><li><span class="small-icon M">M</span><a href="Queue.html#destroyed">destroyed</a></li><li><span class="small-icon M">M</span><a href="Queue.html#guildId">guildId</a></li><li><span class="small-icon M">M</span><a href="Queue.html#JerichoPlayer">JerichoPlayer</a></li><li><span class="small-icon M">M</span><a href="Queue.html#message">message</a></li><li><span class="small-icon M">M</span><a href="Queue.html#metadata">metadata</a></li><li><span class="small-icon M">M</span><a href="Queue.html#MusicPlayer">MusicPlayer</a></li><li><span class="small-icon M">M</span><a href="Queue.html#paused">paused</a></li><li><span class="small-icon M">M</span><a href="Queue.html#playerMode">playerMode</a></li><li><span class="small-icon M">M</span><a href="Queue.html#playing">playing</a></li><li><span class="small-icon M">M</span><a href="Queue.html#previousTrack">previousTrack</a></li><li><span class="small-icon M">M</span><a href="Queue.html#QueueOptions">QueueOptions</a></li><li><span class="small-icon M">M</span><a href="Queue.html#StreamPacket">StreamPacket</a></li><li><span class="small-icon M">M</span><a href="Queue.html#tracks">tracks</a></li><li><span class="small-icon M">M</span><a href="Queue.html#volume">volume</a></li></ul></li></ul>
+</nav>
+
+<div id="main">
+    <div class="burger">
+        <div class="burger-line-1"></div>
+        <div class="burger-line-2"></div>
+        <div class="burger-line-3"></div>
+    </div>
+
+    <h1 class="page-title">Class: JerichoPlayer</h1>
+
+    
+
+
+
+
+<section>
+<header>
+    <hr>
+    
+        <h2><span class="attribs"><span class="type-signature"></span></span>JerichoPlayer<span class="signature">(Client, JerichoPlayerOptions)</span><span class="type-signature"></span></h2>
+        
+    
+</header>
+
+<article>
+    <div class="container-overview">
+    
+        
+
+    
+
+    
+    <h4 class="name" id="JerichoPlayer"><span class="type-signature"></span>new JerichoPlayer<span class="signature">(Client, JerichoPlayerOptions)</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Jericho Player Constructor</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<div class="table-box">
+    <table class="params">
+        <thead>
+        <tr>
+            
+            <th>Name</th>
+            
+
+            <th>Type</th>
+
+            
+
+            
+
+            <th class="last">Description</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        
+
+            <tr>
+                
+                    <td class="name"><code>Client</code></td>
+                
+
+                <td class="type">
+                
+                    
+<span class="param-type">Client</span>
+
+
+                
+                </td>
+
+                
+
+                
+
+                <td class="description last"><p>Instanceof Discord.js Client</p></td>
+            </tr>
+
+        
+
+            <tr>
+                
+                    <td class="name"><code>JerichoPlayerOptions</code></td>
+                
+
+                <td class="type">
+                
+                    
+<span class="param-type">DefaultJerichoPlayerOptions</span>
+
+
+                
+                </td>
+
+                
+
+                
+
+                <td class="description last"><p>Player Options for Stream Extraction and Voice Connection Moderation</p></td>
+            </tr>
+
+        
+        </tbody>
+    </table>
+</div>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Handlers_Player-Handler.js.html">Handlers/Player-Handler.js</a>, <a href="Handlers_Player-Handler.js.html#line34">line 34</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<hr>
+    
+    </div>
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+        <h3 class="subsection-title">Members</h3>
+
+        
+            
+<h4 class="name" id="Client"><span class="type-signature">(readonly) </span>Client<span class="type-signature"> :Client</span></h4>
+
+
+
+
+<div class="description">
+    <p>Client Discord Client Instance</p>
+</div>
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">Client</span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Handlers_Player-Handler.js.html">Handlers/Player-Handler.js</a>, <a href="Handlers_Player-Handler.js.html#line64">line 64</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+<hr>
+        
+            
+<h4 class="name" id="JerichoPlayerOptions"><span class="type-signature">(readonly) </span>JerichoPlayerOptions<span class="type-signature"> :DefaultJerichoPlayerOptions</span></h4>
+
+
+
+
+<div class="description">
+    <p>Jericho Player Default Options Saved for Class Utils Comparing and Fixing</p>
+</div>
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">DefaultJerichoPlayerOptions</span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Handlers_Player-Handler.js.html">Handlers/Player-Handler.js</a>, <a href="Handlers_Player-Handler.js.html#line72">line 72</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+<hr>
+        
+    
+
+    
+        <h3 class="subsection-title">Methods</h3>
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="CreateQueue"><span class="type-signature"></span>CreateQueue<span class="signature">(message, QueueCreateOptions)</span><span class="type-signature"> &rarr; {<a href="Queue.html">Queue</a>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>CreateQueue =&gt; Create Queue Instance for Player and per Guild</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<div class="table-box">
+    <table class="params">
+        <thead>
+        <tr>
+            
+            <th>Name</th>
+            
+
+            <th>Type</th>
+
+            
+
+            
+
+            <th class="last">Description</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        
+
+            <tr>
+                
+                    <td class="name"><code>message</code></td>
+                
+
+                <td class="type">
+                
+                    
+<span class="param-type">Message</span>
+|
+
+<span class="param-type">Interaction</span>
+
+
+                
+                </td>
+
+                
+
+                
+
+                <td class="description last"><p>Guild Message Only for getting info about guild and guildId</p></td>
+            </tr>
+
+        
+
+            <tr>
+                
+                    <td class="name"><code>QueueCreateOptions</code></td>
+                
+
+                <td class="type">
+                
+                    
+<span class="param-type">DefaultQueueCreateOptions</span>
+|
+
+<span class="param-type">undefined</span>
+
+
+                
+                </td>
+
+                
+
+                
+
+                <td class="description last"><p>=&gt; Queue Create Options for Queue Instance ( for making ByDefault Values for Queue.<methods> )</p></td>
+            </tr>
+
+        
+        </tbody>
+    </table>
+</div>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Handlers_Player-Handler.js.html">Handlers/Player-Handler.js</a>, <a href="Handlers_Player-Handler.js.html#line198">line 198</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>Queue Instance =&gt; ( for Queue.<methods> like Queue.play() )</p>
+</div>
+
+
+
+<ul>
+    <li>
+        Type: <span class="simple-code">
+<span class="param-type"><a href="Queue.html">Queue</a></span>
+
+</span>
+    </li>
+</ul>
+
+    
+
+
+
+
+
+<hr>
+        
+            
+
+    
+
+    
+    <h4 class="name" id="DeleteQueue"><span class="type-signature"></span>DeleteQueue<span class="signature">(guildId)</span><span class="type-signature"> &rarr; {undefined}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>DeleteQueue -&gt; Delete's Cached Queue (forced way to erase Queue's Existence)</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<div class="table-box">
+    <table class="params">
+        <thead>
+        <tr>
+            
+            <th>Name</th>
+            
+
+            <th>Type</th>
+
+            
+
+            
+
+            <th class="last">Description</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        
+
+            <tr>
+                
+                    <td class="name"><code>guildId</code></td>
+                
+
+                <td class="type">
+                
+                    
+<span class="param-type">String</span>
+|
+
+<span class="param-type">Number</span>
+
+
+                
+                </td>
+
+                
+
+                
+
+                <td class="description last"><p>Guild[&quot;id&quot;] OR guild.id is required to fetch queue from the Cache</p></td>
+            </tr>
+
+        
+        </tbody>
+    </table>
+</div>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Handlers_Player-Handler.js.html">Handlers/Player-Handler.js</a>, <a href="Handlers_Player-Handler.js.html#line257">line 257</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>Returns &quot;undefined&quot;</p>
+</div>
+
+
+
+<ul>
+    <li>
+        Type: <span class="simple-code">
+<span class="param-type">undefined</span>
+
+</span>
+    </li>
+</ul>
+
+    
+
+
+
+
+
+<hr>
+        
+            
+
+    
+
+    
+    <h4 class="name" id="GetQueue"><span class="type-signature"></span>GetQueue<span class="signature">(guildId)</span><span class="type-signature"> &rarr; {<a href="Queue.html">Queue</a>|undefined}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>GetQueue -&gt; Fetch Queue (Instance) from Cache or else returns undefined</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<div class="table-box">
+    <table class="params">
+        <thead>
+        <tr>
+            
+            <th>Name</th>
+            
+
+            <th>Type</th>
+
+            
+
+            
+
+            <th class="last">Description</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        
+
+            <tr>
+                
+                    <td class="name"><code>guildId</code></td>
+                
+
+                <td class="type">
+                
+                    
+<span class="param-type">String</span>
+|
+
+<span class="param-type">Number</span>
+
+
+                
+                </td>
+
+                
+
+                
+
+                <td class="description last"><p>Guild[&quot;id&quot;] OR guild.id is required to fetch queue from the Cache</p></td>
+            </tr>
+
+        
+        </tbody>
+    </table>
+</div>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Handlers_Player-Handler.js.html">Handlers/Player-Handler.js</a>, <a href="Handlers_Player-Handler.js.html#line276">line 276</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>Returns Queue Instance or else &quot;undefined&quot;</p>
+</div>
+
+
+
+<ul>
+    <li>
+        Type: <span class="simple-code">
+<span class="param-type"><a href="Queue.html">Queue</a></span>
+|
+
+<span class="param-type">undefined</span>
+
+</span>
+    </li>
+</ul>
+
+    
+
+
+
+
+
+<hr>
+        
+    
+
+    
+
+    
+</article>
+
+</section>
+
+
+
+
+
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.4</a> on Sat Nov 06 2021 13:06:18 GMT+0000 (Coordinated Universal Time) using <a href="https://github.com/zyrouge/jsdoc-skyceil">Skyceil Theme</a>
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/linenumber.js"></script>
+
+</body>
+</html>

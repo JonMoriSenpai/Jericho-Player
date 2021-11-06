@@ -7,26 +7,16 @@
     <script src="scripts/prettify/prettify.js"></script>
     <script src="scripts/prettify/lang-css.js"></script>
     <script src="scripts/nav.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.3/fuse.min.js"></script>
-    
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
     <link type="text/css" rel="stylesheet" href="styles/skyceil.css">
     <link type="text/css" rel="stylesheet" href="styles/prettify.css">
-    <link type="text/css" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
 </head>
 
 <body>
 
 <nav class="navbar">
-    <div class="utilities">
-        <div id="search">
-            <input type="text" id="search-box" placeholder="Search"><br>
-            <div id="search-results" style="display: none;"></div>
-        </div>
-        <button class="theme" data-theme="light"><i class="fas fa-moon"></i></button>
-    </div>
-    <hr>
     <h4><a href="index.html">Home</a></h4><h5 class="no-bottom must-underline">Classes</h5><ul><li><span class="small-icon C">C</span><b><a href="ClassUtils.html">ClassUtils</a></b><ul class="has-class-methods"><li><span class="small-icon F">F</span><a href="ClassUtils.html#.HumanTimeConversion">HumanTimeConversion</a></li><li><span class="small-icon F">F</span><a href="ClassUtils.html#.ScanDeps">ScanDeps</a></li><li><span class="small-icon F">F</span><a href="ClassUtils.html#.stablizingoptions">stablizingoptions</a></li></ul></li><li><span class="small-icon C">C</span><b><a href="JerichoPlayer.html">JerichoPlayer</a></b><ul class="has-class-methods"><li><span class="small-icon F">F</span><a href="JerichoPlayer.html#CreateQueue">CreateQueue</a></li><li><span class="small-icon F">F</span><a href="JerichoPlayer.html#DeleteQueue">DeleteQueue</a></li><li><span class="small-icon F">F</span><a href="JerichoPlayer.html#GetQueue">GetQueue</a></li><li><span class="small-icon M">M</span><a href="JerichoPlayer.html#Client">Client</a></li><li><span class="small-icon M">M</span><a href="JerichoPlayer.html#JerichoPlayerOptions">JerichoPlayerOptions</a></li></ul></li><li><span class="small-icon C">C</span><b><a href="Queue.html">Queue</a></b><ul class="has-class-methods"><li><span class="small-icon F">F</span><a href="Queue.html#autoplay">autoplay</a></li><li><span class="small-icon F">F</span><a href="Queue.html#back">back</a></li><li><span class="small-icon F">F</span><a href="Queue.html#clear">clear</a></li><li><span class="small-icon F">F</span><a href="Queue.html#createProgressBar">createProgressBar</a></li><li><span class="small-icon F">F</span><a href="Queue.html#destroy">destroy</a></li><li><span class="small-icon F">F</span><a href="Queue.html#insert">insert</a></li><li><span class="small-icon F">F</span><a href="Queue.html#loop">loop</a></li><li><span class="small-icon F">F</span><a href="Queue.html#mute">mute</a></li><li><span class="small-icon F">F</span><a href="Queue.html#pause">pause</a></li><li><span class="small-icon F">F</span><a href="Queue.html#play">play</a></li><li><span class="small-icon F">F</span><a href="Queue.html#remove">remove</a></li><li><span class="small-icon F">F</span><a href="Queue.html#repeat">repeat</a></li><li><span class="small-icon F">F</span><a href="Queue.html#resume">resume</a></li><li><span class="small-icon F">F</span><a href="Queue.html#search">search</a></li><li><span class="small-icon F">F</span><a href="Queue.html#skip">skip</a></li><li><span class="small-icon F">F</span><a href="Queue.html#stop">stop</a></li><li><span class="small-icon F">F</span><a href="Queue.html#unmute">unmute</a></li><li><span class="small-icon M">M</span><a href="Queue.html#Client">Client</a></li><li><span class="small-icon M">M</span><a href="Queue.html#current">current</a></li><li><span class="small-icon M">M</span><a href="Queue.html#currentTimestamp">currentTimestamp</a></li><li><span class="small-icon M">M</span><a href="Queue.html#destroyed">destroyed</a></li><li><span class="small-icon M">M</span><a href="Queue.html#guildId">guildId</a></li><li><span class="small-icon M">M</span><a href="Queue.html#JerichoPlayer">JerichoPlayer</a></li><li><span class="small-icon M">M</span><a href="Queue.html#message">message</a></li><li><span class="small-icon M">M</span><a href="Queue.html#metadata">metadata</a></li><li><span class="small-icon M">M</span><a href="Queue.html#MusicPlayer">MusicPlayer</a></li><li><span class="small-icon M">M</span><a href="Queue.html#paused">paused</a></li><li><span class="small-icon M">M</span><a href="Queue.html#playerMode">playerMode</a></li><li><span class="small-icon M">M</span><a href="Queue.html#playing">playing</a></li><li><span class="small-icon M">M</span><a href="Queue.html#previousTrack">previousTrack</a></li><li><span class="small-icon M">M</span><a href="Queue.html#QueueOptions">QueueOptions</a></li><li><span class="small-icon M">M</span><a href="Queue.html#StreamPacket">StreamPacket</a></li><li><span class="small-icon M">M</span><a href="Queue.html#tracks">tracks</a></li><li><span class="small-icon M">M</span><a href="Queue.html#volume">volume</a></li></ul></li></ul>
 </nav>
 
@@ -278,7 +268,7 @@ module.exports = ClassUtils;
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.7</a> on Sat Nov 06 2021 12:53:18 GMT+0000 (Coordinated Universal Time) using <a href="https://github.com/devsnowflake/jsdoc-skyceil">Skyceil Theme</a>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.4</a> on Sat Nov 06 2021 13:06:18 GMT+0000 (Coordinated Universal Time) using <a href="https://github.com/zyrouge/jsdoc-skyceil">Skyceil Theme</a>
 </footer>
 
 <script>prettyPrint();</script>
