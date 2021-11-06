@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>Source: Utilities/Class-Utils.js</title>
+    <title>Source: types/interfaces.js</title>
 
     <script src="scripts/prettify/prettify.js"></script>
     <script src="scripts/prettify/lang-css.js"></script>
@@ -27,7 +27,7 @@
         <div class="burger-line-3"></div>
     </div>
 
-    <h1 class="page-title">Source: Utilities/Class-Utils.js</h1>
+    <h1 class="page-title">Source: types/interfaces.js</h1>
 
     
 
@@ -36,225 +36,259 @@
     
     <section>
         <article>
-            <pre class="prettyprint source linenums"><code>const { resolve, dirname } = require('path');
-const { FFmpeg } = require('prism-media');
+            <pre class="prettyprint source linenums"><code>/**
+ * ProgressBar ->  Progress bar Credentials
+ */
+const DefaultProgressBar = {
+  CompleteIcon: '▬',
+  TargetIcon: '🔘',
+  RemainingIcon: '▬',
+  StartingIcon: undefined,
+  EndIcon: undefined,
+};
 
 /**
- * @class ClassUtils -> Class Util's methods are for Class's Support and helping basic or extract support neccassity tools
+ * Default Current TimeStamp Structure
  */
-class ClassUtils {
-  /**
-   * stablizingoptions() -> Stabilizing Local and Parent Options with accuracy 80%
-   * @param {Object} Local Local function/method options
-   * @param {Object} Parent Parent function/method options
-   * @returns {Object} Finaliize Options
-   */
 
-  static stablizingoptions(Local, Parent) {
-    if (!Local) return Parent;
-    if (!Parent) return Local;
-    const ProcessOptions = {};
-    const Options = Object.keys(Local).length > Object.keys(Parent).length
-      ? Object.keys(Local)
-      : Object.keys(Parent);
-    for (let count = 0, len = Options.length; count &lt; len; ++count) {
-      ProcessOptions[Options[count]] = (typeof Local[Options[count]] === 'object'
-        &amp;&amp; Local[Options[count]] !== undefined
-        &amp;&amp; Parent[Options[count]] !== undefined
-        &amp;&amp; Local[Options[count]]
-        &amp;&amp; !Local[Options[count]][0]
-        ? ClassUtils.stablizingoptions(
-          Local[Options[count]],
-          Parent[Options[count]],
-        )
-        : undefined)
-        ?? (Local[Options[count]] === undefined
-          ? Parent[Options[count]]
-          : Local[Options[count]]);
-    }
-    return ProcessOptions;
-  }
+const DefaultcurrentTimestamp = {
+  track_ms: '',
+  totaltrack_ms: '',
+  previoustracks_ms: '',
+  totalqueue_ms: '',
+  saved_queue_ms: '',
+  queue_ms: '',
+  remainqueue_ms: '',
+  human_track: '',
+  human_totaltrack: '',
+  human_previoustracks: '',
+  human_totalqueue: '',
+  human_saved_queue: '',
+  human_queue: '',
+  human_remainqueue: '',
+};
 
-  /**
-   * ScanDeps() -> Scanning Dependencies in package.json or node_modules for package or versions list
-   * @param {String|undefined} packageName Package name for publishing it sversion in project
-   * @returns {String|undefined} Publish Data whaich was requested for
-   */
+/**
+ * Default Player Mode Objects
+ */
 
-  static ScanDeps(packageName) {
-    if (!packageName) {
-      const report = [];
-      const addVersion = (name) => report.push(
-        `- ${name}: ${ClassUtils.__versioning(name) ?? 'not found'}`,
-      );
-      // general
-      report.push('Core Dependencies');
-      addVersion('@discordjs/voice');
-      addVersion('prism-media');
-      report.push('');
+const DefaultPlayerMode = {
+  mode: undefined,
+  type: undefined,
+  times: undefined,
+};
 
-      // opus
-      report.push('Opus Libraries');
-      addVersion('@discordjs/opus');
-      addVersion('opusscript');
-      report.push('');
+/**
+ * DefaultModesName -> Default Modes Names for Setting Music Player Modes
+ */
+const DefaultModesName = {
+  Loop: 'loop',
+  Repeat: 'repeat',
+  Autoplay: 'autoplay',
+};
 
-      // encryption
-      report.push('Encryption Libraries');
-      addVersion('sodium');
-      addVersion('libsodium-wrappers');
-      addVersion('tweetnacl');
-      report.push('');
+/**
+ * DefaultModesType -> Default Modes Bodies for Setting Music Player Mode's Values
+ */
+const DefaultModesType = {
+  Track: 'track',
+  Queue: 'queue',
+  Off: 'off',
+};
 
-      // ffmpeg
-      report.push('FFmpeg');
-      try {
-        const info = FFmpeg.getInfo();
-        report.push(`- version: ${info.version}`);
-        report.push(
-          `- libopus: ${
-            info.output.includes('--enable-libopus') ? 'yes' : 'no'
-          }`,
-        );
-      } catch (err) {
-        report.push('- not found');
-      }
-      addVersion('ffmpeg-static');
-      report.push('');
+/**
+ * JoinChannelOptions ->  Join Channel Credentials/Options
+ */
+const DefaultJoinChannelOptions = {
+  force: false,
+};
 
-      // Extractors
-      report.push('Extractors');
-      addVersion('playdl-music-extractor');
-      addVersion('video-extractor');
+/**
+ * DisconnectChannelOptions ->  Disconnect/Destroy Channel Connection Credentials/Options
+ */
+const DefaultDisconnectChannelOptions = {
+  destroy: true,
+};
 
-      return ['-'.repeat(50), ...report, '-'.repeat(50)].join('\n');
-    }
-    return (
-      ClassUtils.__versioning(packageName)
-      ?? ClassUtils.__versioning(packageName.toLowerCase().trim())
-    );
-  }
+/**
+ * ExtractorStreamOptions ->  Extractor Options to fetch Songs
+ */
+const DefaultExtractorStreamOptions = {
+  Limit: 1,
+  Quality: 'high',
+  Cookies: undefined,
+  ByPassYoutubeDLRatelimit: true,
+  YoutubeDLCookiesFilePath: undefined,
+  Proxy: undefined,
+};
 
-  /**
-   * @private __versioning() -> Searching Versions of Packages
-   * @param {String} name NPM Package Name
-   * @returns {String|undefined} Returns Package Version
-   */
+/**
+ * Track ->  Song Track
+ */
 
-  static __versioning(name) {
-    try {
-      const pkg = name === '@discordjs/voice'
-        ? require('../../package.json')
-        : ClassUtils.__SearchPackageJson(
-          dirname(require.resolve(name)),
-          name,
-          8,
-        );
-      return pkg?.version ?? undefined;
-    } catch (err) {
-      return undefined;
-    }
-  }
-  /**
-   * @private __SearchPackageJson() -> Searching Every package.json with deps
-   * @param {String} dir Directory name | value
-   * @param {String} packageName NPM Package Name
-   * @param {Number} depth Depth to go in Directories or outward
-   * @returns {Object} pacakge.json file with accurate versions
-   */
+const DefaultTrack = {
+  Id: 0,
+  url: undefined,
+  video_Id: undefined,
+  requestedBy: undefined,
+  title: undefined,
+  description: undefined,
+  duration: 0,
+  human_duration: undefined,
+  thumbnail: undefined,
+  channelId: undefined,
+  channel_url: undefined,
+  likes: 0,
+  is_live: false,
+  dislikes: 0,
+};
 
-  static __SearchPackageJson(dir, packageName, depth) {
-    if (depth === 0) return undefined;
-    const attemptedPath = resolve(dir, './package.json');
-    try {
-      const pkg = require(attemptedPath);
-      if (pkg.name !== packageName) throw new Error('package.json does not match');
-      return pkg;
-    } catch (err) {
-      return ClassUtils.__SearchPackageJson(
-        resolve(dir, '..'),
-        packageName,
-        depth - 1,
-      );
-    }
-  }
+/**
+ * Stream ->  Song Track's STream Data / Raw Data from Extractors
+ */
 
-  /**
-   * HumanTimeConversion() -> Human Time Conversion Function with two categories
-   * @param {String|Number|undefined} Type1 Convert Milliseconds to Human Time Language
-   * @param {Object[]|undefined} Type2 Convert Milliseconds to Human Time variables
-   * @returns {String|undefined} Returns String with desired value
-   */
+const DefaultStream = {
+  Id: 0,
+  url: undefined,
+  video_Id: undefined,
+  title: undefined,
+  author: undefined,
+  author_link: undefined,
+  description: undefined,
+  custom_extractor: undefined,
+  duration: 0,
+  human_duration: undefined,
+  preview_stream_url: undefined,
+  stream: undefined,
+  stream_type: undefined,
+  stream_duration: 0,
+  stream_video_Id: undefined,
+  stream_human_duration: undefined,
+  orignal_extractor: undefined,
+  thumbnail: undefined,
+  channelId: undefined,
+  channel_url: undefined,
+  likes: 0,
+  is_live: false,
+  dislikes: 0,
+};
 
-  static HumanTimeConversion(Type1 = undefined, Type2 = undefined) {
-    if (Type1) {
-      const DurationMilliSeconds = Type1 / 1000;
-      let ProcessedString = '';
-      for (
-        let DurationArray = [
-            [Math.floor(DurationMilliSeconds / 31536e3), 'Years'],
-            [Math.floor((DurationMilliSeconds % 31536e3) / 86400), 'Days'],
-            [
-              Math.floor(((DurationMilliSeconds % 31536e3) % 86400) / 3600),
-              'Hours',
-            ],
-            [
-              Math.floor(
-                (((DurationMilliSeconds % 31536e3) % 86400) % 3600) / 60,
-              ),
-              'Minutes',
-            ],
-            [
-              Math.floor(
-                (((DurationMilliSeconds % 31536e3) % 86400) % 3600) % 60,
-              ),
-              'Seconds',
-            ],
-          ],
-          SideArray = 0,
-          GarbageValue = DurationArray.length;
-        SideArray &lt; GarbageValue;
-        SideArray++
-      ) {
-        DurationArray[SideArray][0] !== 0
-          &amp;&amp; (ProcessedString += ` ${DurationArray[SideArray][0]} ${
-            DurationArray[SideArray][0] === 1
-              ? DurationArray[SideArray][1].substr(
-                0,
-                DurationArray[SideArray][1].length - 1,
-              )
-              : DurationArray[SideArray][1]
-          }`);
-      }
-      return ProcessedString.trim();
-    }
-    if (Type2) {
-      const TimeData = new Date(Number(Type2.Time));
-      const days = TimeData.getUTCDate() - 1;
-      const hours = TimeData.getUTCHours();
-      const minutes = TimeData.getUTCMinutes();
-      const seconds = TimeData.getUTCSeconds();
-      const milliseconds = TimeData.getUTCMilliseconds();
+/**
+ * Chunk ->  Song Track's STream Data And Raw Data from Extractors for StreamPacket
+ */
 
-      const TimeString = [];
-      if (days) TimeString.push(days);
-      if (hours &amp;&amp; !Type2.ignore.includes('hour')) TimeString.push(hours &lt; 10 &amp;&amp; days > 0 ? `0${hours}` : hours);
-      !Type2.ignore.includes('min')
-        ? TimeString.push(minutes &lt; 10 ? `0${minutes}` : minutes)
-        : undefined;
-      !Type2.ignore.includes('sec')
-        ? TimeString.push(seconds &lt; 10 ? `0${seconds}` : seconds)
-        : undefined;
-      !Type2.ignore.includes('milliseconds')
-        ? TimeString.push(milliseconds &lt; 10 ? `0${milliseconds}` : milliseconds)
-        : undefined;
-      return TimeString.join(':');
-    }
-    return '0 Seconds';
-  }
-}
+const DefaultChunk = {
+  playlist: false,
+  tracks: [DefaultTrack],
+  streamdatas: [DefaultStream],
+  error: undefined,
+};
 
-module.exports = ClassUtils;
+/**
+ * StreamPacket ->  StreamPacket Instance for Queue for handlind backend Workloads
+ */
+
+const DefaultStreamPacket = {
+  Client: undefined,
+  VoiceChannel: undefined,
+  extractor: undefined,
+  searches: undefined,
+  tracks: undefined,
+  subscription: undefined,
+  VoiceConnection: undefined,
+  metadata: undefined,
+  guildId: undefined,
+  ExtractorStreamOptions: DefaultExtractorStreamOptions,
+  IgnoreError: undefined,
+  JerichoPlayer: undefined,
+  volume: 0,
+  AudioResource: undefined,
+  previousTracks: undefined,
+  TimedoutId: 0,
+  TrackTimeStamp: undefined,
+};
+
+/**
+ * FetchOptions ->  Fetch Options for SongFetching function for Extractors
+ */
+
+const DefaultFetchOptions = {
+  IgnoreError: true,
+  ExtractorStreamOptions: DefaultExtractorStreamOptions,
+  NoStreamif: false,
+};
+
+/**
+ * ExtractorData Extractor Data Raw from Extractor Download/Extractor Options
+ */
+const DefaultExtractorData = {
+  playlist: false,
+  tracks: DefaultStream,
+  error: undefined,
+};
+
+/**
+ * StreamCreateOptions Stream Create Options for Extractors
+ */
+
+const DefaultStreamCreateOptions = {
+  requestedBy: undefined,
+  IgnoreError: true,
+  ExtractorStreamOptions: DefaultExtractorStreamOptions,
+};
+
+/**
+ * JerichoPlayerOptions Jericho Player's Default Options
+ */
+
+const DefaultJerichoPlayerOptions = {
+  extractor: 'play-dl',
+  ExtractorStreamOptions: DefaultExtractorStreamOptions,
+  IgnoreError: true,
+  LeaveOnEmpty: true,
+  LeaveOnEnd: true,
+  LeaveOnBotOnly: true,
+  LeaveOnEmptyTimedout: 0,
+  LeaveOnEndTimedout: 0,
+  LeaveOnBotOnlyTimedout: 0,
+};
+
+/**
+ * QueueCreateOptions Queue's Default Options
+ */
+
+const DefaultQueueCreateOptions = {
+  extractor: 'play-dl',
+  metadata: null,
+  ExtractorStreamOptions: DefaultExtractorStreamOptions,
+  IgnoreError: true,
+  LeaveOnEmpty: true,
+  LeaveOnEnd: true,
+  LeaveOnBotOnly: true,
+  LeaveOnEmptyTimedout: 0,
+  LeaveOnEndTimedout: 0,
+  LeaveOnBotOnlyTimedout: 0,
+};
+
+module.exports = {
+  DefaultQueueCreateOptions,
+  DefaultJerichoPlayerOptions,
+  DefaultExtractorStreamOptions,
+  DefaultStreamCreateOptions,
+  DefaultProgressBar,
+  DefaultChunk,
+  DefaultStream,
+  DefaultTrack,
+  DefaultStreamPacket,
+  DefaultDisconnectChannelOptions,
+  DefaultJoinChannelOptions,
+  DefaultExtractorData,
+  DefaultFetchOptions,
+  DefaultModesName,
+  DefaultModesType,
+  DefaultPlayerMode,
+  DefaultcurrentTimestamp,
+};
 </code></pre>
         </article>
     </section>
