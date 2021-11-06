@@ -27,7 +27,6 @@ const {
 const Queue = require('../Handlers/Queue-Handler');
 
 /**
- * @private
  * @class StreamPacketGen -> Stream Packet Generator for Connection and Internal Workflows
  * Stream packet is meant to untouched by Users as it can distortion or runtime Bugs and errors during playing except when you are debugging them
  */
@@ -166,6 +165,7 @@ class StreamPacketGen {
     this.previousTracks = [];
 
     /**
+     * @private
      * TimedoutId Queue Timedout ID value or undefined
      * @type {String|Number|undefined|Boolean}
      * @readonly
@@ -173,6 +173,7 @@ class StreamPacketGen {
     this.TimedoutId = undefined;
 
     /**
+     * @private
      * TrackTimeStamp Track's Live Status and Storing Value of the Time
      * @type {Object}
      * @readonly
@@ -180,6 +181,7 @@ class StreamPacketGen {
     this.TrackTimeStamp = { Starting: undefined, Paused: undefined };
 
     /**
+     * @private
      * MusicPlayerMode Music Player's Modes Cache Signal
      * @type {DefaultModesName}
      * @readonly

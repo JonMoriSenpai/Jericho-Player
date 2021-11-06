@@ -27,7 +27,7 @@ const {
   DefaultModesType,
   DefaultcurrentTimestamp,
 } = require('../types/interfaces');
-const { Track } = require('../../typings/Instances')
+const { Track } = require('../../typings/Instances');
 const TrackGenerator = require('../Structures/Tracks');
 
 /**
@@ -481,7 +481,7 @@ class Queue {
       Paused: undefined,
     };
 
-    /*
+    /**
      * Timeout Session and Call for Voice Utils's disconnect method/function
      * Above , Cached Destruction Timeout ID , incase Queue got recovered before destruction to cancel out the destroy Timedout
      * Below is to completely Destroy Stream Packet

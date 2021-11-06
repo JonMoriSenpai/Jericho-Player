@@ -4,7 +4,13 @@
     "dictionaries": ["jsdoc"]
   },
   "source": {
-    "include": ["package.json", "README.md", "src"],
+    "include": [
+      "package.json",
+      "README.md",
+      "src",
+      "src/types/interfaces.js",
+      "typings/Instances.d.ts"
+    ],
     "includePattern": ".js$",
     "excludePattern": "(node_modules/|docs|tests/)"
   },
@@ -22,8 +28,8 @@
   "opts": {
     "destination": "./docs/",
     "encoding": "utf8",
-    "private": true,
+    "private": false,
     "recurse": true,
-    "template": "./node_modules/minami"
+    "template": "./node_modules/jsdoc-skyceil"
   }
 }

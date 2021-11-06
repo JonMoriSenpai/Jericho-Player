@@ -1,4 +1,4 @@
-/*
+/**
  * ProgressBar ->  Progress bar Credentials
  */
 const DefaultProgressBar = {
@@ -9,7 +9,7 @@ const DefaultProgressBar = {
   EndIcon: undefined,
 };
 
-/*
+/**
  * Default Current TimeStamp Structure
  */
 
@@ -30,7 +30,7 @@ const DefaultcurrentTimestamp = {
   human_remainqueue: '',
 };
 
-/*
+/**
  * Default Player Mode Objects
  */
 
@@ -40,7 +40,7 @@ const DefaultPlayerMode = {
   times: undefined,
 };
 
-/*
+/**
  * DefaultModesName -> Default Modes Names for Setting Music Player Modes
  */
 const DefaultModesName = {
@@ -49,7 +49,7 @@ const DefaultModesName = {
   Autoplay: 'autoplay',
 };
 
-/*
+/**
  * DefaultModesType -> Default Modes Bodies for Setting Music Player Mode's Values
  */
 const DefaultModesType = {
@@ -58,21 +58,21 @@ const DefaultModesType = {
   Off: 'off',
 };
 
-/*
+/**
  * JoinChannelOptions ->  Join Channel Credentials/Options
  */
 const DefaultJoinChannelOptions = {
   force: false,
 };
 
-/*
+/**
  * DisconnectChannelOptions ->  Disconnect/Destroy Channel Connection Credentials/Options
  */
 const DefaultDisconnectChannelOptions = {
   destroy: true,
 };
 
-/*
+/**
  * ExtractorStreamOptions ->  Extractor Options to fetch Songs
  */
 const DefaultExtractorStreamOptions = {
@@ -84,7 +84,7 @@ const DefaultExtractorStreamOptions = {
   Proxy: undefined,
 };
 
-/*
+/**
  * Track ->  Song Track
  */
 
@@ -105,7 +105,7 @@ const DefaultTrack = {
   dislikes: 0,
 };
 
-/*
+/**
  * Stream ->  Song Track's STream Data / Raw Data from Extractors
  */
 
@@ -135,7 +135,7 @@ const DefaultStream = {
   dislikes: 0,
 };
 
-/*
+/**
  * Chunk ->  Song Track's STream Data And Raw Data from Extractors for StreamPacket
  */
 
@@ -146,7 +146,7 @@ const DefaultChunk = {
   error: undefined,
 };
 
-/*
+/**
  * StreamPacket ->  StreamPacket Instance for Queue for handlind backend Workloads
  */
 
@@ -170,7 +170,7 @@ const DefaultStreamPacket = {
   TrackTimeStamp: undefined,
 };
 
-/*
+/**
  * FetchOptions ->  Fetch Options for SongFetching function for Extractors
  */
 
@@ -180,7 +180,7 @@ const DefaultFetchOptions = {
   NoStreamif: false,
 };
 
-/*
+/**
  * ExtractorData Extractor Data Raw from Extractor Download/Extractor Options
  */
 const DefaultExtractorData = {
@@ -189,7 +189,7 @@ const DefaultExtractorData = {
   error: undefined,
 };
 
-/*
+/**
  * StreamCreateOptions Stream Create Options for Extractors
  */
 
@@ -199,7 +199,7 @@ const DefaultStreamCreateOptions = {
   ExtractorStreamOptions: DefaultExtractorStreamOptions,
 };
 
-/*
+/**
  * JerichoPlayerOptions Jericho Player's Default Options
  */
 
@@ -215,7 +215,7 @@ const DefaultJerichoPlayerOptions = {
   LeaveOnBotOnlyTimedout: 0,
 };
 
-/*
+/**
  * QueueCreateOptions Queue's Default Options
  */
 
