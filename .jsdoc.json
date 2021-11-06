@@ -22,10 +22,10 @@
         }
     },
     "opts": {
-        "destination": "./gh-pages/",
+        "destination": "./docs/",
         "encoding": "utf8",
         "private": false,
-        "recurse": false,
+        "recurse": true,
         "template": "./node_modules/jsdoc-skyceil"
     }
 }
