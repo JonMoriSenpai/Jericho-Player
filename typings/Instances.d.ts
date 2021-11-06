@@ -16,6 +16,10 @@ import {
 } from 'discord.js'
 import { JerichoPlayer } from './index'
 
+/**
+ *
+ */
+
 export type Queue = {
   readonly Client: Client
   readonly StreamPacket: StreamPacket
@@ -257,8 +261,8 @@ export type PlayerMode = {
   times: String | Number | undefined
 }
 
-export type DefaultModesTypes = {
-  Track: 'track'
-  Queue: 'queue'
-  Off: 'off'
+export enum DefaultModesTypes {
+  Track = 'track',
+  Queue = 'queue',
+  Off = 'off'
 }

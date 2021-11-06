@@ -1,5 +1,15 @@
+const {
+  User, Client, VoiceChannel, StageChannel,
+} = require('discord.js');
+const { AudioResource, PlayerSubscription } = require('@discordjs/voice');
+
 /**
- * ProgressBar ->  Progress bar Credentials
+ * @typedef {Object} DefaultProgressBar
+ * @property {String|undefined} CompleteIcon
+ * @property {String|undefined} TargetIcon
+ * @property {String|undefined} RemainingIcon
+ * @property {String|undefined} StartingIcon
+ * @property {String|undefined} EndIcon
  */
 const DefaultProgressBar = {
   CompleteIcon: '▬',
@@ -10,7 +20,20 @@ const DefaultProgressBar = {
 };
 
 /**
- * Default Current TimeStamp Structure
+ * @typedef {Object} DefaultcurrentTimestamp
+ * @property {String|undefined} track_ms
+ * @property {String|undefined} totaltrack_ms
+ * @property {String|undefined} previoustracks_ms
+ * @property {String|undefined} saved_queue_ms
+ * @property {String|undefined} queue_ms
+ * @property {String|undefined} remainqueue_ms
+ * @property {String|undefined} human_track
+ * @property {String|undefined} human_totaltrack
+ * @property {String|undefined} human_previoustracks
+ * @property {String|undefined} human_totalqueue
+ * @property {String|undefined} human_saved_queue
+ * @property {String|undefined} human_queue
+ * @property {String|undefined} human_remainqueue
  */
 
 const DefaultcurrentTimestamp = {
@@ -31,17 +54,23 @@ const DefaultcurrentTimestamp = {
 };
 
 /**
- * Default Player Mode Objects
+ * @typedef {Object} DefaultPlayerMode
+ * @property {String|undefined} mode
+ * @property {String|undefined} type
+ * @property {String|undefined} times
  */
 
 const DefaultPlayerMode = {
-  mode: undefined,
-  type: undefined,
-  times: undefined,
+  mode: '',
+  type: '',
+  times: '',
 };
 
 /**
- * DefaultModesName -> Default Modes Names for Setting Music Player Modes
+ * @typedef {Object} DefaultModesName
+ * @property {String|undefined} Loop
+ * @property {String|undefined} Repeat
+ * @property {String|undefined} Autoplay
  */
 const DefaultModesName = {
   Loop: 'loop',
@@ -50,7 +79,10 @@ const DefaultModesName = {
 };
 
 /**
- * DefaultModesType -> Default Modes Bodies for Setting Music Player Mode's Values
+ * @typedef {Object} DefaultModesType
+ * @property {String|undefined} Track
+ * @property {String|undefined} Queue
+ * @property {String|undefined} Off
  */
 const DefaultModesType = {
   Track: 'track',
@@ -59,21 +91,29 @@ const DefaultModesType = {
 };
 
 /**
- * JoinChannelOptions ->  Join Channel Credentials/Options
+ * @typedef {Object} DefaultJoinChannelOptions
+ * @property {Boolean|undefined} force
  */
 const DefaultJoinChannelOptions = {
   force: false,
 };
 
 /**
- * DisconnectChannelOptions ->  Disconnect/Destroy Channel Connection Credentials/Options
+ * @typedef {Object} DefaultDisconnectChannelOptions
+ * @property {Boolean|undefined} destroy
  */
 const DefaultDisconnectChannelOptions = {
   destroy: true,
 };
 
 /**
- * ExtractorStreamOptions ->  Extractor Options to fetch Songs
+ * @typedef {Object} DefaultDisconnectChannelOptions
+ * @property {Number} Limit
+ * @property {String} Quality
+ * @property {String} Cookies
+ * @property {Boolean} ByPassYoutubeDLRatelimit
+ * @property {String} YoutubeDLCookiesFilePath
+ * @property {String[]} Proxy
  */
 const DefaultExtractorStreamOptions = {
   Limit: 1,
@@ -85,7 +125,21 @@ const DefaultExtractorStreamOptions = {
 };
 
 /**
- * Track ->  Song Track
+ * @typedef {Object} DefaultTrack
+ * @property {Number} Id
+ * @property {String} url
+ * @property {String} video_Id
+ * @property {User} requestedBy
+ * @property {String} title
+ * @property {String} description
+ * @property {Number} duration
+ * @property {String} human_duration
+ * @property {String} thumbnail
+ * @property {String} channelId
+ * @property {String} channel_url
+ * @property {Number} likes
+ * @property {Boolean} is_live
+ * @property {Number} dislikes
  */
 
 const DefaultTrack = {
@@ -106,7 +160,30 @@ const DefaultTrack = {
 };
 
 /**
- * Stream ->  Song Track's STream Data / Raw Data from Extractors
+ * @private
+ * @typedef {Object} DefaultStream
+ * @property {Number} Id
+ * @property {String} url
+ * @property {String} video_Id
+ * @property {User} requestedBy
+ * @property {String} title
+ * @property {String} description
+ * @property {String} custom_extractor
+ * @property {String} duration
+ * @property {String} human_duration
+ * @property {String} preview_stream_url
+ * @property {String} stream
+ * @property {String} stream_type
+ * @property {String} stream_duration
+ * @property {String} stream_video_Id
+ * @property {Number} stream_human_duration
+ * @property {String} orignal_extractor
+ * @property {String} thumbnail
+ * @property {String} channelId
+ * @property {String} channel_url
+ * @property {Number} likes
+ * @property {Boolean} is_live
+ * @property {Number} dislikes
  */
 
 const DefaultStream = {
@@ -136,7 +213,11 @@ const DefaultStream = {
 };
 
 /**
- * Chunk ->  Song Track's STream Data And Raw Data from Extractors for StreamPacket
+ * @typedef {Object} DefaultChunk
+ * @property {Boolean} playlist
+ * @property {DefaultTrack[]} tracks
+ * @property {DefaultStream[]} streamdatas
+ * @property {String} error
  */
 
 const DefaultChunk = {
@@ -147,7 +228,22 @@ const DefaultChunk = {
 };
 
 /**
- * StreamPacket ->  StreamPacket Instance for Queue for handlind backend Workloads
+ * @typedef {Object} DefaultStreamPacket
+ * @property {Client} Client
+ * @property {VoiceChannel|StageChannel} VoiceChannel
+ * @property {String} extractor
+ * @property {DefaultTrack[]} searches
+ * @property {DefaultStream[]} tracks
+ * @property {PlayerSubscription} subscription
+ * @property {VoiceConnection} VoiceConnection
+ * @property {any} metadata
+ * @property {String} guildId
+ * @property {DefaultExtractorStreamOptions} ExtractorStreamOptions
+ * @property {Boolean} IgnoreError
+ * @property {any} JerichoPlayer
+ * @property {Number} volume
+ * @property {AudioResource} AudioResource
+ * @property {DefaultTrack[]} previousTracks
  */
 
 const DefaultStreamPacket = {
@@ -171,7 +267,10 @@ const DefaultStreamPacket = {
 };
 
 /**
- * FetchOptions ->  Fetch Options for SongFetching function for Extractors
+ * @typedef {Object} DefaultFetchOptions
+ * @property {Boolean} IgnoreError
+ * @property {DefaultExtractorStreamOptions} ExtractorStreamOptions
+ * @property {Boolean} NoStreamif
  */
 
 const DefaultFetchOptions = {
@@ -181,7 +280,10 @@ const DefaultFetchOptions = {
 };
 
 /**
- * ExtractorData Extractor Data Raw from Extractor Download/Extractor Options
+ * @typedef {Object} DefaultExtractorData
+ * @property {Boolean} playlist
+ * @property {DefaultStream} tracks
+ * @property {String} error
  */
 const DefaultExtractorData = {
   playlist: false,
@@ -190,7 +292,10 @@ const DefaultExtractorData = {
 };
 
 /**
- * StreamCreateOptions Stream Create Options for Extractors
+ * @typedef {Object} DefaultStreamCreateOptions
+ * @property {User} requestedBy
+ * @property {Boolean} IgnoreError
+ * @property {DefaultExtractorStreamOptions} ExtractorStreamOptions
  */
 
 const DefaultStreamCreateOptions = {
@@ -200,7 +305,16 @@ const DefaultStreamCreateOptions = {
 };
 
 /**
- * JerichoPlayerOptions Jericho Player's Default Options
+ * @typedef {Object} DefaultStreamCreateOptions
+ * @property {String} extractor
+ * @property {DefaultExtractorStreamOptions} ExtractorStreamOptions
+ * @property {Boolean} IgnoreError
+ * @property {Boolean} LeaveOnEmpty
+ * @property {Boolean} LeaveOnEnd
+ * @property {Boolean} LeaveOnBotOnly
+ * @property {Number} LeaveOnEmptyTimedout
+ * @property {Number} LeaveOnEndTimedout
+ * @property {Number} LeaveOnBotOnlyTimedout
  */
 
 const DefaultJerichoPlayerOptions = {
@@ -216,7 +330,17 @@ const DefaultJerichoPlayerOptions = {
 };
 
 /**
- * QueueCreateOptions Queue's Default Options
+ * @typedef {Object} DefaultQueueCreateOptions
+ * @property {String} extractor
+ * @property {any} metadata
+ * @property {DefaultExtractorStreamOptions} ExtractorStreamOptions
+ * @property {Boolean} IgnoreError
+ * @property {Boolean} LeaveOnEmpty
+ * @property {Boolean} LeaveOnEnd
+ * @property {Boolean} LeaveOnBotOnly
+ * @property {Number} LeaveOnEmptyTimedout
+ * @property {Number} LeaveOnEndTimedout
+ * @property {Number} LeaveOnBotOnlyTimedout
  */
 
 const DefaultQueueCreateOptions = {

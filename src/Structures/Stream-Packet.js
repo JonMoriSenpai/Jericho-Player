@@ -20,6 +20,7 @@ const ClassUtils = require('../Utilities/Class-Utils');
 const {
   DefaultExtractorStreamOptions,
   DefaultTrack,
+  DefaultStream,
   DefaultChunk,
   DefaultModesType,
   DefaultModesName,
@@ -27,6 +28,7 @@ const {
 const Queue = require('../Handlers/Queue-Handler');
 
 /**
+ * @private
  * @class StreamPacketGen -> Stream Packet Generator for Connection and Internal Workflows
  * Stream packet is meant to untouched by Users as it can distortion or runtime Bugs and errors during playing except when you are debugging them
  */
@@ -80,14 +82,14 @@ class StreamPacketGen {
 
     /**
      * searches User Readable Tracks
-     * @type {Object[]}
+     * @type {DefaultStream[]}
      * @readonly
      */
     this.searches = [];
 
     /**
      * Tracks Stream Datas from Extractors and then parent Data of searches
-     * @type {Object[]}
+     * @type {DefaultTrack[]}
      * @readonly
      */
     this.tracks = [];
@@ -101,7 +103,7 @@ class StreamPacketGen {
 
     /**
      * Metadata Metadata value in Streampacket for Audio Resources
-     * @type {Object|undefined}
+     * @type {any|undefined}
      */
     this.metadata = MetadataValue;
 

@@ -10,7 +10,7 @@ import {
   Queue,
   PlayerOptions,
   QueueOptions,
-  DefaultModesTypes,
+  DefaultModesTypes
 } from './instances'
 import { VoiceConnection } from '@discordjs/voice'
 import { EventEmitter } from 'events'
@@ -51,4 +51,4 @@ export class VoiceUtils {
   ): undefined
 }
 
-export const DefaultModesTypes: DefaultModesTypes
+export { DefaultModesTypes, DefaultModesTypes as PlayerModesTypes }
