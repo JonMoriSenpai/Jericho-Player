@@ -1,5 +1,5 @@
-# Discord Player
-Complete framework to facilitate music commands using **[discord.js](https://discord.js.org)**.
+# Jericho Player
+LightWeight Framework for  **[discord.js v13](https://discord.js.org)** Music Bots and Radio Bots with fast moderation with commands and no memory leak.
 
 [![downloadsBadge](https://img.shields.io/npm/dt/jericho-player?style=for-the-badge)](https://npmjs.com/jericho-player)
 [![versionBadge](https://img.shields.io/npm/v/jericho-player?style=for-the-badge)](https://npmjs.com/jericho-player)
@@ -15,8 +15,15 @@ $ npm install --save jericho-player
 
 ### Install **[@discordjs/opus](https://npmjs.com/package/@discordjs/opus)**
 
+
 ```sh
 $ npm install --save @discordjs/opus
+```
+
+### Install **[@discordjs/voice](https://npmjs.com/package/@discordjs/voice)**
+
+```sh
+$ npm install --save @discordjs/voice
 ```
 
 ### Install FFmpeg or Avconv
@@ -29,147 +36,47 @@ $ npm install --save @discordjs/opus
 # Features
 - Simple & easy to use 🤘
 - Beginner friendly 😱
-- Audio filters 🎸
+- Auto Proxy Feature
 - Lightweight 🛬
-- Custom extractors support 🌌
-- Lyrics 📃
+- play-dl or youtube-dl extractors support 🌌
 - Multiple sources support ✌
 - Play in multiple servers at the same time 🚗
 
-## [Documentation](https://discord-player.js.org)
+## [Documentation](https://jericho-player.js.org)
 
-## Getting Started
-
-First of all, you will need to register slash commands:
-
-```js
-const { REST } = require("@discordjs/rest");
-const { Routes } = require("discord-api-types/v9");
-
-const commands = [{
-    name: "play",
-    description: "Plays a song!",
-    options: [
-        {
-            name: "query",
-            type: "STRING",
-            description: "The song you want to play",
-            required: true
-        }
-    ]
-}]; 
-
-const rest = new REST({ version: "9" }).setToken(process.env.DISCORD_TOKEN);
-
-(async () => {
-  try {
-    console.log("Started refreshing application [/] commands.");
-
-    await rest.put(
-      Routes.applicationGuildCommands(CLIENT_ID, GUILD_ID),
-      { body: commands },
-    );
-
-    console.log("Successfully reloaded application [/] commands.");
-  } catch (error) {
-    console.error(error);
-  }
-})();
-```
-
-Now you can implement your bot's logic:
-
-```js
-const { Client, Intents } = require("discord.js");
-const client = new Discord.Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_VOICE_STATES] });
-const { Player } = require("discord-player");
-
-// Create a new Player (you don't need any API Key)
-const player = new Player(client);
-
-// add the trackStart event so when a song will be played this message will be sent
-player.on("trackStart", (queue, track) => queue.metadata.channel.send(`🎶 | Now playing **${track.title}**!`))
-
-client.once("ready", () => {
-    console.log("I'm ready !");
-});
-
-client.on("interactionCreate", async (interaction) => {
-    if (!interaction.isCommand()) return;
-
-    // /play Despacito
-    // will play "Despacito" in the voice channel
-    if (interaction.commandName === "play") {
-        if (!interaction.member.voice.channelId) return await interaction.reply({ content: "You are not in a voice channel!", ephemeral: true });
-        if (interaction.guild.me.voice.channelId && interaction.member.voice.channelId !== interaction.guild.me.voice.channelId) return await interaction.reply({ content: "You are not in my voice channel!", ephemeral: true });
-        const query = interaction.options.get("query").value;
-        const queue = player.createQueue(interaction.guild, {
-            metadata: {
-                channel: interaction.channel
-            }
-        });
-        
-        // verify vc connection
-        try {
-            if (!queue.connection) await queue.connect(interaction.member.voice.channel);
-        } catch {
-            queue.destroy();
-            return await interaction.reply({ content: "Could not join your voice channel!", ephemeral: true });
-        }
-
-        await interaction.deferReply();
-        const track = await player.search(query, {
-            requestedBy: interaction.user
-        }).then(x => x.tracks[0]);
-        if (!track) return await interaction.followUp({ content: `❌ | Track **${query}** not found!` });
-
-        queue.play(track);
-
-        return await interaction.followUp({ content: `⏱️ | Loading track **${track.title}**!` });
-    }
-});
-
-client.login(process.env.DISCORD_TOKEN);
-```
 
 ## Supported websites
 
-By default, discord-player supports **YouTube**, **Spotify** and **SoundCloud** streams only.
+By default, jericho-player supports **YouTube**, **Spotify**, **facebook** and **SoundCloud** streams only.
 
 ### Optional dependencies
 
-Discord Player provides an **Extractor API** that enables you to use your custom stream extractor with it. Some packages have been made by the community to add new features using this API.
+Jericho Player got some **Custom Extractors** that enables you to use and fast Extraction. Some packages have been made by the Sid is Live YT to add new features using this Extractors.
 
-#### [@discord-player/extractor](https://github.com/Snowflake107/discord-player-extractors) (optional)
+#### [playdl-music-extractor](https://npmjs.com/package/playdl-music-extractor) (optional)
 
-Optional package that adds support for `vimeo`, `reverbnation`, `facebook`, `attachment links` and `lyrics`.
-You just need to install it using `npm i --save @discord-player/extractor` (discord-player will automatically detect and use it).
+Optional package that adds support for `vimeo`, `reverbnation`, `facebook`, `attachment links`.
+You just need to install it using `npm i --save video-extractor` (jericho-player will automatically detect and use it).
 
-#### [@discord-player/downloader](https://github.com/DevSnowflake/discord-player-downloader) (optional)
+#### [video-extractor](https://npmjs.com/package/video-extractor) (optional)
 
-`@discord-player/downloader` is an optional package that brings support for +700 websites. The documentation is available [here](https://github.com/DevSnowflake/discord-player-downloader).
+`video-extractor` is an optional package that brings support for +700 websites. The documentation is available [here](https://npmjs.com/package/video-extractor).
 
-## Examples of bots made with Discord Player
+## Examples of bots made with Jericho Player
 
 These bots are made by the community, they can help you build your own!
 
-* **[Discord Music Bot](https://github.com/Androz2091/discord-music-bot)** by [Androz2091](https://github.com/Androz2091)
-* [AtlantaBot](https://github.com/Androz2091/AtlantaBot) by [Androz2091](https://github.com/Androz2091) (**outdated**)
-* [Discord-Music](https://github.com/inhydrox/discord-music) by [inhydrox](https://github.com/inhydrox) (**outdated**)
-* [Music-bot](https://github.com/ZerioDev/Music-bot) by [ZerioDev](https://github.com/ZerioDev) (**outdated**)
+* **[Fairy Tale - Jericho Player](https://github.com/SidisLiveYT/Jericho-Player-Discord-Bot)** by [SidisLiveYT](https://github.com/SidisLiveYT)
+
 
 ## Advanced
 
 ### Use cookies
 
 ```js
-const player = new Player(client, {
-    ytdlOptions: {
-        requestOptions: {
-            headers: {
-                cookie: "YOUR_YOUTUBE_COOKIE"
-            }
-        }
+const player = new JerichoPlayer(client, {
+    ExtractorStreamOptions: {
+        Cookies: //Youtube Cookies String Value
     }
 });
 ```
@@ -177,15 +84,12 @@ const player = new Player(client, {
 ### Use custom proxies
 
 ```js
-const HttpsProxyAgent = require("https-proxy-agent");
-
 // Remove "user:pass@" if you don't need to authenticate to your proxy.
 const proxy = "http://user:pass@111.111.111.111:8080";
-const agent = HttpsProxyAgent(proxy);
 
-const player = new Player(client, {
-    ytdlOptions: {
-        requestOptions: { agent }
+const player = new JerichoPlayer(client, {
+    ExtractorStreamOptions: {
+        Proxy: [proxy] //Proxy Value from Array
     }
 });
 ```

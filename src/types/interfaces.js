@@ -107,7 +107,7 @@ const DefaultDisconnectChannelOptions = {
 };
 
 /**
- * @typedef {Object} DefaultDisconnectChannelOptions
+ * @typedef {Object} DefaultExtractorStreamOptions
  * @property {Number} Limit
  * @property {String} Quality
  * @property {String} Cookies
@@ -305,7 +305,7 @@ const DefaultStreamCreateOptions = {
 };
 
 /**
- * @typedef {Object} DefaultStreamCreateOptions
+ * @typedef {Object} DefaultJerichoPlayerOptions
  * @property {String} extractor
  * @property {DefaultExtractorStreamOptions} ExtractorStreamOptions
  * @property {Boolean} IgnoreError
