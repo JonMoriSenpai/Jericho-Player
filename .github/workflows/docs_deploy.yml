@@ -15,11 +15,8 @@ jobs:
       - name: Build
         uses: andstor/jsdoc-action@v1
         with:
-          source_dir: ./src
-          output_dir: ./docs
           config_file: .jsdoc.json
           template: jsdoc-skyceil
-          front_page: README.md
 
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
