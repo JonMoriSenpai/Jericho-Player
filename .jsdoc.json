@@ -1,10 +1,10 @@
 {
   "tags": {
-    "allowUnknownTags": false,
+    "allowUnknownTags": true,
     "dictionaries": ["jsdoc"]
   },
   "source": {
-    "include": ["package.json", "README.md", "src", "typings"],
+    "include": ["package.json", "README.md", "src"],
     "includePattern": ".js$",
     "excludePattern": "(node_modules/|docs|tests/)"
   },
@@ -24,6 +24,6 @@
     "encoding": "utf8",
     "private": true,
     "recurse": true,
-    "template": "./node_modules/jsdoc-skyceil"
+    "template": "./node_modules/minami"
   }
 }

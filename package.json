@@ -34,6 +34,7 @@
     "eslint-plugin-import": "^2.25.2",
     "jsdoc": "^3.6.7",
     "jsdoc-strip-async-await": "^0.1.0",
+    "minami": "^1.2.3",
     "nyc": "^15.1.0",
     "semantic-release": "^18.0.0"
   },
