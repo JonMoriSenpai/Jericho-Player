@@ -27,7 +27,7 @@ class JerichoPlayer extends EventEmitter {
   /**
    * Jericho Player Constructor
    * @param {Client} Client  Instanceof Discord.js Client
-   * @param {DefaultJerichoPlayerOptions}  JerichoPlayerOptions  Player Options for Stream Extraction and Voice Connection Moderation
+   * @param {DefaultJerichoPlayerOptions} JerichoPlayerOptions  Player Options for Stream Extraction and Voice Connection Moderation
    */
 
   constructor(

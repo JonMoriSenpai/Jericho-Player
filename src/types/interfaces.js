@@ -5,11 +5,11 @@ const { AudioResource, PlayerSubscription } = require('@discordjs/voice');
 
 /**
  * @typedef {Object} DefaultProgressBar
- * @property {String|undefined} CompleteIcon
- * @property {String|undefined} TargetIcon
- * @property {String|undefined} RemainingIcon
- * @property {String|undefined} StartingIcon
- * @property {String|undefined} EndIcon
+ * @property {String} CompleteIcon
+ * @property {String} TargetIcon
+ * @property {String} RemainingIcon
+ * @property {String} StartingIcon
+ * @property {String} EndIcon
  */
 const DefaultProgressBar = {
   CompleteIcon: '▬',
@@ -21,19 +21,19 @@ const DefaultProgressBar = {
 
 /**
  * @typedef {Object} DefaultcurrentTimestamp
- * @property {String|undefined} track_ms
- * @property {String|undefined} totaltrack_ms
- * @property {String|undefined} previoustracks_ms
- * @property {String|undefined} saved_queue_ms
- * @property {String|undefined} queue_ms
- * @property {String|undefined} remainqueue_ms
- * @property {String|undefined} human_track
- * @property {String|undefined} human_totaltrack
- * @property {String|undefined} human_previoustracks
- * @property {String|undefined} human_totalqueue
- * @property {String|undefined} human_saved_queue
- * @property {String|undefined} human_queue
- * @property {String|undefined} human_remainqueue
+ * @property {String} track_ms
+ * @property {String} totaltrack_ms
+ * @property {String} previoustracks_ms
+ * @property {String} saved_queue_ms
+ * @property {String} queue_ms
+ * @property {String} remainqueue_ms
+ * @property {String} human_track
+ * @property {String} human_totaltrack
+ * @property {String} human_previoustracks
+ * @property {String} human_totalqueue
+ * @property {String} human_saved_queue
+ * @property {String} human_queue
+ * @property {String} human_remainqueue
  */
 
 const DefaultcurrentTimestamp = {
@@ -55,9 +55,9 @@ const DefaultcurrentTimestamp = {
 
 /**
  * @typedef {Object} DefaultPlayerMode
- * @property {String|undefined} mode
- * @property {String|undefined} type
- * @property {String|undefined} times
+ * @property {String} mode
+ * @property {String} type
+ * @property {String} times
  */
 
 const DefaultPlayerMode = {
@@ -68,9 +68,9 @@ const DefaultPlayerMode = {
 
 /**
  * @typedef {Object} DefaultModesName
- * @property {String|undefined} Loop
- * @property {String|undefined} Repeat
- * @property {String|undefined} Autoplay
+ * @property {String} Loop
+ * @property {String} Repeat
+ * @property {String} Autoplay
  */
 const DefaultModesName = {
   Loop: 'loop',
@@ -80,9 +80,9 @@ const DefaultModesName = {
 
 /**
  * @typedef {Object} DefaultModesType
- * @property {String|undefined} Track
- * @property {String|undefined} Queue
- * @property {String|undefined} Off
+ * @property {String} Track
+ * @property {String} Queue
+ * @property {String} Off
  */
 const DefaultModesType = {
   Track: 'track',
@@ -92,7 +92,7 @@ const DefaultModesType = {
 
 /**
  * @typedef {Object} DefaultJoinChannelOptions
- * @property {Boolean|undefined} force
+ * @property {Boolean} force
  */
 const DefaultJoinChannelOptions = {
   force: false,
@@ -100,7 +100,7 @@ const DefaultJoinChannelOptions = {
 
 /**
  * @typedef {Object} DefaultDisconnectChannelOptions
- * @property {Boolean|undefined} destroy
+ * @property {Boolean} destroy
  */
 const DefaultDisconnectChannelOptions = {
   destroy: true,
