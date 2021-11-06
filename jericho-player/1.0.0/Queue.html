@@ -1,0 +1,4683 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Class: Queue</title>
+
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <script src="scripts/nav.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.3/fuse.min.js"></script>
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link type="text/css" rel="stylesheet" href="styles/skyceil.css">
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+    <link type="text/css" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+</head>
+
+<body>
+
+<nav class="navbar">
+    <div class="utilities">
+        <div id="search">
+            <input type="text" id="search-box" placeholder="Search"><br>
+            <div id="search-results" style="display: none;"></div>
+        </div>
+        <button class="theme" data-theme="light"><i class="fas fa-moon"></i></button>
+    </div>
+    <hr>
+    <h4><a href="index.html">Home</a></h4><h5 class="no-bottom must-underline">Classes</h5><ul><li><span class="small-icon C">C</span><b><a href="ClassUtils.html">ClassUtils</a></b><ul class="has-class-methods"><li><span class="small-icon F">F</span><a href="ClassUtils.html#.HumanTimeConversion">HumanTimeConversion</a></li><li><span class="small-icon F">F</span><a href="ClassUtils.html#.ScanDeps">ScanDeps</a></li><li><span class="small-icon F">F</span><a href="ClassUtils.html#.stablizingoptions">stablizingoptions</a></li></ul></li><li><span class="small-icon C">C</span><b><a href="JerichoPlayer.html">JerichoPlayer</a></b><ul class="has-class-methods"><li><span class="small-icon F">F</span><a href="JerichoPlayer.html#CreateQueue">CreateQueue</a></li><li><span class="small-icon F">F</span><a href="JerichoPlayer.html#DeleteQueue">DeleteQueue</a></li><li><span class="small-icon F">F</span><a href="JerichoPlayer.html#GetQueue">GetQueue</a></li><li><span class="small-icon M">M</span><a href="JerichoPlayer.html#Client">Client</a></li><li><span class="small-icon M">M</span><a href="JerichoPlayer.html#JerichoPlayerOptions">JerichoPlayerOptions</a></li></ul></li><li><span class="small-icon C">C</span><b><a href="Queue.html">Queue</a></b><ul class="has-class-methods"><li><span class="small-icon F">F</span><a href="Queue.html#autoplay">autoplay</a></li><li><span class="small-icon F">F</span><a href="Queue.html#back">back</a></li><li><span class="small-icon F">F</span><a href="Queue.html#clear">clear</a></li><li><span class="small-icon F">F</span><a href="Queue.html#createProgressBar">createProgressBar</a></li><li><span class="small-icon F">F</span><a href="Queue.html#destroy">destroy</a></li><li><span class="small-icon F">F</span><a href="Queue.html#insert">insert</a></li><li><span class="small-icon F">F</span><a href="Queue.html#loop">loop</a></li><li><span class="small-icon F">F</span><a href="Queue.html#mute">mute</a></li><li><span class="small-icon F">F</span><a href="Queue.html#pause">pause</a></li><li><span class="small-icon F">F</span><a href="Queue.html#play">play</a></li><li><span class="small-icon F">F</span><a href="Queue.html#remove">remove</a></li><li><span class="small-icon F">F</span><a href="Queue.html#repeat">repeat</a></li><li><span class="small-icon F">F</span><a href="Queue.html#resume">resume</a></li><li><span class="small-icon F">F</span><a href="Queue.html#search">search</a></li><li><span class="small-icon F">F</span><a href="Queue.html#skip">skip</a></li><li><span class="small-icon F">F</span><a href="Queue.html#stop">stop</a></li><li><span class="small-icon F">F</span><a href="Queue.html#unmute">unmute</a></li><li><span class="small-icon M">M</span><a href="Queue.html#Client">Client</a></li><li><span class="small-icon M">M</span><a href="Queue.html#current">current</a></li><li><span class="small-icon M">M</span><a href="Queue.html#currentTimestamp">currentTimestamp</a></li><li><span class="small-icon M">M</span><a href="Queue.html#destroyed">destroyed</a></li><li><span class="small-icon M">M</span><a href="Queue.html#guildId">guildId</a></li><li><span class="small-icon M">M</span><a href="Queue.html#JerichoPlayer">JerichoPlayer</a></li><li><span class="small-icon M">M</span><a href="Queue.html#message">message</a></li><li><span class="small-icon M">M</span><a href="Queue.html#metadata">metadata</a></li><li><span class="small-icon M">M</span><a href="Queue.html#MusicPlayer">MusicPlayer</a></li><li><span class="small-icon M">M</span><a href="Queue.html#paused">paused</a></li><li><span class="small-icon M">M</span><a href="Queue.html#playerMode">playerMode</a></li><li><span class="small-icon M">M</span><a href="Queue.html#playing">playing</a></li><li><span class="small-icon M">M</span><a href="Queue.html#previousTrack">previousTrack</a></li><li><span class="small-icon M">M</span><a href="Queue.html#QueueOptions">QueueOptions</a></li><li><span class="small-icon M">M</span><a href="Queue.html#StreamPacket">StreamPacket</a></li><li><span class="small-icon M">M</span><a href="Queue.html#tracks">tracks</a></li><li><span class="small-icon M">M</span><a href="Queue.html#volume">volume</a></li></ul></li></ul>
+</nav>
+
+<div id="main">
+    <div class="burger">
+        <div class="burger-line-1"></div>
+        <div class="burger-line-2"></div>
+        <div class="burger-line-3"></div>
+    </div>
+
+    <h1 class="page-title">Class: Queue</h1>
+
+    
+
+
+
+
+<section>
+<header>
+    <hr>
+    
+        <h2><span class="attribs"><span class="type-signature"></span></span>Queue<span class="signature">(Client, message, QueueOptions, JerichoPlayer)</span><span class="type-signature"></span></h2>
+        
+            <div class="class-description"><p>Queue -&gt; Queue Class for Creating Queue Instances for Guild
+Queue Instance for Making a Virtual Play Ground for handling all Requests in a static Area</p></div>
+        
+    
+</header>
+
+<article>
+    <div class="container-overview">
+    
+        
+
+    
+    <h2>Constructor</h2>
+    
+
+    
+    <h4 class="name" id="Queue"><span class="type-signature"></span>new Queue<span class="signature">(Client, message, QueueOptions, JerichoPlayer)</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<div class="table-box">
+    <table class="params">
+        <thead>
+        <tr>
+            
+            <th>Name</th>
+            
+
+            <th>Type</th>
+
+            
+
+            
+
+            <th class="last">Description</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        
+
+            <tr>
+                
+                    <td class="name"><code>Client</code></td>
+                
+
+                <td class="type">
+                
+                    
+<span class="param-type">Client</span>
+
+
+                
+                </td>
+
+                
+
+                
+
+                <td class="description last"><p>Discord Client Instance</p></td>
+            </tr>
+
+        
+
+            <tr>
+                
+                    <td class="name"><code>message</code></td>
+                
+
+                <td class="type">
+                
+                    
+<span class="param-type">Message</span>
+
+
+                
+                </td>
+
+                
+
+                
+
+                <td class="description last"><p>Guild's Text Messsage</p></td>
+            </tr>
+
+        
+
+            <tr>
+                
+                    <td class="name"><code>QueueOptions</code></td>
+                
+
+                <td class="type">
+                
+                    
+<span class="param-type">DefaultQueueCreateOptions</span>
+|
+
+<span class="param-type">undefined</span>
+
+
+                
+                </td>
+
+                
+
+                
+
+                <td class="description last"><p>Queue Create Options</p></td>
+            </tr>
+
+        
+
+            <tr>
+                
+                    <td class="name"><code>JerichoPlayer</code></td>
+                
+
+                <td class="type">
+                
+                    
+<span class="param-type"><a href="JerichoPlayer.html">JerichoPlayer</a></span>
+
+
+                
+                </td>
+
+                
+
+                
+
+                <td class="description last"><p>Jericho Player Instance</p></td>
+            </tr>
+
+        
+        </tbody>
+    </table>
+</div>
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Handlers_Queue-Handler.js.html">Handlers/Queue-Handler.js</a>, <a href="Handlers_Queue-Handler.js.html#line38">line 38</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>New Queue Instance</p>
+</div>
+
+
+
+    
+
+
+
+
+
+<hr>
+    
+    </div>
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+        <h3 class="subsection-title">Members</h3>
+
+        
+            
+<h4 class="name" id="Client"><span class="type-signature">(readonly) </span>Client<span class="type-signature"> :Client</span></h4>
+
+
+
+
+<div class="description">
+    <p>Client Discord Client Instance</p>
+</div>
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">Client</span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Handlers_Queue-Handler.js.html">Handlers/Queue-Handler.js</a>, <a href="Handlers_Queue-Handler.js.html#line74">line 74</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+<hr>
+        
+            
+<h4 class="name" id="current"><span class="type-signature">(readonly) </span>current<span class="type-signature"> :DefaultTrack|undefined</span></h4>
+
+
+
+
+<div class="description">
+    <p>Returns Current Track Cached in Stream Packet or Queue.tracks</p>
+</div>
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">DefaultTrack</span>
+|
+
+<span class="param-type">undefined</span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Handlers_Queue-Handler.js.html">Handlers/Queue-Handler.js</a>, <a href="Handlers_Queue-Handler.js.html#line872">line 872</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+<hr>
+        
+            
+<h4 class="name" id="currentTimestamp"><span class="type-signature">(readonly) </span>currentTimestamp<span class="type-signature"> :DefaultcurrentTimestamp|undefined</span></h4>
+
+
+
+
+<div class="description">
+    <p>CurrentTimeStamp -&gt; TimeStamp of tracks , queue and e.t.c in milliseconds and human readable format</p>
+</div>
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">DefaultcurrentTimestamp</span>
+|
+
+<span class="param-type">undefined</span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Handlers_Queue-Handler.js.html">Handlers/Queue-Handler.js</a>, <a href="Handlers_Queue-Handler.js.html#line883">line 883</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+<hr>
+        
+            
+<h4 class="name" id="destroyed"><span class="type-signature">(readonly) </span>destroyed<span class="type-signature"> :Boolean|Number</span></h4>
+
+
+
+
+<div class="description">
+    <p>Queue has been destroyed with Queue.destroy() respond with Boolean or else in delay for destruction will return Timedout ID for clearInterval fucntion</p>
+</div>
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">Boolean</span>
+|
+
+<span class="param-type">Number</span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Handlers_Queue-Handler.js.html">Handlers/Queue-Handler.js</a>, <a href="Handlers_Queue-Handler.js.html#line133">line 133</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+<hr>
+        
+            
+<h4 class="name" id="guildId"><span class="type-signature">(readonly) </span>guildId<span class="type-signature"> :String|Number</span></h4>
+
+
+
+
+<div class="description">
+    <p>Guild's id Object cached from new constructor's guild value</p>
+</div>
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">String</span>
+|
+
+<span class="param-type">Number</span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Handlers_Queue-Handler.js.html">Handlers/Queue-Handler.js</a>, <a href="Handlers_Queue-Handler.js.html#line126">line 126</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+<hr>
+        
+            
+<h4 class="name" id="JerichoPlayer"><span class="type-signature">(readonly) </span>JerichoPlayer<span class="type-signature"> :<a href="JerichoPlayer.html">JerichoPlayer</a></span></h4>
+
+
+
+
+<div class="description">
+    <p>JerichoPlayer Player's Instance for fetching Queue from Cache , Just in case it is required</p>
+</div>
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type"><a href="JerichoPlayer.html">JerichoPlayer</a></span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Handlers_Queue-Handler.js.html">Handlers/Queue-Handler.js</a>, <a href="Handlers_Queue-Handler.js.html#line151">line 151</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+<hr>
+        
+            
+<h4 class="name" id="message"><span class="type-signature">(readonly) </span>message<span class="type-signature"> :Message</span></h4>
+
+
+
+
+<div class="description">
+    <p>Guild Text Channel's message instance</p>
+</div>
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">Message</span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Handlers_Queue-Handler.js.html">Handlers/Queue-Handler.js</a>, <a href="Handlers_Queue-Handler.js.html#line106">line 106</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+<hr>
+        
+            
+<h4 class="name" id="metadata"><span class="type-signature"></span>metadata<span class="type-signature"> :Object|undefined</span></h4>
+
+
+
+
+<div class="description">
+    <p>Metadata value in Queue for Audio Resources</p>
+</div>
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">Object</span>
+|
+
+<span class="param-type">undefined</span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Handlers_Queue-Handler.js.html">Handlers/Queue-Handler.js</a>, <a href="Handlers_Queue-Handler.js.html#line112">line 112</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+<hr>
+        
+            
+<h4 class="name" id="MusicPlayer"><span class="type-signature">(readonly) </span>MusicPlayer<span class="type-signature"> :AudioPlayer</span></h4>
+
+
+
+
+<div class="description">
+    <p>MusicPlayer New Music Player for the Queue Instance to carry out the Basic Stream Operations</p>
+</div>
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">AudioPlayer</span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Handlers_Queue-Handler.js.html">Handlers/Queue-Handler.js</a>, <a href="Handlers_Queue-Handler.js.html#line140">line 140</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+<hr>
+        
+            
+<h4 class="name" id="paused"><span class="type-signature">(readonly) </span>paused<span class="type-signature"> :Boolean|undefined</span></h4>
+
+
+
+
+<div class="description">
+    <p>MusicPlayer's Paused's Status as Boolean</p>
+</div>
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">Boolean</span>
+|
+
+<span class="param-type">undefined</span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Handlers_Queue-Handler.js.html">Handlers/Queue-Handler.js</a>, <a href="Handlers_Queue-Handler.js.html#line836">line 836</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+<hr>
+        
+            
+<h4 class="name" id="playerMode"><span class="type-signature">(readonly) </span>playerMode<span class="type-signature"> :DefaultPlayerMode|undefined</span></h4>
+
+
+
+
+<div class="description">
+    <p>Player Mode of Music Player like 'Loop','Repeat','AutoPlay'</p>
+</div>
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">DefaultPlayerMode</span>
+|
+
+<span class="param-type">undefined</span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Handlers_Queue-Handler.js.html">Handlers/Queue-Handler.js</a>, <a href="Handlers_Queue-Handler.js.html#line993">line 993</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+<hr>
+        
+            
+<h4 class="name" id="playing"><span class="type-signature">(readonly) </span>playing<span class="type-signature"> :Boolean</span></h4>
+
+
+
+
+<div class="description">
+    <p>MusicPlayer's Playing/Activity's Status as Boolean</p>
+</div>
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">Boolean</span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Handlers_Queue-Handler.js.html">Handlers/Queue-Handler.js</a>, <a href="Handlers_Queue-Handler.js.html#line856">line 856</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+<hr>
+        
+            
+<h4 class="name" id="previousTrack"><span class="type-signature">(readonly) </span>previousTrack<span class="type-signature"> :DefaultTrack|undefined</span></h4>
+
+
+
+
+<div class="description">
+    <p>Previous Track Data | Same as Queue.current , But Data of previous track</p>
+</div>
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">DefaultTrack</span>
+|
+
+<span class="param-type">undefined</span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Handlers_Queue-Handler.js.html">Handlers/Queue-Handler.js</a>, <a href="Handlers_Queue-Handler.js.html#line979">line 979</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+<hr>
+        
+            
+<h4 class="name" id="QueueOptions"><span class="type-signature">(readonly) </span>QueueOptions<span class="type-signature"> :DefaultQueueCreateOptions</span></h4>
+
+
+
+
+<div class="description">
+    <p>QueueOptions Queue Default Options for Upcoming methods operations</p>
+</div>
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">DefaultQueueCreateOptions</span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Handlers_Queue-Handler.js.html">Handlers/Queue-Handler.js</a>, <a href="Handlers_Queue-Handler.js.html#line82">line 82</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+<hr>
+        
+            
+<h4 class="name" id="StreamPacket"><span class="type-signature">(readonly) </span>StreamPacket<span class="type-signature"> :DefaultStreamPacket</span></h4>
+
+
+
+
+<div class="description">
+    <p>StreamPacket Stream packet for Queue | Simply Handling Voice Connections and Tracks/Streams</p>
+</div>
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">DefaultStreamPacket</span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Handlers_Queue-Handler.js.html">Handlers/Queue-Handler.js</a>, <a href="Handlers_Queue-Handler.js.html#line92">line 92</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+<hr>
+        
+            
+<h4 class="name" id="tracks"><span class="type-signature">(readonly) </span>tracks<span class="type-signature"> :Array.&lt;Object></span></h4>
+
+
+
+
+<div class="description">
+    <p>Queue.tracks[] holds all the Queue's tracks Cache</p>
+</div>
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">Array.&lt;Object></span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Handlers_Queue-Handler.js.html">Handlers/Queue-Handler.js</a>, <a href="Handlers_Queue-Handler.js.html#line119">line 119</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+<hr>
+        
+            
+<h4 class="name" id="volume"><span class="type-signature">(readonly) </span>volume<span class="type-signature"> :Number|undefined</span></h4>
+
+
+
+
+<div class="description">
+    <p>Volume of the Music Player Currently OR to set new Volume for Music Player</p>
+</div>
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">Number</span>
+|
+
+<span class="param-type">undefined</span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Handlers_Queue-Handler.js.html">Handlers/Queue-Handler.js</a>, <a href="Handlers_Queue-Handler.js.html#line808">line 808</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+<hr>
+        
+    
+
+    
+        <h3 class="subsection-title">Methods</h3>
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="autoplay"><span class="type-signature"></span>autoplay<span class="signature">(ChoiceORQuery)</span><span class="type-signature"> &rarr; {Boolean|undefined}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>autoplay() -&gt; Autplay Songs with the help of last Played Track or Query given</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<div class="table-box">
+    <table class="params">
+        <thead>
+        <tr>
+            
+            <th>Name</th>
+            
+
+            <th>Type</th>
+
+            
+
+            
+
+            <th class="last">Description</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        
+
+            <tr>
+                
+                    <td class="name"><code>ChoiceORQuery</code></td>
+                
+
+                <td class="type">
+                
+                    
+<span class="param-type">String</span>
+|
+
+<span class="param-type">String</span>
+|
+
+<span class="param-type">undefined</span>
+
+
+                
+                </td>
+
+                
+
+                
+
+                <td class="description last"><p>Mode Choice , like &quot;off&quot; | OR else give Query or Url for autoplay songs with respect to specified query</p></td>
+            </tr>
+
+        
+        </tbody>
+    </table>
+</div>
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Handlers_Queue-Handler.js.html">Handlers/Queue-Handler.js</a>, <a href="Handlers_Queue-Handler.js.html#line754">line 754</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>returns true for green signal operation and undefined for errors</p>
+</div>
+
+
+
+<ul>
+    <li>
+        Type: <span class="simple-code">
+<span class="param-type">Boolean</span>
+|
+
+<span class="param-type">undefined</span>
+
+</span>
+    </li>
+</ul>
+
+    
+
+
+
+
+
+<hr>
+        
+            
+
+    
+
+    
+    <h4 class="name" id="back"><span class="type-signature">(async) </span>back<span class="signature">(TracksBackwardIndex, User, PlayOptions, forceback)</span><span class="type-signature"> &rarr; {Promise.&lt;(Boolean|undefined)>|undefined}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>back -&gt; Playing Previous Songs from non-destroyed Queue</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<div class="table-box">
+    <table class="params">
+        <thead>
+        <tr>
+            
+            <th>Name</th>
+            
+
+            <th>Type</th>
+
+            
+
+            
+            <th>Default</th>
+            
+
+            <th class="last">Description</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        
+
+            <tr>
+                
+                    <td class="name"><code>TracksBackwardIndex</code></td>
+                
+
+                <td class="type">
+                
+                    
+<span class="param-type">String</span>
+|
+
+<span class="param-type">Number</span>
+
+
+                
+                </td>
+
+                
+
+                
+                    <td class="default">
+                    
+                        0
+                    
+                    </td>
+                
+
+                <td class="description last"><p>TrackIndex in PreviousTracks Stack to Play now or else recent ended song will be played</p></td>
+            </tr>
+
+        
+
+            <tr>
+                
+                    <td class="name"><code>User</code></td>
+                
+
+                <td class="type">
+                
+                    
+<span class="param-type">User</span>
+|
+
+<span class="param-type">GuildMember</span>
+
+
+                
+                </td>
+
+                
+
+                
+                    <td class="default">
+                    
+                    </td>
+                
+
+                <td class="description last"><p>User Data if new User is using Back Command</p></td>
+            </tr>
+
+        
+
+            <tr>
+                
+                    <td class="name"><code>PlayOptions</code></td>
+                
+
+                <td class="type">
+                
+                    
+<span class="param-type">DefaultQueueCreateOptions</span>
+
+
+                
+                </td>
+
+                
+
+                
+                    <td class="default">
+                    
+                    </td>
+                
+
+                <td class="description last"><p>Stream Play Options , Same as Queue Create Options to add more into extraction and other properties</p></td>
+            </tr>
+
+        
+
+            <tr>
+                
+                    <td class="name"><code>forceback</code></td>
+                
+
+                <td class="type">
+                
+                    
+<span class="param-type">Boolean</span>
+|
+
+<span class="param-type">undefined</span>
+
+
+                
+                </td>
+
+                
+
+                
+                    <td class="default">
+                    
+                        true
+                    
+                    </td>
+                
+
+                <td class="description last"><p>if User wants to forceibly play previous Tracks without any delay or wait</p></td>
+            </tr>
+
+        
+        </tbody>
+    </table>
+</div>
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Handlers_Queue-Handler.js.html">Handlers/Queue-Handler.js</a>, <a href="Handlers_Queue-Handler.js.html#line584">line 584</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>true if operation emits green signal or undefined for errors</p>
+</div>
+
+
+
+<ul>
+    <li>
+        Type: <span class="simple-code">
+<span class="param-type">Promise.&lt;(Boolean|undefined)></span>
+|
+
+<span class="param-type">undefined</span>
+
+</span>
+    </li>
+</ul>
+
+    
+
+
+
+
+
+<hr>
+        
+            
+
+    
+
+    
+    <h4 class="name" id="clear"><span class="type-signature"></span>clear<span class="signature">(TracksAmount)</span><span class="type-signature"> &rarr; {Boolean|undefined}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>clear() -&gt; Clear Tracks from Queue and Stream Packet</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<div class="table-box">
+    <table class="params">
+        <thead>
+        <tr>
+            
+            <th>Name</th>
+            
+
+            <th>Type</th>
+
+            
+
+            
+
+            <th class="last">Description</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        
+
+            <tr>
+                
+                    <td class="name"><code>TracksAmount</code></td>
+                
+
+                <td class="type">
+                
+                    
+<span class="param-type">Number</span>
+|
+
+<span class="param-type">String</span>
+
+
+                
+                </td>
+
+                
+
+                
+
+                <td class="description last"><p>Tracks Size in Queue</p></td>
+            </tr>
+
+        
+        </tbody>
+    </table>
+</div>
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Handlers_Queue-Handler.js.html">Handlers/Queue-Handler.js</a>, <a href="Handlers_Queue-Handler.js.html#line548">line 548</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>true if operation emits green signal or undefined for errors</p>
+</div>
+
+
+
+<ul>
+    <li>
+        Type: <span class="simple-code">
+<span class="param-type">Boolean</span>
+|
+
+<span class="param-type">undefined</span>
+
+</span>
+    </li>
+</ul>
+
+    
+
+
+
+
+
+<hr>
+        
+            
+
+    
+
+    
+    <h4 class="name" id="createProgressBar"><span class="type-signature"></span>createProgressBar<span class="signature">(Work, DefaultType, Bar)</span><span class="type-signature"> &rarr; {String|undefined}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>createProgressBar() -&gt; Create progress bar for Queue ,Tracks , PreviousTracks and current track(Track)</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<div class="table-box">
+    <table class="params">
+        <thead>
+        <tr>
+            
+            <th>Name</th>
+            
+
+            <th>Type</th>
+
+            
+
+            
+            <th>Default</th>
+            
+
+            <th class="last">Description</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        
+
+            <tr>
+                
+                    <td class="name"><code>Work</code></td>
+                
+
+                <td class="type">
+                
+                    
+<span class="param-type">String</span>
+|
+
+<span class="param-type">undefined</span>
+
+
+                
+                </td>
+
+                
+
+                
+                    <td class="default">
+                    
+                        track
+                    
+                    </td>
+                
+
+                <td class="description last"><p>Queue ,Tracks , PreviousTracks and current track(Track) as its Value</p></td>
+            </tr>
+
+        
+
+            <tr>
+                
+                    <td class="name"><code>DefaultType</code></td>
+                
+
+                <td class="type">
+                
+                    
+<span class="param-type">String</span>
+|
+
+<span class="param-type">Number</span>
+|
+
+<span class="param-type">undefined</span>
+
+
+                
+                </td>
+
+                
+
+                
+                    <td class="default">
+                    
+                    </td>
+                
+
+                <td class="description last"><p>Default Type Value to create Progress bar Cache Types</p></td>
+            </tr>
+
+        
+
+            <tr>
+                
+                    <td class="name"><code>Bar</code></td>
+                
+
+                <td class="type">
+                
+                    
+<span class="param-type">DefaultProgressBar</span>
+
+
+                
+                </td>
+
+                
+
+                
+                    <td class="default">
+                    
+                    </td>
+                
+
+                <td class="description last"><p>Progress bar Credentials or else ByDefault it will Create one</p></td>
+            </tr>
+
+        
+        </tbody>
+    </table>
+</div>
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Handlers_Queue-Handler.js.html">Handlers/Queue-Handler.js</a>, <a href="Handlers_Queue-Handler.js.html#line646">line 646</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>Progress Bar or else undefined if any error occurs</p>
+</div>
+
+
+
+<ul>
+    <li>
+        Type: <span class="simple-code">
+<span class="param-type">String</span>
+|
+
+<span class="param-type">undefined</span>
+
+</span>
+    </li>
+</ul>
+
+    
+
+
+
+
+
+<hr>
+        
+            
+
+    
+
+    
+    <h4 class="name" id="destroy"><span class="type-signature"></span>destroy<span class="signature">(connectionTimedout)</span><span class="type-signature"> &rarr; {Boolean|undefined}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>destroy() -&gt; Destroy Queue | Also Destroy Connection with it , method is quite powerfull</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<div class="table-box">
+    <table class="params">
+        <thead>
+        <tr>
+            
+            <th>Name</th>
+            
+
+            <th>Type</th>
+
+            
+
+            
+            <th>Default</th>
+            
+
+            <th class="last">Description</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        
+
+            <tr>
+                
+                    <td class="name"><code>connectionTimedout</code></td>
+                
+
+                <td class="type">
+                
+                    
+<span class="param-type">Number</span>
+|
+
+<span class="param-type">undefined</span>
+
+
+                
+                </td>
+
+                
+
+                
+                    <td class="default">
+                    
+                        0
+                    
+                    </td>
+                
+
+                <td class="description last"><p>NodejsTimeout Number to destroy with a timer</p></td>
+            </tr>
+
+        
+        </tbody>
+    </table>
+</div>
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Handlers_Queue-Handler.js.html">Handlers/Queue-Handler.js</a>, <a href="Handlers_Queue-Handler.js.html#line470">line 470</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>true if operation emits green signal or undefined for errors</p>
+</div>
+
+
+
+<ul>
+    <li>
+        Type: <span class="simple-code">
+<span class="param-type">Boolean</span>
+|
+
+<span class="param-type">undefined</span>
+
+</span>
+    </li>
+</ul>
+
+    
+
+
+
+
+
+<hr>
+        
+            
+
+    
+
+    
+    <h4 class="name" id="insert"><span class="type-signature">(async) </span>insert<span class="signature">(Query, TrackIndex, User, InsertOptions)</span><span class="type-signature"> &rarr; {Promise.&lt;(Boolean|undefined)>|undefined}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>insert() -&gt; Insertion of Query into Track's Cache in Queue</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<div class="table-box">
+    <table class="params">
+        <thead>
+        <tr>
+            
+            <th>Name</th>
+            
+
+            <th>Type</th>
+
+            
+
+            
+
+            <th class="last">Description</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        
+
+            <tr>
+                
+                    <td class="name"><code>Query</code></td>
+                
+
+                <td class="type">
+                
+                    
+<span class="param-type">String</span>
+
+
+                
+                </td>
+
+                
+
+                
+
+                <td class="description last"><p>Query as URLs or Youtube Searches</p></td>
+            </tr>
+
+        
+
+            <tr>
+                
+                    <td class="name"><code>TrackIndex</code></td>
+                
+
+                <td class="type">
+                
+                    
+<span class="param-type">String</span>
+|
+
+<span class="param-type">Number</span>
+
+
+                
+                </td>
+
+                
+
+                
+
+                <td class="description last"><p>Track Index Value to insert at any specific position</p></td>
+            </tr>
+
+        
+
+            <tr>
+                
+                    <td class="name"><code>User</code></td>
+                
+
+                <td class="type">
+                
+                    
+<span class="param-type">GuildMember</span>
+|
+
+<span class="param-type">User</span>
+
+
+                
+                </td>
+
+                
+
+                
+
+                <td class="description last"><p>user Value for Track.requestedBy Object</p></td>
+            </tr>
+
+        
+
+            <tr>
+                
+                    <td class="name"><code>InsertOptions</code></td>
+                
+
+                <td class="type">
+                
+                    
+<span class="param-type">DefaultQueueCreateOptions</span>
+|
+
+<span class="param-type">undefined</span>
+
+
+                
+                </td>
+
+                
+
+                
+
+                <td class="description last"><p>Stream Options for Query Processing | Same as Queue Creation and Play Method</p></td>
+            </tr>
+
+        
+        </tbody>
+    </table>
+</div>
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Handlers_Queue-Handler.js.html">Handlers/Queue-Handler.js</a>, <a href="Handlers_Queue-Handler.js.html#line369">line 369</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>true if operation emits green signal or undefined for errors</p>
+</div>
+
+
+
+<ul>
+    <li>
+        Type: <span class="simple-code">
+<span class="param-type">Promise.&lt;(Boolean|undefined)></span>
+|
+
+<span class="param-type">undefined</span>
+
+</span>
+    </li>
+</ul>
+
+    
+
+
+
+
+
+<hr>
+        
+            
+
+    
+
+    
+    <h4 class="name" id="loop"><span class="type-signature"></span>loop<span class="signature">(Choice)</span><span class="type-signature"> &rarr; {Boolean|undefined}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>loop() -&gt; Loop Single Track or Queue</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<div class="table-box">
+    <table class="params">
+        <thead>
+        <tr>
+            
+            <th>Name</th>
+            
+
+            <th>Type</th>
+
+            
+
+            
+
+            <th class="last">Description</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        
+
+            <tr>
+                
+                    <td class="name"><code>Choice</code></td>
+                
+
+                <td class="type">
+                
+                    
+<span class="param-type">String</span>
+|
+
+<span class="param-type">undefined</span>
+
+
+                
+                </td>
+
+                
+
+                
+
+                <td class="description last"><p>Mode Choice , like &quot;track&quot; | &quot;queue&quot; | &quot;off&quot;</p></td>
+            </tr>
+
+        
+        </tbody>
+    </table>
+</div>
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Handlers_Queue-Handler.js.html">Handlers/Queue-Handler.js</a>, <a href="Handlers_Queue-Handler.js.html#line725">line 725</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>returns true for green signal operation and undefined for errors</p>
+</div>
+
+
+
+<ul>
+    <li>
+        Type: <span class="simple-code">
+<span class="param-type">Boolean</span>
+|
+
+<span class="param-type">undefined</span>
+
+</span>
+    </li>
+</ul>
+
+    
+
+
+
+
+
+<hr>
+        
+            
+
+    
+
+    
+    <h4 class="name" id="mute"><span class="type-signature"></span>mute<span class="signature">()</span><span class="type-signature"> &rarr; {Boolean|undefined}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>mute() -&gt; Mute Music Player</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Handlers_Queue-Handler.js.html">Handlers/Queue-Handler.js</a>, <a href="Handlers_Queue-Handler.js.html#line512">line 512</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>true if operation emits green signal or undefined for errors</p>
+</div>
+
+
+
+<ul>
+    <li>
+        Type: <span class="simple-code">
+<span class="param-type">Boolean</span>
+|
+
+<span class="param-type">undefined</span>
+
+</span>
+    </li>
+</ul>
+
+    
+
+
+
+
+
+<hr>
+        
+            
+
+    
+
+    
+    <h4 class="name" id="pause"><span class="type-signature"></span>pause<span class="signature">()</span><span class="type-signature"> &rarr; {Boolean|undefined}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>pause() -&gt; pause the Player and freeze  Track Manulpulation and Stream tooo</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Handlers_Queue-Handler.js.html">Handlers/Queue-Handler.js</a>, <a href="Handlers_Queue-Handler.js.html#line332">line 332</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>true if operation emits green signal or undefined for errors</p>
+</div>
+
+
+
+<ul>
+    <li>
+        Type: <span class="simple-code">
+<span class="param-type">Boolean</span>
+|
+
+<span class="param-type">undefined</span>
+
+</span>
+    </li>
+</ul>
+
+    
+
+
+
+
+
+<hr>
+        
+            
+
+    
+
+    
+    <h4 class="name" id="play"><span class="type-signature">(async) </span>play<span class="signature">(Query, VoiceChannel, User, PlayOptions)</span><span class="type-signature"> &rarr; {Promise.&lt;(Boolean|undefined)>|undefined}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>play() -&gt;  Play Options for Queue Instance , Accept any kind of URL if extractor is &quot;youtube-dl&quot; or set undefined | &quot;play-dl&quot; to fetch from custom extractor</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<div class="table-box">
+    <table class="params">
+        <thead>
+        <tr>
+            
+            <th>Name</th>
+            
+
+            <th>Type</th>
+
+            
+
+            
+
+            <th class="last">Description</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        
+
+            <tr>
+                
+                    <td class="name"><code>Query</code></td>
+                
+
+                <td class="type">
+                
+                    
+<span class="param-type">String</span>
+
+
+                
+                </td>
+
+                
+
+                
+
+                <td class="description last"><p>Query like URls or Youtube Searches | Default Extractor accept 5 supported and big websites like youtube , spotify , soundcloud , retribution , facebook and for &quot;youtube-dl&quot; , it accept any follows official &quot;youtube&quot; searches</p></td>
+            </tr>
+
+        
+
+            <tr>
+                
+                    <td class="name"><code>VoiceChannel</code></td>
+                
+
+                <td class="type">
+                
+                    
+<span class="param-type">VoiceChannel</span>
+|
+
+<span class="param-type">StageChannel</span>
+
+
+                
+                </td>
+
+                
+
+                
+
+                <td class="description last"><p>Voice Channel from Discord.js</p></td>
+            </tr>
+
+        
+
+            <tr>
+                
+                    <td class="name"><code>User</code></td>
+                
+
+                <td class="type">
+                
+                    
+<span class="param-type">User</span>
+|
+
+<span class="param-type">GuildMember</span>
+
+
+                
+                </td>
+
+                
+
+                
+
+                <td class="description last"><p>Guild Member or Guild User for requestedBy Object in track</p></td>
+            </tr>
+
+        
+
+            <tr>
+                
+                    <td class="name"><code>PlayOptions</code></td>
+                
+
+                <td class="type">
+                
+                    
+<span class="param-type">DefaultQueueCreateOptions</span>
+
+
+                
+                </td>
+
+                
+
+                
+
+                <td class="description last"><p>Play Options | Queue Create Options | Stream Options for Additional features</p></td>
+            </tr>
+
+        
+        </tbody>
+    </table>
+</div>
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Handlers_Queue-Handler.js.html">Handlers/Queue-Handler.js</a>, <a href="Handlers_Queue-Handler.js.html#line188">line 188</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>undefined on successfull attempt or Promise rejection | true if operation went good signal</p>
+</div>
+
+
+
+<ul>
+    <li>
+        Type: <span class="simple-code">
+<span class="param-type">Promise.&lt;(Boolean|undefined)></span>
+|
+
+<span class="param-type">undefined</span>
+
+</span>
+    </li>
+</ul>
+
+    
+
+
+
+
+
+<hr>
+        
+            
+
+    
+
+    
+    <h4 class="name" id="remove"><span class="type-signature"></span>remove<span class="signature">(Index, Amount)</span><span class="type-signature"> &rarr; {Boolean|undefined}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>remove() -&gt; Remove method to Remove Song/Track from Queue/Tracks Cache</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<div class="table-box">
+    <table class="params">
+        <thead>
+        <tr>
+            
+            <th>Name</th>
+            
+
+            <th>Type</th>
+
+            
+
+            
+            <th>Default</th>
+            
+
+            <th class="last">Description</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        
+
+            <tr>
+                
+                    <td class="name"><code>Index</code></td>
+                
+
+                <td class="type">
+                
+                    
+<span class="param-type">String</span>
+|
+
+<span class="param-type">Number</span>
+|
+
+<span class="param-type">undefined</span>
+
+
+                
+                </td>
+
+                
+
+                
+                    <td class="default">
+                    
+                    </td>
+                
+
+                <td class="description last"><p>Track Index to Remove from Queue.tracks</p></td>
+            </tr>
+
+        
+
+            <tr>
+                
+                    <td class="name"><code>Amount</code></td>
+                
+
+                <td class="type">
+                
+                    
+<span class="param-type">Number</span>
+|
+
+<span class="param-type">undefined</span>
+
+
+                
+                </td>
+
+                
+
+                
+                    <td class="default">
+                    
+                        1
+                    
+                    </td>
+                
+
+                <td class="description last"><p>Amount of Tracks to Remove from Queue OR Queue.tracks</p></td>
+            </tr>
+
+        
+        </tbody>
+    </table>
+</div>
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Handlers_Queue-Handler.js.html">Handlers/Queue-Handler.js</a>, <a href="Handlers_Queue-Handler.js.html#line435">line 435</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>true if operation emits green signal or undefined for errors</p>
+</div>
+
+
+
+<ul>
+    <li>
+        Type: <span class="simple-code">
+<span class="param-type">Boolean</span>
+|
+
+<span class="param-type">undefined</span>
+
+</span>
+    </li>
+</ul>
+
+    
+
+
+
+
+
+<hr>
+        
+            
+
+    
+
+    
+    <h4 class="name" id="repeat"><span class="type-signature"></span>repeat<span class="signature">(Choice, Times)</span><span class="type-signature"> &rarr; {Boolean|undefined}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>repeat() -&gt; Repeat Track or Queue with &quot;n&quot; Times given by User</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<div class="table-box">
+    <table class="params">
+        <thead>
+        <tr>
+            
+            <th>Name</th>
+            
+
+            <th>Type</th>
+
+            
+
+            
+            <th>Default</th>
+            
+
+            <th class="last">Description</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        
+
+            <tr>
+                
+                    <td class="name"><code>Choice</code></td>
+                
+
+                <td class="type">
+                
+                    
+<span class="param-type">String</span>
+|
+
+<span class="param-type">String</span>
+|
+
+<span class="param-type">undefined</span>
+
+
+                
+                </td>
+
+                
+
+                
+                    <td class="default">
+                    
+                    </td>
+                
+
+                <td class="description last"><p>Mode Choice , like &quot;track&quot; | &quot;queue&quot; | &quot;off&quot;</p></td>
+            </tr>
+
+        
+
+            <tr>
+                
+                    <td class="name"><code>Times</code></td>
+                
+
+                <td class="type">
+                
+                    
+<span class="param-type">String</span>
+|
+
+<span class="param-type">undefined</span>
+
+
+                
+                </td>
+
+                
+
+                
+                    <td class="default">
+                    
+                        1
+                    
+                    </td>
+                
+
+                <td class="description last"><p>Number of Repeat Track or Queue with &quot;n&quot; Times given by User</p></td>
+            </tr>
+
+        
+        </tbody>
+    </table>
+</div>
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Handlers_Queue-Handler.js.html">Handlers/Queue-Handler.js</a>, <a href="Handlers_Queue-Handler.js.html#line738">line 738</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>returns true for green signal operation and undefined for errors</p>
+</div>
+
+
+
+<ul>
+    <li>
+        Type: <span class="simple-code">
+<span class="param-type">Boolean</span>
+|
+
+<span class="param-type">undefined</span>
+
+</span>
+    </li>
+</ul>
+
+    
+
+
+
+
+
+<hr>
+        
+            
+
+    
+
+    
+    <h4 class="name" id="resume"><span class="type-signature"></span>resume<span class="signature">()</span><span class="type-signature"> &rarr; {Boolean|undefined}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>resume() -&gt; Resume the Paused Player and Unfreeze Track's Functions in Queue/StreamPacket</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Handlers_Queue-Handler.js.html">Handlers/Queue-Handler.js</a>, <a href="Handlers_Queue-Handler.js.html#line348">line 348</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>true if operation emits green signal or undefined for errors</p>
+</div>
+
+
+
+<ul>
+    <li>
+        Type: <span class="simple-code">
+<span class="param-type">Boolean</span>
+|
+
+<span class="param-type">undefined</span>
+
+</span>
+    </li>
+</ul>
+
+    
+
+
+
+
+
+<hr>
+        
+            
+
+    
+
+    
+    <h4 class="name" id="search"><span class="type-signature">(async) </span>search<span class="signature">(Query, User, SearchOptions)</span><span class="type-signature"> &rarr; {Promise.&lt;Objectundefined>|undefined}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>search() -&gt; Searching for Tracks of Query</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<div class="table-box">
+    <table class="params">
+        <thead>
+        <tr>
+            
+            <th>Name</th>
+            
+
+            <th>Type</th>
+
+            
+
+            
+
+            <th class="last">Description</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        
+
+            <tr>
+                
+                    <td class="name"><code>Query</code></td>
+                
+
+                <td class="type">
+                
+                    
+<span class="param-type">String</span>
+
+
+                
+                </td>
+
+                
+
+                
+
+                <td class="description last"><p>Query as URLs or Youtube Searches</p></td>
+            </tr>
+
+        
+
+            <tr>
+                
+                    <td class="name"><code>User</code></td>
+                
+
+                <td class="type">
+                
+                    
+<span class="param-type">GuildMember</span>
+|
+
+<span class="param-type">User</span>
+
+
+                
+                </td>
+
+                
+
+                
+
+                <td class="description last"><p>user Value for Track.requestedBy Object</p></td>
+            </tr>
+
+        
+
+            <tr>
+                
+                    <td class="name"><code>SearchOptions</code></td>
+                
+
+                <td class="type">
+                
+                    
+<span class="param-type">DefaultQueueCreateOptions</span>
+|
+
+<span class="param-type">undefined</span>
+
+
+                
+                </td>
+
+                
+
+                
+
+                <td class="description last"><p>Stream Options for Query Processing | Same as Queue Creation and Play Method</p></td>
+            </tr>
+
+        
+        </tbody>
+    </table>
+</div>
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Handlers_Queue-Handler.js.html">Handlers/Queue-Handler.js</a>, <a href="Handlers_Queue-Handler.js.html#line767">line 767</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>Returns Tracks if operation emits green signal or undefined for errors</p>
+</div>
+
+
+
+<ul>
+    <li>
+        Type: <span class="simple-code">
+<span class="param-type">Promise.&lt;Objectundefined></span>
+|
+
+<span class="param-type">undefined</span>
+
+</span>
+    </li>
+</ul>
+
+    
+
+
+
+
+
+<hr>
+        
+            
+
+    
+
+    
+    <h4 class="name" id="skip"><span class="type-signature"></span>skip<span class="signature">(TrackIndex)</span><span class="type-signature"> &rarr; {Boolean|undefined}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>skip() -&gt;  Skips the Curren Song if Index is undefined | 0 , or else act as skipTo Type where Next song will play what has been Mentioned</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<div class="table-box">
+    <table class="params">
+        <thead>
+        <tr>
+            
+            <th>Name</th>
+            
+
+            <th>Type</th>
+
+            
+
+            
+
+            <th class="last">Description</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        
+
+            <tr>
+                
+                    <td class="name"><code>TrackIndex</code></td>
+                
+
+                <td class="type">
+                
+                    
+<span class="param-type">String</span>
+|
+
+<span class="param-type">Number</span>
+|
+
+<span class="param-type">undefined</span>
+
+
+                
+                </td>
+
+                
+
+                
+
+                <td class="description last"><p>Track's Index (0,1,2,..) To Skip to Specified Track or else undefined to skip current and play song now</p></td>
+            </tr>
+
+        
+        </tbody>
+    </table>
+</div>
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Handlers_Queue-Handler.js.html">Handlers/Queue-Handler.js</a>, <a href="Handlers_Queue-Handler.js.html#line265">line 265</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>true if operation went signal Green or else undefined for error event triggers</p>
+</div>
+
+
+
+<ul>
+    <li>
+        Type: <span class="simple-code">
+<span class="param-type">Boolean</span>
+|
+
+<span class="param-type">undefined</span>
+
+</span>
+    </li>
+</ul>
+
+    
+
+
+
+
+
+<hr>
+        
+            
+
+    
+
+    
+    <h4 class="name" id="stop"><span class="type-signature"></span>stop<span class="signature">()</span><span class="type-signature"> &rarr; {Boolean|undefined}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>stop() -&gt; Stops the Player and Clean the Tracks</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Handlers_Queue-Handler.js.html">Handlers/Queue-Handler.js</a>, <a href="Handlers_Queue-Handler.js.html#line310">line 310</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>true if operation emits green signal or undefined for errors</p>
+</div>
+
+
+
+<ul>
+    <li>
+        Type: <span class="simple-code">
+<span class="param-type">Boolean</span>
+|
+
+<span class="param-type">undefined</span>
+
+</span>
+    </li>
+</ul>
+
+    
+
+
+
+
+
+<hr>
+        
+            
+
+    
+
+    
+    <h4 class="name" id="unmute"><span class="type-signature"></span>unmute<span class="signature">(Volume)</span><span class="type-signature"> &rarr; {Number|undefined}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>unmute() -&gt; Un-Mute Music Player</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<div class="table-box">
+    <table class="params">
+        <thead>
+        <tr>
+            
+            <th>Name</th>
+            
+
+            <th>Type</th>
+
+            
+
+            
+
+            <th class="last">Description</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        
+
+            <tr>
+                
+                    <td class="name"><code>Volume</code></td>
+                
+
+                <td class="type">
+                
+                    
+<span class="param-type">String</span>
+|
+
+<span class="param-type">Number</span>
+|
+
+<span class="param-type">undefined</span>
+
+
+                
+                </td>
+
+                
+
+                
+
+                <td class="description last"><p>Volume of the Track or Music Player</p></td>
+            </tr>
+
+        
+        </tbody>
+    </table>
+</div>
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Handlers_Queue-Handler.js.html">Handlers/Queue-Handler.js</a>, <a href="Handlers_Queue-Handler.js.html#line526">line 526</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>Returns Volume Value if operation went green or else , returns undefined if error occurs</p>
+</div>
+
+
+
+<ul>
+    <li>
+        Type: <span class="simple-code">
+<span class="param-type">Number</span>
+|
+
+<span class="param-type">undefined</span>
+
+</span>
+    </li>
+</ul>
+
+    
+
+
+
+
+
+<hr>
+        
+    
+
+    
+
+    
+</article>
+
+</section>
+
+
+
+
+
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.7</a> on Sat Nov 06 2021 12:53:18 GMT+0000 (Coordinated Universal Time) using <a href="https://github.com/devsnowflake/jsdoc-skyceil">Skyceil Theme</a>
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/linenumber.js"></script>
+
+</body>
+</html>
