@@ -21,13 +21,11 @@ const {
   DefaultQueueCreateOptions,
   DefaultProgressBar,
   DefaultTrack,
-  DefaultStreamPacket,
   DefaultModesName,
   DefaultPlayerMode,
   DefaultModesType,
   DefaultcurrentTimestamp,
 } = require('../types/interfaces');
-const { Track } = require('../../typings/Instances');
 const TrackGenerator = require('../Structures/Tracks');
 
 /**
@@ -114,7 +112,7 @@ class Queue {
 
     /**
      * Queue.tracks[] holds all the Queue's tracks Cache
-     * @type {Track[]}
+     * @type {DefaultTrack[]}
      * @readonly
      */
     this.tracks = [];
