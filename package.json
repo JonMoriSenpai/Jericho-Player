@@ -28,7 +28,7 @@
   "devDependencies": {
     "@babel/eslint-parser": "^7.16.0",
     "@babel/preset-env": "^7.16.0",
-    "@discordjs/docgen": "^0.10.0",
+    "@devsnowflake/docgen": "github:DevSnowflake/docgen",
     "cz-conventional-changelog": "^3.3.0",
     "eslint": "^8.2.0",
     "eslint-config-airbnb-base": "^14.2.1",
