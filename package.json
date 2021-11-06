@@ -22,8 +22,8 @@
     "commit": "git-cz",
     "semantic-release": "semantic-release --branches main",
     "commit:push": "git add . && npm run commit && git push",
-    "docs": "docgen --jsdoc jsdoc.json --source src --custom docs/index.yml --output docs/docs.json",
-    "docs:test": "docgen --jsdoc jsdoc.json --source src --custom docs/index.yml"
+    "docs": "docgen --source src --custom docs/index.yml --output docs/docs.json",
+    "docs:test": "docgen --source src --custom docs/index.yml"
   },
   "devDependencies": {
     "@babel/eslint-parser": "^7.16.0",
