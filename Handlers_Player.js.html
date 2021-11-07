@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>Source: Handlers/Player-Handler.js</title>
+    <title>Source: Handlers/Player.js</title>
 
     <script src="scripts/prettify/prettify.js"></script>
     <script src="scripts/prettify/lang-css.js"></script>
@@ -17,7 +17,7 @@
 <body>
 
 <nav class="navbar">
-    <h4><a href="index.html">Home</a></h4><h5 class="no-bottom must-underline">Classes</h5><ul><li><span class="small-icon C">C</span><b><a href="ClassUtils.html">ClassUtils</a></b><ul class="has-class-methods"><li><span class="small-icon F">F</span><a href="ClassUtils.html#.HumanTimeConversion">HumanTimeConversion</a></li><li><span class="small-icon F">F</span><a href="ClassUtils.html#.ScanDeps">ScanDeps</a></li><li><span class="small-icon F">F</span><a href="ClassUtils.html#.stablizingoptions">stablizingoptions</a></li></ul></li><li><span class="small-icon C">C</span><b><a href="JerichoPlayer.html">JerichoPlayer</a></b><ul class="has-class-methods"><li><span class="small-icon F">F</span><a href="JerichoPlayer.html#CreateQueue">CreateQueue</a></li><li><span class="small-icon F">F</span><a href="JerichoPlayer.html#DeleteQueue">DeleteQueue</a></li><li><span class="small-icon F">F</span><a href="JerichoPlayer.html#GetQueue">GetQueue</a></li><li><span class="small-icon M">M</span><a href="JerichoPlayer.html#Client">Client</a></li><li><span class="small-icon M">M</span><a href="JerichoPlayer.html#JerichoPlayerOptions">JerichoPlayerOptions</a></li></ul></li><li><span class="small-icon C">C</span><b><a href="Queue.html">Queue</a></b><ul class="has-class-methods"><li><span class="small-icon F">F</span><a href="Queue.html#autoplay">autoplay</a></li><li><span class="small-icon F">F</span><a href="Queue.html#back">back</a></li><li><span class="small-icon F">F</span><a href="Queue.html#clear">clear</a></li><li><span class="small-icon F">F</span><a href="Queue.html#createProgressBar">createProgressBar</a></li><li><span class="small-icon F">F</span><a href="Queue.html#destroy">destroy</a></li><li><span class="small-icon F">F</span><a href="Queue.html#insert">insert</a></li><li><span class="small-icon F">F</span><a href="Queue.html#loop">loop</a></li><li><span class="small-icon F">F</span><a href="Queue.html#mute">mute</a></li><li><span class="small-icon F">F</span><a href="Queue.html#pause">pause</a></li><li><span class="small-icon F">F</span><a href="Queue.html#play">play</a></li><li><span class="small-icon F">F</span><a href="Queue.html#remove">remove</a></li><li><span class="small-icon F">F</span><a href="Queue.html#repeat">repeat</a></li><li><span class="small-icon F">F</span><a href="Queue.html#resume">resume</a></li><li><span class="small-icon F">F</span><a href="Queue.html#search">search</a></li><li><span class="small-icon F">F</span><a href="Queue.html#skip">skip</a></li><li><span class="small-icon F">F</span><a href="Queue.html#stop">stop</a></li><li><span class="small-icon F">F</span><a href="Queue.html#unmute">unmute</a></li><li><span class="small-icon M">M</span><a href="Queue.html#Client">Client</a></li><li><span class="small-icon M">M</span><a href="Queue.html#current">current</a></li><li><span class="small-icon M">M</span><a href="Queue.html#currentTimestamp">currentTimestamp</a></li><li><span class="small-icon M">M</span><a href="Queue.html#destroyed">destroyed</a></li><li><span class="small-icon M">M</span><a href="Queue.html#guildId">guildId</a></li><li><span class="small-icon M">M</span><a href="Queue.html#JerichoPlayer">JerichoPlayer</a></li><li><span class="small-icon M">M</span><a href="Queue.html#message">message</a></li><li><span class="small-icon M">M</span><a href="Queue.html#metadata">metadata</a></li><li><span class="small-icon M">M</span><a href="Queue.html#MusicPlayer">MusicPlayer</a></li><li><span class="small-icon M">M</span><a href="Queue.html#paused">paused</a></li><li><span class="small-icon M">M</span><a href="Queue.html#playerMode">playerMode</a></li><li><span class="small-icon M">M</span><a href="Queue.html#playing">playing</a></li><li><span class="small-icon M">M</span><a href="Queue.html#previousTrack">previousTrack</a></li><li><span class="small-icon M">M</span><a href="Queue.html#QueueOptions">QueueOptions</a></li><li><span class="small-icon M">M</span><a href="Queue.html#StreamPacket">StreamPacket</a></li><li><span class="small-icon M">M</span><a href="Queue.html#tracks">tracks</a></li><li><span class="small-icon M">M</span><a href="Queue.html#volume">volume</a></li></ul></li></ul><h4><a href="global.html">Global</a></h4>
+    <h4><a href="index.html">Home</a></h4><h5 class="no-bottom must-underline">Classes</h5><ul><li><span class="small-icon C">C</span><b><a href="ClassUtils.html">ClassUtils</a></b><ul class="has-class-methods"><li><span class="small-icon F">F</span><a href="ClassUtils.html#.HumanTimeConversion">HumanTimeConversion</a></li><li><span class="small-icon F">F</span><a href="ClassUtils.html#.ScanDeps">ScanDeps</a></li><li><span class="small-icon F">F</span><a href="ClassUtils.html#.stablizingoptions">stablizingoptions</a></li></ul></li><li><span class="small-icon C">C</span><b><a href="Player.html">Player</a></b><ul class="has-class-methods"><li><span class="small-icon F">F</span><a href="Player.html#CreateQueue">CreateQueue</a></li><li><span class="small-icon F">F</span><a href="Player.html#DeleteQueue">DeleteQueue</a></li><li><span class="small-icon F">F</span><a href="Player.html#GetQueue">GetQueue</a></li><li><span class="small-icon M">M</span><a href="Player.html#Client">Client</a></li><li><span class="small-icon M">M</span><a href="Player.html#JerichoPlayerOptions">JerichoPlayerOptions</a></li></ul></li><li><span class="small-icon C">C</span><b><a href="Queue.html">Queue</a></b><ul class="has-class-methods"><li><span class="small-icon F">F</span><a href="Queue.html#autoplay">autoplay</a></li><li><span class="small-icon F">F</span><a href="Queue.html#back">back</a></li><li><span class="small-icon F">F</span><a href="Queue.html#clear">clear</a></li><li><span class="small-icon F">F</span><a href="Queue.html#createProgressBar">createProgressBar</a></li><li><span class="small-icon F">F</span><a href="Queue.html#destroy">destroy</a></li><li><span class="small-icon F">F</span><a href="Queue.html#insert">insert</a></li><li><span class="small-icon F">F</span><a href="Queue.html#loop">loop</a></li><li><span class="small-icon F">F</span><a href="Queue.html#mute">mute</a></li><li><span class="small-icon F">F</span><a href="Queue.html#pause">pause</a></li><li><span class="small-icon F">F</span><a href="Queue.html#play">play</a></li><li><span class="small-icon F">F</span><a href="Queue.html#remove">remove</a></li><li><span class="small-icon F">F</span><a href="Queue.html#repeat">repeat</a></li><li><span class="small-icon F">F</span><a href="Queue.html#resume">resume</a></li><li><span class="small-icon F">F</span><a href="Queue.html#search">search</a></li><li><span class="small-icon F">F</span><a href="Queue.html#skip">skip</a></li><li><span class="small-icon F">F</span><a href="Queue.html#stop">stop</a></li><li><span class="small-icon F">F</span><a href="Queue.html#unmute">unmute</a></li><li><span class="small-icon M">M</span><a href="Queue.html#Client">Client</a></li><li><span class="small-icon M">M</span><a href="Queue.html#current">current</a></li><li><span class="small-icon M">M</span><a href="Queue.html#currentTimestamp">currentTimestamp</a></li><li><span class="small-icon M">M</span><a href="Queue.html#destroyed">destroyed</a></li><li><span class="small-icon M">M</span><a href="Queue.html#guildId">guildId</a></li><li><span class="small-icon M">M</span><a href="Queue.html#message">message</a></li><li><span class="small-icon M">M</span><a href="Queue.html#metadata">metadata</a></li><li><span class="small-icon M">M</span><a href="Queue.html#MusicPlayer">MusicPlayer</a></li><li><span class="small-icon M">M</span><a href="Queue.html#paused">paused</a></li><li><span class="small-icon M">M</span><a href="Queue.html#Player">Player</a></li><li><span class="small-icon M">M</span><a href="Queue.html#playerMode">playerMode</a></li><li><span class="small-icon M">M</span><a href="Queue.html#playing">playing</a></li><li><span class="small-icon M">M</span><a href="Queue.html#previousTrack">previousTrack</a></li><li><span class="small-icon M">M</span><a href="Queue.html#QueueOptions">QueueOptions</a></li><li><span class="small-icon M">M</span><a href="Queue.html#StreamPacket">StreamPacket</a></li><li><span class="small-icon M">M</span><a href="Queue.html#tracks">tracks</a></li><li><span class="small-icon M">M</span><a href="Queue.html#volume">volume</a></li></ul></li><li><span class="small-icon C">C</span><b><a href="VoiceUtils.html">VoiceUtils</a></b><ul class="has-class-methods"><li><span class="small-icon F">F</span><a href="VoiceUtils.html#.disconnect">disconnect</a></li><li><span class="small-icon F">F</span><a href="VoiceUtils.html#.join">join</a></li></ul></li></ul><h4><a href="global.html">Global</a></h4>
 </nav>
 
 <div id="main">
@@ -27,7 +27,7 @@
         <div class="burger-line-3"></div>
     </div>
 
-    <h1 class="page-title">Source: Handlers/Player-Handler.js</h1>
+    <h1 class="page-title">Source: Handlers/Player.js</h1>
 
     
 
@@ -46,15 +46,15 @@ const {
   VoiceChannel,
   StageChannel,
 } = require('discord.js');
-const Queue = require('./Queue-Handler.js');
-const ClassUtils = require('../Utilities/Class-Utils');
-const { join } = require('../Utilities/Voice-Utils');
+const Queue = require('./Queue.js');
+const ClassUtils = require('../Utilities/ClassUtils');
+const { join } = require('../Utilities/VoiceUtils');
 const {
   DefaultJerichoPlayerOptions,
   DefaultQueueCreateOptions,
 } = require('../types/interfaces');
 
-class JerichoPlayer extends EventEmitter {
+class Player extends EventEmitter {
   /**
    * @private QueueCaches -> Caches of Queues for per "instanceof Player"
    * @type {Object}
@@ -117,12 +117,12 @@ class JerichoPlayer extends EventEmitter {
      */
 
     this.Client.on('voiceStateUpdate', async (OldVoiceState, NewVoiceState) => {
-      /**
-       * - QueueInstance Fetched from Private Raw Cache Fetching Method "JerichoPlayer.QueueCacheFetch(guildId)"
+      /*
+       * - QueueInstance Fetched from Private Raw Cache Fetching Method "Player.QueueCacheFetch(guildId)"
        * - QueueIntance => will be used to filter Voice Events Related to our Queue or else return undefined for handling
        */
 
-      const QueueInstance = JerichoPlayer.QueueCacheFetch(
+      const QueueInstance = Player.QueueCacheFetch(
         (NewVoiceState ? NewVoiceState.guild.id : undefined)
           ?? (OldVoiceState ? OldVoiceState.guild.id : undefined),
       );
@@ -166,7 +166,7 @@ class JerichoPlayer extends EventEmitter {
          */
 
         await this.#__handleVoiceConnectionInterchange(
-          JerichoPlayer.#QueueCaches[NewVoiceState.guild.id],
+          Player.#QueueCaches[NewVoiceState.guild.id],
           NewVoiceState.channel,
         );
 
@@ -176,7 +176,7 @@ class JerichoPlayer extends EventEmitter {
          */
 
         return this.#__playerVoiceConnectionMainHandler(
-          JerichoPlayer.#QueueCaches[NewVoiceState.guild.id],
+          Player.#QueueCaches[NewVoiceState.guild.id],
           NewVoiceState.channel,
         );
       }
@@ -196,7 +196,7 @@ class JerichoPlayer extends EventEmitter {
          */
 
         return this.#__playerVoiceConnectionMainHandler(
-          JerichoPlayer.#QueueCaches[OldVoiceState.guild.id],
+          Player.#QueueCaches[OldVoiceState.guild.id],
           NewVoiceState.channel ?? OldVoiceState.channel,
         );
       }
@@ -280,9 +280,9 @@ class JerichoPlayer extends EventEmitter {
     );
 
     // To Avoid excess use of memory and Space in Large bots , We will always Cache Queue and Create one if is Deleted by DeleteQueue() method
-    const QueueInstance = JerichoPlayer.QueueCacheFetch(message.guild.id, QueueCreateOptions)
+    const QueueInstance = Player.QueueCacheFetch(message.guild.id, QueueCreateOptions)
       ?? new Queue(this.Client, message, QueueCreateOptions, this);
-    return JerichoPlayer.QueueCacheAdd(QueueInstance);
+    return Player.QueueCacheAdd(QueueInstance);
   }
 
   /**
@@ -299,8 +299,8 @@ class JerichoPlayer extends EventEmitter {
       return void this.emit('error', 'Invalid Guild Id', this, guildId);
     }
     // Checks for Queue in Cache doesn't matter if its Connection was destroyed | Cache only fetch its Existence to avoid excess CPU load
-    if (JerichoPlayer.QueueCacheFetch(guildId)) {
-      return void JerichoPlayer.QueueCacheRemove(guildId);
+    if (Player.QueueCacheFetch(guildId)) {
+      return void Player.QueueCacheRemove(guildId);
     }
     return void this.emit('error', 'Destroyed Queue', undefined);
   }
@@ -317,7 +317,7 @@ class JerichoPlayer extends EventEmitter {
     ) {
       return void this.emit('error', 'Invalid Guild Id', this, guildId);
     }
-    return JerichoPlayer.QueueCacheFetch(guildId);
+    return Player.QueueCacheFetch(guildId);
   }
 
   /**
@@ -328,7 +328,7 @@ class JerichoPlayer extends EventEmitter {
    */
 
   static QueueCacheAdd(QueueInstance) {
-    JerichoPlayer.#QueueCaches[`${QueueInstance.guildId}`] = QueueInstance;
+    Player.#QueueCaches[`${QueueInstance.guildId}`] = QueueInstance;
     return QueueInstance;
   }
 
@@ -341,7 +341,7 @@ class JerichoPlayer extends EventEmitter {
    */
 
   static QueueCacheFetch(guildId, QueueCreateOptions = null) {
-    const QueueInstance = JerichoPlayer.#QueueCaches[`${guildId}`];
+    const QueueInstance = Player.#QueueCaches[`${guildId}`];
     if (QueueCreateOptions &amp;&amp; QueueInstance) {
       QueueInstance.QueueOptions = ClassUtils.stablizingoptions(
         QueueCreateOptions,
@@ -349,9 +349,9 @@ class JerichoPlayer extends EventEmitter {
       );
       if (typeof QueueInstance.destroyed !== 'boolean') clearTimeout(QueueInstance.destroyed);
       QueueInstance.destroyed = false;
-      JerichoPlayer.#QueueCaches[`${guildId}`] = QueueInstance;
+      Player.#QueueCaches[`${guildId}`] = QueueInstance;
     }
-    return JerichoPlayer.#QueueCaches[`${guildId}`];
+    return Player.#QueueCaches[`${guildId}`];
   }
 
   /**
@@ -363,15 +363,15 @@ class JerichoPlayer extends EventEmitter {
 
   static QueueCacheRemove(guildId) {
     if (!this.QueueCacheFetch(guildId)) return false;
-    const QueueInstance = JerichoPlayer.#QueueCaches[`${guildId}`];
-    if (JerichoPlayer.#QueueCaches[`${guildId}`].playing) {
-      JerichoPlayer.#QueueCaches[`${guildId}`].stop();
+    const QueueInstance = Player.#QueueCaches[`${guildId}`];
+    if (Player.#QueueCaches[`${guildId}`].playing) {
+      Player.#QueueCaches[`${guildId}`].stop();
     }
     if (!QueueInstance.destroyed) QueueInstance.destroy();
     const Garbage = {};
     Garbage.Structure = QueueInstance;
     delete Garbage.Structure;
-    JerichoPlayer.#QueueCaches[`${guildId}`] = undefined;
+    Player.#QueueCaches[`${guildId}`] = undefined;
     return void null;
   }
 
@@ -442,7 +442,7 @@ class JerichoPlayer extends EventEmitter {
         QueueInstance.MusicPlayer,
       );
     }
-    JerichoPlayer.#QueueCaches[QueueInstance.guildId] = QueueInstance;
+    Player.#QueueCaches[QueueInstance.guildId] = QueueInstance;
     return void null;
   }
 
@@ -548,7 +548,7 @@ class JerichoPlayer extends EventEmitter {
   }
 }
 
-module.exports = JerichoPlayer;
+module.exports = Player;
 </code></pre>
         </article>
     </section>
@@ -562,7 +562,7 @@ module.exports = JerichoPlayer;
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.4</a> on Sat Nov 06 2021 18:46:53 GMT+0000 (Coordinated Universal Time) using <a href="https://github.com/zyrouge/jsdoc-skyceil">Skyceil Theme</a>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.4</a> on Sun Nov 07 2021 03:49:30 GMT+0000 (Coordinated Universal Time) using <a href="https://github.com/zyrouge/jsdoc-skyceil">Skyceil Theme</a>
 </footer>
 
 <script>prettyPrint();</script>

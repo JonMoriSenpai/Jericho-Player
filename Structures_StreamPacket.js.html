@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>Source: Structures/Stream-Packet.js</title>
+    <title>Source: Structures/StreamPacket.js</title>
 
     <script src="scripts/prettify/prettify.js"></script>
     <script src="scripts/prettify/lang-css.js"></script>
@@ -17,7 +17,7 @@
 <body>
 
 <nav class="navbar">
-    <h4><a href="index.html">Home</a></h4><h5 class="no-bottom must-underline">Classes</h5><ul><li><span class="small-icon C">C</span><b><a href="ClassUtils.html">ClassUtils</a></b><ul class="has-class-methods"><li><span class="small-icon F">F</span><a href="ClassUtils.html#.HumanTimeConversion">HumanTimeConversion</a></li><li><span class="small-icon F">F</span><a href="ClassUtils.html#.ScanDeps">ScanDeps</a></li><li><span class="small-icon F">F</span><a href="ClassUtils.html#.stablizingoptions">stablizingoptions</a></li></ul></li><li><span class="small-icon C">C</span><b><a href="JerichoPlayer.html">JerichoPlayer</a></b><ul class="has-class-methods"><li><span class="small-icon F">F</span><a href="JerichoPlayer.html#CreateQueue">CreateQueue</a></li><li><span class="small-icon F">F</span><a href="JerichoPlayer.html#DeleteQueue">DeleteQueue</a></li><li><span class="small-icon F">F</span><a href="JerichoPlayer.html#GetQueue">GetQueue</a></li><li><span class="small-icon M">M</span><a href="JerichoPlayer.html#Client">Client</a></li><li><span class="small-icon M">M</span><a href="JerichoPlayer.html#JerichoPlayerOptions">JerichoPlayerOptions</a></li></ul></li><li><span class="small-icon C">C</span><b><a href="Queue.html">Queue</a></b><ul class="has-class-methods"><li><span class="small-icon F">F</span><a href="Queue.html#autoplay">autoplay</a></li><li><span class="small-icon F">F</span><a href="Queue.html#back">back</a></li><li><span class="small-icon F">F</span><a href="Queue.html#clear">clear</a></li><li><span class="small-icon F">F</span><a href="Queue.html#createProgressBar">createProgressBar</a></li><li><span class="small-icon F">F</span><a href="Queue.html#destroy">destroy</a></li><li><span class="small-icon F">F</span><a href="Queue.html#insert">insert</a></li><li><span class="small-icon F">F</span><a href="Queue.html#loop">loop</a></li><li><span class="small-icon F">F</span><a href="Queue.html#mute">mute</a></li><li><span class="small-icon F">F</span><a href="Queue.html#pause">pause</a></li><li><span class="small-icon F">F</span><a href="Queue.html#play">play</a></li><li><span class="small-icon F">F</span><a href="Queue.html#remove">remove</a></li><li><span class="small-icon F">F</span><a href="Queue.html#repeat">repeat</a></li><li><span class="small-icon F">F</span><a href="Queue.html#resume">resume</a></li><li><span class="small-icon F">F</span><a href="Queue.html#search">search</a></li><li><span class="small-icon F">F</span><a href="Queue.html#skip">skip</a></li><li><span class="small-icon F">F</span><a href="Queue.html#stop">stop</a></li><li><span class="small-icon F">F</span><a href="Queue.html#unmute">unmute</a></li><li><span class="small-icon M">M</span><a href="Queue.html#Client">Client</a></li><li><span class="small-icon M">M</span><a href="Queue.html#current">current</a></li><li><span class="small-icon M">M</span><a href="Queue.html#currentTimestamp">currentTimestamp</a></li><li><span class="small-icon M">M</span><a href="Queue.html#destroyed">destroyed</a></li><li><span class="small-icon M">M</span><a href="Queue.html#guildId">guildId</a></li><li><span class="small-icon M">M</span><a href="Queue.html#JerichoPlayer">JerichoPlayer</a></li><li><span class="small-icon M">M</span><a href="Queue.html#message">message</a></li><li><span class="small-icon M">M</span><a href="Queue.html#metadata">metadata</a></li><li><span class="small-icon M">M</span><a href="Queue.html#MusicPlayer">MusicPlayer</a></li><li><span class="small-icon M">M</span><a href="Queue.html#paused">paused</a></li><li><span class="small-icon M">M</span><a href="Queue.html#playerMode">playerMode</a></li><li><span class="small-icon M">M</span><a href="Queue.html#playing">playing</a></li><li><span class="small-icon M">M</span><a href="Queue.html#previousTrack">previousTrack</a></li><li><span class="small-icon M">M</span><a href="Queue.html#QueueOptions">QueueOptions</a></li><li><span class="small-icon M">M</span><a href="Queue.html#StreamPacket">StreamPacket</a></li><li><span class="small-icon M">M</span><a href="Queue.html#tracks">tracks</a></li><li><span class="small-icon M">M</span><a href="Queue.html#volume">volume</a></li></ul></li></ul><h4><a href="global.html">Global</a></h4>
+    <h4><a href="index.html">Home</a></h4><h5 class="no-bottom must-underline">Classes</h5><ul><li><span class="small-icon C">C</span><b><a href="ClassUtils.html">ClassUtils</a></b><ul class="has-class-methods"><li><span class="small-icon F">F</span><a href="ClassUtils.html#.HumanTimeConversion">HumanTimeConversion</a></li><li><span class="small-icon F">F</span><a href="ClassUtils.html#.ScanDeps">ScanDeps</a></li><li><span class="small-icon F">F</span><a href="ClassUtils.html#.stablizingoptions">stablizingoptions</a></li></ul></li><li><span class="small-icon C">C</span><b><a href="Player.html">Player</a></b><ul class="has-class-methods"><li><span class="small-icon F">F</span><a href="Player.html#CreateQueue">CreateQueue</a></li><li><span class="small-icon F">F</span><a href="Player.html#DeleteQueue">DeleteQueue</a></li><li><span class="small-icon F">F</span><a href="Player.html#GetQueue">GetQueue</a></li><li><span class="small-icon M">M</span><a href="Player.html#Client">Client</a></li><li><span class="small-icon M">M</span><a href="Player.html#JerichoPlayerOptions">JerichoPlayerOptions</a></li></ul></li><li><span class="small-icon C">C</span><b><a href="Queue.html">Queue</a></b><ul class="has-class-methods"><li><span class="small-icon F">F</span><a href="Queue.html#autoplay">autoplay</a></li><li><span class="small-icon F">F</span><a href="Queue.html#back">back</a></li><li><span class="small-icon F">F</span><a href="Queue.html#clear">clear</a></li><li><span class="small-icon F">F</span><a href="Queue.html#createProgressBar">createProgressBar</a></li><li><span class="small-icon F">F</span><a href="Queue.html#destroy">destroy</a></li><li><span class="small-icon F">F</span><a href="Queue.html#insert">insert</a></li><li><span class="small-icon F">F</span><a href="Queue.html#loop">loop</a></li><li><span class="small-icon F">F</span><a href="Queue.html#mute">mute</a></li><li><span class="small-icon F">F</span><a href="Queue.html#pause">pause</a></li><li><span class="small-icon F">F</span><a href="Queue.html#play">play</a></li><li><span class="small-icon F">F</span><a href="Queue.html#remove">remove</a></li><li><span class="small-icon F">F</span><a href="Queue.html#repeat">repeat</a></li><li><span class="small-icon F">F</span><a href="Queue.html#resume">resume</a></li><li><span class="small-icon F">F</span><a href="Queue.html#search">search</a></li><li><span class="small-icon F">F</span><a href="Queue.html#skip">skip</a></li><li><span class="small-icon F">F</span><a href="Queue.html#stop">stop</a></li><li><span class="small-icon F">F</span><a href="Queue.html#unmute">unmute</a></li><li><span class="small-icon M">M</span><a href="Queue.html#Client">Client</a></li><li><span class="small-icon M">M</span><a href="Queue.html#current">current</a></li><li><span class="small-icon M">M</span><a href="Queue.html#currentTimestamp">currentTimestamp</a></li><li><span class="small-icon M">M</span><a href="Queue.html#destroyed">destroyed</a></li><li><span class="small-icon M">M</span><a href="Queue.html#guildId">guildId</a></li><li><span class="small-icon M">M</span><a href="Queue.html#message">message</a></li><li><span class="small-icon M">M</span><a href="Queue.html#metadata">metadata</a></li><li><span class="small-icon M">M</span><a href="Queue.html#MusicPlayer">MusicPlayer</a></li><li><span class="small-icon M">M</span><a href="Queue.html#paused">paused</a></li><li><span class="small-icon M">M</span><a href="Queue.html#Player">Player</a></li><li><span class="small-icon M">M</span><a href="Queue.html#playerMode">playerMode</a></li><li><span class="small-icon M">M</span><a href="Queue.html#playing">playing</a></li><li><span class="small-icon M">M</span><a href="Queue.html#previousTrack">previousTrack</a></li><li><span class="small-icon M">M</span><a href="Queue.html#QueueOptions">QueueOptions</a></li><li><span class="small-icon M">M</span><a href="Queue.html#StreamPacket">StreamPacket</a></li><li><span class="small-icon M">M</span><a href="Queue.html#tracks">tracks</a></li><li><span class="small-icon M">M</span><a href="Queue.html#volume">volume</a></li></ul></li><li><span class="small-icon C">C</span><b><a href="VoiceUtils.html">VoiceUtils</a></b><ul class="has-class-methods"><li><span class="small-icon F">F</span><a href="VoiceUtils.html#.disconnect">disconnect</a></li><li><span class="small-icon F">F</span><a href="VoiceUtils.html#.join">join</a></li></ul></li></ul><h4><a href="global.html">Global</a></h4>
 </nav>
 
 <div id="main">
@@ -27,7 +27,7 @@
         <div class="burger-line-3"></div>
     </div>
 
-    <h1 class="page-title">Source: Structures/Stream-Packet.js</h1>
+    <h1 class="page-title">Source: Structures/StreamPacket.js</h1>
 
     
 
@@ -51,10 +51,10 @@ const {
   StageChannel,
 } = require('discord.js');
 const { suggestions } = require('youtube-suggest-gen');
-const JerichoPlayer = require('../Handlers/Player-Handler');
+const Player = require('../Handlers/Player');
 const TracksGen = require('./Tracks');
-const VoiceUtils = require('../Utilities/Voice-Utils');
-const ClassUtils = require('../Utilities/Class-Utils');
+const VoiceUtils = require('../Utilities/VoiceUtils');
+const ClassUtils = require('../Utilities/ClassUtils');
 const {
   DefaultExtractorStreamOptions,
   DefaultTrack,
@@ -63,7 +63,7 @@ const {
   DefaultModesType,
   DefaultModesName,
 } = require('../types/interfaces');
-const Queue = require('../Handlers/Queue-Handler');
+const Queue = require('../Handlers/Queue');
 
 /**
  * @private
@@ -78,7 +78,7 @@ class StreamPacketGen {
    * @param {String|Number|Object|undefined} MetadataValue metadata value from user for Tracks|Queue
    * @param {String|Boolean|undefined} extractor extractor to be used as "play-dl" or "youtube-dl"
    * @param {DefaultExtractorStreamOptions} ExtractorStreamOptions Streaming options
-   * @param {AudioPlayer} JerichoPlayer Audio-Player for playing Songs
+   * @param {AudioPlayer} Player Audio-Player for playing Songs
    * @param {Boolean|undefined} IgnoreError IgnoreError or else throw on major bugs
    */
   constructor(
@@ -94,7 +94,7 @@ class StreamPacketGen {
       YoutubeDLCookiesFilePath: undefined,
       Proxy: undefined,
     },
-    JerichoPlayer = undefined,
+    Player = undefined,
     IgnoreError = true,
   ) {
     /**
@@ -178,10 +178,10 @@ class StreamPacketGen {
 
     /**
      * Player's Instance for further operations
-     * @type {JerichoPlayer}
+     * @type {Player}
      * @readonly
      */
-    this.JerichoPlayer = JerichoPlayer;
+    this.Player = Player;
 
     /**
      * volume Volume of the Music Player
@@ -240,7 +240,7 @@ class StreamPacketGen {
    * @param {DefaultExtractorStreamOptions} StreamCreateOptions Stream Options for TracksGen methods
    * @param {String|Boolean|undefined} extractor extractor to be used as "play-dl" or "youtube-dl"
    * @param {User|GuildMember|undefined} requestedBy user Data as who requested if given during insert or play method of Queue Instance
-   * @returns {Promise&lt;this|undefined>|undefined} Returns Stream-Packet with Updated values of tracks
+   * @returns {Promise&lt;this|undefined>|undefined} Returns StreamPacket with Updated values of tracks
    */
 
   async create(
@@ -274,24 +274,24 @@ class StreamPacketGen {
         : 0,
     );
     if (Chunks.error) {
-      return void this.JerichoPlayer.emit(
+      return void this.Player.emit(
         'error',
         Chunks.error,
-        this.JerichoPlayer.GetQueue(this.guildId),
+        this.Player.GetQueue(this.guildId),
       );
     }
     this.searches = this.searches.concat(Chunks.tracks);
     this.tracks = this.tracks.concat(Chunks.streamdatas);
     Chunks.playlist === true || Chunks.playlist
-      ? this.JerichoPlayer.emit(
+      ? this.Player.emit(
         'playlistAdd',
-        this.JerichoPlayer.GetQueue(this.guildId),
+        this.Player.GetQueue(this.guildId),
         Chunks.tracks,
       )
       : undefined;
-    this.JerichoPlayer.emit(
+    this.Player.emit(
       'tracksAdd',
-      this.JerichoPlayer.GetQueue(this.guildId),
+      this.Player.GetQueue(this.guildId),
       Chunks.tracks,
     );
     if (VoiceChannel) {
@@ -308,10 +308,10 @@ class StreamPacketGen {
         })
         : this.VoiceConnection;
     } else if (!VoiceChannel &amp;&amp; !this.VoiceChannel &amp;&amp; !this.VoiceConnection) {
-      return void this.JerichoPlayer.emit(
+      return void this.Player.emit(
         'connectionError',
         'Invalid Voice Connection or Invalid Voice Channel Error',
-        this.JerichoPlayer.GetQueue(this.guildId),
+        this.Player.GetQueue(this.guildId),
         this.VoiceConnection,
         this.guildId,
       );
@@ -365,7 +365,7 @@ class StreamPacketGen {
       this.ExtractorStreamOptions,
     );
     if (!this.VoiceChannel &amp;&amp; !this.VoiceConnection) {
-      return void this.JerichoPlayer.emit(
+      return void this.Player.emit(
         'error',
         'Invalid Connection',
         this.VoiceConnection,
@@ -373,10 +373,10 @@ class StreamPacketGen {
       );
     }
     if (Number(Index) &lt;= -1 &amp;&amp; Number(Index) >= this.searches.length) {
-      return void this.JerichoPlayer.emit(
+      return void this.Player.emit(
         'error',
         'Invalid Index',
-        this.JerichoPlayer.GetQueue(this.guildId),
+        this.Player.GetQueue(this.guildId),
         Number(Index),
       );
     }
@@ -390,30 +390,30 @@ class StreamPacketGen {
         : 0,
     );
     if (Chunk.error) {
-      return void this.JerichoPlayer.emit(
+      return void this.Player.emit(
         'error',
         Chunk.error,
-        this.JerichoPlayer.GetQueue(this.guildId),
+        this.Player.GetQueue(this.guildId),
       );
     }
     Chunk.playlist === true || Chunk.playlist
-      ? this.JerichoPlayer.emit(
+      ? this.Player.emit(
         'playlistAdd',
-        this.JerichoPlayer.GetQueue(this.guildId),
+        this.Player.GetQueue(this.guildId),
         Chunk.tracks,
         'insert',
       )
       : undefined;
-    this.JerichoPlayer.emit(
+    this.Player.emit(
       'tracksAdd',
-      this.JerichoPlayer.GetQueue(this.guildId),
+      this.Player.GetQueue(this.guildId),
       Chunk.tracks,
       'insert',
     );
     this.#__HandleInsertion(Number(Index) ?? -1, Chunk);
-    this.JerichoPlayer.emit(
+    this.Player.emit(
       'tracksAdd',
-      this.JerichoPlayer.GetQueue(this.guildId),
+      this.Player.GetQueue(this.guildId),
       Chunk.tracks,
     );
     return this;
@@ -445,9 +445,9 @@ class StreamPacketGen {
     forceback,
   ) {
     if (
-      !this.JerichoPlayer.GetQueue(this.guildId)
-      || (this.JerichoPlayer.GetQueue(this.guildId)
-        &amp;&amp; this.JerichoPlayer.GetQueue(this.guildId).destroyed)
+      !this.Player.GetQueue(this.guildId)
+      || (this.Player.GetQueue(this.guildId)
+        &amp;&amp; this.Player.GetQueue(this.guildId).destroyed)
     ) return void null;
     StreamCreateOptions.ExtractorStreamOptions = ClassUtils.stablizingoptions(
       StreamCreateOptions.ExtractorStreamOptions,
@@ -468,10 +468,10 @@ class StreamPacketGen {
         : 0,
     );
     if (Chunks.error) {
-      return void this.JerichoPlayer.emit(
+      return void this.Player.emit(
         'error',
         Chunks.error,
-        this.JerichoPlayer.GetQueue(this.guildId),
+        this.Player.GetQueue(this.guildId),
       );
     }
 
@@ -483,7 +483,7 @@ class StreamPacketGen {
       this.previousTracks.length - TracksBackwardIndex - 1,
       1,
     );
-    forceback ? this.JerichoPlayer.GetQueue(this.guildId).skip() : undefined;
+    forceback ? this.Player.GetQueue(this.guildId).skip() : undefined;
     return true;
   }
 
@@ -595,10 +595,10 @@ class StreamPacketGen {
       return this.AudioResource;
     } catch (error) {
       this.AudioResource = undefined;
-      return void this.JerichoPlayer.emit(
+      return void this.Player.emit(
         'connectionError',
         `${error.message ?? error ?? 'Audio Resource Streaming Error'}`,
-        this.JerichoPlayer.GetQueue(this.guildId),
+        this.Player.GetQueue(this.guildId),
         this.VoiceConnection,
         this.guildId,
       );
@@ -707,7 +707,7 @@ class StreamPacketGen {
         )
         : undefined;
       if (SearchResults &amp;&amp; SearchResults.error) {
-        return void this.JerichoPlayer.emit(
+        return void this.Player.emit(
           'error',
           SearchResults.error,
           QueueInstance,
@@ -725,7 +725,7 @@ class StreamPacketGen {
           &amp;&amp; GarbageSuggestion[0].title
         )
       ) {
-        return void this.JerichoPlayer.emit(
+        return void this.Player.emit(
           'error',
           'No AutoPlay Track Result',
           QueueInstance,
@@ -739,7 +739,7 @@ class StreamPacketGen {
         Number(QueueInstance.previousTrack.Id ?? 0) - 1,
       );
       if (Chunks &amp;&amp; Chunks.error) {
-        return void this.JerichoPlayer.emit(
+        return void this.Player.emit(
           'error',
           Chunks.error,
           QueueInstance,
@@ -791,7 +791,7 @@ module.exports = StreamPacketGen;
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.4</a> on Sat Nov 06 2021 18:46:53 GMT+0000 (Coordinated Universal Time) using <a href="https://github.com/zyrouge/jsdoc-skyceil">Skyceil Theme</a>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.4</a> on Sun Nov 07 2021 03:49:30 GMT+0000 (Coordinated Universal Time) using <a href="https://github.com/zyrouge/jsdoc-skyceil">Skyceil Theme</a>
 </footer>
 
 <script>prettyPrint();</script>
