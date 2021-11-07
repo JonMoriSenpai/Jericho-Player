@@ -62,11 +62,11 @@
   "author": "Sid is Live YT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Jericho-Player/Jericho-Player.git"
+    "url": "git+https://github.com/SidisLiveYT/Jericho-Player.git"
   },
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/Jericho-Player/Jericho-Player/issues"
+    "url": "https://github.com/SidisLiveYT/Jericho-Player/issues"
   },
   "homepage": "https://jericho-player.js.org/"
 }

@@ -1,7 +1,8 @@
+const { Client } = require('discord.js')
 const { Player } = require('../src/index.js')
 
 //import { Player } from '../src/index.mjs'
-var player = new Player()
+var player = new Player(Client)
 
 
 //Create Queue or Fetch Queue from Cache
