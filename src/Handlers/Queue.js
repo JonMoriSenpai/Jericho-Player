@@ -220,11 +220,7 @@ class Queue {
         )
       )
     ) {
-      return void this.Player.emit(
-        'error',
-        'Invalid Voice Channel',
-        this,
-      );
+      return void this.Player.emit('error', 'Invalid Voice Channel', this);
     }
 
     // Comparing and Placing Default Values if any
@@ -273,12 +269,7 @@ class Queue {
       TrackIndex
       && !(typeof TrackIndex === 'number' || typeof TrackIndex === 'string')
     ) {
-      return void this.Player.emit(
-        'error',
-        'Invalid Index',
-        this,
-        TrackIndex,
-      );
+      return void this.Player.emit('error', 'Invalid Index', this, TrackIndex);
     }
     if (
       !this.playing
@@ -420,12 +411,7 @@ class Queue {
       TrackIndex
       && !(typeof TrackIndex === 'number' || typeof TrackIndex === 'string')
     ) {
-      return void this.Player.emit(
-        'error',
-        'Invalid Index',
-        this,
-        TrackIndex,
-      );
+      return void this.Player.emit('error', 'Invalid Index', this, TrackIndex);
     }
 
     // Stabilizing Insert Options with Insert Options to Create a Satisfied Options
@@ -471,12 +457,7 @@ class Queue {
       return void this.Player.emit('error', 'Invalid Index', this, Index);
     }
     if (Number.isNaN(Amount)) {
-      return void this.Player.emit(
-        'error',
-        'Invalid Amount',
-        this,
-        Amount,
-      );
+      return void this.Player.emit('error', 'Invalid Amount', this, Amount);
     }
     if (Number(Index) < -1 && Number(Index) >= this.tracks.length) {
       return void this.Player.emit(
@@ -573,12 +554,7 @@ class Queue {
       return void this.Player.emit('error', 'Empty Queue', this);
     }
     if (Volume && Number.isNaN(Volume)) {
-      return void this.Player.emit(
-        'error',
-        'Invalid Volume',
-        this,
-        Volume,
-      );
+      return void this.Player.emit('error', 'Invalid Volume', this, Volume);
     }
     this.volume = Volume ? Number(Volume) : 95;
     return this.volume;
@@ -654,11 +630,7 @@ class Queue {
       return void this.Player.emit('error', 'Destroyed Queue', this);
     }
     if (!this.previousTrack) {
-      return void this.Player.emit(
-        'error',
-        'Empty Previous Tracks',
-        this,
-      );
+      return void this.Player.emit('error', 'Empty Previous Tracks', this);
     }
     if (TracksBackwardIndex && Number.isNaN(TracksBackwardIndex)) {
       return void this.Player.emit(
@@ -756,11 +728,7 @@ class Queue {
         );
       case 'previousTracks':
         if (!this.previousTrack) {
-          return void this.Player.emit(
-            'error',
-            'Empty Previous Tracks',
-            this,
-          );
+          return void this.Player.emit('error', 'Empty Previous Tracks', this);
         }
         return this.#__StructureProgressBar(
           Bar,
@@ -895,12 +863,7 @@ class Queue {
       !(typeof Volume === 'number' || typeof Volume === 'string')
       && (Number(Volume) > 200 || Number(Volume) < 0)
     ) {
-      return void this.Player.emit(
-        'error',
-        'Invalid Volume',
-        this,
-        Volume,
-      );
+      return void this.Player.emit('error', 'Invalid Volume', this, Volume);
     }
     this.StreamPacket.volume = Number(Volume) / 1000;
     if (this.tracks && this.tracks[0] && this.StreamPacket.AudioResource) {
@@ -1132,8 +1095,8 @@ class Queue {
     ) {
       this.StreamPacket.TimedoutId = this.#__QueueAudioPlayerStatusManager();
       return void this.Player.emit('queueEnd', this);
-    }
-    this.StreamPacket.TimedoutId = this.StreamPacket.TimedoutId
+    } if (!this.StreamPacket) return void null;
+    this.StreamPacket.TimedoutId = this.StreamPacket && this.StreamPacket.TimedoutId
       ? clearTimeout(Number(this.StreamPacket.TimedoutId))
       : undefined;
     try {

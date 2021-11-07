@@ -422,7 +422,7 @@ class Player extends EventEmitter {
    * #__buildsandDepschecks -> Private Method for Checks for Dependencies , Intents to avoid Internal value errors or package bugs
    * @param {Client} Client Discord Client Instance for Operating as a Bot
    * @returns {void} undefined, As these Private method only meant for Voice Handling with Options
-   * @private 
+   * @private
    */
 
   #__buildsandDepschecks(Client) {
