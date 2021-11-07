@@ -68,5 +68,21 @@
   "bugs": {
     "url": "https://github.com/SidisLiveYT/Jericho-Player/issues"
   },
-  "homepage": "https://jericho-player.js.org/"
+  "homepage": "https://jericho-player.js.org/",
+  "keywords": [
+    "jericho-player",
+    "music-player",
+    "youtube",
+    "spotify",
+    "soundcloud",
+    "facebook",
+    "player-framework",
+    "player",
+    "youtube-dl",
+    "play-dl",
+    "music-framework",
+    "discord bots",
+    "discord-music-player",
+    "discord-player"
+  ]
 }
