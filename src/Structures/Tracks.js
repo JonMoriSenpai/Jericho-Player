@@ -1,4 +1,4 @@
-const ClassUtils = require('../Utilities/Class-Utils');
+const ClassUtils = require('../Utilities/ClassUtils');
 const {
   DefaultExtractorStreamOptions,
   DefaultChunk,

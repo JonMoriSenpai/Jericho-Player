@@ -8,15 +8,15 @@ const {
   VoiceChannel,
   StageChannel,
 } = require('discord.js');
-const Queue = require('./Queue-Handler.js');
-const ClassUtils = require('../Utilities/Class-Utils');
-const { join } = require('../Utilities/Voice-Utils');
+const Queue = require('./Queue.js');
+const ClassUtils = require('../Utilities/ClassUtils');
+const { join } = require('../Utilities/VoiceUtils');
 const {
   DefaultJerichoPlayerOptions,
   DefaultQueueCreateOptions,
 } = require('../types/interfaces');
 
-class JerichoPlayer extends EventEmitter {
+class Player extends EventEmitter {
   /**
    * @private QueueCaches -> Caches of Queues for per "instanceof Player"
    * @type {Object}
@@ -80,11 +80,11 @@ class JerichoPlayer extends EventEmitter {
 
     this.Client.on('voiceStateUpdate', async (OldVoiceState, NewVoiceState) => {
       /*
-       * - QueueInstance Fetched from Private Raw Cache Fetching Method "JerichoPlayer.QueueCacheFetch(guildId)"
+       * - QueueInstance Fetched from Private Raw Cache Fetching Method "Player.QueueCacheFetch(guildId)"
        * - QueueIntance => will be used to filter Voice Events Related to our Queue or else return undefined for handling
        */
 
-      const QueueInstance = JerichoPlayer.QueueCacheFetch(
+      const QueueInstance = Player.QueueCacheFetch(
         (NewVoiceState ? NewVoiceState.guild.id : undefined)
           ?? (OldVoiceState ? OldVoiceState.guild.id : undefined),
       );
@@ -128,7 +128,7 @@ class JerichoPlayer extends EventEmitter {
          */
 
         await this.#__handleVoiceConnectionInterchange(
-          JerichoPlayer.#QueueCaches[NewVoiceState.guild.id],
+          Player.#QueueCaches[NewVoiceState.guild.id],
           NewVoiceState.channel,
         );
 
@@ -138,7 +138,7 @@ class JerichoPlayer extends EventEmitter {
          */
 
         return this.#__playerVoiceConnectionMainHandler(
-          JerichoPlayer.#QueueCaches[NewVoiceState.guild.id],
+          Player.#QueueCaches[NewVoiceState.guild.id],
           NewVoiceState.channel,
         );
       }
@@ -158,7 +158,7 @@ class JerichoPlayer extends EventEmitter {
          */
 
         return this.#__playerVoiceConnectionMainHandler(
-          JerichoPlayer.#QueueCaches[OldVoiceState.guild.id],
+          Player.#QueueCaches[OldVoiceState.guild.id],
           NewVoiceState.channel ?? OldVoiceState.channel,
         );
       }
@@ -242,9 +242,9 @@ class JerichoPlayer extends EventEmitter {
     );
 
     // To Avoid excess use of memory and Space in Large bots , We will always Cache Queue and Create one if is Deleted by DeleteQueue() method
-    const QueueInstance = JerichoPlayer.QueueCacheFetch(message.guild.id, QueueCreateOptions)
+    const QueueInstance = Player.QueueCacheFetch(message.guild.id, QueueCreateOptions)
       ?? new Queue(this.Client, message, QueueCreateOptions, this);
-    return JerichoPlayer.QueueCacheAdd(QueueInstance);
+    return Player.QueueCacheAdd(QueueInstance);
   }
 
   /**
@@ -261,8 +261,8 @@ class JerichoPlayer extends EventEmitter {
       return void this.emit('error', 'Invalid Guild Id', this, guildId);
     }
     // Checks for Queue in Cache doesn't matter if its Connection was destroyed | Cache only fetch its Existence to avoid excess CPU load
-    if (JerichoPlayer.QueueCacheFetch(guildId)) {
-      return void JerichoPlayer.QueueCacheRemove(guildId);
+    if (Player.QueueCacheFetch(guildId)) {
+      return void Player.QueueCacheRemove(guildId);
     }
     return void this.emit('error', 'Destroyed Queue', undefined);
   }
@@ -279,7 +279,7 @@ class JerichoPlayer extends EventEmitter {
     ) {
       return void this.emit('error', 'Invalid Guild Id', this, guildId);
     }
-    return JerichoPlayer.QueueCacheFetch(guildId);
+    return Player.QueueCacheFetch(guildId);
   }
 
   /**
@@ -290,7 +290,7 @@ class JerichoPlayer extends EventEmitter {
    */
 
   static QueueCacheAdd(QueueInstance) {
-    JerichoPlayer.#QueueCaches[`${QueueInstance.guildId}`] = QueueInstance;
+    Player.#QueueCaches[`${QueueInstance.guildId}`] = QueueInstance;
     return QueueInstance;
   }
 
@@ -303,7 +303,7 @@ class JerichoPlayer extends EventEmitter {
    */
 
   static QueueCacheFetch(guildId, QueueCreateOptions = null) {
-    const QueueInstance = JerichoPlayer.#QueueCaches[`${guildId}`];
+    const QueueInstance = Player.#QueueCaches[`${guildId}`];
     if (QueueCreateOptions && QueueInstance) {
       QueueInstance.QueueOptions = ClassUtils.stablizingoptions(
         QueueCreateOptions,
@@ -311,9 +311,9 @@ class JerichoPlayer extends EventEmitter {
       );
       if (typeof QueueInstance.destroyed !== 'boolean') clearTimeout(QueueInstance.destroyed);
       QueueInstance.destroyed = false;
-      JerichoPlayer.#QueueCaches[`${guildId}`] = QueueInstance;
+      Player.#QueueCaches[`${guildId}`] = QueueInstance;
     }
-    return JerichoPlayer.#QueueCaches[`${guildId}`];
+    return Player.#QueueCaches[`${guildId}`];
   }
 
   /**
@@ -325,15 +325,15 @@ class JerichoPlayer extends EventEmitter {
 
   static QueueCacheRemove(guildId) {
     if (!this.QueueCacheFetch(guildId)) return false;
-    const QueueInstance = JerichoPlayer.#QueueCaches[`${guildId}`];
-    if (JerichoPlayer.#QueueCaches[`${guildId}`].playing) {
-      JerichoPlayer.#QueueCaches[`${guildId}`].stop();
+    const QueueInstance = Player.#QueueCaches[`${guildId}`];
+    if (Player.#QueueCaches[`${guildId}`].playing) {
+      Player.#QueueCaches[`${guildId}`].stop();
     }
     if (!QueueInstance.destroyed) QueueInstance.destroy();
     const Garbage = {};
     Garbage.Structure = QueueInstance;
     delete Garbage.Structure;
-    JerichoPlayer.#QueueCaches[`${guildId}`] = undefined;
+    Player.#QueueCaches[`${guildId}`] = undefined;
     return void null;
   }
 
@@ -404,7 +404,7 @@ class JerichoPlayer extends EventEmitter {
         QueueInstance.MusicPlayer,
       );
     }
-    JerichoPlayer.#QueueCaches[QueueInstance.guildId] = QueueInstance;
+    Player.#QueueCaches[QueueInstance.guildId] = QueueInstance;
     return void null;
   }
 
@@ -510,4 +510,4 @@ class JerichoPlayer extends EventEmitter {
   }
 }
 
-module.exports = JerichoPlayer;
+module.exports = Player;

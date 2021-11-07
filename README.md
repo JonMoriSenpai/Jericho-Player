@@ -74,7 +74,7 @@ These bots are made by the community, they can help you build your own!
 ### Use cookies
 
 ```js
-const player = new JerichoPlayer(client, {
+const player = new Player(client, {
     ExtractorStreamOptions: {
         Cookies: //Youtube Cookies String Value
     }
@@ -87,7 +87,7 @@ const player = new JerichoPlayer(client, {
 // Remove "user:pass@" if you don't need to authenticate to your proxy.
 const proxy = "http://user:pass@111.111.111.111:8080";
 
-const player = new JerichoPlayer(client, {
+const player = new Player(client, {
     ExtractorStreamOptions: {
         Proxy: [proxy] //Proxy Value from Array
     }

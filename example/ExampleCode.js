@@ -1,7 +1,7 @@
-const { JerichoPlayer } = require('../src/index.js')
+const { Player } = require('../src/index.js')
 
-//import { JerichoPlayer } from '../src/index.mjs'
-var player = new JerichoPlayer()
+//import { Player } from '../src/index.mjs'
+var player = new Player()
 
 
 //Create Queue or Fetch Queue from Cache

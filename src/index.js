@@ -1,10 +1,10 @@
-const JerichoPlayer = require('./Handlers/Player-Handler');
-const Utils = require('./Utilities/Class-Utils');
-const VoiceUtils = require('./Utilities/Voice-Utils');
+const Player = require('./Handlers/Player');
+const Utils = require('./Utilities/ClassUtils');
+const VoiceUtils = require('./Utilities/VoiceUtils');
 const { DefaultModesType } = require('./types/interfaces');
 
 module.exports = {
-  JerichoPlayer,
+  Player,
   Utils,
   VoiceUtils,
   DefaultModesTypes: DefaultModesType,

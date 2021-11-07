@@ -13,10 +13,10 @@ const {
   StageChannel,
 } = require('discord.js');
 const { suggestions } = require('youtube-suggest-gen');
-const JerichoPlayer = require('../Handlers/Player-Handler');
+const Player = require('../Handlers/Player');
 const TracksGen = require('./Tracks');
-const VoiceUtils = require('../Utilities/Voice-Utils');
-const ClassUtils = require('../Utilities/Class-Utils');
+const VoiceUtils = require('../Utilities/VoiceUtils');
+const ClassUtils = require('../Utilities/ClassUtils');
 const {
   DefaultExtractorStreamOptions,
   DefaultTrack,
@@ -25,7 +25,7 @@ const {
   DefaultModesType,
   DefaultModesName,
 } = require('../types/interfaces');
-const Queue = require('../Handlers/Queue-Handler');
+const Queue = require('../Handlers/Queue');
 
 /**
  * @private
@@ -40,7 +40,7 @@ class StreamPacketGen {
    * @param {String|Number|Object|undefined} MetadataValue metadata value from user for Tracks|Queue
    * @param {String|Boolean|undefined} extractor extractor to be used as "play-dl" or "youtube-dl"
    * @param {DefaultExtractorStreamOptions} ExtractorStreamOptions Streaming options
-   * @param {AudioPlayer} JerichoPlayer Audio-Player for playing Songs
+   * @param {AudioPlayer} Player Audio-Player for playing Songs
    * @param {Boolean|undefined} IgnoreError IgnoreError or else throw on major bugs
    */
   constructor(
@@ -56,7 +56,7 @@ class StreamPacketGen {
       YoutubeDLCookiesFilePath: undefined,
       Proxy: undefined,
     },
-    JerichoPlayer = undefined,
+    Player = undefined,
     IgnoreError = true,
   ) {
     /**
@@ -140,10 +140,10 @@ class StreamPacketGen {
 
     /**
      * Player's Instance for further operations
-     * @type {JerichoPlayer}
+     * @type {Player}
      * @readonly
      */
-    this.JerichoPlayer = JerichoPlayer;
+    this.Player = Player;
 
     /**
      * volume Volume of the Music Player
@@ -202,7 +202,7 @@ class StreamPacketGen {
    * @param {DefaultExtractorStreamOptions} StreamCreateOptions Stream Options for TracksGen methods
    * @param {String|Boolean|undefined} extractor extractor to be used as "play-dl" or "youtube-dl"
    * @param {User|GuildMember|undefined} requestedBy user Data as who requested if given during insert or play method of Queue Instance
-   * @returns {Promise<this|undefined>|undefined} Returns Stream-Packet with Updated values of tracks
+   * @returns {Promise<this|undefined>|undefined} Returns StreamPacket with Updated values of tracks
    */
 
   async create(
@@ -236,24 +236,24 @@ class StreamPacketGen {
         : 0,
     );
     if (Chunks.error) {
-      return void this.JerichoPlayer.emit(
+      return void this.Player.emit(
         'error',
         Chunks.error,
-        this.JerichoPlayer.GetQueue(this.guildId),
+        this.Player.GetQueue(this.guildId),
       );
     }
     this.searches = this.searches.concat(Chunks.tracks);
     this.tracks = this.tracks.concat(Chunks.streamdatas);
     Chunks.playlist === true || Chunks.playlist
-      ? this.JerichoPlayer.emit(
+      ? this.Player.emit(
         'playlistAdd',
-        this.JerichoPlayer.GetQueue(this.guildId),
+        this.Player.GetQueue(this.guildId),
         Chunks.tracks,
       )
       : undefined;
-    this.JerichoPlayer.emit(
+    this.Player.emit(
       'tracksAdd',
-      this.JerichoPlayer.GetQueue(this.guildId),
+      this.Player.GetQueue(this.guildId),
       Chunks.tracks,
     );
     if (VoiceChannel) {
@@ -270,10 +270,10 @@ class StreamPacketGen {
         })
         : this.VoiceConnection;
     } else if (!VoiceChannel && !this.VoiceChannel && !this.VoiceConnection) {
-      return void this.JerichoPlayer.emit(
+      return void this.Player.emit(
         'connectionError',
         'Invalid Voice Connection or Invalid Voice Channel Error',
-        this.JerichoPlayer.GetQueue(this.guildId),
+        this.Player.GetQueue(this.guildId),
         this.VoiceConnection,
         this.guildId,
       );
@@ -327,7 +327,7 @@ class StreamPacketGen {
       this.ExtractorStreamOptions,
     );
     if (!this.VoiceChannel && !this.VoiceConnection) {
-      return void this.JerichoPlayer.emit(
+      return void this.Player.emit(
         'error',
         'Invalid Connection',
         this.VoiceConnection,
@@ -335,10 +335,10 @@ class StreamPacketGen {
       );
     }
     if (Number(Index) <= -1 && Number(Index) >= this.searches.length) {
-      return void this.JerichoPlayer.emit(
+      return void this.Player.emit(
         'error',
         'Invalid Index',
-        this.JerichoPlayer.GetQueue(this.guildId),
+        this.Player.GetQueue(this.guildId),
         Number(Index),
       );
     }
@@ -352,30 +352,30 @@ class StreamPacketGen {
         : 0,
     );
     if (Chunk.error) {
-      return void this.JerichoPlayer.emit(
+      return void this.Player.emit(
         'error',
         Chunk.error,
-        this.JerichoPlayer.GetQueue(this.guildId),
+        this.Player.GetQueue(this.guildId),
       );
     }
     Chunk.playlist === true || Chunk.playlist
-      ? this.JerichoPlayer.emit(
+      ? this.Player.emit(
         'playlistAdd',
-        this.JerichoPlayer.GetQueue(this.guildId),
+        this.Player.GetQueue(this.guildId),
         Chunk.tracks,
         'insert',
       )
       : undefined;
-    this.JerichoPlayer.emit(
+    this.Player.emit(
       'tracksAdd',
-      this.JerichoPlayer.GetQueue(this.guildId),
+      this.Player.GetQueue(this.guildId),
       Chunk.tracks,
       'insert',
     );
     this.#__HandleInsertion(Number(Index) ?? -1, Chunk);
-    this.JerichoPlayer.emit(
+    this.Player.emit(
       'tracksAdd',
-      this.JerichoPlayer.GetQueue(this.guildId),
+      this.Player.GetQueue(this.guildId),
       Chunk.tracks,
     );
     return this;
@@ -407,9 +407,9 @@ class StreamPacketGen {
     forceback,
   ) {
     if (
-      !this.JerichoPlayer.GetQueue(this.guildId)
-      || (this.JerichoPlayer.GetQueue(this.guildId)
-        && this.JerichoPlayer.GetQueue(this.guildId).destroyed)
+      !this.Player.GetQueue(this.guildId)
+      || (this.Player.GetQueue(this.guildId)
+        && this.Player.GetQueue(this.guildId).destroyed)
     ) return void null;
     StreamCreateOptions.ExtractorStreamOptions = ClassUtils.stablizingoptions(
       StreamCreateOptions.ExtractorStreamOptions,
@@ -430,10 +430,10 @@ class StreamPacketGen {
         : 0,
     );
     if (Chunks.error) {
-      return void this.JerichoPlayer.emit(
+      return void this.Player.emit(
         'error',
         Chunks.error,
-        this.JerichoPlayer.GetQueue(this.guildId),
+        this.Player.GetQueue(this.guildId),
       );
     }
 
@@ -445,7 +445,7 @@ class StreamPacketGen {
       this.previousTracks.length - TracksBackwardIndex - 1,
       1,
     );
-    forceback ? this.JerichoPlayer.GetQueue(this.guildId).skip() : undefined;
+    forceback ? this.Player.GetQueue(this.guildId).skip() : undefined;
     return true;
   }
 
@@ -557,10 +557,10 @@ class StreamPacketGen {
       return this.AudioResource;
     } catch (error) {
       this.AudioResource = undefined;
-      return void this.JerichoPlayer.emit(
+      return void this.Player.emit(
         'connectionError',
         `${error.message ?? error ?? 'Audio Resource Streaming Error'}`,
-        this.JerichoPlayer.GetQueue(this.guildId),
+        this.Player.GetQueue(this.guildId),
         this.VoiceConnection,
         this.guildId,
       );
@@ -669,7 +669,7 @@ class StreamPacketGen {
         )
         : undefined;
       if (SearchResults && SearchResults.error) {
-        return void this.JerichoPlayer.emit(
+        return void this.Player.emit(
           'error',
           SearchResults.error,
           QueueInstance,
@@ -687,7 +687,7 @@ class StreamPacketGen {
           && GarbageSuggestion[0].title
         )
       ) {
-        return void this.JerichoPlayer.emit(
+        return void this.Player.emit(
           'error',
           'No AutoPlay Track Result',
           QueueInstance,
@@ -701,7 +701,7 @@ class StreamPacketGen {
         Number(QueueInstance.previousTrack.Id ?? 0) - 1,
       );
       if (Chunks && Chunks.error) {
-        return void this.JerichoPlayer.emit(
+        return void this.Player.emit(
           'error',
           Chunks.error,
           QueueInstance,

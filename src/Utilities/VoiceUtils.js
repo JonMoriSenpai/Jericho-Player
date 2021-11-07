@@ -103,10 +103,10 @@ class VoiceUtils {
           }
           return void VoiceConnection.disconnect();
         }
-        return void QueueInstance.JerichoPlayer.emit(
+        return void QueueInstance.Player.emit(
           'connectionError',
           "Voice Connection Can't be destroyed",
-          QueueInstance.JerichoPlayer.GetQueue(QueueInstance.guildId),
+          QueueInstance.Player.GetQueue(QueueInstance.guildId),
           VoiceConnection,
           guildId,
         );
@@ -135,10 +135,10 @@ class VoiceUtils {
       }
       return void VoiceConnection.disconnect();
     }
-    return void QueueInstance.JerichoPlayer.emit(
+    return void QueueInstance.Player.emit(
       'connectionError',
       "Voice Connection Can't be destroyed",
-      QueueInstance.JerichoPlayer.GetQueue(QueueInstance.guildId),
+      QueueInstance.Player.GetQueue(QueueInstance.guildId),
       VoiceConnection,
       guildId,
     );

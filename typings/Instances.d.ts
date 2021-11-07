@@ -14,7 +14,7 @@ import {
   User,
   VoiceChannel
 } from 'discord.js'
-import { JerichoPlayer } from './index'
+import { Player } from './index'
 
 /**
  *
@@ -47,7 +47,7 @@ export type Queue = {
   readonly tracks: Array<Track>
   readonly guildId: Guild['id'] | Snowflake | String
   readonly destroyed: Boolean | Number
-  readonly JerichoPlayer: JerichoPlayer
+  readonly Player: Player
   readonly playing: Boolean
   readonly paused: Boolean
   readonly IgnoreError: Boolean
@@ -164,7 +164,7 @@ export type StreamPacket = {
     readonly Proxy: String | Array<String> | 'IPAdress:PortNumber'
   }
   readonly IgnoreError: Boolean
-  readonly JerichoPlayer: JerichoPlayer
+  readonly Player: Player
   readonly volume: Number
   readonly AudioResource: AudioResource
   readonly previousTracks: Track[] | undefined

@@ -13,10 +13,10 @@ const {
   StageChannel,
   Message,
 } = require('discord.js');
-const StreamPacketGen = require('../Structures/Stream-Packet');
-const ClassUtils = require('../Utilities/Class-Utils');
-const { disconnect } = require('../Utilities/Voice-Utils');
-const JerichoPlayer = require('./Player-Handler');
+const StreamPacketGen = require('../Structures/StreamPacket');
+const ClassUtils = require('../Utilities/ClassUtils');
+const { disconnect } = require('../Utilities/VoiceUtils');
+const Player = require('./Player');
 const {
   DefaultQueueCreateOptions,
   DefaultProgressBar,
@@ -39,7 +39,7 @@ class Queue {
    * @param {Client} Client Discord Client Instance
    * @param {Message} message Guild's Text Messsage
    * @param {DefaultQueueCreateOptions|undefined} QueueOptions Queue Create Options
-   * @param {JerichoPlayer} JerichoPlayer Jericho Player Instance
+   * @param {Player} Player Jericho Player Instance
    */
   constructor(
     Client,
@@ -63,7 +63,7 @@ class Queue {
       LeaveOnEndTimedout: undefined,
       LeaveOnBotOnlyTimedout: undefined,
     },
-    JerichoPlayer = undefined,
+    Player = undefined,
   ) {
     /**
      * Client Discord Client Instance
@@ -94,7 +94,7 @@ class Queue {
       QueueOptions.metadata,
       QueueOptions.extractor,
       QueueOptions.ExtractorStreamOptions,
-      JerichoPlayer,
+      Player,
     );
 
     /**
@@ -143,11 +143,11 @@ class Queue {
     });
 
     /**
-     * JerichoPlayer Player's Instance for fetching Queue from Cache , Just in case it is required
-     * @type {JerichoPlayer}
+     * Player Player's Instance for fetching Queue from Cache , Just in case it is required
+     * @type {Player}
      * @readonly
      */
-    this.JerichoPlayer = JerichoPlayer;
+    this.Player = Player;
 
     /**
      * "statechange" Voice Event for Audio Player for quick filtered Decision making
@@ -163,7 +163,7 @@ class Queue {
           this.StreamPacket.AudioResource = undefined;
           this.StreamPacket.previousTracks.push(this.StreamPacket.searches[0]);
           !(this.playerMode && this.playerMode.type === DefaultModesType.Track)
-            ? this.JerichoPlayer.emit('trackEnd', this, this.tracks[0])
+            ? this.Player.emit('trackEnd', this, this.tracks[0])
             : undefined;
         }
         if (!this.destroyed) this.#__CleaningTrackMess();
@@ -204,7 +204,7 @@ class Queue {
   ) {
     // Watch for Queue.destroyed Property for ignoring Invalid operation and further un-wanted Errors
     if (this.destroyed) {
-      return void this.JerichoPlayer.emit('error', 'Destroyed Queue', this);
+      return void this.Player.emit('error', 'Destroyed Queue', this);
     }
     // Checks for Valid Voice Channel Type to avoid further meaningless operations
     if (
@@ -220,7 +220,7 @@ class Queue {
         )
       )
     ) {
-      return void this.JerichoPlayer.emit(
+      return void this.Player.emit(
         'error',
         'Invalid Voice Channel',
         this,
@@ -239,10 +239,10 @@ class Queue {
         PlayOptions.metadata,
         PlayOptions.extractor,
         PlayOptions.ExtractorStreamOptions,
-        this.JerichoPlayer,
+        this.Player,
       );
 
-    // Dynamically | In-directly fetches Data about Query and store it as Stream-Packet
+    // Dynamically | In-directly fetches Data about Query and store it as StreamPacket
     this.StreamPacket = (await this.StreamPacket.create(
       Query,
       VoiceChannel,
@@ -267,13 +267,13 @@ class Queue {
 
   skip(TrackIndex) {
     if (this.destroyed) {
-      return void this.JerichoPlayer.emit('error', 'Destroyed Queue', this);
+      return void this.Player.emit('error', 'Destroyed Queue', this);
     }
     if (
       TrackIndex
       && !(typeof TrackIndex === 'number' || typeof TrackIndex === 'string')
     ) {
-      return void this.JerichoPlayer.emit(
+      return void this.Player.emit(
         'error',
         'Invalid Index',
         this,
@@ -284,10 +284,10 @@ class Queue {
       !this.playing
       || (this.playing && !this.playerMode && !this.StreamPacket.tracks[1])
     ) {
-      return void this.JerichoPlayer.emit('error', 'Empty Queue', this);
+      return void this.Player.emit('error', 'Empty Queue', this);
     }
     if (Number(TrackIndex) <= 0 && Number(TrackIndex) >= this.tracks.length) {
-      return void this.JerichoPlayer.emit(
+      return void this.Player.emit(
         'error',
         'Invalid Index',
         this,
@@ -316,13 +316,13 @@ class Queue {
 
   stop() {
     if (this.destroyed) {
-      return void this.JerichoPlayer.emit('error', 'Destroyed Queue', this);
+      return void this.Player.emit('error', 'Destroyed Queue', this);
     }
     if (!this.playing) {
-      return void this.JerichoPlayer.emit('error', 'Not Playing', this);
+      return void this.Player.emit('error', 'Not Playing', this);
     }
     if (!this.StreamPacket.tracks[0]) {
-      return void this.JerichoPlayer.emit('error', 'Empty Queue', this);
+      return void this.Player.emit('error', 'Empty Queue', this);
     }
     this.#__CleaningTrackMess(
       0,
@@ -346,13 +346,13 @@ class Queue {
 
   pause() {
     if (this.destroyed) {
-      return void this.JerichoPlayer.emit('error', 'Destroyed Queue', this);
+      return void this.Player.emit('error', 'Destroyed Queue', this);
     }
     if (!this.playing) {
-      return void this.JerichoPlayer.emit('error', 'Not Playing', this);
+      return void this.Player.emit('error', 'Not Playing', this);
     }
     if (!this.StreamPacket.tracks[0]) {
-      return void this.JerichoPlayer.emit('error', 'Empty Queue', this);
+      return void this.Player.emit('error', 'Empty Queue', this);
     }
     if (this.MusicPlayer.pause(true)) {
       this.StreamPacket.TrackTimeStamp.Paused = new Date().getTime();
@@ -368,16 +368,16 @@ class Queue {
 
   resume() {
     if (this.destroyed) {
-      return void this.JerichoPlayer.emit('error', 'Destroyed Queue', this);
+      return void this.Player.emit('error', 'Destroyed Queue', this);
     }
     if (!this.playing) {
-      return void this.JerichoPlayer.emit('error', 'Not Playing', this);
+      return void this.Player.emit('error', 'Not Playing', this);
     }
     if (!this.StreamPacket.tracks[0]) {
-      return void this.JerichoPlayer.emit('error', 'Empty Queue', this);
+      return void this.Player.emit('error', 'Empty Queue', this);
     }
     if (!this.paused) {
-      return void this.JerichoPlayer.emit('error', 'Not Paused', this);
+      return void this.Player.emit('error', 'Not Paused', this);
     }
     if (this.MusicPlayer.unpause()) {
       this.StreamPacket.TrackTimeStamp.Starting
@@ -414,13 +414,13 @@ class Queue {
     },
   ) {
     if (this.destroyed) {
-      return void this.JerichoPlayer.emit('error', 'Destroyed Queue', this);
+      return void this.Player.emit('error', 'Destroyed Queue', this);
     }
     if (
       TrackIndex
       && !(typeof TrackIndex === 'number' || typeof TrackIndex === 'string')
     ) {
-      return void this.JerichoPlayer.emit(
+      return void this.Player.emit(
         'error',
         'Invalid Index',
         this,
@@ -443,7 +443,7 @@ class Queue {
         InsertOptions.metadata,
         InsertOptions.extractor,
         InsertOptions.ExtractorStreamOptions,
-        this.JerichoPlayer,
+        this.Player,
       );
     this.StreamPacket = (await this.StreamPacket.insert(
       Number(TrackIndex) ?? -1,
@@ -465,13 +465,13 @@ class Queue {
 
   remove(Index = -1, Amount = 1) {
     if (this.destroyed) {
-      return void this.JerichoPlayer.emit('error', 'Destroyed Queue', this);
+      return void this.Player.emit('error', 'Destroyed Queue', this);
     }
     if (Number.isNaN(Index)) {
-      return void this.JerichoPlayer.emit('error', 'Invalid Index', this, Index);
+      return void this.Player.emit('error', 'Invalid Index', this, Index);
     }
     if (Number.isNaN(Amount)) {
-      return void this.JerichoPlayer.emit(
+      return void this.Player.emit(
         'error',
         'Invalid Amount',
         this,
@@ -479,7 +479,7 @@ class Queue {
       );
     }
     if (Number(Index) < -1 && Number(Index) >= this.tracks.length) {
-      return void this.JerichoPlayer.emit(
+      return void this.Player.emit(
         'error',
         'Invalid Index',
         this,
@@ -500,7 +500,7 @@ class Queue {
 
   destroy(connectionTimedout = 0) {
     if (this.destroyed) {
-      return void this.JerichoPlayer.emit('error', 'Destroyed Queue', this);
+      return void this.Player.emit('error', 'Destroyed Queue', this);
     }
     this.StreamPacket.tracks = [];
     this.StreamPacket.searches = [];
@@ -544,13 +544,13 @@ class Queue {
 
   mute() {
     if (this.destroyed) {
-      return void this.JerichoPlayer.emit('error', 'Destroyed Queue', this);
+      return void this.Player.emit('error', 'Destroyed Queue', this);
     }
     if (!this.playing) {
-      return void this.JerichoPlayer.emit('error', 'Not Playing', this);
+      return void this.Player.emit('error', 'Not Playing', this);
     }
     if (!this.StreamPacket.tracks[0]) {
-      return void this.JerichoPlayer.emit('error', 'Empty Queue', this);
+      return void this.Player.emit('error', 'Empty Queue', this);
     }
     this.volume = 0;
     return true;
@@ -564,16 +564,16 @@ class Queue {
 
   unmute(Volume) {
     if (this.destroyed) {
-      return void this.JerichoPlayer.emit('error', 'Destroyed Queue', this);
+      return void this.Player.emit('error', 'Destroyed Queue', this);
     }
     if (!this.playing) {
-      return void this.JerichoPlayer.emit('error', 'Not Playing', this);
+      return void this.Player.emit('error', 'Not Playing', this);
     }
     if (!this.StreamPacket.tracks[0]) {
-      return void this.JerichoPlayer.emit('error', 'Empty Queue', this);
+      return void this.Player.emit('error', 'Empty Queue', this);
     }
     if (Volume && Number.isNaN(Volume)) {
-      return void this.JerichoPlayer.emit(
+      return void this.Player.emit(
         'error',
         'Invalid Volume',
         this,
@@ -592,16 +592,16 @@ class Queue {
 
   clear(TracksAmount = this.tracks.length - 1) {
     if (this.destroyed) {
-      return void this.JerichoPlayer.emit('error', 'Destroyed Queue', this);
+      return void this.Player.emit('error', 'Destroyed Queue', this);
     }
     if (!this.playing) {
-      return void this.JerichoPlayer.emit('error', 'Not Playing', this);
+      return void this.Player.emit('error', 'Not Playing', this);
     }
     if (!this.StreamPacket.tracks[0] || !this.StreamPacket.tracks[1]) {
-      return void this.JerichoPlayer.emit('error', 'Empty Queue', this);
+      return void this.Player.emit('error', 'Empty Queue', this);
     }
     if (TracksAmount && Number.isNaN(TracksAmount)) {
-      return void this.JerichoPlayer.emit(
+      return void this.Player.emit(
         'error',
         'Invalid TracksAmount',
         this,
@@ -612,7 +612,7 @@ class Queue {
       Number(TracksAmount) < 1
       && Number(TracksAmount) >= this.tracks.length
     ) {
-      return void this.JerichoPlayer.emit(
+      return void this.Player.emit(
         'error',
         'Invalid Index',
         this,
@@ -651,17 +651,17 @@ class Queue {
     forceback = true,
   ) {
     if (this.destroyed) {
-      return void this.JerichoPlayer.emit('error', 'Destroyed Queue', this);
+      return void this.Player.emit('error', 'Destroyed Queue', this);
     }
     if (!this.previousTrack) {
-      return void this.JerichoPlayer.emit(
+      return void this.Player.emit(
         'error',
         'Empty Previous Tracks',
         this,
       );
     }
     if (TracksBackwardIndex && Number.isNaN(TracksBackwardIndex)) {
-      return void this.JerichoPlayer.emit(
+      return void this.Player.emit(
         'error',
         'Invalid Track Index',
         this,
@@ -672,7 +672,7 @@ class Queue {
       Number(TracksBackwardIndex) < 0
       && Number(TracksBackwardIndex) > this.StreamPacket.previousTracks.length
     ) {
-      return void this.JerichoPlayer.emit(
+      return void this.Player.emit(
         'error',
         'Previous Track Limit Exceeding',
         this,
@@ -708,13 +708,13 @@ class Queue {
     },
   ) {
     if (this.destroyed) {
-      return void this.JerichoPlayer.emit('error', 'Destroyed Queue', this);
+      return void this.Player.emit('error', 'Destroyed Queue', this);
     }
     if (!this.StreamPacket) {
-      return void this.JerichoPlayer.emit('error', 'Destroyed Queue', this);
+      return void this.Player.emit('error', 'Destroyed Queue', this);
     }
     if (DefaultType && Number.isNaN(DefaultType)) {
-      return void this.JerichoPlayer.emit(
+      return void this.Player.emit(
         'error',
         'Invalid Default Type',
         this,
@@ -724,7 +724,7 @@ class Queue {
     switch (Work.toLowerCase().trim()) {
       case 'track':
         if (!this.StreamPacket.tracks[0]) {
-          return void this.JerichoPlayer.emit('error', 'Nothing Playing', this);
+          return void this.Player.emit('error', 'Nothing Playing', this);
         }
         return this.#__StructureProgressBar(
           Bar,
@@ -734,7 +734,7 @@ class Queue {
         );
       case 'queue':
         if (!this.StreamPacket.tracks[0]) {
-          return void this.JerichoPlayer.emit('error', 'Empty Queue', this);
+          return void this.Player.emit('error', 'Empty Queue', this);
         }
         return this.#__StructureProgressBar(
           Bar,
@@ -746,7 +746,7 @@ class Queue {
         );
       case 'tracks':
         if (!this.StreamPacket.tracks[0]) {
-          return void this.JerichoPlayer.emit('error', 'Empty Queue', this);
+          return void this.Player.emit('error', 'Empty Queue', this);
         }
         return this.#__StructureProgressBar(
           Bar,
@@ -756,7 +756,7 @@ class Queue {
         );
       case 'previousTracks':
         if (!this.previousTrack) {
-          return void this.JerichoPlayer.emit(
+          return void this.Player.emit(
             'error',
             'Empty Previous Tracks',
             this,
@@ -770,7 +770,7 @@ class Queue {
         );
       default:
         if (!this.StreamPacket.tracks[0]) {
-          return void this.JerichoPlayer.emit('error', 'Nothing Playing', this);
+          return void this.Player.emit('error', 'Nothing Playing', this);
         }
         return this.#__StructureProgressBar(
           Bar,
@@ -789,10 +789,10 @@ class Queue {
 
   loop(Choice = DefaultModesType.Track) {
     if (this.destroyed) {
-      return void this.JerichoPlayer.emit('error', 'Destroyed Queue', this);
+      return void this.Player.emit('error', 'Destroyed Queue', this);
     }
     if (!this.StreamPacket) {
-      return void this.JerichoPlayer.emit('error', 'Destroyed Queue', this);
+      return void this.Player.emit('error', 'Destroyed Queue', this);
     }
     return this.StreamPacket.setMode(DefaultModesName.Loop, Choice);
   }
@@ -806,10 +806,10 @@ class Queue {
 
   repeat(Choice = DefaultModesType.Track, Times = 1) {
     if (this.destroyed) {
-      return void this.JerichoPlayer.emit('error', 'Destroyed Queue', this);
+      return void this.Player.emit('error', 'Destroyed Queue', this);
     }
     if (!this.StreamPacket) {
-      return void this.JerichoPlayer.emit('error', 'Destroyed Queue', this);
+      return void this.Player.emit('error', 'Destroyed Queue', this);
     }
     return this.StreamPacket.setMode(
       DefaultModesName.Repeat,
@@ -826,10 +826,10 @@ class Queue {
 
   autoplay(ChoiceORQuery = undefined) {
     if (this.destroyed) {
-      return void this.JerichoPlayer.emit('error', 'Destroyed Queue', this);
+      return void this.Player.emit('error', 'Destroyed Queue', this);
     }
     if (!this.StreamPacket) {
-      return void this.JerichoPlayer.emit('error', 'Destroyed Queue', this);
+      return void this.Player.emit('error', 'Destroyed Queue', this);
     }
     return this.StreamPacket.setMode(DefaultModesName.Autoplay, ChoiceORQuery);
   }
@@ -871,7 +871,7 @@ class Queue {
       0,
     );
     if (Chunks.error) {
-      return void this.JerichoPlayer.emit('error', Chunks.error, this);
+      return void this.Player.emit('error', Chunks.error, this);
     }
     return { playlist: Chunks.playlist, tracks: Chunks.tracks };
   }
@@ -889,13 +889,13 @@ class Queue {
 
   set volume(Volume = 0) {
     if (this.destroyed) {
-      return void this.JerichoPlayer.emit('error', 'Destroyed Queue', this);
+      return void this.Player.emit('error', 'Destroyed Queue', this);
     }
     if (
       !(typeof Volume === 'number' || typeof Volume === 'string')
       && (Number(Volume) > 200 || Number(Volume) < 0)
     ) {
-      return void this.JerichoPlayer.emit(
+      return void this.Player.emit(
         'error',
         'Invalid Volume',
         this,
@@ -967,10 +967,10 @@ class Queue {
 
   get currentTimestamp() {
     if (this.destroyed) {
-      return void this.JerichoPlayer.emit('error', 'Destroyed Queue', this);
+      return void this.Player.emit('error', 'Destroyed Queue', this);
     }
     if (!this.StreamPacket.tracks[0]) {
-      return void this.JerichoPlayer.emit('error', 'Empty Queue', this);
+      return void this.Player.emit('error', 'Empty Queue', this);
     }
 
     const TimeStamp = {
@@ -1131,7 +1131,7 @@ class Queue {
           && !GarbagePlayerModeHandle))
     ) {
       this.StreamPacket.TimedoutId = this.#__QueueAudioPlayerStatusManager();
-      return void this.JerichoPlayer.emit('queueEnd', this);
+      return void this.Player.emit('queueEnd', this);
     }
     this.StreamPacket.TimedoutId = this.StreamPacket.TimedoutId
       ? clearTimeout(Number(this.StreamPacket.TimedoutId))
@@ -1140,7 +1140,7 @@ class Queue {
       const AudioResource = this.StreamPacket.StreamAudioResourceExtractor(
         this.StreamPacket.tracks[0],
       );
-      this.JerichoPlayer.emit('trackStart', this, this.tracks[0]);
+      this.Player.emit('trackStart', this, this.tracks[0]);
       this.MusicPlayer.play(AudioResource);
       if (
         !this.StreamPacket.subscription
@@ -1155,7 +1155,7 @@ class Queue {
         5e3,
       ));
     } catch (error) {
-      this.JerichoPlayer.emit(
+      this.Player.emit(
         'connectionError',
         `${error.message ?? error ?? 'Audio Resource Streaming Error'}`,
         this,

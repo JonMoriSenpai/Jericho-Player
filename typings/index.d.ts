@@ -15,7 +15,7 @@ import {
 import { VoiceConnection } from '@discordjs/voice'
 import { EventEmitter } from 'events'
 
-export class JerichoPlayer extends EventEmitter {
+export class Player extends EventEmitter {
   public constructor (Client: Client, PlayerOptions?: PlayerOptions)
   public readonly Client: Client
   public readonly PlayerOptions: PlayerOptions

@@ -240,7 +240,7 @@ const DefaultChunk = {
  * @property {String} guildId
  * @property {DefaultExtractorStreamOptions} ExtractorStreamOptions
  * @property {Boolean} IgnoreError
- * @property {any} JerichoPlayer
+ * @property {any} Player
  * @property {Number} volume
  * @property {AudioResource} AudioResource
  * @property {DefaultTrack[]} previousTracks
@@ -258,7 +258,7 @@ const DefaultStreamPacket = {
   guildId: undefined,
   ExtractorStreamOptions: DefaultExtractorStreamOptions,
   IgnoreError: undefined,
-  JerichoPlayer: undefined,
+  Player: undefined,
   volume: 0,
   AudioResource: undefined,
   previousTracks: undefined,
