@@ -55,8 +55,8 @@ Jericho Player got some **Custom Extractors** that enables you to use and fast E
 
 #### [playdl-music-extractor](https://npmjs.com/package/playdl-music-extractor) (optional)
 
-Optional package that adds support for `vimeo`, `reverbnation`, `facebook`, `attachment links`.
-You just need to install it using `npm i --save video-extractor` (jericho-player will automatically detect and use it).
+Optional package that adds support for `vimeo`, `reverbnation`, `facebook`.
+You just need to install it using `npm i --save playdl-music-extractor` (jericho-player will automatically detect and use it).
 
 #### [video-extractor](https://npmjs.com/package/video-extractor) (optional)
 

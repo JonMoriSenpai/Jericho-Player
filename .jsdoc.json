@@ -17,7 +17,7 @@
   "templates": {
     "cleverLinks": true,
     "monospaceLinks": true,
-    "useLongnameInNav": true,
+    "useLongnameInNav": false,
     "showInheritedInNav": true,
     "default": {
       "outputSourceFiles": true,
@@ -29,6 +29,6 @@
     "encoding": "utf8",
     "private": false,
     "recurse": true,
-    "template": "./node_modules/jsdoc-skyceil"
+    "template": "Androz2091/jsdoc-skyceil"
   }
 }

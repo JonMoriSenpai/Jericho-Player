@@ -13,6 +13,11 @@ const {
 
 class VoiceUtils {
   /**
+   * @constructor
+   */
+  constructor() { }
+
+  /**
    * Join Channel function for Voice Utils with Client and Channel and JoinChannelOptions Credentials
    * @param {Client} Client Discord Client Instance
    * @param {VoiceChannel|StageChannel} Channel Guild Voice Channel | Guild Stage Channel
