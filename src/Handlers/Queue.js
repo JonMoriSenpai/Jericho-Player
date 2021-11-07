@@ -508,7 +508,9 @@ class Queue {
       )
       : undefined;
 
-    this.destroyed = NodeTimeoutId;
+    this.destroyed = NodeTimeoutId && !Number.isNaN(NodeTimeoutId)
+      ? Number(NodeTimeoutId)
+      : true;
 
     // StreamPacket Destruction
     const Garbage = {};
@@ -1095,7 +1097,8 @@ class Queue {
     ) {
       this.StreamPacket.TimedoutId = this.#__QueueAudioPlayerStatusManager();
       return void this.Player.emit('queueEnd', this);
-    } if (!this.StreamPacket) return void null;
+    }
+    if (!this.StreamPacket) return void null;
     this.StreamPacket.TimedoutId = this.StreamPacket && this.StreamPacket.TimedoutId
       ? clearTimeout(Number(this.StreamPacket.TimedoutId))
       : undefined;

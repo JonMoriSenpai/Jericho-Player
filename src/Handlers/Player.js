@@ -99,6 +99,27 @@ class Player extends EventEmitter {
 
       // - QueueInstance checking if its related to Queue Voice Connection Events
 
+      if (!NewVoiceState.channel && OldVoiceState.id === this.Client.user.id) {
+        /**
+         * - event "channelEmpty" and "botDisconnect" will trigger on bot leaving the VC | Timeout will be Handlerd in - "Queue.#__ResourcePlay()"
+         * - events are in order to provide quick response with a minimal checks
+         */
+        if (
+          OldVoiceState.channel
+          && OldVoiceState.channel.members
+          && ((OldVoiceState.channel.members.size === 1
+            && OldVoiceState.channel.members.some(clientchecks))
+            || OldVoiceState.channel.members.size === 0)
+        ) {
+          this.emit('channelEmpty', QueueInstance, OldVoiceState.channel);
+        }
+        this.emit(
+          'botDisconnect',
+          QueueInstance,
+          OldVoiceState.channel ?? undefined,
+        );
+        return this.DeleteQueue(QueueInstance.guildId);
+      }
       if (
         !QueueInstance
         || (QueueInstance && QueueInstance.destroyed)
@@ -167,27 +188,6 @@ class Player extends EventEmitter {
           Player.#QueueCaches[OldVoiceState.guild.id],
           NewVoiceState.channel ?? OldVoiceState.channel,
         );
-      }
-      if (!NewVoiceState.channel && OldVoiceState.id === this.Client.user.id) {
-        /**
-         * - event "channelEmpty" and "botDisconnect" will trigger on bot leaving the VC | Timeout will be Handlerd in - "Queue.#__ResourcePlay()"
-         * - events are in order to provide quick response with a minimal checks
-         */
-        if (
-          OldVoiceState.channel
-          && OldVoiceState.channel.members
-          && ((OldVoiceState.channel.members.size === 1
-            && OldVoiceState.channel.members.some(clientchecks))
-            || OldVoiceState.channel.members.size === 0)
-        ) {
-          this.emit('channelEmpty', QueueInstance, OldVoiceState.channel);
-        }
-        this.emit(
-          'botDisconnect',
-          QueueInstance,
-          OldVoiceState.channel ?? undefined,
-        );
-        return this.DeleteQueue(QueueInstance.guildId);
       }
       return void null;
     });
