@@ -18,16 +18,17 @@ const {
 
 class Player extends EventEmitter {
   /**
-   * @private QueueCaches -> Caches of Queues for per "instanceof Player"
+   * QueueCaches -> Caches of Queues for per "instanceof Player"
    * @type {Object}
    * @readonly
+   * @private
    */
   static #QueueCaches = {};
 
   /**
    * Jericho Player Constructor
    * @param {Client} Client  Instanceof Discord.js Client
-   * @param {DefaultJerichoPlayerOptions} JerichoPlayerOptions  Player Options for Stream Extraction and Voice Connection Moderation
+   * @param {DefaultJerichoPlayerOptions} JerichoPlayerOptions [options={}] Player Options for Stream Extraction and Voice Connection Moderation
    */
 
   constructor(
@@ -317,10 +318,11 @@ class Player extends EventEmitter {
   }
 
   /**
-   * @private Player Class Defined Method
+   * Player Class Defined Method
    * QueueCacheRemove -> Private Method for Player's Workload to Remove Queue Cache Easily without using any Player's Instance
    * @param {String|Number} guildId Guild["id"] OR guild.id is required to fetch queue from the Cache
    * @returns {undefined} undefined , To reperesnt the Work Complete Signal as Queue will be destroyed so , we can't return Queue
+   * @private
    */
 
   static QueueCacheRemove(guildId) {
@@ -338,11 +340,12 @@ class Player extends EventEmitter {
   }
 
   /**
-   * @private Player Class Defined Method
+   * Player Class Defined Method
    * #__playerVoiceConnectionMainHandler -> Private Method for Player's Voice Connection "Manager" to Filter out Connection Decisions frpm Queue | Player 's Connection Options from User
    * @param {Queue} QueueInstance Queue Instance made from "Queue" class to work around
    * @param {VoiceChannel|StageChannel} VoiceChannel Simple Discord Voice Channel | Stage Channel Value
    * @returns {undefined} undefined, As these Private method only meant for Voice Handling with Options
+   * @private
    */
   #__playerVoiceConnectionMainHandler(QueueInstance, VoiceChannel) {
     const clientchecks = (member) => member.user.id === this.Client.user.id;
@@ -381,11 +384,12 @@ class Player extends EventEmitter {
   }
 
   /**
-   * @private Player Class Defined Method
+   * Player Class Defined Method
    * #__handleVoiceConnectionInterchange -> Private Method for Player's Voice Destroy Connection
    * @param {Queue} QueueInstance Queue Instance made from "Queue" class to work around
    * @param {VoiceChannel|StageChannel} VoiceChannel Simple Discord Voice Channel | Stage Channel Value
    * @returns {undefined} undefined, As these Private method only meant for Voice Handling with Options
+   * @private
    */
 
   async #__handleVoiceConnectionInterchange(QueueInstance, VoiceChannel) {
@@ -409,10 +413,11 @@ class Player extends EventEmitter {
   }
 
   /**
-   * @private Player Class Defined Method
+   * Player Class Defined Method
    * #__buildsandDepschecks -> Private Method for Checks for Dependencies , Intents to avoid Internal value errors or package bugs
    * @param {Client} Client Discord Client Instance for Operating as a Bot
    * @returns {undefined} undefined, As these Private method only meant for Voice Handling with Options
+   * @private 
    */
 
   #__buildsandDepschecks(Client) {
