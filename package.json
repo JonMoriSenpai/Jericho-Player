@@ -35,7 +35,7 @@
     "eslint-plugin-import": "^2.25.2",
     "jsdoc": "^3.6.7",
     "jsdoc-babel": "^0.5.0",
-    "jsdoc-skyceil": "^2.0.0",
+    "jsdoc-skyceil": "github:Androz2091/jsdoc-skyceil",
     "nyc": "^15.1.0",
     "semantic-release": "^18.0.0"
   },
