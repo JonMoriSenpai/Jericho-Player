@@ -37,11 +37,11 @@ class StreamPacketGen {
   /**
    * @param {Client} Client Discord Client Instance
    * @param {String|Number} guildId Guild's ID for fetching Queue from Queue's Cache
-   * @param {String|Number|Object|undefined} MetadataValue metadata value from user for Tracks|Queue
-   * @param {String|Boolean|undefined} extractor extractor to be used as "play-dl" or "youtube-dl"
+   * @param {String|Number|Object|void} MetadataValue metadata value from user for Tracks|Queue
+   * @param {String|Boolean|void} extractor extractor to be used as "play-dl" or "youtube-dl"
    * @param {DefaultExtractorStreamOptions} ExtractorStreamOptions Streaming options
    * @param {AudioPlayer} Player Audio-Player for playing Songs
-   * @param {Boolean|undefined} IgnoreError IgnoreError or else throw on major bugs
+   * @param {Boolean|void} IgnoreError IgnoreError or else throw on major bugs
    */
   constructor(
     Client,
@@ -75,7 +75,7 @@ class StreamPacketGen {
 
     /**
      * Extractor Extractor name as "play-dl" OR "youtube-dl"
-     * @type {String|undefined}
+     * @type {String|void}
      * @readonly
      */
     this.extractor = extractor;
@@ -96,14 +96,14 @@ class StreamPacketGen {
 
     /**
      * VoiceConnection Voice Connection Value designed by "@discordjs/voice"
-     * @type {VoiceConnection|undefined}
+     * @type {VoiceConnection|void}
      * @readonly
      */
     this.VoiceConnection = null;
 
     /**
      * Metadata Metadata value in Streampacket for Audio Resources
-     * @type {any|undefined}
+     * @type {any|void}
      */
     this.metadata = MetadataValue;
 
@@ -123,7 +123,7 @@ class StreamPacketGen {
 
     /**
      * ExtractorStreamOptions Extractor Fetching Options
-     * @type {DefaultExtractorStreamOptions|undefined}
+     * @type {DefaultExtractorStreamOptions|void}
      * @readonly
      */
     this.ExtractorStreamOptions = ExtractorStreamOptions = ClassUtils.stablizingoptions(
@@ -133,7 +133,7 @@ class StreamPacketGen {
 
     /**
      * IgnoreError IgnoreError's true Value if its required
-     * @type {Boolean|undefined}
+     * @type {Boolean|void}
      * @readonly
      */
     this.IgnoreError = !!IgnoreError ?? true;
@@ -154,7 +154,7 @@ class StreamPacketGen {
 
     /**
      * AudioResource Track's Audio Resource
-     * @type {AudioResource|undefined}
+     * @type {AudioResource|void}
      * @readonly
      */
     this.AudioResource = undefined;
@@ -169,7 +169,7 @@ class StreamPacketGen {
     /**
      * @private
      * TimedoutId Queue Timedout ID value or undefined
-     * @type {String|Number|undefined|Boolean}
+     * @type {String|Number|void|Boolean}
      * @readonly
      */
     this.TimedoutId = undefined;
@@ -200,9 +200,9 @@ class StreamPacketGen {
    * @param {String} Query Query like URls or Youtube Searches | Default Extractor accept 5 supported and big websites like youtube , spotify , soundcloud , retribution , facebook and for "youtube-dl" , it accept any follows official "youtube" searches
    * @param {VoiceChannel|StageChannel} VoiceChannel Voice Channel to connect Discord Client and getConnections
    * @param {DefaultExtractorStreamOptions} StreamCreateOptions Stream Options for TracksGen methods
-   * @param {String|Boolean|undefined} extractor extractor to be used as "play-dl" or "youtube-dl"
-   * @param {User|GuildMember|undefined} requestedBy user Data as who requested if given during insert or play method of Queue Instance
-   * @returns {Promise<this|undefined>|undefined} Returns StreamPacket with Updated values of tracks
+   * @param {String|Boolean|void} extractor extractor to be used as "play-dl" or "youtube-dl"
+   * @param {User|GuildMember|void} requestedBy user Data as who requested if given during insert or play method of Queue Instance
+   * @returns {Promise<this|void>|void} Returns StreamPacket with Updated values of tracks
    */
 
   async create(
@@ -284,8 +284,8 @@ class StreamPacketGen {
 
   /**
    * remove() -> Remove Track from Tracks Cache
-   * @param {String|Number|undefined} Index Tracks Remove Stream packet method but works internally
-   * @param {String|Number|undefined} Amount Tracks Amount to Delete
+   * @param {String|Number|void} Index Tracks Remove Stream packet method but works internally
+   * @param {String|Number|void} Amount Tracks Amount to Delete
    * @returns {this} Returns StreamPacket Class Instance
    */
 
@@ -297,12 +297,12 @@ class StreamPacketGen {
 
   /**
    * insert() -> Insertion of Track in Tracks Cache with all workings of shifting
-   * @param {Number|String|undefined} Index Track's Index where new Track will be inserted
+   * @param {Number|String|void} Index Track's Index where new Track will be inserted
    * @param {String} Query Query like URls or Youtube Searches | Default Extractor accept 5 supported and big websites like youtube , spotify , soundcloud , retribution , facebook and for "youtube-dl" , it accept any follows official "youtube" searches
    * @param {DefaultExtractorStreamOptions} StreamFetchOptions Streaming Options from extractor
-   * @param {String|Boolean|undefined} extractor extractor to be used as "play-dl" or "youtube-dl"
-   * @param {User|GuildMember|undefined} requestedBy User or GuildMember for requestedBy value for Track
-   * @returns {Promise<this|undefined>} Returns StreamPacket Instance of the Queue
+   * @param {String|Boolean|void} extractor extractor to be used as "play-dl" or "youtube-dl"
+   * @param {User|GuildMember|void} requestedBy User or GuildMember for requestedBy value for Track
+   * @returns {Promise<this|void>} Returns StreamPacket Instance of the Queue
    */
 
   async insert(
@@ -383,11 +383,11 @@ class StreamPacketGen {
 
   /**
    * back() -> back command for Internal finishing of previous Tracks streaming
-   * @param {String|Number|undefined} TracksBackwardIndex Track Index from previous Tracks Data
-   * @param {User|GuildMember|undefined} requestedBy for changigng exisitng requestedBy Value
+   * @param {String|Number|void} TracksBackwardIndex Track Index from previous Tracks Data
+   * @param {User|GuildMember|void} requestedBy for changigng exisitng requestedBy Value
    * @param {DefaultExtractorStreamOptions} StreamCreateOptions Stream Create Optiosn from Track Class
-   * @param {Boolen|undefined} forceback Forcefully skip to requested Track as true or false
-   * @returns {Promise<Boolean|undefined>} true if operation went green or else undefined for errors
+   * @param {Boolen|void} forceback Forcefully skip to requested Track as true or false
+   * @returns {Promise<Boolean|void>} true if operation went green or else undefined for errors
    */
 
   async back(
@@ -452,9 +452,9 @@ class StreamPacketGen {
   /**
    * setMode() -> Set Mode of the Music Player between "loop","repeat","autoplay"
    * @param {String} ModeName Mode's Names for Setting Mode
-   * @param {String|Boolean|undefined} ModeType Mode's Value for Setting which to operated
-   * @param {String|Number|undefined} Times Extra Data from Queue.methods as Times
-   * @returns {Boolean|undefined} returns true if operation went gree signal ro undefined on errors
+   * @param {String|Boolean|void} ModeType Mode's Value for Setting which to operated
+   * @param {String|Number|void} Times Extra Data from Queue.methods as Times
+   * @returns {Boolean|void} returns true if operation went gree signal ro undefined on errors
    */
 
   setMode(ModeName, ModeType, Times) {
@@ -570,7 +570,7 @@ class StreamPacketGen {
   /**
    * __handleMusicPlayerModes() -> Private Method for Handling complex Music Player's Modes with internal tracks
    * @param {Queue} QueueInstance Queue Instance of per Guild
-   * @returns {Boolean|undefined|Promise<Boolean|undefined>} returns true if operation went gree signal ro undefined on errors
+   * @returns {Boolean|void|Promise<Boolean|void>} returns true if operation went gree signal ro undefined on errors
    */
   async __handleMusicPlayerModes(QueueInstance) {
     if (!QueueInstance.playerMode) return void null;
@@ -718,9 +718,9 @@ class StreamPacketGen {
 
   /**
    * @private #__HandleInsertion -> Private Method for handling Insertion correctly without distrubing other tracks
-   * @param {Number|undefined} Index Track Index to insert Tracks from spefic position
+   * @param {Number|void} Index Track Index to insert Tracks from spefic position
    * @param {DefaultChunk} Chunk Chunk value from Tracksgen.fetch() including tracks and streams value
-   * @returns {undefined} as it's a One-go process
+   * @returns {void} as it's a One-go process
    */
 
   #__HandleInsertion(Index = -1, Chunk) {

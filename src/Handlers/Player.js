@@ -16,6 +16,11 @@ const {
   DefaultQueueCreateOptions,
 } = require('../types/interfaces');
 
+/**
+ * Jericho Player's Player Class
+ * @extends {EventEmitter}
+ */
+
 class Player extends EventEmitter {
   /**
    * QueueCaches -> Caches of Queues for per "instanceof Player"
@@ -191,7 +196,7 @@ class Player extends EventEmitter {
   /**
    * CreateQueue => Create Queue Instance for Player and per Guild
    * @param {Message | Interaction} message Guild Message Only for getting info about guild and guildId
-   * @param {DefaultQueueCreateOptions|undefined} QueueCreateOptions => Queue Create Options for Queue Instance ( for making ByDefault Values for Queue.<methods> )
+   * @param {DefaultQueueCreateOptions|void} QueueCreateOptions => Queue Create Options for Queue Instance ( for making ByDefault Values for Queue.<methods> )
    * @returns {Queue} Queue Instance => ( for Queue.<methods> like Queue.play() )
    */
 
@@ -251,7 +256,7 @@ class Player extends EventEmitter {
   /**
    * DeleteQueue -> Delete's Cached Queue (forced way to erase Queue's Existence)
    * @param {String|Number} guildId Guild["id"] OR guild.id is required to fetch queue from the Cache
-   * @returns {undefined} Returns "undefined"
+   * @returns {void} Returns "undefined"
    */
 
   DeleteQueue(guildId) {
@@ -271,7 +276,7 @@ class Player extends EventEmitter {
   /**
    * GetQueue -> Fetch Queue (Instance) from Cache or else returns undefined
    * @param {String|Number} guildId Guild["id"] OR guild.id is required to fetch queue from the Cache
-   * @returns {Queue|undefined} Returns Queue Instance or else "undefined"
+   * @returns {Queue|void} Returns Queue Instance or else "undefined"
    */
   GetQueue(guildId) {
     if (
@@ -300,7 +305,7 @@ class Player extends EventEmitter {
    * QueueCacheFetch -> Private Method for Player's Workload to Fetch Queue Cache Easily without using any Player's Instance
    * @param {String|Number} guildId Guild["id"] OR guild.id is required to fetch queue from the Cache
    * @param {DefaultQueueCreateOptions} QueueCreateOptions QueueCreateOptions for if Queue "connection" is destroyed , then it requires Options to remake whole infrastructure
-   * @returns {Queue|undefined} QueueInstance , To reperesnt the Work Complete Signal
+   * @returns {Queue|void} QueueInstance , To reperesnt the Work Complete Signal
    */
 
   static QueueCacheFetch(guildId, QueueCreateOptions = null) {
@@ -321,7 +326,7 @@ class Player extends EventEmitter {
    * Player Class Defined Method
    * QueueCacheRemove -> Private Method for Player's Workload to Remove Queue Cache Easily without using any Player's Instance
    * @param {String|Number} guildId Guild["id"] OR guild.id is required to fetch queue from the Cache
-   * @returns {undefined} undefined , To reperesnt the Work Complete Signal as Queue will be destroyed so , we can't return Queue
+   * @returns {void} undefined , To reperesnt the Work Complete Signal as Queue will be destroyed so , we can't return Queue
    * @private
    */
 
@@ -344,7 +349,7 @@ class Player extends EventEmitter {
    * #__playerVoiceConnectionMainHandler -> Private Method for Player's Voice Connection "Manager" to Filter out Connection Decisions frpm Queue | Player 's Connection Options from User
    * @param {Queue} QueueInstance Queue Instance made from "Queue" class to work around
    * @param {VoiceChannel|StageChannel} VoiceChannel Simple Discord Voice Channel | Stage Channel Value
-   * @returns {undefined} undefined, As these Private method only meant for Voice Handling with Options
+   * @returns {void} undefined, As these Private method only meant for Voice Handling with Options
    * @private
    */
   #__playerVoiceConnectionMainHandler(QueueInstance, VoiceChannel) {
@@ -388,7 +393,7 @@ class Player extends EventEmitter {
    * #__handleVoiceConnectionInterchange -> Private Method for Player's Voice Destroy Connection
    * @param {Queue} QueueInstance Queue Instance made from "Queue" class to work around
    * @param {VoiceChannel|StageChannel} VoiceChannel Simple Discord Voice Channel | Stage Channel Value
-   * @returns {undefined} undefined, As these Private method only meant for Voice Handling with Options
+   * @returns {void} undefined, As these Private method only meant for Voice Handling with Options
    * @private
    */
 
@@ -416,7 +421,7 @@ class Player extends EventEmitter {
    * Player Class Defined Method
    * #__buildsandDepschecks -> Private Method for Checks for Dependencies , Intents to avoid Internal value errors or package bugs
    * @param {Client} Client Discord Client Instance for Operating as a Bot
-   * @returns {undefined} undefined, As these Private method only meant for Voice Handling with Options
+   * @returns {void} undefined, As these Private method only meant for Voice Handling with Options
    * @private 
    */
 

@@ -17,11 +17,11 @@ class TrackGenerator {
   /**
    * fetch() -> Fetch method , fetches Streams for Stream packet
    * @param {String} Query Query like URls or Youtube Searches | Default Extractor accept 5 supported and big websites like youtube , spotify , soundcloud , retribution , facebook and for "youtube-dl" , it accept any follows official "youtube" searches
-   * @param {User|GuildMember|undefined} requestedBy user Data as who requested if given during insert or play method of Queue Instance
+   * @param {User|GuildMember|void} requestedBy user Data as who requested if given during insert or play method of Queue Instance
    * @param {DefaultExtractorStreamOptions} FetchOptions Extractor Options for Track Download from Extractors
-   * @param {String|Boolean|undefined} extractor extractor to be used as "play-dl" or "youtube-dl"
-   * @param {Nummber|String|undefined} CacheLength Last Track ID value
-   * @param {Boolean|undefined} NoStreamif Check if User wants Stream or not
+   * @param {String|Boolean|void} extractor extractor to be used as "play-dl" or "youtube-dl"
+   * @param {Nummber|String|void} CacheLength Last Track ID value
+   * @param {Boolean|void} NoStreamif Check if User wants Stream or not
    * @returns {Promise<DefaultChunk>} returns Chunk value | like a packet of tracks and streamdata values
    */
   static async fetch(
@@ -104,8 +104,8 @@ class TrackGenerator {
   /**
    * @private Track_Id_Placement -> Track Placement in Tracks Cache with Differing as stream tracks and normal tracks for users
    * @param {DefaultStream[]} Tracks Stream Tracks to be converted User fetchable
-   * @param {Number|undefined} CacheLength last Cached Track's ID
-   * @param {User|GuildMember|undefined} requestedBy RequestedBy User Object value for Track
+   * @param {Number|void} CacheLength last Cached Track's ID
+   * @param {User|GuildMember|void} requestedBy RequestedBy User Object value for Track
    * @returns {DefaultChunk} Chunk Vlaue for Tracks Cache
    */
 
@@ -131,7 +131,7 @@ class TrackGenerator {
    * SongsFetching() -> Raw Track Data Fetching from various extractors like "play-dl" | "youtube-dl"
    * @param {String} Query Query like URls or Youtube Searches | Default Extractor accept 5 supported and big websites like youtube , spotify , soundcloud , retribution , facebook and for "youtube-dl" , it accept any follows official "youtube" searches
    * @param {DefaultFetchOptions} FetchOptions Fetching Options for Extractors
-   * @param {String|Boolean|undefined} extractor extractor to be used as "play-dl" or "youtube-dl"
+   * @param {String|Boolean|void} extractor extractor to be used as "play-dl" or "youtube-dl"
    * @returns {Promise<DefaultExtractorData>} Returns Extractor Value with no edits
    */
 
@@ -189,7 +189,7 @@ class TrackGenerator {
    * @private YoutubeDLExtractor -> Youtube-Dl Extractor for player
    * @param {String} Query Query like URls or Youtube Searches | Default Extractor accept 5 supported and big websites like youtube , spotify , soundcloud , retribution , facebook and for "youtube-dl" , it accept any follows official "youtube" searches
    * @param {DefaultExtractorStreamOptions} ExtractorStreamOptions Extractor Fetching Options
-   * @param {Boolean|undefined} NoStreamif Check if User wants Stream or not
+   * @param {Boolean|void} NoStreamif Check if User wants Stream or not
    * @returns {Promise<DefaultExtractorData>} Returns Extractor Value with no edits
    */
 
@@ -224,7 +224,7 @@ class TrackGenerator {
    * @private PlayDLExtractor -> Play-Dl Extractor for player
    * @param {String} Query Query like URls or Youtube Searches | Default Extractor accept 5 supported and big websites like youtube , spotify , soundcloud , retribution , facebook and for "youtube-dl" , it accept any follows official "youtube" searches
    * @param {DefaultExtractorStreamOptions} ExtractorStreamOptions Extractor Fetching Options
-   * @param {Boolean|undefined} NoStreamif Check if User wants Stream or not
+   * @param {Boolean|void} NoStreamif Check if User wants Stream or not
    * @returns {Promise<DefaultExtractorData>} Returns Extractor Value with no edits
    */
 
@@ -239,7 +239,7 @@ class TrackGenerator {
   /**
    * @private UserTrackModelGen -> Transfering Normal Stream Data to user readable Track
    * @param {DefaultStream} TrackData Stream Data about the Track
-   * @param {User|GuildMember|undefined} requestedByUser Requested user for Track Object
+   * @param {User|GuildMember|void} requestedByUser Requested user for Track Object
    * @returns {DefaultTrack} Track Value for Queue.tracks[]
    */
 

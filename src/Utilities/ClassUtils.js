@@ -39,8 +39,8 @@ class ClassUtils {
 
   /**
    * ScanDeps() -> Scanning Dependencies in package.json or node_modules for package or versions list
-   * @param {String|undefined} packageName Package name for publishing it sversion in project
-   * @returns {String|undefined} Publish Data whaich was requested for
+   * @param {String|void} packageName Package name for publishing it sversion in project
+   * @returns {String|void} Publish Data whaich was requested for
    */
 
   static ScanDeps(packageName) {
@@ -100,7 +100,7 @@ class ClassUtils {
   /**
    * @private __versioning() -> Searching Versions of Packages
    * @param {String} name NPM Package Name
-   * @returns {String|undefined} Returns Package Version
+   * @returns {String|void} Returns Package Version
    */
 
   static __versioning(name) {
@@ -143,9 +143,9 @@ class ClassUtils {
 
   /**
    * HumanTimeConversion() -> Human Time Conversion Function with two categories
-   * @param {String|Number|undefined} Type1 Convert Milliseconds to Human Time Language
-   * @param {Object[]|undefined} Type2 Convert Milliseconds to Human Time variables
-   * @returns {String|undefined} Returns String with desired value
+   * @param {String|Number|void} Type1 Convert Milliseconds to Human Time Language
+   * @param {Object[]|void} Type2 Convert Milliseconds to Human Time variables
+   * @returns {String|void} Returns String with desired value
    */
 
   static HumanTimeConversion(Type1 = undefined, Type2 = undefined) {

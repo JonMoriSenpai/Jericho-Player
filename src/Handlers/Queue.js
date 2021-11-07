@@ -38,7 +38,7 @@ class Queue {
   /**
    * @param {Client} Client Discord Client Instance
    * @param {Message} message Guild's Text Messsage
-   * @param {DefaultQueueCreateOptions|undefined} QueueOptions Queue Create Options
+   * @param {DefaultQueueCreateOptions|void} QueueOptions Queue Create Options
    * @param {Player} Player Jericho Player Instance
    */
   constructor(
@@ -106,7 +106,7 @@ class Queue {
 
     /**
      * Metadata value in Queue for Audio Resources
-     * @type {Object|undefined}
+     * @type {Object|void}
      */
     this.metadata = QueueOptions.metadata;
 
@@ -181,7 +181,7 @@ class Queue {
    * @param {VoiceChannel|StageChannel} VoiceChannel Voice Channel from Discord.js
    * @param {User|GuildMember} User Guild Member or Guild User for requestedBy Object in track
    * @param {DefaultQueueCreateOptions} PlayOptions Play Options | Queue Create Options | Stream Options for Additional features
-   * @returns {Promise<Boolean|undefined>|undefined} undefined on successfull attempt or Promise rejection | true if operation went good signal
+   * @returns {Promise<Boolean|void>|void} undefined on successfull attempt or Promise rejection | true if operation went good signal
    */
 
   async play(
@@ -261,8 +261,8 @@ class Queue {
 
   /**
    * skip() ->  Skips the Curren Song if Index is undefined | 0 , or else act as skipTo Type where Next song will play what has been Mentioned
-   * @param {String|Number|undefined} TrackIndex Track's Index (0,1,2,..) To Skip to Specified Track or else undefined to skip current and play song now
-   * @returns {Boolean|undefined} true if operation went signal Green or else undefined for error event triggers
+   * @param {String|Number|void} TrackIndex Track's Index (0,1,2,..) To Skip to Specified Track or else undefined to skip current and play song now
+   * @returns {Boolean|void} true if operation went signal Green or else undefined for error event triggers
    */
 
   skip(TrackIndex) {
@@ -311,7 +311,7 @@ class Queue {
 
   /**
    * stop() -> Stops the Player and Clean the Tracks
-   * @returns {Boolean|undefined} true if operation emits green signal or undefined for errors
+   * @returns {Boolean|void} true if operation emits green signal or undefined for errors
    */
 
   stop() {
@@ -341,7 +341,7 @@ class Queue {
 
   /**
    * pause() -> pause the Player and freeze  Track Manulpulation and Stream tooo
-   * @returns {Boolean|undefined} true if operation emits green signal or undefined for errors
+   * @returns {Boolean|void} true if operation emits green signal or undefined for errors
    */
 
   pause() {
@@ -363,7 +363,7 @@ class Queue {
 
   /**
    * resume() -> Resume the Paused Player and Unfreeze Track's Functions in Queue/StreamPacket
-   * @returns {Boolean|undefined} true if operation emits green signal or undefined for errors
+   * @returns {Boolean|void} true if operation emits green signal or undefined for errors
    */
 
   resume() {
@@ -392,8 +392,8 @@ class Queue {
    * @param {String} Query Query as URLs or Youtube Searches
    * @param {String | Number} TrackIndex Track Index Value to insert at any specific position
    * @param {GuildMember|User} User user Value for Track.requestedBy Object
-   * @param {DefaultQueueCreateOptions|undefined} InsertOptions Stream Options for Query Processing | Same as Queue Creation and Play Method
-   * @returns {Promise<Boolean|undefined>|undefined} true if operation emits green signal or undefined for errors
+   * @param {DefaultQueueCreateOptions|void} InsertOptions Stream Options for Query Processing | Same as Queue Creation and Play Method
+   * @returns {Promise<Boolean|void>|void} true if operation emits green signal or undefined for errors
    */
   async insert(
     Query,
@@ -458,9 +458,9 @@ class Queue {
 
   /**
    * remove() -> Remove method to Remove Song/Track from Queue/Tracks Cache
-   * @param {String|Number|undefined} Index Track Index to Remove from Queue.tracks
-   * @param {Number|undefined} Amount Amount of Tracks to Remove from Queue OR Queue.tracks
-   * @returns {Boolean|undefined} true if operation emits green signal or undefined for errors
+   * @param {String|Number|void} Index Track Index to Remove from Queue.tracks
+   * @param {Number|void} Amount Amount of Tracks to Remove from Queue OR Queue.tracks
+   * @returns {Boolean|void} true if operation emits green signal or undefined for errors
    */
 
   remove(Index = -1, Amount = 1) {
@@ -494,8 +494,8 @@ class Queue {
 
   /**
    * destroy() -> Destroy Queue | Also Destroy Connection with it , method is quite powerfull
-   * @param {Number|undefined} connectionTimedout NodejsTimeout Number to destroy with a timer
-   * @returns {Boolean|undefined} true if operation emits green signal or undefined for errors
+   * @param {Number|void} connectionTimedout NodejsTimeout Number to destroy with a timer
+   * @returns {Boolean|void} true if operation emits green signal or undefined for errors
    */
 
   destroy(connectionTimedout = 0) {
@@ -539,7 +539,7 @@ class Queue {
 
   /**
    * mute() -> Mute Music Player
-   * @returns {Boolean|undefined} true if operation emits green signal or undefined for errors
+   * @returns {Boolean|void} true if operation emits green signal or undefined for errors
    */
 
   mute() {
@@ -558,8 +558,8 @@ class Queue {
 
   /**
    * unmute() -> Un-Mute Music Player
-   * @param {String|Number|undefined} Volume Volume of the Track or Music Player
-   * @returns {Number|undefined} Returns Volume Value if operation went green or else , returns undefined if error occurs
+   * @param {String|Number|void} Volume Volume of the Track or Music Player
+   * @returns {Number|void} Returns Volume Value if operation went green or else , returns undefined if error occurs
    */
 
   unmute(Volume) {
@@ -587,7 +587,7 @@ class Queue {
   /**
    * clear() -> Clear Tracks from Queue and Stream Packet
    * @param {Number|String} TracksAmount Tracks Size in Queue
-   * @returns {Boolean|undefined} true if operation emits green signal or undefined for errors
+   * @returns {Boolean|void} true if operation emits green signal or undefined for errors
    */
 
   clear(TracksAmount = this.tracks.length - 1) {
@@ -628,8 +628,8 @@ class Queue {
    * @param {String|Number} TracksBackwardIndex TrackIndex in PreviousTracks Stack to Play now or else recent ended song will be played
    * @param {User|GuildMember} User User Data if new User is using Back Command
    * @param {DefaultQueueCreateOptions} PlayOptions Stream Play Options , Same as Queue Create Options to add more into extraction and other properties
-   * @param {Boolean|undefined} forceback if User wants to forceibly play previous Tracks without any delay or wait
-   * @returns {Promise<Boolean|undefined>|undefined} true if operation emits green signal or undefined for errors
+   * @param {Boolean|void} forceback if User wants to forceibly play previous Tracks without any delay or wait
+   * @returns {Promise<Boolean|void>|void} true if operation emits green signal or undefined for errors
    */
 
   async back(
@@ -690,10 +690,10 @@ class Queue {
 
   /**
    * createProgressBar() -> Create progress bar for Queue ,Tracks , PreviousTracks and current track(Track)
-   * @param {String|undefined} Work  Queue ,Tracks , PreviousTracks and current track(Track) as its Value
-   * @param {String|Number|undefined} DefaultType Default Type Value to create Progress bar Cache Types
+   * @param {String|void} Work  Queue ,Tracks , PreviousTracks and current track(Track) as its Value
+   * @param {String|Number|void} DefaultType Default Type Value to create Progress bar Cache Types
    * @param {DefaultProgressBar} Bar Progress bar Credentials or else ByDefault it will Create one
-   * @returns {String|undefined} Progress Bar or else undefined if any error occurs
+   * @returns {String|void} Progress Bar or else undefined if any error occurs
    */
 
   createProgressBar(
@@ -783,8 +783,8 @@ class Queue {
 
   /**
    * loop() -> Loop Single Track or Queue
-   * @param {String|undefined} Choice Mode Choice , like "track" | "queue" | "off"
-   * @returns {Boolean|undefined} returns true for green signal operation and undefined for errors
+   * @param {String|void} Choice Mode Choice , like "track" | "queue" | "off"
+   * @returns {Boolean|void} returns true for green signal operation and undefined for errors
    */
 
   loop(Choice = DefaultModesType.Track) {
@@ -799,9 +799,9 @@ class Queue {
 
   /**
    * repeat() -> Repeat Track or Queue with "n" Times given by User
-   * @param {String|String|undefined} Choice Mode Choice , like "track" | "queue" | "off"
-   * @param {String|undefined} Times Number of Repeat Track or Queue with "n" Times given by User
-   * @returns {Boolean|undefined} returns true for green signal operation and undefined for errors
+   * @param {String|String|void} Choice Mode Choice , like "track" | "queue" | "off"
+   * @param {String|void} Times Number of Repeat Track or Queue with "n" Times given by User
+   * @returns {Boolean|void} returns true for green signal operation and undefined for errors
    */
 
   repeat(Choice = DefaultModesType.Track, Times = 1) {
@@ -820,8 +820,8 @@ class Queue {
 
   /**
    * autoplay() -> Autplay Songs with the help of last Played Track or Query given
-   * @param {String|String|undefined} ChoiceORQuery Mode Choice , like "off" | OR else give Query or Url for autoplay songs with respect to specified query
-   * @returns {Boolean|undefined} returns true for green signal operation and undefined for errors
+   * @param {String|String|void} ChoiceORQuery Mode Choice , like "off" | OR else give Query or Url for autoplay songs with respect to specified query
+   * @returns {Boolean|void} returns true for green signal operation and undefined for errors
    */
 
   autoplay(ChoiceORQuery = undefined) {
@@ -838,8 +838,8 @@ class Queue {
    * search() -> Searching for Tracks of Query
    * @param {String} Query Query as URLs or Youtube Searches
    * @param {GuildMember|User} User user Value for Track.requestedBy Object
-   * @param {DefaultQueueCreateOptions|undefined} SearchOptions Stream Options for Query Processing | Same as Queue Creation and Play Method
-   * @returns {Promise<Objectundefined>|undefined} Returns Tracks if operation emits green signal or undefined for errors
+   * @param {DefaultQueueCreateOptions|void} SearchOptions Stream Options for Query Processing | Same as Queue Creation and Play Method
+   * @returns {Promise<Objectundefined>|void} Returns Tracks if operation emits green signal or undefined for errors
    */
   async search(
     Query,
@@ -878,7 +878,7 @@ class Queue {
 
   /**
    * Volume of the Music Player Currently OR to set new Volume for Music Player
-   * @type {Number|undefined}
+   * @type {Number|void}
    * @readonly
    */
 
@@ -911,7 +911,7 @@ class Queue {
 
   /**
    * MusicPlayer's Paused's Status as Boolean
-   * @type {Boolean|undefined}
+   * @type {Boolean|void}
    * @readonly
    */
   get paused() {
@@ -951,7 +951,7 @@ class Queue {
 
   /**
    * Returns Current Track Cached in Stream Packet or Queue.tracks
-   * @type {DefaultTrack|undefined}
+   * @type {DefaultTrack|void}
    * @readonly
    */
   get current() {
@@ -961,7 +961,7 @@ class Queue {
 
   /**
    * CurrentTimeStamp -> TimeStamp of tracks , queue and e.t.c in milliseconds and human readable format
-   * @type {DefaultcurrentTimestamp|undefined}
+   * @type {DefaultcurrentTimestamp|void}
    * @readonly
    */
 
@@ -1061,7 +1061,7 @@ class Queue {
 
   /**
    * Previous Track Data | Same as Queue.current , But Data of previous track
-   * @type {DefaultTrack|undefined}
+   * @type {DefaultTrack|void}
    * @readonly
    */
 
@@ -1075,7 +1075,7 @@ class Queue {
 
   /**
    * Player Mode of Music Player like 'Loop','Repeat','AutoPlay'
-   * @type {DefaultPlayerMode|undefined}
+   * @type {DefaultPlayerMode|void}
    * @readonly
    */
 
@@ -1109,7 +1109,7 @@ class Queue {
   /**
    * Audio Resource or Management of Tracks in Queue
    * @private #__ResourcePlay() -> Resource Plays
-   * @returns {undefined} Returns undefined , it just completes a one-go process
+   * @returns {void} Returns undefined , it just completes a one-go process
    */
 
   async #__ResourcePlay() {
@@ -1169,9 +1169,9 @@ class Queue {
 
   /**
    * @private #__CleaningTrackMess -> Cleaning Tracks from mentioned Starting Index and Delete Tracks Number
-   * @param {Number|undefined} StartingTrackIndex Starting Track Index Number
-   * @param {Number|undefined} DeleteTracksCount Delete Tracks Count Number
-   * @returns {undefined} undefined as it's a One-Go Process
+   * @param {Number|void} StartingTrackIndex Starting Track Index Number
+   * @param {Number|void} DeleteTracksCount Delete Tracks Count Number
+   * @returns {void} undefined as it's a One-Go Process
    */
 
   #__CleaningTrackMess(StartingTrackIndex = 0, DeleteTracksCount) {
@@ -1203,7 +1203,7 @@ class Queue {
 
   /**
    * @private #__QueueAudioPlayerStatusManager -> Audio Player Manager as a part of End Event Handling
-   * @returns {undefined} undefined as it's a One-Go Process
+   * @returns {void} undefined as it's a One-Go Process
    */
 
   #__QueueAudioPlayerStatusManager() {
@@ -1224,8 +1224,8 @@ class Queue {
    * @param {Object} Credentials Credentials as Progress Bar work Data
    * @param {Number} FirstValue Starting Index of Requested Array
    * @param {Number} TotalValue End Index of Requested Array OR Total Counts
-   * @param {String|Number|undefined} DefaultType Default Framework Slot Number to use
-   * @returns {String|undefined} Progress Bar GUI in the form of string or errors on undefined
+   * @param {String|Number|void} DefaultType Default Framework Slot Number to use
+   * @returns {String|void} Progress Bar GUI in the form of string or errors on undefined
    */
 
   #__StructureProgressBar(Credentials, FirstValue, TotalValue, DefaultType) {

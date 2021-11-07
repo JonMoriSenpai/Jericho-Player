@@ -7,7 +7,7 @@
   "plugins": ["plugins/markdown", "node_modules/jsdoc-babel"],
   "babel": {
     "extensions": ["js"],
-    "babelrc": true,
+    "babelrc": false,
     "presets": [["@babel/preset-env", { "targets": { "node": true } }]]
   }
 }
