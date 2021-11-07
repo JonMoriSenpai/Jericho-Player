@@ -28,12 +28,13 @@
   "devDependencies": {
     "@babel/eslint-parser": "^7.16.0",
     "@babel/preset-env": "^7.16.0",
-    "@discordjs/docgen": "^0.10.0",
+    "@devsnowflake/docgen": "github:devsnowflake/docgen",
     "cz-conventional-changelog": "^3.3.0",
     "eslint": "^8.2.0",
     "eslint-config-airbnb-base": "^14.2.1",
     "eslint-plugin-import": "^2.25.2",
     "jsdoc": "^3.6.7",
+    "jsdoc-babel": "^0.5.0",
     "jsdoc-skyceil": "^2.0.0",
     "nyc": "^15.1.0",
     "semantic-release": "^18.0.0"
