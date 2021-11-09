@@ -31,6 +31,8 @@
     "no-underscore-dangle": "off",
     "no-empty": "off",
     "no-useless-constructor": "off",
-    "no-empty-function": "off"
+    "no-empty-function": "off",
+    "default-param-last": "off",
+    "no-setter-return": "off"
   }
 }

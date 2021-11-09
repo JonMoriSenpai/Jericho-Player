@@ -514,9 +514,9 @@ class Queue {
 
     // StreamPacket Destruction
     const Garbage = {};
+    this.StreamPacket = null;
     Garbage.container = this.StreamPacket;
     delete Garbage.container;
-    this.StreamPacket = undefined;
     return this.destroyed ?? undefined;
   }
 

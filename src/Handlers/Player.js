@@ -86,11 +86,11 @@ class Player extends EventEmitter {
 
     this.Client.on('voiceStateUpdate', async (OldVoiceState, NewVoiceState) => {
       /*
-       * - QueueInstance Fetched from Private Raw Cache Fetching Method "Player.QueueCacheFetch(guildId)"
+       * - QueueInstance Fetched from Private Raw Cache Fetching Method "Player.#QueueCacheFetch(guildId)"
        * - QueueIntance => will be used to filter Voice Events Related to our Queue or else return undefined for handling
        */
 
-      const QueueInstance = Player.QueueCacheFetch(
+      const QueueInstance = Player.#QueueCacheFetch(
         (NewVoiceState ? NewVoiceState.guild.id : undefined)
           ?? (OldVoiceState ? OldVoiceState.guild.id : undefined),
       );
@@ -248,9 +248,9 @@ class Player extends EventEmitter {
     );
 
     // To Avoid excess use of memory and Space in Large bots , We will always Cache Queue and Create one if is Deleted by DeleteQueue() method
-    const QueueInstance = Player.QueueCacheFetch(message.guild.id, QueueCreateOptions)
+    const QueueInstance = Player.#QueueCacheFetch(message.guild.id, QueueCreateOptions)
       ?? new Queue(this.Client, message, QueueCreateOptions, this);
-    return Player.QueueCacheAdd(QueueInstance);
+    return Player.#QueueCacheAdd(QueueInstance);
   }
 
   /**
@@ -267,8 +267,8 @@ class Player extends EventEmitter {
       return void this.emit('error', 'Invalid Guild Id', this, guildId);
     }
     // Checks for Queue in Cache doesn't matter if its Connection was destroyed | Cache only fetch its Existence to avoid excess CPU load
-    if (Player.QueueCacheFetch(guildId)) {
-      return void Player.QueueCacheRemove(guildId);
+    if (Player.#QueueCacheFetch(guildId)) {
+      return void Player.#QueueCacheRemove(guildId);
     }
     return void this.emit('error', 'Destroyed Queue', undefined);
   }
@@ -285,37 +285,37 @@ class Player extends EventEmitter {
     ) {
       return void this.emit('error', 'Invalid Guild Id', this, guildId);
     }
-    return Player.QueueCacheFetch(guildId);
+    return Player.#QueueCacheFetch(guildId);
   }
 
   /**
    * @private Player Class Defined Method
-   * QueueCacheAdd -> Private Method for Player's Workload to Add Queue Cache Easily without using any Player's Instance
+   * #QueueCacheAdd -> Private Method for Player's Workload to Add Queue Cache Easily without using any Player's Instance
    * @param {Queue} QueueInstance Queue Instance made from "Queue" class to work around with many <Queue>.methods() for a guild
    * @returns {Queue} QueueInstance , To reperesnt the Work Complete Signal
    */
 
-  static QueueCacheAdd(QueueInstance) {
+  static #QueueCacheAdd(QueueInstance) {
     Player.#QueueCaches[`${QueueInstance.guildId}`] = QueueInstance;
     return QueueInstance;
   }
 
   /**
    * @private Player Class Defined Method
-   * QueueCacheFetch -> Private Method for Player's Workload to Fetch Queue Cache Easily without using any Player's Instance
+   * #QueueCacheFetch -> Private Method for Player's Workload to Fetch Queue Cache Easily without using any Player's Instance
    * @param {String|Number} guildId Guild["id"] OR guild.id is required to fetch queue from the Cache
    * @param {DefaultQueueCreateOptions} QueueCreateOptions QueueCreateOptions for if Queue "connection" is destroyed , then it requires Options to remake whole infrastructure
    * @returns {Queue|void} QueueInstance , To reperesnt the Work Complete Signal
    */
 
-  static QueueCacheFetch(guildId, QueueCreateOptions = null) {
+  static #QueueCacheFetch(guildId, QueueCreateOptions = null) {
     const QueueInstance = Player.#QueueCaches[`${guildId}`];
     if (QueueCreateOptions && QueueInstance) {
       QueueInstance.QueueOptions = ClassUtils.stablizingoptions(
         QueueCreateOptions,
         QueueInstance.QueueOptions,
       );
-      if (typeof QueueInstance.destroyed !== 'boolean') clearTimeout(QueueInstance.destroyed);
+      if (QueueInstance && QueueInstance.destroyed && typeof QueueInstance.destroyed !== 'boolean') clearTimeout(QueueInstance.destroyed);
       QueueInstance.destroyed = false;
       Player.#QueueCaches[`${guildId}`] = QueueInstance;
     }
@@ -324,23 +324,24 @@ class Player extends EventEmitter {
 
   /**
    * Player Class Defined Method
-   * QueueCacheRemove -> Private Method for Player's Workload to Remove Queue Cache Easily without using any Player's Instance
+   * #QueueCacheRemove -> Private Method for Player's Workload to Remove Queue Cache Easily without using any Player's Instance
    * @param {String|Number} guildId Guild["id"] OR guild.id is required to fetch queue from the Cache
    * @returns {void} undefined , To reperesnt the Work Complete Signal as Queue will be destroyed so , we can't return Queue
    * @private
    */
 
-  static QueueCacheRemove(guildId) {
-    if (!this.QueueCacheFetch(guildId)) return false;
-    const QueueInstance = Player.#QueueCaches[`${guildId}`];
+  static #QueueCacheRemove(guildId) {
+    if (!this.#QueueCacheFetch(guildId)) return false;
+    let QueueInstance = Player.#QueueCaches[`${guildId}`];
     if (Player.#QueueCaches[`${guildId}`].playing) {
       Player.#QueueCaches[`${guildId}`].stop();
     }
     if (!QueueInstance.destroyed) QueueInstance.destroy();
     const Garbage = {};
     Garbage.Structure = QueueInstance;
+    QueueInstance = null;
+    Player.#QueueCaches[`${guildId}`] = null;
     delete Garbage.Structure;
-    Player.#QueueCaches[`${guildId}`] = undefined;
     return void null;
   }
 
@@ -393,7 +394,7 @@ class Player extends EventEmitter {
    * #__handleVoiceConnectionInterchange -> Private Method for Player's Voice Destroy Connection
    * @param {Queue} QueueInstance Queue Instance made from "Queue" class to work around
    * @param {VoiceChannel|StageChannel} VoiceChannel Simple Discord Voice Channel | Stage Channel Value
-   * @returns {void} undefined, As these Private method only meant for Voice Handling with Options
+   * @returns {Promise<void>} undefined, As these Private method only meant for Voice Handling with Options
    * @private
    */
 
