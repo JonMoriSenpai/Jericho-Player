@@ -1,6 +1,6 @@
 {
   "name": "jericho-player",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "LightWeight Framework for discord.js v13 Music Bots and Radio Bots with fast moderation with commands and no memory leak",
   "main": "./src/index.js",
   "module": "./src/index.mjs",
@@ -22,13 +22,11 @@
     "commit": "git-cz",
     "semantic-release": "semantic-release --branches main",
     "commit:push": "git add . && npm run commit && git push",
-    "docs": "jsdoc node_modules/.bin/jsdoc --configure .jsdoc.json --verbose",
-    "docs:advance": "docgen --jsdoc jsdoc.json --source src --custom docs/index.yml --output docs/docs.json"
+    "docs": "jsdoc node_modules/.bin/jsdoc --configure .jsdoc.json --verbose"
   },
   "devDependencies": {
     "@babel/eslint-parser": "^7.16.0",
     "@babel/preset-env": "^7.16.0",
-    "@discordjs/docgen": "^0.10.0",
     "cz-conventional-changelog": "^3.3.0",
     "eslint": "^8.2.0",
     "eslint-config-airbnb-base": "^15.0.0",
