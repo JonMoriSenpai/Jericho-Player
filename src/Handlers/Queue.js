@@ -508,13 +508,12 @@ class Queue {
       )
       : undefined;
 
-    this.destroyed = NodeTimeoutId && !Number.isNaN(NodeTimeoutId)
+    this.destroyed = NodeTimeoutId && !Number.isNaN(NodeTimeoutId) && Number(NodeTimeoutId) > 0
       ? Number(NodeTimeoutId)
       : true;
 
     // StreamPacket Destruction
     const Garbage = {};
-    this.StreamPacket = null;
     Garbage.container = this.StreamPacket;
     delete Garbage.container;
     return this.destroyed ?? undefined;
