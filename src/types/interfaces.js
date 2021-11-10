@@ -1,7 +1,13 @@
 const {
   User, Client, VoiceChannel, StageChannel,
 } = require('discord.js');
-const { AudioResource, PlayerSubscription } = require('@discordjs/voice');
+const {
+  AudioResource,
+  PlayerSubscription,
+  VoiceConnection,
+} = require('@discordjs/voice');
+const Queue = require('../Handlers/Queue');
+const Player = require('../Handlers/Player');
 
 /**
  * @typedef {Object} DefaultProgressBar
@@ -356,6 +362,63 @@ const DefaultQueueCreateOptions = {
   LeaveOnBotOnlyTimedout: 0,
 };
 
+/**
+ * @typedef {Object} DefaultPlayerEvents
+ * @property {Object} error Player Error Events and should be handled Properly
+ * @property {Object} channelEmpty When Noone is there in Channel
+ * @property {Object} botDisconnect If Bot got disconnected from Voice Channel
+ * @property {Object} trackEnd Event for Song got Ended Perfectly
+ * @property {Object} trackStart Event for Starting of Songs
+ * @property {Object} connectionError Connection Error for Join Channel Configs and Methods
+ * @property {Boolean} playlistAdd Event for if Playlist has been Parsed and Tracks will be returned
+ * @property {Object} tracksAdd Event for Tracks Added currently if playlist got stuck and even single Track will also emit this event
+ */
+
+const DefaultPlayerEvents = {
+  error: {
+    message: '',
+    queue: Queue || Player || undefined,
+    extradata: undefined,
+  },
+
+  channelEmpty: {
+    queue: Queue,
+    voiceChannel: VoiceChannel || StageChannel || undefined,
+  },
+
+  botDisconnect: {
+    queue: Queue,
+    voiceChannel: VoiceChannel || StageChannel || undefined,
+  },
+
+  trackEnd: {
+    queue: Queue,
+    track: DefaultTrack,
+  },
+
+  trackStart: {
+    queue: Queue,
+    track: DefaultTrack,
+  },
+
+  connectionError: {
+    message: '',
+    queue: Queue,
+    connection: VoiceConnection || undefined,
+    guildId: String,
+  },
+
+  playlistAdd: {
+    queue: Queue,
+    tracks: [DefaultTrack],
+  },
+
+  tracksAdd: {
+    queue: Queue,
+    tracks: [DefaultTrack],
+  },
+};
+
 module.exports = {
   DefaultQueueCreateOptions,
   DefaultJerichoPlayerOptions,
@@ -374,4 +437,5 @@ module.exports = {
   DefaultModesType,
   DefaultPlayerMode,
   DefaultcurrentTimestamp,
+  DefaultPlayerEvents,
 };

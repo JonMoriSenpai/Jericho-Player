@@ -10,10 +10,13 @@ import {
   Queue,
   PlayerOptions,
   QueueOptions,
-  DefaultModesTypes
+  DefaultModesTypes,
+  PlayerEvents,
+  Awaitable
 } from './instances'
 import { VoiceConnection } from '@discordjs/voice'
 import { EventEmitter } from 'events'
+
 
 export class Player extends EventEmitter {
   public constructor (Client: Client, PlayerOptions?: PlayerOptions)
@@ -25,6 +28,12 @@ export class Player extends EventEmitter {
   ): Queue | undefined
   public GetQueue (guildId: Guild['id'] | Snowflake | String): Queue | undefined
   public DeleteQueue (guildId: Guild['id'] | Snowflake | String): undefined
+
+  public on<K extends keyof PlayerEvents>(event: K, listener: (...args: PlayerEvents[K]) => Awaitable<void>): this;
+  public on<S extends string | symbol>(
+    event: Exclude<S, keyof PlayerEvents>,
+    listener: (...args: any[]) => Awaitable<void>,
+  ): this;
 }
 
 export class Utils {

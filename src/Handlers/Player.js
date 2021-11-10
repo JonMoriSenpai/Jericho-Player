@@ -113,12 +113,16 @@ class Player extends EventEmitter {
         ) {
           this.emit('channelEmpty', QueueInstance, OldVoiceState.channel);
         }
-        this.emit(
-          'botDisconnect',
-          QueueInstance,
-          OldVoiceState.channel ?? undefined,
-        );
-        return this.DeleteQueue(QueueInstance.guildId);
+        if (QueueInstance && !QueueInstance.destroyed) {
+          this.emit(
+            'botDisconnect',
+            QueueInstance,
+            OldVoiceState.channel ?? undefined,
+          );
+        }
+        return QueueInstance && QueueInstance.guildId
+          ? this.DeleteQueue(QueueInstance.guildId)
+          : undefined;
       }
       if (
         !QueueInstance
@@ -315,7 +319,11 @@ class Player extends EventEmitter {
         QueueCreateOptions,
         QueueInstance.QueueOptions,
       );
-      if (QueueInstance && QueueInstance.destroyed && typeof QueueInstance.destroyed !== 'boolean') clearTimeout(QueueInstance.destroyed);
+      if (
+        QueueInstance
+        && QueueInstance.destroyed
+        && typeof QueueInstance.destroyed !== 'boolean'
+      ) clearTimeout(QueueInstance.destroyed);
       QueueInstance.destroyed = false;
       Player.#QueueCaches[`${guildId}`] = QueueInstance;
     }
@@ -338,10 +346,11 @@ class Player extends EventEmitter {
     }
     if (!QueueInstance.destroyed) QueueInstance.destroy();
     const Garbage = {};
-    Garbage.Structure = QueueInstance;
-    QueueInstance = null;
-    Player.#QueueCaches[`${guildId}`] = null;
-    delete Garbage.Structure;
+    QueueInstance = Player.#QueueCaches[`${guildId}`] = undefined;
+    Garbage.container1 = QueueInstance;
+    Garbage.container2 = Player.#QueueCaches[`${guildId}`];
+    delete Garbage.container1;
+    delete Garbage.container2;
     return void null;
   }
 

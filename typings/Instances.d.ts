@@ -11,14 +11,11 @@ import {
   Interaction,
   Message,
   Snowflake,
+  StageChannel,
   User,
   VoiceChannel
 } from 'discord.js'
 import { Player } from './index'
-
-/**
- *
- */
 
 export type Queue = {
   readonly Client: Client
@@ -102,12 +99,12 @@ export type Queue = {
     DefaultType?: Number | String | undefined | '1' | '3',
     Bar?:
       | {
-          CompleteIcon: String | '▬'
-          TargetIcon: String | '🔘'
-          RemainingIcon: String | '▬'
-          StartingIcon: String | undefined
-          EndIcon: String | undefined
-        }
+        CompleteIcon: String | '▬'
+        TargetIcon: String | '🔘'
+        RemainingIcon: String | '▬'
+        StartingIcon: String | undefined
+        EndIcon: String | undefined
+      }
       | undefined
   ): String | undefined
 
@@ -189,12 +186,12 @@ export type Stream = {
   readonly stream_video_Id: String
   readonly stream_human_duration: String
   readonly orignal_extractor:
-    | String
-    | 'youtube'
-    | 'spotify'
-    | 'soundcloud'
-    | 'facebook'
-    | 'arbitrary'
+  | String
+  | 'youtube'
+  | 'spotify'
+  | 'soundcloud'
+  | 'facebook'
+  | 'arbitrary'
   readonly thumbnail: String
   readonly channelId: String | Number
   readonly channel_url: String
@@ -265,4 +262,43 @@ export enum DefaultModesTypes {
   Track = 'track',
   Queue = 'queue',
   Off = 'off'
+}
+export type Awaitable<T> = T | PromiseLike<T>
+
+export interface PlayerEvents {
+  error: [
+    message: string,
+    queue: Queue | Player | undefined,
+    extradata: any | undefined,
+  ]
+  channelEmpty: [
+    queue: Queue,
+    voiceChannel: VoiceChannel | StageChannel | undefined,
+  ]
+  botDisconnect: [
+    queue: Queue,
+    voiceChannel: VoiceChannel | StageChannel | undefined,
+  ]
+  trackEnd: [
+    queue: Queue,
+    track: Track,
+  ]
+  trackStart: [
+    queue: Queue,
+    track: Track,
+  ]
+  connectionError: [
+    message: string,
+    queue: Queue,
+    connection: VoiceConnection | undefined,
+    guildId: String | Snowflake,
+  ]
+  playlistAdd: [
+    queue: Queue,
+    tracks: Track[],
+  ]
+  tracksAdd: [
+    queue: Queue,
+    tracks: Track[],
+  ]
 }
