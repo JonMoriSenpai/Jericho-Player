@@ -514,8 +514,14 @@ class Queue {
 
     // StreamPacket Destruction
     const Garbage = {};
-    Garbage.container = this.StreamPacket;
-    delete Garbage.container;
+    Garbage.container1 = this.StreamPacket.tracks;
+    Garbage.container2 = this.StreamPacket.searches;
+    Garbage.container3 = this.StreamPacket.previousTracks;
+    Garbage.container4 = this.StreamPacket;
+    delete Garbage.container1;
+    delete Garbage.container2;
+    delete Garbage.container3;
+    delete Garbage.container4;
     return this.destroyed ?? undefined;
   }
 
