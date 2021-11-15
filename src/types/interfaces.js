@@ -363,6 +363,164 @@ const DefaultQueueCreateOptions = {
 };
 
 /**
+ * @typedef {Object} DefaultUserDrivenAudioFilters
+ * @property {Boolean} bassboost_low
+ * @property {Boolean} bassboost
+ * @property {Boolean} bassboost_high
+ * @property {Boolean} "3D"
+ * @property {Boolean} "8D"
+ * @property {Boolean} vaporwave
+ * @property {Boolean} nightcore
+ * @property {Boolean} phaser
+ * @property {Boolean} tremolo
+ * @property {Boolean} vibrato
+ * @property {Boolean} reverse
+ * @property {Boolean} treble
+ * @property {Boolean} normalizer
+ * @property {Boolean} normalizer2
+ * @property {Boolean} surrounding
+ * @property {Boolean} pulsator
+ * @property {Boolean} subboost
+ * @property {Boolean} karaoke
+ * @property {Boolean} flanger
+ * @property {Boolean} gate
+ * @property {Boolean} haas
+ * @property {Boolean} mcompand
+ * @property {Boolean} mono
+ * @property {Boolean} mstlr
+ * @property {Boolean} mstrr
+ * @property {Boolean} compressor
+ * @property {Boolean} expander
+ * @property {Boolean} softlimiter
+ * @property {Boolean} chorus
+ * @property {Boolean} chorus2d
+ * @property {Boolean} chorus3d
+ * @property {Boolean} fadein
+ * @property {Boolean} dim
+ * @property {Boolean} earrape
+ * @property {Boolean} echo
+ */
+
+const DefaultUserDrivenAudioFilters = {
+  bassboost_low: false,
+  bassboost: false,
+  bassboost_high: false,
+  '3D': false,
+  '8D': false,
+  vaporwave: false,
+  nightcore: false,
+  phaser: false,
+  tremolo: false,
+  vibrato: false,
+  reverse: false,
+  treble: false,
+  normalizer: false,
+  normalizer2: false,
+  surrounding: false,
+  pulsator: false,
+  subboost: false,
+  karaoke: false,
+  flanger: false,
+  gate: false,
+  haas: false,
+  mcompand: false,
+  mono: false,
+  mstlr: false,
+  mstrr: false,
+  compressor: false,
+  expander: false,
+  softlimiter: false,
+  chorus: false,
+  chorus2d: false,
+  chorus3d: false,
+  fadein: false,
+  dim: false,
+  earrape: false,
+  echo: false,
+};
+
+/**
+ * @private
+ * @typedef {Object} DefaultAudioFilters
+ * @property {String} bassboost_low
+ * @property {String} bassboost
+ * @property {String} bassboost_high
+ * @property {String} "3D"
+ * @property {String} "8D"
+ * @property {String} vaporwave
+ * @property {String} nightcore
+ * @property {String} phaser
+ * @property {String} tremolo
+ * @property {String} vibrato
+ * @property {String} reverse
+ * @property {String} treble
+ * @property {String} normalizer
+ * @property {String} normalizer2
+ * @property {String} surrounding
+ * @property {String} pulsator
+ * @property {String} subboost
+ * @property {String} karaoke
+ * @property {String} flanger
+ * @property {String} gate
+ * @property {String} haas
+ * @property {String} mcompand
+ * @property {String} mono
+ * @property {String} mstlr
+ * @property {String} mstrr
+ * @property {String} compressor
+ * @property {String} expander
+ * @property {String} softlimiter
+ * @property {String} chorus
+ * @property {String} chorus2d
+ * @property {String} chorus3d
+ * @property {String} fadein
+ * @property {String} dim
+ * @property {String} earrape
+ * @property {String} echo
+ */
+
+const DefaultAudioFilters = {
+  bassboost_low: 'bass=g=15:f=110:w=0.3',
+  bassboost: 'bass=g=20:f=110:w=0.3',
+  bassboost_high: 'bass=g=30:f=110:w=0.3',
+  '3d': 'apulsator=hz=0.125',
+  '8D': 'apulsator=hz=0.09',
+  vaporwave: 'aresample=48000,asetrate=48000*0.8',
+  nightcore: 'aresample=48000,asetrate=48000*1.25',
+  phaser: 'aphaser=in_gain=0.4',
+  tremolo: 'tremolo',
+  vibrato: 'vibrato=f=6.5',
+  reverse: 'areverse',
+  treble: 'treble=g=5',
+  normalizer: 'dynaudnorm=g=101',
+  normalizer2: 'acompressor',
+  surrounding: 'surround',
+  pulsator: 'apulsator=hz=1',
+  subboost: 'asubboost',
+  karaoke: 'stereotools=mlev=0.03',
+  flanger: 'flanger',
+  gate: 'agate',
+  haas: 'haas',
+  mcompand: 'mcompand',
+  mono: 'pan=mono|c0=.5*c0+.5*c1',
+  mstlr: 'stereotools=mode=ms>lr',
+  mstrr: 'stereotools=mode=ms>rr',
+  compressor: 'compand=points=-80/-105|-62/-80|-15.4/-15.4|0/-12|20/-7.6',
+  expander:
+    'compand=attacks=0:points=-80/-169|-54/-80|-49.5/-64.6|-41.1/-41.1|-25.8/-15|-10.8/-4.5|0/0|20/8.3',
+  softlimiter:
+    'compand=attacks=0:points=-80/-80|-12.4/-12.4|-6/-8|0/-6.8|20/-2.8',
+  chorus: 'chorus=0.7:0.9:55:0.4:0.25:2',
+  chorus2d: 'chorus=0.6:0.9:50|60:0.4|0.32:0.25|0.4:2|1.3',
+  chorus3d: 'chorus=0.5:0.9:50|60|40:0.4|0.32|0.3:0.25|0.4|0.3:2|2.3|1.3',
+  fadein: 'afade=t=in:ss=0:d=10',
+  dim:
+    "afftfilt=\"'real=re * (1-clip((b/nb)*b,0,1))':imag='im * (1-clip((b/nb)*b,0,1))'\"",
+  earrape: 'channelsplit,sidechaingate=level_in=64',
+  echo: 'aecho=0.8:0.9:1000:0.3',
+};
+
+/**
  * @typedef {Object} DefaultPlayerEvents
  * @property {Object} error Player Error Events and should be handled Properly
  * @property {Object} channelEmpty When Noone is there in Channel
@@ -438,4 +596,6 @@ module.exports = {
   DefaultPlayerMode,
   DefaultcurrentTimestamp,
   DefaultPlayerEvents,
+  DefaultUserDrivenAudioFilters,
+  DefaultAudioFilters,
 };

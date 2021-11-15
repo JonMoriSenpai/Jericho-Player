@@ -1,5 +1,9 @@
 const { resolve, dirname } = require('path');
 const { FFmpeg } = require('prism-media');
+const {
+  DefaultUserDrivenAudioFilters,
+  DefaultAudioFilters,
+} = require('../types/interfaces');
 
 /**
  * @class ClassUtils -> Class Util's methods are for Class's Support and helping basic or extract support neccassity tools
@@ -145,10 +149,15 @@ class ClassUtils {
    * HumanTimeConversion() -> Human Time Conversion Function with two categories
    * @param {String|Number|void} Type1 Convert Milliseconds to Human Time Language
    * @param {Object[]|void} Type2 Convert Milliseconds to Human Time variables
+   * @param {String|void} Type3 Convert Standared hh:mm:ss to milliseoncds
    * @returns {String|void} Returns String with desired value
    */
 
-  static HumanTimeConversion(Type1 = undefined, Type2 = undefined) {
+  static HumanTimeConversion(
+    Type1 = undefined,
+    Type2 = undefined,
+    Type3 = undefined,
+  ) {
     if (Type1) {
       const DurationMilliSeconds = Type1 / 1000;
       let ProcessedString = '';
@@ -212,7 +221,49 @@ class ClassUtils {
         : undefined;
       return TimeString.join(':');
     }
+    if (Type3) {
+      const TimeArray = typeof Type3 === 'string' ? Type3.split(':') : Type3;
+      let milliseconds = 0;
+      let GarbageValue = 1;
+
+      while (TimeArray.length > 0) {
+        milliseconds += GarbageValue * parseInt(TimeArray.pop(), 10);
+        GarbageValue *= 60;
+      }
+
+      return milliseconds;
+    }
     return '0 Seconds';
+  }
+
+  /**
+   * FiltersConverter() -> Converter for AudioFilters
+   * @param {String[]|Object{}} FiltersArray
+   */
+  static AudioFiltersConverter(FiltersArray) {
+    if (FiltersArray && FiltersArray[0]) {
+      const ObjectKeys = Object.keys(DefaultAudioFilters);
+      for (let count = 0, len = ObjectKeys.length; count < len; count++) {
+        if (
+          DefaultAudioFilters[`${ObjectKeys[count]}`]
+          && FiltersArray.includes(
+            DefaultAudioFilters[`${ObjectKeys[count]}`].trim(),
+          )
+        ) DefaultUserDrivenAudioFilters[`${ObjectKeys[count]}`] = true;
+      }
+      return DefaultUserDrivenAudioFilters;
+    }
+    const Filterkeys = Object.keys(FiltersArray);
+    const CacheArray = [];
+    for (let count = 0, len = Filterkeys.length; count < len; count++) {
+      if (
+        DefaultAudioFilters[`${Filterkeys[count]}`]
+        && FiltersArray[`${Filterkeys[count]}`]
+      ) {
+        CacheArray.push(`${DefaultAudioFilters[`${Filterkeys[count]}`].trim()}`);
+      }
+    }
+    return CacheArray;
   }
 }
 

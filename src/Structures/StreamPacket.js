@@ -13,6 +13,7 @@ const {
   StageChannel,
 } = require('discord.js');
 const { suggestions } = require('youtube-suggest-gen');
+const { FFmpeg } = require('prism-media');
 const Player = require('../Handlers/Player');
 const TracksGen = require('./Tracks');
 const VoiceUtils = require('../Utilities/VoiceUtils');
@@ -26,6 +27,7 @@ const {
   DefaultModesName,
 } = require('../types/interfaces');
 const Queue = require('../Handlers/Queue');
+const { HumanTimeConversion } = require('../Utilities/ClassUtils');
 
 /**
  * @private
@@ -165,6 +167,18 @@ class StreamPacketGen {
      * @readonly
      */
     this.previousTracks = [];
+
+    /**
+     * @private
+     * Private Cache of Modes using now
+     * @type {Object{}}
+     * @readonly
+     */
+    this.ExternalModes = {
+      seek: false,
+      audioFilters: false,
+      filtersUpdateChecks: false,
+    };
 
     /**
      * @private
@@ -448,6 +462,95 @@ class StreamPacketGen {
     forceback ? this.Player.GetQueue(this.guildId).skip() : undefined;
     return true;
   }
+  /**
+   * FFmpegArgsHandling() -> Ffmpeg Args handling for Audio Streaming Manupulations
+   * @param {Object} seekDuration Seeking Duration if any for seek methods
+   * @param {boolean} RemoveAudioFilters Boolean value for Removing Audio Filters
+   * @param {Boolean|undefined} cacheOnCurrentStream Cache Modernized Stream of the Current/Specified Track
+   * @param {Number|undefined} IndexValue Index Value of the Tracks
+   * @returns {Boolean} Returns true if operation went green or undefined
+   */
+
+  async FFmpegArgsHandling(
+    seekDuration,
+    RemoveAudioFilters = false,
+    cacheOnCurrentStream = false,
+    IndexValue = 0,
+  ) {
+    if (RemoveAudioFilters) {
+      this.ExternalModes = {
+        seek: this.StreamPacket.ExternalModes
+          ? this.StreamPacket.ExternalModes.audioFilters
+          : false,
+        audioFilters: [],
+        filtersUpdateChecks: this.StreamPacket.ExternalModes
+          ? this.StreamPacket.ExternalModes.filtersUpdateChecks
+          : false,
+      };
+    }
+    const ffmpegArgs = [
+      '-reconnect',
+      '1',
+      '-reconnect_streamed',
+      '1',
+      '-reconnect_at_eof',
+      '1',
+      '-reconnect_delay_max',
+      '5',
+      '-i',
+      this.tracks[0].stream_url,
+      '-analyzeduration',
+      '0',
+      '-loglevel',
+      '0',
+      '-ar',
+      '48000',
+      '-ac',
+      '2',
+      '-f',
+      's16le',
+    ];
+    if (seekDuration && seekDuration.StartingPoint) {
+      ffmpegArgs.unshift(
+        '-ss',
+        HumanTimeConversion(undefined, {
+          Time: seekDuration.StartingPoint,
+          ignore: ['milliseconds'],
+        }),
+      );
+    }
+    if (seekDuration && seekDuration.EndingPoint) {
+      ffmpegArgs.unshift(
+        '-t',
+        HumanTimeConversion(undefined, {
+          Time: seekDuration.EndingPoint,
+          ignore: ['milliseconds'],
+        }),
+      );
+    }
+    if (
+      this.ExternalModes.audioFilters
+      && typeof this.ExternalModes.audioFilters === 'object'
+      && this.ExternalModes.audioFilters[Number(IndexValue)]
+      && !RemoveAudioFilters
+    ) {
+      ffmpegArgs.unshift(
+        '-af',
+        this.ExternalModes.audioFilters[Number(IndexValue) + 1]
+          ? this.ExternalModes.audioFilters.join(',')
+          : this.ExternalModes.audioFilters[Number(IndexValue)],
+      );
+    }
+    const streamtrack = this.tracks;
+    streamtrack.stream = new FFmpeg({ args: ffmpegArgs, shell: false });
+    !cacheOnCurrentStream
+      ? this.searches.splice(1, 0, this.searches[Number(IndexValue)])
+      : undefined;
+    !cacheOnCurrentStream
+      ? this.tracks.splice(1, 0, streamtrack)
+      : (this.tracks[Number(IndexValue)] = streamtrack);
+    return true;
+  }
 
   /**
    * setMode() -> Set Mode of the Music Player between "loop","repeat","autoplay"
@@ -701,11 +804,7 @@ class StreamPacketGen {
         Number(QueueInstance.previousTrack.Id ?? 0) - 1,
       );
       if (Chunks && Chunks.error) {
-        return void this.Player.emit(
-          'error',
-          Chunks.error,
-          QueueInstance,
-        );
+        return void this.Player.emit('error', Chunks.error, QueueInstance);
       }
       this.tracks.push(Chunks.streamdatas[0]);
       this.searches.push(Chunks.tracks[0]);
