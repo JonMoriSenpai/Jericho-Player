@@ -175,18 +175,15 @@ class Queue {
               this.StreamPacket.ExternalModes
               && this.StreamPacket.ExternalModes.filtersUpdateChecks
             )
-          ) this.StreamPacket.previousTracks.push(this.StreamPacket.searches[0]);
-          !(this.playerMode && this.playerMode.type === DefaultModesType.Track)
-            ? this.Player.emit('trackEnd', this, this.tracks[0])
-            : undefined;
+          ) {
+            this.StreamPacket.previousTracks.push(this.StreamPacket.searches[0]);
+            !(
+              this.playerMode && this.playerMode.type === DefaultModesType.Track
+            )
+              ? this.Player.emit('trackEnd', this, this.tracks[0])
+              : undefined;
+          }
         }
-        this.StreamPacket.ExternalModes = {
-          seek: false,
-          audioFilters: this.StreamPacket.ExternalModes
-            ? this.StreamPacket.ExternalModes.audioFilters
-            : undefined,
-          filtersUpdateChecks: false,
-        };
         if (!this.destroyed) this.#__CleaningTrackMess();
         this.#__ResourcePlay();
       } else if (newState && newState.status === AudioPlayerStatus.Playing) {
@@ -920,16 +917,14 @@ class Queue {
         && typeof EndingPoint === 'string'
         && EndingPoint.includes(':')
         ? HumanTimeConversion(undefined, undefined, EndingPoint)
-        : EndingPoint
-          ? parseInt(EndingPoint)
-          : undefined,
+        : EndingPoint,
     );
     StartingPoint = parseInt(
       StartingPoint
         && typeof StartingPoint === 'string'
         && StartingPoint.includes(':')
         ? HumanTimeConversion(undefined, undefined, StartingPoint)
-        : parseInt(StartingPoint),
+        : StartingPoint,
     );
     if (StartingPoint >= Number(this.tracks[0].duration) - 1000) {
       return void this.Player.emit(
@@ -945,15 +940,21 @@ class Queue {
         this,
       );
     }
-    this.StreamPacket.FFmpegArgsHandling({
-      StartingPoint,
-      EndingPoint,
-    });
+    if (StartingPoint <= 0 || EndingPoint < 0) {
+      return void this.Player.emit(
+        'error',
+        "Invalid Seek Config | Try to Give less than track's Duration",
+        this,
+      );
+    }
     this.StreamPacket.ExternalModes = {
-      seek: true,
+      seek: {
+        StartingPoint,
+        EndingPoint: EndingPoint !== 0 ? EndingPoint : undefined,
+      },
       audioFilters: this.StreamPacket.ExternalModes
         ? this.StreamPacket.ExternalModes.audioFilters
-        : undefined,
+        : [],
       filtersUpdateChecks: true,
     };
     this.skip();
@@ -966,7 +967,7 @@ class Queue {
    * @returns {Boolean|void} returns true for complete process or else undefined for errors
    */
 
-  setFilters(FilterStructure = undefined) {
+  setFilters(FilterStructure = ['off']) {
     if (this.destroyed) {
       return void this.Player.emit('error', 'Destroyed Queue', this);
     }
@@ -976,21 +977,16 @@ class Queue {
     if (!this.StreamPacket.tracks[0]) {
       return void this.Player.emit('error', 'Empty Queue', this);
     }
-    if (FilterStructure) {
-      this.StreamPacket.ExternalModes = {
-        seek: this.StreamPacket.ExternalModes
-          ? this.StreamPacket.ExternalModes.seek
-          : false,
-        audioFilters: this.StreamPacket.ExternalModes
-          ? AudioFiltersConverter(FilterStructure)
-          : undefined,
-        filtersUpdateChecks: true,
-      };
-    }
-    this.StreamPacket.FFmpegArgsHandling(
-      { StartingPoint: Number(this.currentTimestamp.track_ms) },
-      !FilterStructure,
-    );
+    this.StreamPacket.ExternalModes = {
+      seek: this.StreamPacket.ExternalModes
+        ? this.StreamPacket.ExternalModes.seek
+        : undefined,
+      audioFilters:
+        this.StreamPacket.ExternalModes && FilterStructure
+          ? (AudioFiltersConverter(FilterStructure) ?? [])
+          : FilterStructure,
+      filtersUpdateChecks: true,
+    };
     this.skip();
     return true;
   }
@@ -1227,7 +1223,7 @@ class Queue {
       !this.StreamPacket.ExternalModes
       || (this.StreamPacket.ExternalModes
         && !this.StreamPacket.ExternalModes.audioFilters)
-    ) return void null;
+    ) return DefaultUserDrivenAudioFilters;
     return (
       AudioFiltersConverter(this.StreamPacket.ExternalModes.audioFilters)
       ?? DefaultUserDrivenAudioFilters
@@ -1266,7 +1262,7 @@ class Queue {
       ? clearTimeout(Number(this.StreamPacket.TimedoutId))
       : undefined;
     try {
-      this.StreamPacket.FFmpegArgsHandling(undefined, false, true, 0);
+      this.StreamPacket.FFmpegArgsHandling(0, false);
       const AudioResource = this.StreamPacket.StreamAudioResourceExtractor(
         this.StreamPacket.tracks[0],
       );

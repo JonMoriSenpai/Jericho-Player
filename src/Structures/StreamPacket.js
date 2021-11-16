@@ -27,7 +27,6 @@ const {
   DefaultModesName,
 } = require('../types/interfaces');
 const Queue = require('../Handlers/Queue');
-const { HumanTimeConversion } = require('../Utilities/ClassUtils');
 
 /**
  * @private
@@ -84,14 +83,14 @@ class StreamPacketGen {
 
     /**
      * searches User Readable Tracks
-     * @type {DefaultStream[]}
+     * @type {DefaultTrack[]}
      * @readonly
      */
     this.searches = [];
 
     /**
      * Tracks Stream Datas from Extractors and then parent Data of searches
-     * @type {DefaultTrack[]}
+     * @type {DefaultStream[]}
      * @readonly
      */
     this.tracks = [];
@@ -175,8 +174,8 @@ class StreamPacketGen {
      * @readonly
      */
     this.ExternalModes = {
-      seek: false,
-      audioFilters: false,
+      seek: { StartingPoint: undefined, EndingPoint: undefined },
+      audioFilters: [],
       filtersUpdateChecks: false,
     };
 
@@ -464,91 +463,93 @@ class StreamPacketGen {
   }
   /**
    * FFmpegArgsHandling() -> Ffmpeg Args handling for Audio Streaming Manupulations
-   * @param {Object} seekDuration Seeking Duration if any for seek methods
-   * @param {boolean} RemoveAudioFilters Boolean value for Removing Audio Filters
-   * @param {Boolean|undefined} cacheOnCurrentStream Cache Modernized Stream of the Current/Specified Track
-   * @param {Number|undefined} IndexValue Index Value of the Tracks
-   * @returns {Boolean} Returns true if operation went green or undefined
+   * @param {Number|undefined} SaveTrackIndex Cache Modernized Stream of the Current/Specified Track
+   * @param {boolean|undefined} forceUpdateChecks Booelan Value of Force Update Check Record
+   * @returns {Boolean|undefined} Returns true if operation went green or undefined
    */
 
-  async FFmpegArgsHandling(
-    seekDuration,
-    RemoveAudioFilters = false,
-    cacheOnCurrentStream = false,
-    IndexValue = 0,
-  ) {
-    if (RemoveAudioFilters) {
+  FFmpegArgsHandling(SaveTrackIndex = 0, forceUpdateChecks = false) {
+    if (
+      !(
+        this.ExternalModes
+        && ((this.ExternalModes.seek
+          && (this.ExternalModes.seek.StartingPoint
+            || this.ExternalModes.seek.EndingPoint))
+          || (this.ExternalModes.audioFilters
+            && this.ExternalModes.audioFilters[0]))
+      )
+    ) {
       this.ExternalModes = {
-        seek: this.StreamPacket.ExternalModes
-          ? this.StreamPacket.ExternalModes.audioFilters
-          : false,
-        audioFilters: [],
-        filtersUpdateChecks: this.StreamPacket.ExternalModes
-          ? this.StreamPacket.ExternalModes.filtersUpdateChecks
-          : false,
+        seek: undefined,
+        audioFilters: this.ExternalModes
+          ? this.ExternalModes.audioFilters
+          : undefined,
+        filtersUpdateChecks: false,
       };
+      return void null;
     }
     const ffmpegArgs = [
-      '-reconnect',
-      '1',
-      '-reconnect_streamed',
-      '1',
-      '-reconnect_at_eof',
-      '1',
-      '-reconnect_delay_max',
-      '5',
-      '-i',
-      this.tracks[0].stream_url,
       '-analyzeduration',
       '0',
       '-loglevel',
       '0',
+      '-acodec',
+      'libopus',
+      '-f',
+      'opus',
       '-ar',
       '48000',
       '-ac',
       '2',
-      '-f',
-      's16le',
     ];
-    if (seekDuration && seekDuration.StartingPoint) {
+
+    if (this.ExternalModes && this.ExternalModes.seek && this.ExternalModes.seek.StartingPoint && this.ExternalModes.seek.StartingPoint > 0) {
       ffmpegArgs.unshift(
         '-ss',
-        HumanTimeConversion(undefined, {
-          Time: seekDuration.StartingPoint,
-          ignore: ['milliseconds'],
-        }),
+        Math.floor(Number(this.ExternalModes.seek.StartingPoint) / 1000),
+        '-accurate_seek',
       );
     }
-    if (seekDuration && seekDuration.EndingPoint) {
+    if (this.ExternalModes && this.ExternalModes.seek && this.ExternalModes.seek.EndingPoint) {
       ffmpegArgs.unshift(
         '-t',
-        HumanTimeConversion(undefined, {
-          Time: seekDuration.EndingPoint,
-          ignore: ['milliseconds'],
-        }),
+        Math.floor(Number(this.ExternalModes.seek.EndingPoint) / 1000),
       );
     }
     if (
       this.ExternalModes.audioFilters
-      && typeof this.ExternalModes.audioFilters === 'object'
-      && this.ExternalModes.audioFilters[Number(IndexValue)]
-      && !RemoveAudioFilters
+      && Array.isArray(this.ExternalModes.audioFilters)
+      && this.ExternalModes.audioFilters[0]
     ) {
-      ffmpegArgs.unshift(
-        '-af',
-        this.ExternalModes.audioFilters[Number(IndexValue) + 1]
-          ? this.ExternalModes.audioFilters.join(',')
-          : this.ExternalModes.audioFilters[Number(IndexValue)],
-      );
+      if (
+        this.ExternalModes.audioFilters.length === 1
+        && this.ExternalModes.audioFilters[0] === 'off'
+      ) {
+        ffmpegArgs.concat('-af', '');
+        this.ExternalModes.audioFilters = undefined;
+      } else ffmpegArgs.concat('-af', this.ExternalModes.audioFilters.join(','));
     }
-    const streamtrack = this.tracks;
-    streamtrack.stream = new FFmpeg({ args: ffmpegArgs, shell: false });
-    !cacheOnCurrentStream
-      ? this.searches.splice(1, 0, this.searches[Number(IndexValue)])
-      : undefined;
-    !cacheOnCurrentStream
-      ? this.tracks.splice(1, 0, streamtrack)
-      : (this.tracks[Number(IndexValue)] = streamtrack);
+    this.ExternalModes = {
+      seek: !!(
+        this.ExternalModes.seek
+        && (this.ExternalModes.seek.StartingPoint || this.ExternalModes.seek.EndingPoint)
+      ),
+      audioFilters: this.ExternalModes
+        ? this.ExternalModes.audioFilters
+        : undefined,
+      filtersUpdateChecks: !!forceUpdateChecks,
+    };
+    const FFmpegProcess = new FFmpeg({
+      args: ffmpegArgs,
+    });
+    this.tracks[0].stream = FFmpegProcess ?? this.tracks[0].stream;
+    this.tracks[0].stream_type = StreamType.OggOpus;
+    SaveTrackIndex !== 0
+      ? this.searches.splice(SaveTrackIndex, 0, this.searches[0])
+      : (this.searches[Number(SaveTrackIndex)] = this.searches[0]);
+    SaveTrackIndex !== 0
+      ? this.tracks.splice(SaveTrackIndex, 0, this.tracks[0])
+      : (this.tracks[Number(SaveTrackIndex)] = this.tracks[0]);
     return true;
   }
 
