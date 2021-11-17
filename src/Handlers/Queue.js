@@ -184,6 +184,15 @@ class Queue {
               : undefined;
           }
         }
+        this.StreamPacket.FFmpegArgsHandling(
+          1,
+          !!(
+            this.StreamPacket.ExternalModes
+            && this.StreamPacket.ExternalModes.seek
+            && (this.StreamPacket.ExternalModes.seek.StartingPoint
+              || this.StreamPacket.ExternalModes.EndingPoint)
+          ),
+        );
         if (!this.destroyed) this.#__CleaningTrackMess();
         this.#__ResourcePlay();
       } else if (newState && newState.status === AudioPlayerStatus.Playing) {
@@ -290,8 +299,12 @@ class Queue {
       return void this.Player.emit('error', 'Invalid Index', this, TrackIndex);
     }
     if (
-      !this.playing
-      || (this.playing && !this.playerMode && !this.StreamPacket.tracks[1])
+      (!this.playing
+        || (this.playing && !this.playerMode && !this.StreamPacket.tracks[1]))
+      && !(
+        this.StreamPacket.ExternalModes
+        && this.StreamPacket.ExternalModes.filtersUpdateChecks
+      )
     ) {
       return void this.Player.emit('error', 'Empty Queue', this);
     }
@@ -964,10 +977,11 @@ class Queue {
   /**
    * setFilters() -> Add or Remove Filters to Track and Audio
    * @param {DefaultUserDrivenAudioFilters|void} FilterStructure Filter Structure Value for filtering real values or undefined to remove all filters
+   * @param {boolean|undefined} forceSkip Force Skip Track
    * @returns {Boolean|void} returns true for complete process or else undefined for errors
    */
 
-  setFilters(FilterStructure = ['off']) {
+  setFilters(FilterStructure = ['off'], forceSkip = false) {
     if (this.destroyed) {
       return void this.Player.emit('error', 'Destroyed Queue', this);
     }
@@ -983,11 +997,11 @@ class Queue {
         : undefined,
       audioFilters:
         this.StreamPacket.ExternalModes && FilterStructure
-          ? (AudioFiltersConverter(FilterStructure) ?? [])
+          ? AudioFiltersConverter(FilterStructure) ?? []
           : FilterStructure,
       filtersUpdateChecks: true,
     };
-    this.skip();
+    forceSkip ? this.skip() : undefined;
     return true;
   }
 
@@ -1262,11 +1276,15 @@ class Queue {
       ? clearTimeout(Number(this.StreamPacket.TimedoutId))
       : undefined;
     try {
-      this.StreamPacket.FFmpegArgsHandling(0, false);
       const AudioResource = this.StreamPacket.StreamAudioResourceExtractor(
         this.StreamPacket.tracks[0],
       );
-      this.Player.emit('trackStart', this, this.tracks[0]);
+      if (
+        !(
+          this.StreamPacket.ExternalModes
+          && this.StreamPacket.ExternalModes.filtersUpdateChecks
+        )
+      ) this.Player.emit('trackStart', this, this.tracks[0]);
       this.MusicPlayer.play(AudioResource);
       if (
         !this.StreamPacket.subscription

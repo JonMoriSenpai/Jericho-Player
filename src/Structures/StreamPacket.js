@@ -502,20 +502,6 @@ class StreamPacketGen {
       '-ac',
       '2',
     ];
-
-    if (this.ExternalModes && this.ExternalModes.seek && this.ExternalModes.seek.StartingPoint && this.ExternalModes.seek.StartingPoint > 0) {
-      ffmpegArgs.unshift(
-        '-ss',
-        Math.floor(Number(this.ExternalModes.seek.StartingPoint) / 1000),
-        '-accurate_seek',
-      );
-    }
-    if (this.ExternalModes && this.ExternalModes.seek && this.ExternalModes.seek.EndingPoint) {
-      ffmpegArgs.unshift(
-        '-t',
-        Math.floor(Number(this.ExternalModes.seek.EndingPoint) / 1000),
-      );
-    }
     if (
       this.ExternalModes.audioFilters
       && Array.isArray(this.ExternalModes.audioFilters)
@@ -525,9 +511,23 @@ class StreamPacketGen {
         this.ExternalModes.audioFilters.length === 1
         && this.ExternalModes.audioFilters[0] === 'off'
       ) {
-        ffmpegArgs.concat('-af', '');
+        ffmpegArgs.unshift('-af', '');
         this.ExternalModes.audioFilters = undefined;
-      } else ffmpegArgs.concat('-af', this.ExternalModes.audioFilters.join(','));
+      } else ffmpegArgs.unshift('-af', this.ExternalModes.audioFilters.join(','));
+    }
+    ffmpegArgs.unshift('-i', this.tracks[0].stream_url);
+    if (this.ExternalModes && this.ExternalModes.seek && this.ExternalModes.seek.EndingPoint) {
+      ffmpegArgs.unshift(
+        '-to',
+        `${this.ExternalModes.seek.EndingPoint}`,
+      );
+    }
+    if (this.ExternalModes && this.ExternalModes.seek && this.ExternalModes.seek.StartingPoint && this.ExternalModes.seek.StartingPoint > 0) {
+      ffmpegArgs.unshift(
+        '-ss',
+        `${this.ExternalModes.seek.StartingPoint}`,
+        '-accurate_seek',
+      );
     }
     this.ExternalModes = {
       seek: !!(
