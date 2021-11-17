@@ -484,7 +484,7 @@ class StreamPacketGen {
         audioFilters: this.ExternalModes
           ? this.ExternalModes.audioFilters
           : undefined,
-        filtersUpdateChecks: false,
+        filtersUpdateChecks: !!forceUpdateChecks,
       };
       return void null;
     }
@@ -544,11 +544,11 @@ class StreamPacketGen {
     });
     this.tracks[0].stream = FFmpegProcess ?? this.tracks[0].stream;
     this.tracks[0].stream_type = StreamType.OggOpus;
-    SaveTrackIndex !== 0
-      ? this.searches.splice(SaveTrackIndex, 0, this.searches[0])
+    SaveTrackIndex && Number(SaveTrackIndex) !== 0
+      ? this.searches.splice(Number(SaveTrackIndex), 0, this.searches[0])
       : (this.searches[Number(SaveTrackIndex)] = this.searches[0]);
-    SaveTrackIndex !== 0
-      ? this.tracks.splice(SaveTrackIndex, 0, this.tracks[0])
+    SaveTrackIndex && Number(SaveTrackIndex) !== 0
+      ? this.tracks.splice(Number(SaveTrackIndex), 0, this.tracks[0])
       : (this.tracks[Number(SaveTrackIndex)] = this.tracks[0]);
     return true;
   }

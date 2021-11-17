@@ -184,8 +184,17 @@ class Queue {
               : undefined;
           }
         }
+        if (
+          !this.destroyed
+          && !(
+            this.StreamPacket.ExternalModes
+            && this.StreamPacket.ExternalModes.seek
+            && (this.StreamPacket.ExternalModes.seek.StartingPoint
+              || this.StreamPacket.ExternalModes.EndingPoint)
+          )
+        ) this.#__CleaningTrackMess();
         this.StreamPacket.FFmpegArgsHandling(
-          1,
+          0,
           !!(
             this.StreamPacket.ExternalModes
             && this.StreamPacket.ExternalModes.seek
@@ -193,7 +202,6 @@ class Queue {
               || this.StreamPacket.ExternalModes.EndingPoint)
           ),
         );
-        if (!this.destroyed) this.#__CleaningTrackMess();
         this.#__ResourcePlay();
       } else if (newState && newState.status === AudioPlayerStatus.Playing) {
         this.StreamPacket.TrackTimeStamp.Starting = new Date().getTime();
