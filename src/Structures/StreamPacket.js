@@ -170,7 +170,7 @@ class StreamPacketGen {
     /**
      * @private
      * Private Cache of Modes using now
-     * @type {Object{}}
+     * @type {Object}
      * @readonly
      */
     this.ExternalModes = {
