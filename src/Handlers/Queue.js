@@ -801,7 +801,7 @@ class Queue {
 
   /**
    * repeat() -> Repeat Track or Queue with "n" Times given by User
-   * @param {String|String|void} Choice Mode Choice , like "track" | "queue" | "off"
+   * @param {String|void} Choice Mode Choice , like "track" | "queue" | "off"
    * @param {String|void} Times Number of Repeat Track or Queue with "n" Times given by User
    * @returns {Boolean|void} returns true for green signal operation and undefined for errors
    */
@@ -822,7 +822,7 @@ class Queue {
 
   /**
    * autoplay() -> Autplay Songs with the help of last Played Track or Query given
-   * @param {String|String|void} ChoiceORQuery Mode Choice , like "off" | OR else give Query or Url for autoplay songs with respect to specified query
+   * @param {String|void} ChoiceORQuery Mode Choice , like "off" | OR else give Query or Url for autoplay songs with respect to specified query
    * @returns {Boolean|void} returns true for green signal operation and undefined for errors
    */
 
