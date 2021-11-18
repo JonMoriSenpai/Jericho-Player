@@ -237,8 +237,9 @@ class ClassUtils {
   }
 
   /**
+   * @static
    * FiltersConverter() -> Converter for AudioFilters
-   * @param {String[]|Object{}} FiltersArray
+   * @param {String[]|Object} FiltersArray
    */
   static AudioFiltersConverter(FiltersArray) {
     if (FiltersArray && FiltersArray[0]) {

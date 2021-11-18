@@ -114,6 +114,7 @@ class TrackGenerator {
     const SearchTracks = [];
     for (let count = 0, len = Tracks.length; count < len; ++count) {
       Tracks[count] ? (Tracks[count].Id = ++CacheLength) : undefined;
+      Tracks[count] ? (Tracks[count].tampered = false) : undefined;
       Tracks[count]
         ? SearchTracks.push(
           TrackGenerator.#UserTrackModelGen(Tracks[count], requestedBy),

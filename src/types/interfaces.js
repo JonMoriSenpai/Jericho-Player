@@ -205,6 +205,7 @@ const DefaultStream = {
   human_duration: undefined,
   preview_stream_url: undefined,
   stream: undefined,
+  stream_url: undefined,
   stream_type: undefined,
   stream_duration: 0,
   stream_video_Id: undefined,
@@ -216,6 +217,7 @@ const DefaultStream = {
   likes: 0,
   is_live: false,
   dislikes: 0,
+  tampered: false,
 };
 
 /**

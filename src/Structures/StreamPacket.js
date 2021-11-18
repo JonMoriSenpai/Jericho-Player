@@ -464,11 +464,10 @@ class StreamPacketGen {
   /**
    * FFmpegArgsHandling() -> Ffmpeg Args handling for Audio Streaming Manupulations
    * @param {Number|undefined} SaveTrackIndex Cache Modernized Stream of the Current/Specified Track
-   * @param {boolean|undefined} forceUpdateChecks Booelan Value of Force Update Check Record
    * @returns {Boolean|undefined} Returns true if operation went green or undefined
    */
 
-  FFmpegArgsHandling(SaveTrackIndex = 0, forceUpdateChecks = false) {
+  FFmpegArgsHandling(SaveTrackIndex = 0) {
     if (
       !(
         this.ExternalModes
@@ -478,13 +477,14 @@ class StreamPacketGen {
           || (this.ExternalModes.audioFilters
             && this.ExternalModes.audioFilters[0]))
       )
+      || !this.tracks[0]
     ) {
       this.ExternalModes = {
         seek: undefined,
         audioFilters: this.ExternalModes
           ? this.ExternalModes.audioFilters
           : undefined,
-        filtersUpdateChecks: !!forceUpdateChecks,
+        filtersUpdateChecks: false,
       };
       return void null;
     }
@@ -516,28 +516,38 @@ class StreamPacketGen {
       } else ffmpegArgs.unshift('-af', this.ExternalModes.audioFilters.join(','));
     }
     ffmpegArgs.unshift('-i', this.tracks[0].stream_url);
-    if (this.ExternalModes && this.ExternalModes.seek && this.ExternalModes.seek.EndingPoint) {
-      ffmpegArgs.unshift(
-        '-to',
-        `${this.ExternalModes.seek.EndingPoint}`,
-      );
+    if (
+      this.ExternalModes
+      && this.ExternalModes.seek
+      && this.ExternalModes.seek.EndingPoint
+    ) {
+      ffmpegArgs.unshift('-to', `${this.ExternalModes.seek.EndingPoint}`);
     }
-    if (this.ExternalModes && this.ExternalModes.seek && this.ExternalModes.seek.StartingPoint && this.ExternalModes.seek.StartingPoint > 0) {
+    if (
+      this.ExternalModes
+      && this.ExternalModes.seek
+      && this.ExternalModes.seek.StartingPoint
+      && this.ExternalModes.seek.StartingPoint > 0
+    ) {
       ffmpegArgs.unshift(
         '-ss',
         `${this.ExternalModes.seek.StartingPoint}`,
         '-accurate_seek',
       );
     }
+    this.tracks[0].tampered = !!(
+      this.ExternalModes && this.ExternalModes.filtersUpdateChecks
+    );
     this.ExternalModes = {
       seek: !!(
         this.ExternalModes.seek
-        && (this.ExternalModes.seek.StartingPoint || this.ExternalModes.seek.EndingPoint)
+        && (this.ExternalModes.seek.StartingPoint
+          || this.ExternalModes.seek.EndingPoint)
       ),
       audioFilters: this.ExternalModes
         ? this.ExternalModes.audioFilters
         : undefined,
-      filtersUpdateChecks: !!forceUpdateChecks,
+      filtersUpdateChecks: false,
     };
     const FFmpegProcess = new FFmpeg({
       args: ffmpegArgs,

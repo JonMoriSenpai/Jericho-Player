@@ -27,7 +27,7 @@ export type Queue = {
       Limit: Number
       Quality: String | 'high' | 'low' | 'medium'
       Cookies: String | 'YTCookies'
-      ByPassYoutubeDLRatelimit: Boolean | undefined
+      ByPassYoutubeDLRatelimit: Boolean | void
       YoutubeDLCookiesFilePath: String | '/path/to/Cookie.txt'
       Proxy: String | Array<String> | 'IPAdress:PortNumber'
     }
@@ -49,7 +49,7 @@ export type Queue = {
   readonly paused: Boolean
   readonly IgnoreError: Boolean
   readonly MusicPlayer: AudioPlayer
-  readonly previousTrack: Track | undefined
+  readonly previousTrack: Track | void
   readonly currentTimestamp: {
     track_ms: String
     totaltrack_ms: String
@@ -66,75 +66,76 @@ export type Queue = {
     human_queue: String
     human_remainqueue: String
   }
-  readonly playerMode: PlayerMode | undefined
+  readonly playerMode: PlayerMode | void
   play(
     Query: String,
     VoiceChannel: VoiceChannel,
-    User: User | GuildMember | undefined,
+    User: User | GuildMember | void,
     PlayOptions?: PlayOptions
-  ): Promise<Boolean> | Promise<undefined> | undefined
-  skip(TrackIndex: Number): Boolean | undefined
-  stop(): Boolean | undefined
-  pause(): Boolean | undefined
-  resume(): Boolean | undefined
+  ): Promise<Boolean> | Promise<undefined> | void
+  skip(TrackIndex: Number): Boolean | void
+  stop(): Boolean | void
+  pause(): Boolean | void
+  resume(): Boolean | void
   insert(
     Query: String,
     TrackIndex: Number,
-    User: User | GuildMember | undefined,
+    User: User | GuildMember | void,
     InsertOptions: PlayOptions
-  ): Promise<Boolean> | Promise<undefined> | undefined
-  destroy(connectionTimedout?: Number): Number | Boolean | undefined
-  remove(Index?: Number, Amount?: Number): Boolean | undefined
-  mute(): Boolean | undefined
-  unmute(Volume?: Number): Boolean | Number | undefined
-  clear(TracksAmount?: Number): Boolean | undefined
+  ): Promise<Boolean> | Promise<undefined> | void
+  destroy(connectionTimedout?: Number): Number | Boolean | void
+  remove(Index?: Number, Amount?: Number): Boolean | void
+  mute(): Boolean | void
+  unmute(Volume?: Number): Boolean | Number | void
+  clear(TracksAmount?: Number): Boolean | void
   back(
     TracksBackwardIndex?: Number,
-    requestedBy?: User | GuildMember | undefined,
+    requestedBy?: User | GuildMember | void,
     PlayOptions?: PlayOptions,
     forceback?: Boolean
-  ): Promise<Boolean> | Promise<undefined> | undefined
+  ): Promise<Boolean> | Promise<undefined> | void
   createProgressBar(
-    Work?: String | undefined | 'track' | 'queue' | 'previousTracks',
-    DefaultType?: Number | String | undefined | '1' | '3',
+    Work?: String | void | 'track' | 'queue' | 'previousTracks',
+    DefaultType?: Number | String | void | '1' | '3',
     Bar?:
       | {
         CompleteIcon: String | '▬'
         TargetIcon: String | '🔘'
         RemainingIcon: String | '▬'
-        StartingIcon: String | undefined
-        EndIcon: String | undefined
+        StartingIcon: String | void
+        EndIcon: String | void
       }
-      | undefined
-  ): String | undefined
+      | void
+  ): String | void
 
   loop(
-    Choice: 'track' | 'queue' | 'off' | String | undefined
-  ): Boolean | undefined
+    Choice: 'track' | 'queue' | 'off' | String | void
+  ): Boolean | void
   repeat(
-    Choice: 'track' | 'queue' | 'off' | String | undefined,
-    Times: number | String | undefined
-  ): Boolean | undefined
+    Choice: 'track' | 'queue' | 'off' | String | void,
+    Times: number | String | void
+  ): Boolean | void
   autoplay(
-    ChoiceORQuery: 'off' | 'Despacito' | 'Urls' | String | Number | undefined
-  ): Boolean | undefined
+    ChoiceORQuery: 'off' | 'Despacito' | 'Urls' | String | Number | void
+  ): Boolean | void
   search(
     Query: String,
     User: User,
-    SearchOptions: PlayOptions | undefined
-  ): Promise<{ playlist: Boolean; tracks: Track[] } | undefined> | undefined
+    SearchOptions: PlayOptions | void
+  ): Promise<{ playlist: Boolean; tracks: Track[] } | void> | void
   seek(
     StartingPoint: String | Number,
-    EndingPoint?: String | Number | undefined
-  ): Boolean | undefined
-  setFilters(FiltersStructure: QueueAudioFilters): Boolean | undefined
+    EndingPoint?: String | Number | void
+  ): Boolean | void
+  setFilters(FiltersStructure: QueueAudioFilters): Boolean | void
+  shuffle(): Boolean | void
 }
 
 export type Track = {
   readonly Id: Number
   readonly url: String
   readonly video_Id: String
-  readonly requestedBy: User | GuildMember | undefined
+  readonly requestedBy: User | GuildMember | void
   readonly title: String
   readonly description: String
   readonly duration: Number
@@ -161,7 +162,7 @@ export type StreamPacket = {
     readonly Limit: Number
     readonly Quality: String | 'high' | 'low' | 'medium'
     readonly Cookies: String | 'YTCookies'
-    readonly ByPassYoutubeDLRatelimit: Boolean | undefined
+    readonly ByPassYoutubeDLRatelimit: Boolean | void
     readonly YoutubeDLCookiesFilePath: String | '/path/to/Cookie.txt'
     readonly Proxy: String | Array<String> | 'IPAdress:PortNumber'
   }
@@ -169,8 +170,8 @@ export type StreamPacket = {
   readonly Player: Player
   readonly volume: Number
   readonly AudioResource: AudioResource
-  readonly previousTracks: Track[] | undefined
-  readonly TimedoutId: Number | undefined
+  readonly previousTracks: Track[] | void
+  readonly TimedoutId: Number | void
 }
 
 export type Stream = {
@@ -211,7 +212,7 @@ export type PlayerOptions = {
     readonly Limit: Number
     readonly Quality: String | 'high' | 'low' | 'medium'
     readonly Cookies: String | 'YTCookies'
-    readonly ByPassYoutubeDLRatelimit: Boolean | undefined
+    readonly ByPassYoutubeDLRatelimit: Boolean | void
     readonly YoutubeDLCookiesFilePath: String | '/path/to/Cookie.txt'
     readonly Proxy: String | Array<String> | 'IPAdress:PortNumber'
   }
@@ -230,7 +231,7 @@ export type PlayOptions = {
     readonly Limit: Number
     readonly Quality: String | 'high' | 'low' | 'medium'
     readonly Cookies: String | 'YTCookies'
-    readonly ByPassYoutubeDLRatelimit: Boolean | undefined
+    readonly ByPassYoutubeDLRatelimit: Boolean | void
     readonly YoutubeDLCookiesFilePath: String | '/path/to/Cookie.txt'
     readonly Proxy: String | Array<String> | 'IPAdress:PortNumber'
   }
@@ -245,7 +246,7 @@ export type QueueOptions = {
     readonly Limit: Number
     readonly Quality: String | 'high' | 'low' | 'medium'
     readonly Cookies: String | 'YTCookies'
-    readonly ByPassYoutubeDLRatelimit: Boolean | undefined
+    readonly ByPassYoutubeDLRatelimit: Boolean | void
     readonly YoutubeDLCookiesFilePath: String | '/path/to/Cookie.txt'
     readonly Proxy: String | Array<String> | 'IPAdress:PortNumber'
   }
@@ -259,8 +260,8 @@ export type QueueOptions = {
 
 export type PlayerMode = {
   mode: String
-  type: String | undefined
-  times: String | Number | undefined
+  type: String | void
+  times: String | Number | void
 }
 
 export enum DefaultModesTypes {
@@ -273,16 +274,16 @@ export type Awaitable<T> = T | PromiseLike<T>
 export interface PlayerEvents {
   error: [
     message: string,
-    queue: Queue | Player | undefined,
-    extradata: any | undefined,
+    queue: Queue | Player | void,
+    extradata: any | void,
   ]
   channelEmpty: [
     queue: Queue,
-    voiceChannel: VoiceChannel | StageChannel | undefined,
+    voiceChannel: VoiceChannel | StageChannel | void,
   ]
   botDisconnect: [
     queue: Queue,
-    voiceChannel: VoiceChannel | StageChannel | undefined,
+    voiceChannel: VoiceChannel | StageChannel | void,
   ]
   trackEnd: [
     queue: Queue,
@@ -295,7 +296,7 @@ export interface PlayerEvents {
   connectionError: [
     message: string,
     queue: Queue,
-    connection: VoiceConnection | undefined,
+    connection: VoiceConnection | void,
     guildId: String | Snowflake,
   ]
   playlistAdd: [

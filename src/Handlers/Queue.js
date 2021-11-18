@@ -163,10 +163,6 @@ class Queue {
           this.StreamPacket
           && this.tracks
           && this.tracks[0]
-          && !(
-            this.StreamPacket.ExternalModes
-            && this.StreamPacket.ExternalModes.seek
-          )
           && this.StreamPacket.AudioResource
         ) {
           this.StreamPacket.AudioResource = undefined;
@@ -188,20 +184,10 @@ class Queue {
           !this.destroyed
           && !(
             this.StreamPacket.ExternalModes
-            && this.StreamPacket.ExternalModes.seek
-            && (this.StreamPacket.ExternalModes.seek.StartingPoint
-              || this.StreamPacket.ExternalModes.EndingPoint)
+            && this.StreamPacket.ExternalModes.filtersUpdateChecks
           )
         ) this.#__CleaningTrackMess();
-        this.StreamPacket.FFmpegArgsHandling(
-          0,
-          !!(
-            this.StreamPacket.ExternalModes
-            && this.StreamPacket.ExternalModes.seek
-            && (this.StreamPacket.ExternalModes.seek.StartingPoint
-              || this.StreamPacket.ExternalModes.EndingPoint)
-          ),
-        );
+        this.StreamPacket.FFmpegArgsHandling(0);
         this.#__ResourcePlay();
       } else if (newState && newState.status === AudioPlayerStatus.Playing) {
         this.StreamPacket.TrackTimeStamp.Starting = new Date().getTime();
@@ -1014,6 +1000,50 @@ class Queue {
   }
 
   /**
+   * shuffle() -> Shuffling the Tracks in Cache Randomly
+   * @returns {Boolean|void} Returns true for green signal operation or undefined for errors
+   */
+
+  shuffle() {
+    if (this.destroyed) {
+      return void this.Player.emit('error', 'Destroyed Queue', this);
+    }
+    if (!this.StreamPacket) {
+      return void this.Player.emit('error', 'Destroyed Queue', this);
+    }
+    if (
+      !(
+        this.StreamPacket.tracks
+        && this.StreamPacket.tracks[0]
+        && this.StreamPacket.tracks.length > 2
+      )
+    ) {
+      return void this.Player.emit('error', 'Less Tracks for Shuffling', this);
+    }
+
+    let Arraycount = this.StreamPacket.tracks.length;
+    let RandomIndex;
+    const Cache = { search: undefined, track: undefined };
+    while (Arraycount > 2) {
+      RandomIndex = Math.floor((Math.random() * (Arraycount - 3) + 3) || 3);
+      Cache.track = this.StreamPacket.tracks[Arraycount];
+      Cache.search = this.StreamPacket.searches[Arraycount];
+      this.StreamPacket.tracks[Arraycount] = this.StreamPacket.tracks[
+        RandomIndex
+      ];
+      this.StreamPacket.searches[Arraycount] = this.StreamPacket.searches[
+        RandomIndex
+      ];
+      this.StreamPacket.tracks[RandomIndex] = Cache.track;
+      this.StreamPacket.searches[RandomIndex] = Cache.search;
+      Arraycount -= 1;
+    }
+    this.StreamPacket.track.filter(Boolean);
+    this.StreamPacket.searches.filter(Boolean);
+    return true;
+  }
+
+  /**
    * Volume of the Music Player Currently OR to set new Volume for Music Player
    * @type {Number|void}
    * @readonly
@@ -1287,12 +1317,7 @@ class Queue {
       const AudioResource = this.StreamPacket.StreamAudioResourceExtractor(
         this.StreamPacket.tracks[0],
       );
-      if (
-        !(
-          this.StreamPacket.ExternalModes
-          && this.StreamPacket.ExternalModes.filtersUpdateChecks
-        )
-      ) this.Player.emit('trackStart', this, this.tracks[0]);
+      if (!(this.StreamPacket && this.StreamPacket.tracks[0].tampered)) this.Player.emit('trackStart', this, this.tracks[0]);
       this.MusicPlayer.play(AudioResource);
       if (
         !this.StreamPacket.subscription

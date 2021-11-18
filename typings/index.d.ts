@@ -25,8 +25,8 @@ export class Player extends EventEmitter {
   public CreateQueue(
     message: Message | Interaction,
     QueueCreateOptions?: QueueOptions,
-  ): Queue | undefined
-  public GetQueue(guildId: Guild['id'] | Snowflake | String): Queue | undefined
+  ): Queue | void
+  public GetQueue(guildId: Guild['id'] | Snowflake | String): Queue | void
   public DeleteQueue(guildId: Guild['id'] | Snowflake | String): undefined
 
   public on<K extends keyof PlayerEvents>(
@@ -41,8 +41,8 @@ export class Player extends EventEmitter {
 
 export class Utils {
   public static ScanDeps(
-    PackageName: String | undefined,
-  ): String | Number | undefined
+    PackageName: String | void,
+  ): String | Number | void
 }
 
 export class VoiceUtils {
@@ -52,14 +52,14 @@ export class VoiceUtils {
     JoinChannelOptions?: {
       force: Boolean
     },
-  ): Promise<VoiceConnection> | undefined
+  ): Promise<VoiceConnection> | void
 
   public static disconnect(
     guildId: Guild['id'] | String | Number,
     DisconnectChannelOptions: {
       destroy: Boolean
     },
-    Timedout?: Number | String | undefined,
+    Timedout?: Number | String | void,
   ): undefined
 }
 
