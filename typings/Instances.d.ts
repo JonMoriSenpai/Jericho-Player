@@ -67,6 +67,9 @@ export type Queue = {
     human_remainqueue: String
   }
   readonly playerMode: PlayerMode | void
+  readonly filters: QueueAudioFilters | void
+  readonly enabledFilters: String[] | void
+  readonly disabledFilters: String[] | void
   play(
     Query: String,
     VoiceChannel: VoiceChannel,
@@ -310,7 +313,7 @@ export interface PlayerEvents {
 }
 
 export interface QueueAudioFilters {
-  bassboost_low?: undefined
+  bassboost_low?: boolean;
   bassboost?: boolean;
   bassboost_high?: boolean;
   "3D"?: boolean;

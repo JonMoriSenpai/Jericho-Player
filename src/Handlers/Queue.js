@@ -1276,6 +1276,12 @@ class Queue {
     return void null;
   }
 
+  /**
+   * Audio Filters Cached in Queue
+   * @type {DefaultUserDrivenAudioFilters|void}
+   * @readonly
+   */
+
   get filters() {
     if (this.destroyed) return void null;
     if (!this.StreamPacket) return void null;
@@ -1288,6 +1294,44 @@ class Queue {
       AudioFiltersConverter(this.StreamPacket.ExternalModes.audioFilters)
       ?? DefaultUserDrivenAudioFilters
     );
+  }
+
+  /**
+   * Enabled Audio Filters for Cached in Queue
+   * @type {String[]|void}
+   * @readonly
+   */
+
+  get enabledFilters() {
+    if (this.destroyed) return void null;
+    if (!this.StreamPacket) return void null;
+    if (!this.filters) return void null;
+
+    const ObjectKeys = Object.keys(this.filters);
+    const CachedEnabled = [];
+    for (let count = 0, len = ObjectKeys.length; count < len; ++count) {
+      if (this.filters[`${ObjectKeys[count]}`]) CachedEnabled.push(ObjectKeys[count]);
+    }
+    return CachedEnabled;
+  }
+
+  /**
+   * Disabled Audio Filters for Cached in Queue
+   * @type {String[]|void}
+   * @readonly
+   */
+
+  get disabledFilters() {
+    if (this.destroyed) return void null;
+    if (!this.StreamPacket) return void null;
+    if (!this.filters) return void null;
+
+    const ObjectKeys = Object.keys(this.filters);
+    const CachedDisabled = [];
+    for (let count = 0, len = ObjectKeys.length; count < len; ++count) {
+      if (!this.filters[`${ObjectKeys[count]}`]) CachedDisabled.push(ObjectKeys[count]);
+    }
+    return CachedDisabled;
   }
 
   /**
