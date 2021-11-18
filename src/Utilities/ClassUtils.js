@@ -13,7 +13,7 @@ class ClassUtils {
    * stablizingoptions() -> Stabilizing Local and Parent Options with accuracy 80%
    * @param {Object} Local Local function/method options
    * @param {Object} Parent Parent function/method options
-   * @returns {Object} Finaliize Options
+   * @returns {Object} Finalized Options with Structure or Array Types
    */
 
   static stablizingoptions(Local, Parent) {
@@ -43,8 +43,8 @@ class ClassUtils {
 
   /**
    * ScanDeps() -> Scanning Dependencies in package.json or node_modules for package or versions list
-   * @param {String|void} packageName Package name for publishing it sversion in project
-   * @returns {String|void} Publish Data whaich was requested for
+   * @param {String|void} packageName Package name for publishing it versions in project
+   * @returns {String|void} Publish Data which was requested for like checks and versions
    */
 
   static ScanDeps(packageName) {
@@ -149,7 +149,7 @@ class ClassUtils {
    * HumanTimeConversion() -> Human Time Conversion Function with two categories
    * @param {String|Number|void} Type1 Convert Milliseconds to Human Time Language
    * @param {Object[]|void} Type2 Convert Milliseconds to Human Time variables
-   * @param {String|void} Type3 Convert Standared hh:mm:ss to milliseoncds
+   * @param {String|void} Type3 Convert Standared hh:mm:ss to milliseconds
    * @returns {String|void} Returns String with desired value
    */
 
@@ -238,7 +238,7 @@ class ClassUtils {
 
   /**
    * @static
-   * FiltersConverter() -> Converter for AudioFilters
+   * FiltersConverter() -> Converter for AudioFilters (private function , but making public for if moments)
    * @param {String[]|Object} FiltersArray
    */
   static AudioFiltersConverter(FiltersArray) {
