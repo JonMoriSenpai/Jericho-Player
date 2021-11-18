@@ -878,7 +878,7 @@ class Queue {
 
   /**
    * seek() -> Seek method for position commands
-   * @param {Number|String} StartingPoint Starting point for Seek method asMilliseconds or hh:mm:ss format
+   * @param {Number|String} StartingPoint Starting point for Seek method as Milliseconds or hh:mm:ss format
    * @param {Number|String|undefined} EndingPoint by default its 0 to create a clip of the a single Track
    * @returns {boolean|undefined} Returns true if operation went without errors
    */
@@ -924,23 +924,29 @@ class Queue {
         && typeof EndingPoint === 'string'
         && EndingPoint.includes(':')
         ? HumanTimeConversion(undefined, undefined, EndingPoint)
-        : EndingPoint,
+        : Math.floor(Number(EndingPoint) / 1000),
     );
     StartingPoint = parseInt(
       StartingPoint
         && typeof StartingPoint === 'string'
         && StartingPoint.includes(':')
         ? HumanTimeConversion(undefined, undefined, StartingPoint)
-        : StartingPoint,
+        : Math.floor(Number(StartingPoint) / 1000),
     );
-    if (StartingPoint >= Number(this.tracks[0].duration) - 1000) {
+    if (
+      StartingPoint
+      >= Math.floor(Number(this.tracks[0].duration) / 1000) - 1
+    ) {
       return void this.Player.emit(
         'error',
         "Invalid Seek Config | Try to Give less than track's Duration",
         this,
       );
     }
-    if (StartingPoint + EndingPoint >= Number(this.tracks[0].duration) - 1000) {
+    if (
+      StartingPoint + EndingPoint
+      >= Math.floor(Number(this.tracks[0].duration) / 1000) - 1
+    ) {
       return void this.Player.emit(
         'error',
         "Invalid Seek Config | Try to Give less than track's Computed End Duration",
@@ -1025,7 +1031,7 @@ class Queue {
     let RandomIndex;
     const Cache = { search: undefined, track: undefined };
     while (Arraycount > 2) {
-      RandomIndex = Math.floor((Math.random() * (Arraycount - 3) + 3) || 3);
+      RandomIndex = Math.floor(Math.random() * (Arraycount - 3) + 3 || 3);
       Cache.track = this.StreamPacket.tracks[Arraycount];
       Cache.search = this.StreamPacket.searches[Arraycount];
       this.StreamPacket.tracks[Arraycount] = this.StreamPacket.tracks[
