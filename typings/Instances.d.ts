@@ -309,7 +309,7 @@ export interface PlayerEvents {
   ]
 }
 
-export interface QueueAudioFilters {
+export type QueueAudioFilters ={
   bassboost_low?: boolean;
   bassboost?: boolean;
   bassboost_high?: boolean;

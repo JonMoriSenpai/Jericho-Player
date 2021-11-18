@@ -661,8 +661,7 @@ class StreamPacketGen {
       const AudioResource = createAudioResource(Track.stream, {
         inputType: Track.stream_type ?? StreamType.Arbitrary,
         metadata: {
-          metadata: this.metadata,
-          Track,
+          metadata: this.metadata ?? undefined,
         },
         inlineVolume: true,
       });
