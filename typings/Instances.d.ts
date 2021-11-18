@@ -127,7 +127,7 @@ export type Queue = {
     StartingPoint: String | Number,
     EndingPoint?: String | Number | void
   ): Boolean | void
-  setFilters(FiltersStructure: QueueAudioFilters): Boolean | void
+  setFilters(FiltersStructure: QueueAudioFilters,forceApply?: Boolean): Boolean | void
   shuffle(): Boolean | void
 }
 

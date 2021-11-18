@@ -971,11 +971,11 @@ class Queue {
   /**
    * setFilters() -> Add or Remove Filters to Track and Audio
    * @param {DefaultUserDrivenAudioFilters|void} FilterStructure Filter Structure Value for filtering real values or undefined to remove all filters
-   * @param {boolean|undefined} forceSkip Force Skip Track
+   * @param {boolean|undefined} forceApply Force Skip Track now
    * @returns {Boolean|void} returns true for complete process or else undefined for errors
    */
 
-  setFilters(FilterStructure = ['off'], forceSkip = false) {
+  setFilters(FilterStructure = ['off'], forceApply = false) {
     if (this.destroyed) {
       return void this.Player.emit('error', 'Destroyed Queue', this);
     }
@@ -993,9 +993,9 @@ class Queue {
         this.StreamPacket.ExternalModes && FilterStructure
           ? AudioFiltersConverter(FilterStructure) ?? []
           : FilterStructure,
-      filtersUpdateChecks: true,
+      filtersUpdateChecks: !!forceApply,
     };
-    forceSkip ? this.skip() : undefined;
+    forceApply ? this.skip() : undefined;
     return true;
   }
 
