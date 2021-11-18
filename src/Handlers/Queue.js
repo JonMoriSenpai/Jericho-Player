@@ -996,7 +996,9 @@ class Queue {
     this.StreamPacket.ExternalModes = {
       seek: this.StreamPacket.ExternalModes
         ? this.StreamPacket.ExternalModes.seek
-        : undefined,
+        : (forceApply
+          ? Math.floor(Number(this.currentTimestamp.track_ms) / 1000)
+          : undefined) ?? undefined,
       audioFilters:
         this.StreamPacket.ExternalModes && FilterStructure
           ? AudioFiltersConverter(FilterStructure) ?? []
