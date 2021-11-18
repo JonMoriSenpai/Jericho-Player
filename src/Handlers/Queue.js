@@ -191,7 +191,7 @@ class Queue {
         this.#__ResourcePlay();
       } else if (newState && newState.status === AudioPlayerStatus.Playing) {
         this.StreamPacket.TrackTimeStamp.Starting = new Date().getTime()
-          + (this.StreamPacket.TrackTimeStamp.Filtered ?? 0);
+          - (this.StreamPacket.TrackTimeStamp.Filtered ?? 0);
         this.StreamPacket.TrackTimeStamp.Filtered = undefined;
         this.StreamPacket.TimedoutId = undefined;
       }
@@ -926,14 +926,14 @@ class Queue {
         && typeof EndingPoint === 'string'
         && EndingPoint.includes(':')
         ? HumanTimeConversion(undefined, undefined, EndingPoint)
-        : Math.floor(Number(EndingPoint) / 1000),
+        : EndingPoint,
     );
     StartingPoint = parseInt(
       StartingPoint
         && typeof StartingPoint === 'string'
         && StartingPoint.includes(':')
         ? HumanTimeConversion(undefined, undefined, StartingPoint)
-        : Math.floor(Number(StartingPoint) / 1000),
+        : StartingPoint,
     );
     if (
       StartingPoint
@@ -955,7 +955,7 @@ class Queue {
         this,
       );
     }
-    if (StartingPoint <= 0 || EndingPoint < 0) {
+    if (StartingPoint <= 0 || (EndingPoint !== 0 && EndingPoint < 0)) {
       return void this.Player.emit(
         'error',
         "Invalid Seek Config | Try to Give less than track's Duration",
@@ -983,7 +983,7 @@ class Queue {
    * @returns {Boolean|void} returns true for complete process or else undefined for errors
    */
 
-  setFilters(FilterStructure = ['off'], forceApply = false) {
+  setFilters(FilterStructure = undefined, forceApply = false) {
     if (this.destroyed) {
       return void this.Player.emit('error', 'Destroyed Queue', this);
     }
@@ -994,15 +994,15 @@ class Queue {
       return void this.Player.emit('error', 'Empty Queue', this);
     }
     this.StreamPacket.ExternalModes = {
-      seek: this.StreamPacket.ExternalModes
-        ? this.StreamPacket.ExternalModes.seek
-        : (forceApply
-          ? Math.floor(Number(this.currentTimestamp.track_ms) / 1000)
-          : undefined) ?? undefined,
-      audioFilters:
-        this.StreamPacket.ExternalModes && FilterStructure
-          ? AudioFiltersConverter(FilterStructure) ?? []
-          : FilterStructure,
+      seek: forceApply
+        ? {
+          StartingPoint:
+              Math.floor(Number(this.currentTimestamp.track_ms) / 1000) + 1,
+        }
+        : undefined,
+      audioFilters: FilterStructure
+        ? AudioFiltersConverter(FilterStructure) ?? []
+        : ['off'],
       filtersUpdateChecks: !!forceApply,
     };
     forceApply ? this.skip() : undefined;
@@ -1144,7 +1144,7 @@ class Queue {
     if (!this.StreamPacket.tracks[0]) {
       return void this.Player.emit('error', 'Empty Queue', this);
     }
-
+    this.StreamPacket.A;
     const TimeStamp = {
       track_ms: `${
         this.paused

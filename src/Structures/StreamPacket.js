@@ -515,7 +515,6 @@ class StreamPacketGen {
         this.ExternalModes.audioFilters.length === 1
         && this.ExternalModes.audioFilters[0] === 'off'
       ) {
-        ffmpegArgs.unshift('-af', '');
         this.ExternalModes.audioFilters = undefined;
       } else ffmpegArgs.unshift('-af', this.ExternalModes.audioFilters.join(','));
     }
@@ -542,7 +541,7 @@ class StreamPacketGen {
     this.tracks[0].tampered = !!(
       this.ExternalModes && this.ExternalModes.filtersUpdateChecks
     );
-    this.TrackTimeStamp.Filtered = this.ExternalModes.seek && this.ExternalModes.seek.StartingPoint
+    this.TrackTimeStamp.Filtered = this.ExternalModes && this.ExternalModes.seek && this.ExternalModes.seek.StartingPoint
       ? Number(this.ExternalModes.seek.StartingPoint) * 1000
       : 0;
     this.ExternalModes = {
