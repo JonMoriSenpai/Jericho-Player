@@ -1289,8 +1289,8 @@ class Queue {
     if (!this.StreamPacket) return void null;
     if (
       !this.StreamPacket.ExternalModes
-      || (this.StreamPacket.ExternalModes
-        && !this.StreamPacket.ExternalModes.audioFilters)
+      || !(this.StreamPacket.ExternalModes
+        && this.StreamPacket.ExternalModes.audioFilters && this.StreamPacket.ExternalModes.audioFilters[0])
     ) return DefaultUserDrivenAudioFilters;
     return (
       AudioFiltersConverter(this.StreamPacket.ExternalModes.audioFilters)
