@@ -1,6 +1,6 @@
 {
   "name": "jericho-player",
-  "version": "1.0.9",
+  "version": "1.0.10",
   "description": "LightWeight Framework for discord.js v13 Music Bots and Radio Bots with fast moderation with commands and no memory leak",
   "main": "./src/index.js",
   "module": "./src/index.mjs",

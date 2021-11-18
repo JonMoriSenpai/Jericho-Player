@@ -190,7 +190,9 @@ class Queue {
         this.StreamPacket.FFmpegArgsHandling(0);
         this.#__ResourcePlay();
       } else if (newState && newState.status === AudioPlayerStatus.Playing) {
-        this.StreamPacket.TrackTimeStamp.Starting = new Date().getTime();
+        this.StreamPacket.TrackTimeStamp.Starting = new Date().getTime()
+          + (this.StreamPacket.TrackTimeStamp.Filtered ?? 0);
+        this.StreamPacket.TrackTimeStamp.Filtered = undefined;
         this.StreamPacket.TimedoutId = undefined;
       }
     });

@@ -149,7 +149,7 @@ class ClassUtils {
    * HumanTimeConversion() -> Human Time Conversion Function with two categories
    * @param {String|Number|void} Type1 Convert Milliseconds to Human Time Language
    * @param {Object[]|void} Type2 Convert Milliseconds to Human Time variables
-   * @param {String|void} Type3 Convert Standared hh:mm:ss to milliseconds
+   * @param {String|void} Type3 Convert Standared hh:mm:ss to Seconds Data
    * @returns {String|void} Returns String with desired value
    */
 

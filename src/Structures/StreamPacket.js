@@ -193,7 +193,11 @@ class StreamPacketGen {
      * @type {Object}
      * @readonly
      */
-    this.TrackTimeStamp = { Starting: undefined, Paused: undefined };
+    this.TrackTimeStamp = {
+      Starting: undefined,
+      Paused: undefined,
+      Filtered: undefined,
+    };
 
     /**
      * @private
@@ -538,6 +542,9 @@ class StreamPacketGen {
     this.tracks[0].tampered = !!(
       this.ExternalModes && this.ExternalModes.filtersUpdateChecks
     );
+    this.TrackTimeStamp.Filtered = this.ExternalModes.seek && this.ExternalModes.seek.StartingPoint
+      ? Number(this.ExternalModes.seek.StartingPoint) * 1000
+      : 0;
     this.ExternalModes = {
       seek: !!(
         this.ExternalModes.seek
