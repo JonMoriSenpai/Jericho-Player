@@ -210,6 +210,17 @@ class StreamPacketGen {
       Repeat: undefined,
       Autoplay: undefined,
     };
+
+    /**
+     * @private
+     * Tempdelay Queue Methods and Process Overload Fixes
+     * @type {Object}
+     * @readonly
+     */
+    this.Tempdelay = {
+      Track: false,
+      FilterUpdate: false,
+    };
   }
 
   /**
@@ -541,7 +552,13 @@ class StreamPacketGen {
     this.tracks[0].tampered = !!(
       this.ExternalModes && this.ExternalModes.filtersUpdateChecks
     );
-    this.TrackTimeStamp.Filtered = this.ExternalModes && this.ExternalModes.seek && this.ExternalModes.seek.StartingPoint
+    this.Tempdelay = {
+      Track: !!this.Tempdelay.Track,
+      FilterUpdate: !this.Tempdelay.FilterUpdate,
+    };
+    this.TrackTimeStamp.Filtered = this.ExternalModes
+      && this.ExternalModes.seek
+      && this.ExternalModes.seek.StartingPoint
       ? Number(this.ExternalModes.seek.StartingPoint) * 1000
       : 0;
     this.ExternalModes = {

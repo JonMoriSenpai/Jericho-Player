@@ -31,6 +31,7 @@ const TrackGenerator = require('../Structures/Tracks');
 const {
   HumanTimeConversion,
   AudioFiltersConverter,
+  TimeWait,
 } = require('../Utilities/ClassUtils');
 
 /**
@@ -250,6 +251,11 @@ class Queue {
     PlayOptions = ClassUtils.stablizingoptions(PlayOptions, this.QueueOptions);
 
     // Stream Packet created if <Queue>.destroyed is true to create Voice Connection store Values
+    if (
+      this.StreamPacket
+      && this.StreamPacket.Tempdelay
+      && this.StreamPacket.Tempdelay.Track
+    ) await TimeWait(1000);
     this.StreamPacket = this.StreamPacket
       ? this.StreamPacket
       : new StreamPacketGen(
@@ -260,15 +266,20 @@ class Queue {
         PlayOptions.ExtractorStreamOptions,
         this.Player,
       );
-
+    if (this.StreamPacket && this.StreamPacket.Tempdelay) {
+      this.StreamPacket.Tempdelay = {
+        Track: !this.StreamPacket.Tempdelay.Track,
+        FilterUpdate: !!this.StreamPacket.Tempdelay.FilterUpdate,
+      };
+    }
     // Dynamically | In-directly fetches Data about Query and store it as StreamPacket
-    this.StreamPacket = (await this.StreamPacket.create(
+    await this.StreamPacket.create(
       Query,
       VoiceChannel,
       PlayOptions,
       PlayOptions.extractor,
       User ?? undefined,
-    )) ?? this.StreamPacket;
+    );
     this.tracks = this.StreamPacket.searches;
 
     // __ResourcePlay() is quite powerfull and shouldbe placed after double checks as it is the main component for Playing Streams
@@ -1289,8 +1300,11 @@ class Queue {
     if (!this.StreamPacket) return void null;
     if (
       !this.StreamPacket.ExternalModes
-      || !(this.StreamPacket.ExternalModes
-        && this.StreamPacket.ExternalModes.audioFilters && this.StreamPacket.ExternalModes.audioFilters[0])
+      || !(
+        this.StreamPacket.ExternalModes
+        && this.StreamPacket.ExternalModes.audioFilters
+        && this.StreamPacket.ExternalModes.audioFilters[0]
+      )
     ) return DefaultUserDrivenAudioFilters;
     return (
       AudioFiltersConverter(this.StreamPacket.ExternalModes.audioFilters)
@@ -1339,7 +1353,7 @@ class Queue {
   /**
    * Audio Resource or Management of Tracks in Queue
    * @private #__ResourcePlay() -> Resource Plays
-   * @returns {void} Returns undefined , it just completes a one-go process
+   * @returns {Promise<void>} Returns undefined , it just completes a one-go process
    */
 
   async #__ResourcePlay() {

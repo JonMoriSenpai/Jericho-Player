@@ -33,6 +33,7 @@
     "no-useless-constructor": "off",
     "no-empty-function": "off",
     "default-param-last": "off",
-    "no-setter-return": "off"
+    "no-setter-return": "off",
+    "no-promise-executor-return": "off"
   }
 }

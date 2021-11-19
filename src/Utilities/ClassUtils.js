@@ -266,6 +266,16 @@ class ClassUtils {
     }
     return CacheArray;
   }
+
+  /**
+   * @static
+   * Wait for Milliseconds for Delay between processes
+   * @param {Number|String|void} Milliseconds Time in Milliseconds
+   * @returns {Promise<void>} return undefined for no return
+   */
+  static async TimeWait(Milliseconds = 1000) {
+    return await new Promise((resolve) => setTimeout(resolve, Number(Milliseconds)));
+  }
 }
 
 module.exports = ClassUtils;
