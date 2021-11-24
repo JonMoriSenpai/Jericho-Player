@@ -161,7 +161,7 @@ class TrackGenerator {
         FetchOptions.ExtractorStreamOptions,
         FetchOptions.NoStreamif,
       )
-      : RawData;
+      : undefined;
     RawData = !RawData
       || (RawData && !RawData.tracks)
       || (RawData && RawData.tracks && !RawData.tracks[0])

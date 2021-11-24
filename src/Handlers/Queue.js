@@ -266,26 +266,116 @@ class Queue {
         PlayOptions.ExtractorStreamOptions,
         this.Player,
       );
-    if (this.StreamPacket && this.StreamPacket.Tempdelay) {
-      this.StreamPacket.Tempdelay = {
-        Track: !this.StreamPacket.Tempdelay.Track,
-        FilterUpdate: !!this.StreamPacket.Tempdelay.FilterUpdate,
-      };
-    }
-    // Dynamically | In-directly fetches Data about Query and store it as StreamPacket
-    await this.StreamPacket.create(
-      Query,
-      VoiceChannel,
-      PlayOptions,
-      PlayOptions.extractor,
-      User ?? undefined,
-    );
-    this.tracks = this.StreamPacket.searches;
+    return true;
+  }
 
-    // __ResourcePlay() is quite powerfull and shouldbe placed after double checks as it is the main component for Playing Streams
-    if (!this.playing && !this.paused && this.tracks && this.tracks[0]) {
-      await this.#__ResourcePlay();
+  /**
+   * playTracks() ->  PlayTracks Options for Queue Instance , Accept any kind of URL if extractor is "youtube-dl" or set undefined | "play-dl" to fetch from custom extractor
+   * @param {String[]} QueryArray Array of Query like URls or Youtube Searches | Default Extractor accept 5 supported and big websites like youtube , spotify , soundcloud , retribution , facebook and for "youtube-dl" , it accept any follows official "youtube" searches
+   * @param {VoiceChannel|StageChannel} VoiceChannel Voice Channel from Discord.js
+   * @param {User|GuildMember} User Guild Member or Guild User for requestedBy Object in track
+   * @param {DefaultQueueCreateOptions} PlayOptions Play Options | Queue Create Options | Stream Options for Additional features
+   * @returns {Promise<Boolean|void>|void} undefined on successfull attempt or Promise rejection | true if operation went good signal
+   */
+
+  async playTracks(
+    QueryArray,
+    VoiceChannel,
+    User,
+    PlayOptions = {
+      IgnoreError: true,
+      extractor: undefined,
+      metadata: this.metadata,
+      ExtractorStreamOptions: {
+        Limit: 1,
+        Quality: 'high',
+        Cookies: undefined,
+        ByPassYoutubeDLRatelimit: true,
+        YoutubeDLCookiesFilePath: undefined,
+        Proxy: undefined,
+      },
+    },
+  ) {
+    if (this.destroyed) {
+      return void this.Player.emit('error', 'Destroyed Queue', this);
     }
+    if (!(QueryArray && Array.isArray(QueryArray))) {
+      return void this.Player.emit(
+        'error',
+        'Invalid Queries Type',
+        this,
+        QueryArray,
+      );
+    }
+    QueryArray = QueryArray.filter(Boolean);
+    if (!QueryArray[0]) {
+      return void this.Player.emit('error', 'Invalid Queries', this, QueryArray);
+    }
+    // Checks for Valid Voice Channel Type to avoid further meaningless operations
+    if (
+      !VoiceChannel
+      || !(
+        VoiceChannel
+        && VoiceChannel.id
+        && VoiceChannel.guild
+        && VoiceChannel.guild.id
+        && VoiceChannel.type
+        && ['guild_voice', 'guild_stage_voice'].includes(
+          VoiceChannel.type.toLowerCase().trim(),
+        )
+      )
+    ) {
+      return void this.Player.emit('error', 'Invalid Voice Channel', this);
+    }
+
+    // Comparing and Placing Default Values if any
+    PlayOptions = ClassUtils.stablizingoptions(PlayOptions, this.QueueOptions);
+
+    // Stream Packet created if <Queue>.destroyed is true to create Voice Connection store Values
+    this.StreamPacket = this.StreamPacket
+      ? this.StreamPacket
+      : new StreamPacketGen(
+        this.Client,
+        this.guildId,
+        PlayOptions.metadata,
+        PlayOptions.extractor,
+        PlayOptions.ExtractorStreamOptions,
+        this.Player,
+      );
+    await Promise.all(
+      QueryArray.map(async (Query) => {
+        if (!(Query && typeof Query === 'string')) {
+          this.Player.emit('error', 'Invalid Query is Detected', this, Query);
+        } else {
+          if (
+            this.StreamPacket
+            && this.StreamPacket.Tempdelay
+            && this.StreamPacket.Tempdelay.Track
+          ) await TimeWait(1000);
+
+          if (this.StreamPacket && this.StreamPacket.Tempdelay) {
+            this.StreamPacket.Tempdelay = {
+              Track: !this.StreamPacket.Tempdelay.Track,
+              FilterUpdate: !!this.StreamPacket.Tempdelay.FilterUpdate,
+            };
+          }
+          // Dynamically | In-directly fetches Data about Query and store it as StreamPacket
+          await this.StreamPacket.create(
+            Query,
+            VoiceChannel,
+            PlayOptions,
+            PlayOptions.extractor,
+            User ?? undefined,
+          );
+          this.tracks = this.StreamPacket.searches;
+
+          // __ResourcePlay() is quite powerfull and shouldbe placed after double checks as it is the main component for Playing Streams
+          if (!this.playing && !this.paused && this.tracks && this.tracks[0]) {
+            await this.#__ResourcePlay();
+          }
+        }
+      }),
+    );
     return true;
   }
 

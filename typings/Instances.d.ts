@@ -76,6 +76,12 @@ export type Queue = {
     User: User | GuildMember | void,
     PlayOptions?: PlayOptions
   ): Promise<Boolean> | Promise<undefined> | void
+  playTracks(
+    QueryArray: String[],
+    VoiceChannel: VoiceChannel,
+    User: User | GuildMember | void,
+    PlayOptions?: PlayOptions
+  ): Promise<Boolean> | Promise<undefined> | void
   skip(TrackIndex: Number): Boolean | void
   stop(): Boolean | void
   pause(): Boolean | void
