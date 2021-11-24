@@ -1,7 +1,7 @@
 <div align="center">
   <br />
   <p>
-    <a href="https://jericho-player.js.org"><img src="https://github.com/SidisLiveYT/Jericho-Player/static/logo.svg" width="546" alt="jericho-player" /></a>
+    <a href="https://jericho-player.js.org"><img src="static/logo.svg" width="546" alt="jericho-player" /></a>
   </p>
   <br />
 <p>
