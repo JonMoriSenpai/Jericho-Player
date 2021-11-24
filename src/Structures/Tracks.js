@@ -153,11 +153,7 @@ class TrackGenerator {
     },
     extractor = 'play-dl',
   ) {
-    let RawData = this.#ArbitaryFetching(Query) ?? undefined;
-    RawData = (!RawData
-        || (RawData && !RawData.tracks)
-        || (RawData && RawData.tracks && !RawData.tracks[0]))
-      && extractor
+    let RawData = extractor
       && extractor.includes('youtube-dl')
       && ClassUtils.ScanDeps('video-extractor')
       ? await TrackGenerator.#YoutubeDLExtractor(
@@ -175,7 +171,11 @@ class TrackGenerator {
           FetchOptions.ExtractorStreamOptions,
           FetchOptions.NoStreamif,
         )
-        : { playlist: false, tracks: [], error: RawData.error }
+        : {
+          playlist: false,
+          tracks: [],
+          error: RawData ? RawData.error : undefined,
+        }
       : RawData;
     RawData = !RawData
       || (RawData && !RawData.tracks)
@@ -186,7 +186,20 @@ class TrackGenerator {
           FetchOptions.ExtractorStreamOptions,
           FetchOptions.NoStreamif,
         )
-        : { playlist: false, tracks: [], error: RawData.error }
+        : {
+          playlist: false,
+          tracks: [],
+          error: RawData ? RawData.error : undefined,
+        }
+      : RawData;
+    RawData = !RawData
+      || (RawData && !RawData.tracks)
+      || (RawData && RawData.tracks && !RawData.tracks[0])
+      ? this.#ArbitaryFetching(Query) ?? {
+        playlist: false,
+        tracks: [],
+        error: RawData ? RawData.error : undefined,
+      }
       : RawData;
     return RawData;
   }
@@ -268,6 +281,8 @@ class TrackGenerator {
 
     RawDataModel.tracks[0].stream = encodeURI(ArbitaryUrl);
     RawDataModel.tracks[0].stream_type = StreamType.Arbitrary;
+    RawDataModel.tracks[0].url = encodeURI(ArbitaryUrl);
+    RawDataModel.tracks[0].title = encodeURI(ArbitaryUrl);
     return RawDataModel;
   }
 
