@@ -55,7 +55,7 @@ $ npm install --save @discordjs/voice
 
 ## [Documentation](https://jericho-player.js.org)
 
-## Supported websites
+# Supported websites
 
 By default, jericho-player supports **YouTube**, **Spotify**, **facebook**, **SoundCloud** and **Arbitary Links** streams only.
 
@@ -72,13 +72,14 @@ You just need to install it using `npm i --save playdl-music-extractor` (jericho
 
 `video-extractor` is an optional package that brings support for +700 websites. The documentation is available [here](https://npmjs.com/package/video-extractor).
 
-## Examples of bots made with Jericho Player
+# Community Bots made with Jericho Player
 
 These bots are made by the community, they can help you build your own!
 
 - **[Fairy Tale - Jericho Player](https://github.com/SidisLiveYT/Jericho-Player-Discord-Bot)** by [SidisLiveYT](https://github.com/SidisLiveYT)
+- **[GoldenV13 - Discord Bot](https://github.com/BotisDerG/GoldenV13)** by [BotisDerG](https://github.com/BotisDerG)
 
-## Advanced
+# Advanced
 
 ### Use cookies
 
