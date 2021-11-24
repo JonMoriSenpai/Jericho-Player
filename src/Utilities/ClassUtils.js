@@ -1,9 +1,9 @@
-const { resolve, dirname } = require('path')
-const { FFmpeg } = require('prism-media')
+const { resolve, dirname } = require('path');
+const { FFmpeg } = require('prism-media');
 const {
   DefaultUserDrivenAudioFilters,
   DefaultAudioFilters,
-} = require('../types/interfaces')
+} = require('../types/interfaces');
 
 /**
  * @class ClassUtils -> Class Util's methods are for Class's Support and helping basic or extract support neccassity tools
@@ -13,7 +13,7 @@ class ClassUtils {
    * @private
    * Caching Time Lapse Data for Class Utils
    */
-  static #CacheTimeLapseCore = {}
+  static #CacheTimeLapseCore = {};
   /**
    * stablizingoptions() -> Stabilizing Local and Parent Options with accuracy 80%
    * @param {Object} Local Local function/method options
@@ -22,30 +22,28 @@ class ClassUtils {
    */
 
   static stablizingoptions(Local, Parent) {
-    if (!Local) return Parent
-    if (!Parent) return Local
-    const ProcessOptions = {}
-    const Options =
-      Object.keys(Local).length > Object.keys(Parent).length
-        ? Object.keys(Local)
-        : Object.keys(Parent)
+    if (!Local) return Parent;
+    if (!Parent) return Local;
+    const ProcessOptions = {};
+    const Options = Object.keys(Local).length > Object.keys(Parent).length
+      ? Object.keys(Local)
+      : Object.keys(Parent);
     for (let count = 0, len = Options.length; count < len; ++count) {
-      ProcessOptions[Options[count]] =
-        (typeof Local[Options[count]] === 'object' &&
-        Local[Options[count]] !== undefined &&
-        Parent[Options[count]] !== undefined &&
-        Local[Options[count]] &&
-        !Local[Options[count]][0]
-          ? ClassUtils.stablizingoptions(
-              Local[Options[count]],
-              Parent[Options[count]],
-            )
-          : undefined) ??
-        (Local[Options[count]] === undefined
+      ProcessOptions[Options[count]] = (typeof Local[Options[count]] === 'object'
+        && Local[Options[count]] !== undefined
+        && Parent[Options[count]] !== undefined
+        && Local[Options[count]]
+        && !Local[Options[count]][0]
+        ? ClassUtils.stablizingoptions(
+          Local[Options[count]],
+          Parent[Options[count]],
+        )
+        : undefined)
+        ?? (Local[Options[count]] === undefined
           ? Parent[Options[count]]
-          : Local[Options[count]])
+          : Local[Options[count]]);
     }
-    return ProcessOptions
+    return ProcessOptions;
   }
 
   /**
@@ -56,57 +54,56 @@ class ClassUtils {
 
   static ScanDeps(packageName) {
     if (!packageName) {
-      const report = []
-      const addVersion = (name) =>
-        report.push(
-          `- ${name}: ${ClassUtils.__versioning(name) ?? 'not found'}`,
-        )
+      const report = [];
+      const addVersion = (name) => report.push(
+        `- ${name}: ${ClassUtils.__versioning(name) ?? 'not found'}`,
+      );
       // general
-      report.push('Core Dependencies')
-      addVersion('@discordjs/voice')
-      addVersion('prism-media')
-      report.push('')
+      report.push('Core Dependencies');
+      addVersion('@discordjs/voice');
+      addVersion('prism-media');
+      report.push('');
 
       // opus
-      report.push('Opus Libraries')
-      addVersion('@discordjs/opus')
-      addVersion('opusscript')
-      report.push('')
+      report.push('Opus Libraries');
+      addVersion('@discordjs/opus');
+      addVersion('opusscript');
+      report.push('');
 
       // encryption
-      report.push('Encryption Libraries')
-      addVersion('sodium')
-      addVersion('libsodium-wrappers')
-      addVersion('tweetnacl')
-      report.push('')
+      report.push('Encryption Libraries');
+      addVersion('sodium');
+      addVersion('libsodium-wrappers');
+      addVersion('tweetnacl');
+      report.push('');
 
       // ffmpeg
-      report.push('FFmpeg')
+      report.push('FFmpeg');
       try {
-        const info = FFmpeg.getInfo()
-        report.push(`- version: ${info.version}`)
+        const info = FFmpeg.getInfo();
+        report.push(`- version: ${info.version}`);
         report.push(
           `- libopus: ${
             info.output.includes('--enable-libopus') ? 'yes' : 'no'
           }`,
-        )
+        );
       } catch (err) {
-        report.push('- not found')
+        report.push('- not found');
       }
-      addVersion('ffmpeg-static')
-      report.push('')
+      addVersion('ffmpeg-static');
+      report.push('');
 
       // Extractors
-      report.push('Extractors')
-      addVersion('playdl-music-extractor')
-      addVersion('video-extractor')
+      report.push('Extractors');
+      addVersion('playdl-music-extractor');
+      addVersion('video-extractor');
 
-      return ['-'.repeat(50), ...report, '-'.repeat(50)].join('\n')
+      return ['-'.repeat(50), ...report, '-'.repeat(50)].join('\n');
     }
     return (
-      ClassUtils.__versioning(packageName) ??
-      ClassUtils.__versioning(packageName.toLowerCase().trim())
-    )
+      ClassUtils.__versioning(packageName)
+      ?? ClassUtils.__versioning(packageName.toLowerCase().trim())
+    );
   }
 
   /**
@@ -117,17 +114,16 @@ class ClassUtils {
 
   static __versioning(name) {
     try {
-      const pkg =
-        name === '@discordjs/voice'
-          ? require('../../package.json')
-          : ClassUtils.__SearchPackageJson(
-              dirname(require.resolve(name)),
-              name,
-              8,
-            )
-      return pkg?.version ?? undefined
+      const pkg = name === '@discordjs/voice'
+        ? require('../../package.json')
+        : ClassUtils.__SearchPackageJson(
+          dirname(require.resolve(name)),
+          name,
+          8,
+        );
+      return pkg?.version ?? undefined;
     } catch (err) {
-      return undefined
+      return undefined;
     }
   }
   /**
@@ -139,19 +135,18 @@ class ClassUtils {
    */
 
   static __SearchPackageJson(dir, packageName, depth) {
-    if (depth === 0) return undefined
-    const attemptedPath = resolve(dir, './package.json')
+    if (depth === 0) return undefined;
+    const attemptedPath = resolve(dir, './package.json');
     try {
-      const pkg = require(attemptedPath)
-      if (pkg.name !== packageName)
-        throw new Error('package.json does not match')
-      return pkg
+      const pkg = require(attemptedPath);
+      if (pkg.name !== packageName) throw new Error('package.json does not match');
+      return pkg;
     } catch (err) {
       return ClassUtils.__SearchPackageJson(
         resolve(dir, '..'),
         packageName,
         depth - 1,
-      )
+      );
     }
   }
 
@@ -169,8 +164,8 @@ class ClassUtils {
     Type3 = undefined,
   ) {
     if (Type1) {
-      const DurationMilliSeconds = Type1 / 1000
-      let ProcessedString = ''
+      const DurationMilliSeconds = Type1 / 1000;
+      let ProcessedString = '';
       for (
         let DurationArray = [
             [Math.floor(DurationMilliSeconds / 31536e3), 'Years'],
@@ -197,54 +192,53 @@ class ClassUtils {
         SideArray < GarbageValue;
         SideArray++
       ) {
-        DurationArray[SideArray][0] !== 0 &&
-          (ProcessedString += ` ${DurationArray[SideArray][0]} ${
+        DurationArray[SideArray][0] !== 0
+          && (ProcessedString += ` ${DurationArray[SideArray][0]} ${
             DurationArray[SideArray][0] === 1
               ? DurationArray[SideArray][1].substr(
-                  0,
-                  DurationArray[SideArray][1].length - 1,
-                )
+                0,
+                DurationArray[SideArray][1].length - 1,
+              )
               : DurationArray[SideArray][1]
-          }`)
+          }`);
       }
-      return ProcessedString.trim()
+      return ProcessedString.trim();
     }
     if (Type2) {
-      const TimeData = new Date(Number(Type2.Time))
-      const days = TimeData.getUTCDate() - 1
-      const hours = TimeData.getUTCHours()
-      const minutes = TimeData.getUTCMinutes()
-      const seconds = TimeData.getUTCSeconds()
-      const milliseconds = TimeData.getUTCMilliseconds()
+      const TimeData = new Date(Number(Type2.Time));
+      const days = TimeData.getUTCDate() - 1;
+      const hours = TimeData.getUTCHours();
+      const minutes = TimeData.getUTCMinutes();
+      const seconds = TimeData.getUTCSeconds();
+      const milliseconds = TimeData.getUTCMilliseconds();
 
-      const TimeString = []
-      if (days) TimeString.push(days)
-      if (hours && !Type2.ignore.includes('hour'))
-        TimeString.push(hours < 10 && days > 0 ? `0${hours}` : hours)
+      const TimeString = [];
+      if (days) TimeString.push(days);
+      if (hours && !Type2.ignore.includes('hour')) TimeString.push(hours < 10 && days > 0 ? `0${hours}` : hours);
       !Type2.ignore.includes('min')
         ? TimeString.push(minutes < 10 ? `0${minutes}` : minutes)
-        : undefined
+        : undefined;
       !Type2.ignore.includes('sec')
         ? TimeString.push(seconds < 10 ? `0${seconds}` : seconds)
-        : undefined
+        : undefined;
       !Type2.ignore.includes('milliseconds')
         ? TimeString.push(milliseconds < 10 ? `0${milliseconds}` : milliseconds)
-        : undefined
-      return TimeString.join(':')
+        : undefined;
+      return TimeString.join(':');
     }
     if (Type3) {
-      const TimeArray = typeof Type3 === 'string' ? Type3.split(':') : Type3
-      let milliseconds = 0
-      let GarbageValue = 1
+      const TimeArray = typeof Type3 === 'string' ? Type3.split(':') : Type3;
+      let milliseconds = 0;
+      let GarbageValue = 1;
 
       while (TimeArray.length > 0) {
-        milliseconds += GarbageValue * parseInt(TimeArray.pop(), 10)
-        GarbageValue *= 60
+        milliseconds += GarbageValue * parseInt(TimeArray.pop(), 10);
+        GarbageValue *= 60;
       }
 
-      return milliseconds
+      return milliseconds;
     }
-    return '0 Seconds'
+    return '0 Seconds';
   }
 
   /**
@@ -254,29 +248,28 @@ class ClassUtils {
    */
   static AudioFiltersConverter(FiltersArray) {
     if (FiltersArray && FiltersArray[0]) {
-      const ObjectKeys = Object.keys(DefaultAudioFilters)
+      const ObjectKeys = Object.keys(DefaultAudioFilters);
       for (let count = 0, len = ObjectKeys.length; count < len; count++) {
         if (
-          DefaultAudioFilters[`${ObjectKeys[count]}`] &&
-          FiltersArray.includes(
+          DefaultAudioFilters[`${ObjectKeys[count]}`]
+          && FiltersArray.includes(
             DefaultAudioFilters[`${ObjectKeys[count]}`].trim(),
           )
-        )
-          DefaultUserDrivenAudioFilters[`${ObjectKeys[count]}`] = true
+        ) DefaultUserDrivenAudioFilters[`${ObjectKeys[count]}`] = true;
       }
-      return DefaultUserDrivenAudioFilters
+      return DefaultUserDrivenAudioFilters;
     }
-    const Filterkeys = Object.keys(FiltersArray)
-    const CacheArray = []
+    const Filterkeys = Object.keys(FiltersArray);
+    const CacheArray = [];
     for (let count = 0, len = Filterkeys.length; count < len; count++) {
       if (
-        DefaultAudioFilters[`${Filterkeys[count]}`] &&
-        FiltersArray[`${Filterkeys[count]}`]
+        DefaultAudioFilters[`${Filterkeys[count]}`]
+        && FiltersArray[`${Filterkeys[count]}`]
       ) {
-        CacheArray.push(`${DefaultAudioFilters[`${Filterkeys[count]}`].trim()}`)
+        CacheArray.push(`${DefaultAudioFilters[`${Filterkeys[count]}`].trim()}`);
       }
     }
-    return CacheArray
+    return CacheArray;
   }
 
   /**
@@ -286,38 +279,32 @@ class ClassUtils {
    * @returns {Promise<void>} return undefined for no return
    */
   static async TimeWait(Milliseconds = 1000) {
-    return await new Promise((resolve) =>
-      setTimeout(resolve, Number(Milliseconds)),
-    )
+    return await new Promise((resolve) => setTimeout(resolve, Number(Milliseconds)));
   }
 
   /**
    * @static
-   * Checks and Wait for Process in Sync Format
-   * @param {Number|String|void} Milliseconds Time in Milliseconds
-   * @param {String|void} ProcessName Process Name for Process Delay method
-   * @return {Promise<Boolean | void>} returns undefined on completion
+   * Checks for Valid Url and returns Boolean Results
+   * @param {String} Url Raw url for Url Checks
+   * @return {Promise<Boolean>} returns undefined on completion
    */
-  static async ProcessDelay(Milliseconds = 1000, ProcessName = 'quick') {
-    const ProcessCache = ClassUtils.#CacheTimeLapseCore[`${ProcessName}`] ?? {}
-    ProcessCache.InitialPoint = ProcessCache.InitialPoint
-      ? ProcessCache.InitialPoint
-      : new Date().getTime()
-    ProcessCache.FinalPoint = ProcessCache.FinalPoint
-      ? ProcessCache.FinalPoint
-      : new Date().getTime()
-    const TimeChange = ProcessCache.FinalPoint - ProcessCache.InitialPoint
-    if (
-      ProcessCache.FinalPoint === ProcessCache.InitialPoint ||
-      TimeChange < Milliseconds
-    ) {
-      ProcessCache.InitialPoint = ProcessCache.FinalPoint
-      ProcessCache.FinalPoint = undefined
-      ClassUtils.#CacheTimeLapseCore[`${ProcessName}`] = ProcessCache
-      return await ClassUtils.TimeWait(TimeChange)
+  static async isUriCheck(Url) {
+    if (!Url || (Url && typeof Url !== 'string')) {
+      return false;
     }
-    return true
+    const ProtocolAndDomainRegEx = /^(?:\w+:)?\/\/(\S+)$/;
+    const LocalHostDomainRegEx = /^localhost[\:?\d]*(?:[^\:?\d]\S*)?$/;
+    const NonLocalHostDomainRegEx = /^[^\s\.]+\.\S{2,}$/;
+    const SearchMatchResults = Url.match(ProtocolAndDomainRegEx);
+    if (!SearchMatchResults || (SearchMatchResults && !SearchMatchResults[1])) {
+      return false;
+    } if (
+      LocalHostDomainRegEx.test(SearchMatchResults[1])
+      || NonLocalHostDomainRegEx.test(SearchMatchResults[1])
+    ) {
+      return true;
+    } return false;
   }
 }
 
-module.exports = ClassUtils
+module.exports = ClassUtils;

@@ -1,3 +1,4 @@
+const { StreamType } = require('@discordjs/voice');
 const ClassUtils = require('../Utilities/ClassUtils');
 const {
   DefaultExtractorStreamOptions,
@@ -152,7 +153,11 @@ class TrackGenerator {
     },
     extractor = 'play-dl',
   ) {
-    let RawData = extractor
+    let RawData = this.#ArbitaryFetching(Query) ?? undefined;
+    RawData = (!RawData
+        || (RawData && !RawData.tracks)
+        || (RawData && RawData.tracks && !RawData.tracks[0]))
+      && extractor
       && extractor.includes('youtube-dl')
       && ClassUtils.ScanDeps('video-extractor')
       ? await TrackGenerator.#YoutubeDLExtractor(
@@ -160,7 +165,7 @@ class TrackGenerator {
         FetchOptions.ExtractorStreamOptions,
         FetchOptions.NoStreamif,
       )
-      : undefined;
+      : RawData;
     RawData = !RawData
       || (RawData && !RawData.tracks)
       || (RawData && RawData.tracks && !RawData.tracks[0])
@@ -171,7 +176,7 @@ class TrackGenerator {
           FetchOptions.NoStreamif,
         )
         : { playlist: false, tracks: [], error: RawData.error }
-      : undefined;
+      : RawData;
     RawData = !RawData
       || (RawData && !RawData.tracks)
       || (RawData && RawData.tracks && !RawData.tracks[0])
@@ -235,6 +240,35 @@ class TrackGenerator {
       return await Extractor(Query, ExtractorStreamOptions);
     }
     return await StreamDownloader(Query, ExtractorStreamOptions);
+  }
+
+  /**
+   * @static @private
+   * Arbitary Url Fetching Method
+   * @param {String} ArbitaryUrl A url ends with .mp3 or .mp4
+   * @returns {DefaultExtractorData} Returns Extractor Data Type for Song Fetching Method
+   */
+
+  static #ArbitaryFetching(ArbitaryUrl) {
+    if (
+      !(
+        ArbitaryUrl
+        && ClassUtils.isUriCheck(ArbitaryUrl)
+        && (ArbitaryUrl.endsWith('.mp3')
+          || ArbitaryUrl.endsWith('.mp4')
+          || ArbitaryUrl.endsWith('.mp3/')
+          || ArbitaryUrl.endsWith('.mp4/'))
+      )
+    ) return void null;
+    const RawDataModel = {
+      playlist: false,
+      tracks: [DefaultStream],
+      error: undefined,
+    };
+
+    RawDataModel.tracks[0].stream = encodeURI(ArbitaryUrl);
+    RawDataModel.tracks[0].stream_type = StreamType.Arbitrary;
+    return RawDataModel;
   }
 
   /**

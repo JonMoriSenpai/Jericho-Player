@@ -31,7 +31,7 @@ const TrackGenerator = require('../Structures/Tracks');
 const {
   HumanTimeConversion,
   AudioFiltersConverter,
-  ProcessDelay,
+  TimeWait,
 } = require('../Utilities/ClassUtils');
 
 /**
@@ -255,7 +255,7 @@ class Queue {
       this.StreamPacket
       && this.StreamPacket.Tempdelay
       && this.StreamPacket.Tempdelay.Track
-    ) await ProcessDelay(1000, 'playCommand');
+    ) await TimeWait(1000);
     this.StreamPacket = this.StreamPacket
       ? this.StreamPacket
       : new StreamPacketGen(
