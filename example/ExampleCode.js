@@ -13,5 +13,5 @@ await Queue.play('Despacito', message.member.voice.channel, message.author)
 
 
 /**
- * for more detailed explanation , visit -> https://github.com/SidisLiveYT/Jericho-Player-Discord-Bot
+ * for more detailed explanation , visit -> https://github.com/SidisLiveYT/Jericho-Player#community-bots-made-with-jericho-player
  */
