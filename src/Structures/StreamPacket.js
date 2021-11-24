@@ -4,6 +4,7 @@ const {
   AudioPlayer,
   AudioResource,
   PlayerSubscription,
+  getVoiceConnection,
 } = require('@discordjs/voice');
 const {
   User,
@@ -94,13 +95,6 @@ class StreamPacketGen {
      * @readonly
      */
     this.tracks = [];
-
-    /**
-     * VoiceConnection Voice Connection Value designed by "@discordjs/voice"
-     * @type {VoiceConnection|void}
-     * @readonly
-     */
-    this.VoiceConnection = null;
 
     /**
      * Metadata Metadata value in Streampacket for Audio Resources
@@ -286,23 +280,23 @@ class StreamPacketGen {
     );
     if (VoiceChannel) {
       this.VoiceChannel = !this.VoiceChannel
-        || !this.VoiceConnection
+        || !getVoiceConnection(this.guildId)
         || (this.VoiceChannel && VoiceChannel.id !== this.VoiceChannel.id)
         ? VoiceChannel
         : this.VoiceChannel;
-      this.VoiceConnection = !this.VoiceChannel
-        || !this.VoiceConnection
+      !this.VoiceChannel
+        || !getVoiceConnection(this.guildId)
         || (this.VoiceChannel && VoiceChannel.id !== this.VoiceChannel.id)
         ? await VoiceUtils.join(this.Client, VoiceChannel, {
           force: true,
         })
-        : this.VoiceConnection;
-    } else if (!VoiceChannel && !this.VoiceChannel && !this.VoiceConnection) {
+        : getVoiceConnection(this.guildId);
+    } else if (!VoiceChannel && !this.VoiceChannel && !getVoiceConnection(this.guildId)) {
       return void this.Player.emit(
         'connectionError',
         'Invalid Voice Connection or Invalid Voice Channel Error',
         this.Player.GetQueue(this.guildId),
-        this.VoiceConnection,
+        getVoiceConnection(this.guildId),
         this.guildId,
       );
     }
@@ -354,11 +348,11 @@ class StreamPacketGen {
       StreamFetchOptions.ExtractorStreamOptions,
       this.ExtractorStreamOptions,
     );
-    if (!this.VoiceChannel && !this.VoiceConnection) {
+    if (!this.VoiceChannel && !getVoiceConnection(this.guildId)) {
       return void this.Player.emit(
         'error',
         'Invalid Connection',
-        this.VoiceConnection,
+        getVoiceConnection(this.guildId),
         this.guildId,
       );
     }
@@ -697,7 +691,7 @@ class StreamPacketGen {
         'connectionError',
         `${error.message ?? error ?? 'Audio Resource Streaming Error'}`,
         this.Player.GetQueue(this.guildId),
-        this.VoiceConnection,
+        getVoiceConnection(this.guildId),
         this.guildId,
       );
     }

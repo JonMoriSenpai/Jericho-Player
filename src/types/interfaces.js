@@ -243,7 +243,6 @@ const DefaultChunk = {
  * @property {DefaultTrack[]} searches
  * @property {DefaultStream[]} tracks
  * @property {PlayerSubscription} subscription
- * @property {VoiceConnection} VoiceConnection
  * @property {any} metadata
  * @property {String} guildId
  * @property {DefaultExtractorStreamOptions} ExtractorStreamOptions
@@ -261,7 +260,6 @@ const DefaultStreamPacket = {
   searches: undefined,
   tracks: undefined,
   subscription: undefined,
-  VoiceConnection: undefined,
   metadata: undefined,
   guildId: undefined,
   ExtractorStreamOptions: DefaultExtractorStreamOptions,

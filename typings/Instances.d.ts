@@ -164,7 +164,6 @@ export type StreamPacket = {
   readonly searches: Array<Track>
   readonly tracks: Array<Stream>
   readonly subscription: PlayerSubscription
-  readonly VoiceConnection: VoiceConnection
   readonly metadata: any
   readonly guildId: Guild['id'] | Snowflake | String
   readonly ExtractorStreamOptions: {

@@ -8,6 +8,7 @@ const {
   VoiceChannel,
   StageChannel,
 } = require('discord.js');
+const { getVoiceConnection } = require('@discordjs/voice');
 const Queue = require('./Queue.js');
 const ClassUtils = require('../Utilities/ClassUtils');
 const { join } = require('../Utilities/VoiceUtils');
@@ -153,7 +154,7 @@ class Player extends EventEmitter {
         && NewVoiceState.id === this.Client.user.id
       ) {
         /**
-         * - QueueInstance.StreamPacket.VoiceConnection && QueueInstance.StreamPacket.VoiceChannel changed based on Client has been Moved to Different Channel
+         * - getVoiceConnection(guildId) && QueueInstance.StreamPacket.VoiceChannel changed based on Client has been Moved to Different Channel
          * - Queue Voice Connection and Channel will be Changed with Resource Subscription will be Changed from the function "this.#__handleVoiceConnectionInterchange()"
          * - QueueInstance with new Refrence Value will be Cached to Player's Queue Caches
          */
@@ -408,7 +409,7 @@ class Player extends EventEmitter {
    */
 
   async #__handleVoiceConnectionInterchange(QueueInstance, VoiceChannel) {
-    QueueInstance.StreamPacket.VoiceConnection = await join(
+    await join(
       this.Client,
       VoiceChannel,
     );
@@ -419,7 +420,7 @@ class Player extends EventEmitter {
       && QueueInstance.StreamPacket.subscription
     ) {
       QueueInstance.StreamPacket.subscription.unsubscribe();
-      QueueInstance.StreamPacket.subscription = QueueInstance.StreamPacket.VoiceConnection.subscribe(
+      QueueInstance.StreamPacket.subscription = getVoiceConnection(QueueInstance.guildId).subscribe(
         QueueInstance.MusicPlayer,
       );
     }

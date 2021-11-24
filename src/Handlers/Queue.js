@@ -4,6 +4,7 @@ const {
   entersState,
   NoSubscriberBehavior,
   AudioPlayer,
+  getVoiceConnection,
 } = require('@discordjs/voice');
 const {
   User,
@@ -266,6 +267,25 @@ class Queue {
         PlayOptions.ExtractorStreamOptions,
         this.Player,
       );
+    if (this.StreamPacket && this.StreamPacket.Tempdelay) {
+      this.StreamPacket.Tempdelay = {
+        Track: !this.StreamPacket.Tempdelay.Track,
+        FilterUpdate: !!this.StreamPacket.Tempdelay.FilterUpdate,
+      };
+    }
+    // Dynamically | In-directly fetches Data about Query and store it as StreamPacket
+    await this.StreamPacket.create(
+      Query,
+      VoiceChannel,
+      PlayOptions,
+      PlayOptions.extractor,
+      User ?? undefined,
+    );
+    this.tracks = this.StreamPacket.searches;
+    // __ResourcePlay() is quite powerfull and shouldbe placed after double checks as it is the main component for Playing Streams
+    if (!this.playing && !this.paused && this.tracks && this.tracks[0]) {
+      await this.#__ResourcePlay();
+    }
     return true;
   }
 
@@ -1479,9 +1499,9 @@ class Queue {
       this.MusicPlayer.play(AudioResource);
       if (
         !this.StreamPacket.subscription
-        && this.StreamPacket.VoiceConnection
+        && getVoiceConnection(this.guildId)
       ) {
-        this.StreamPacket.subscription = this.StreamPacket.VoiceConnection.subscribe(this.MusicPlayer)
+        this.StreamPacket.subscription = getVoiceConnection(this.guildId).subscribe(this.MusicPlayer)
           ?? undefined;
       }
       return void (await entersState(
@@ -1494,7 +1514,7 @@ class Queue {
         'connectionError',
         `${error.message ?? error ?? 'Audio Resource Streaming Error'}`,
         this,
-        this.StreamPacket.VoiceConnection,
+        getVoiceConnection(this.guildId),
         this.guildId,
       );
       if (this.tracks[1]) return void this.MusicPlayer.stop();
