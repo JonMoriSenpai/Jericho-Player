@@ -12,3 +12,4 @@ example/
 .eslintignore
 .npmrc
 .jsdoc.json
+static/
