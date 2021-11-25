@@ -76,8 +76,8 @@ You just need to install it using `npm i --save playdl-music-extractor` (jericho
 
 These bots are made by the community, they can help you build your own!
 
-- **[Fairy Tale - Jericho Player](https://github.com/SidisLiveYT/Jericho-Player-Discord-Bot)** by [SidisLiveYT](https://github.com/SidisLiveYT)
-- **[GoldenV13 - Discord Bot](https://github.com/BotisDerG/GoldenV13)** by [BotisDerG](https://github.com/BotisDerG)
+- `[ Updated ] ` **[Fairy Tale - Jericho Player](https://github.com/SidisLiveYT/Jericho-Player-Discord-Bot)** by [SidisLiveYT](https://github.com/SidisLiveYT)
+- `[ Updated ] ` **[GoldenV13 - Discord Bot](https://github.com/spasten-studio/GoldenV13)** by [Spasten.Studio](https://github.com/Spasten-Studio)
 
 # Advanced
 
