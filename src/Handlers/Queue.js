@@ -689,7 +689,7 @@ class Queue {
     if (!this.StreamPacket.tracks[0]) {
       return void this.Player.emit('error', 'Empty Queue', this);
     }
-    if (this.QueueOptions && !this.QueueOptions.NoMemoryLeakMode) {
+    if (this.QueueOptions && this.QueueOptions.NoMemoryLeakMode) {
       return void this.Player.emit(
         'error',
         "You can't Alter Volume of the Stream if No-Memory-Leak-Mode is enabled",
@@ -717,7 +717,7 @@ class Queue {
     if (!this.StreamPacket.tracks[0]) {
       return void this.Player.emit('error', 'Empty Queue', this);
     }
-    if (this.QueueOptions && !this.QueueOptions.NoMemoryLeakMode) {
+    if (this.QueueOptions && this.QueueOptions.NoMemoryLeakMode) {
       return void this.Player.emit(
         'error',
         "You can't Alter Volume of the Stream if No-Memory-Leak-Mode is enabled",
@@ -1199,6 +1199,15 @@ class Queue {
 
   get volume() {
     if (this.destroyed) return void null;
+    if (this.QueueOptions && this.QueueOptions.NoMemoryLeakMode) {
+      this.Player.emit(
+        'error',
+        "You can't Alter Volume of the Stream if No-Memory-Leak-Mode is enabled",
+        this,
+        0.1,
+      );
+      return 0.1;
+    }
     return (this.StreamPacket.volume ?? 0.095) * 1000;
   }
 
@@ -1206,7 +1215,7 @@ class Queue {
     if (this.destroyed) {
       return void this.Player.emit('error', 'Destroyed Queue', this);
     }
-    if (this.QueueOptions && !this.QueueOptions.NoMemoryLeakMode) {
+    if (this.QueueOptions && this.QueueOptions.NoMemoryLeakMode) {
       return void this.Player.emit(
         'error',
         "You can't Alter Volume of the Stream if No-Memory-Leak-Mode is enabled",
