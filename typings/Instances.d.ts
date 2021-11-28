@@ -37,6 +37,7 @@ export type Queue = {
     readonly LeaveOnEmptyTimedout: Number | 'Time in Seconds'
     readonly LeaveOnEndTimedout: Number | 'Time in Seconds'
     readonly LeaveOnBotOnlyTimedout: Number | 'Time in Seconds'
+    readonly NoMemoryLeakMode: Boolean | 'No Memory Leak Mode for Music Player'
   }
   message: Message | Interaction
   metadata: any
@@ -231,6 +232,7 @@ export type PlayerOptions = {
   readonly readonlyLeaveOnEmptyTimedout: Number | 'Time in Seconds'
   readonly LeaveOnEndTimedout: Number | 'Time in Seconds'
   readonly LeaveOnBotOnlyTimedout: Number | 'Time in Seconds'
+  readonly NoMemoryLeakMode: Boolean | 'No Memory Leak Mode for Music Player'
 }
 export type PlayOptions = {
   readonly extractor: String | 'play-dl' | 'youtube-dl'
@@ -264,6 +266,7 @@ export type QueueOptions = {
   readonly LeaveOnEmptyTimedout: Number | 'Time in Seconds'
   readonly LeaveOnEndTimedout: Number | 'Time in Seconds'
   readonly LeaveOnBotOnlyTimedout: Number | 'Time in Seconds'
+  readonly NoMemoryLeakMode: Boolean | 'No Memory Leak Mode for Music Player'
 }
 
 export type PlayerMode = {

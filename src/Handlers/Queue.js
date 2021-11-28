@@ -69,6 +69,7 @@ class Queue {
       LeaveOnEmptyTimedout: undefined,
       LeaveOnEndTimedout: undefined,
       LeaveOnBotOnlyTimedout: undefined,
+      NoMemoryLeakMode: undefined,
     },
     Player = undefined,
   ) {
@@ -688,6 +689,14 @@ class Queue {
     if (!this.StreamPacket.tracks[0]) {
       return void this.Player.emit('error', 'Empty Queue', this);
     }
+    if (this.QueueOptions && !this.QueueOptions.NoMemoryLeakMode) {
+      return void this.Player.emit(
+        'error',
+        "You can't Alter Volume of the Stream if No-Memory-Leak-Mode is enabled",
+        this,
+        0.095,
+      );
+    }
     this.volume = 0;
     return true;
   }
@@ -707,6 +716,14 @@ class Queue {
     }
     if (!this.StreamPacket.tracks[0]) {
       return void this.Player.emit('error', 'Empty Queue', this);
+    }
+    if (this.QueueOptions && !this.QueueOptions.NoMemoryLeakMode) {
+      return void this.Player.emit(
+        'error',
+        "You can't Alter Volume of the Stream if No-Memory-Leak-Mode is enabled",
+        this,
+        Volume,
+      );
     }
     if (Volume && Number.isNaN(Volume)) {
       return void this.Player.emit('error', 'Invalid Volume', this, Volume);
@@ -1189,6 +1206,14 @@ class Queue {
     if (this.destroyed) {
       return void this.Player.emit('error', 'Destroyed Queue', this);
     }
+    if (this.QueueOptions && !this.QueueOptions.NoMemoryLeakMode) {
+      return void this.Player.emit(
+        'error',
+        "You can't Alter Volume of the Stream if No-Memory-Leak-Mode is enabled",
+        this,
+        Volume,
+      );
+    }
     if (
       !(typeof Volume === 'number' || typeof Volume === 'string')
       && (Number(Volume) > 200 || Number(Volume) < 0)
@@ -1497,10 +1522,7 @@ class Queue {
       );
       if (!(this.StreamPacket && this.StreamPacket.tracks[0].tampered)) this.Player.emit('trackStart', this, this.tracks[0]);
       this.MusicPlayer.play(AudioResource);
-      if (
-        !this.StreamPacket.subscription
-        && getVoiceConnection(this.guildId)
-      ) {
+      if (!this.StreamPacket.subscription && getVoiceConnection(this.guildId)) {
         this.StreamPacket.subscription = getVoiceConnection(this.guildId).subscribe(this.MusicPlayer)
           ?? undefined;
       }

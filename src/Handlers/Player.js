@@ -56,6 +56,7 @@ class Player extends EventEmitter {
       LeaveOnEmptyTimedout: 0,
       LeaveOnEndTimedout: 0,
       LeaveOnBotOnlyTimedout: 0,
+      NoMemoryLeakMode: false,
     },
   ) {
     super();
@@ -225,6 +226,7 @@ class Player extends EventEmitter {
       LeaveOnEmptyTimedout: undefined,
       LeaveOnEndTimedout: undefined,
       LeaveOnBotOnlyTimedout: undefined,
+      NoMemoryLeakMode: undefined,
     },
   ) {
     // this.#__buildsandDepschecks() -> Checks for Invalid Client , Missing Dependencies with Missing Discord Client Voice Intents

@@ -321,6 +321,7 @@ const DefaultStreamCreateOptions = {
  * @property {Number} LeaveOnEmptyTimedout
  * @property {Number} LeaveOnEndTimedout
  * @property {Number} LeaveOnBotOnlyTimedout
+ * @property {Boolean} NoMemoryLeakMode
  */
 
 const DefaultJerichoPlayerOptions = {
@@ -333,6 +334,7 @@ const DefaultJerichoPlayerOptions = {
   LeaveOnEmptyTimedout: 0,
   LeaveOnEndTimedout: 0,
   LeaveOnBotOnlyTimedout: 0,
+  NoMemoryLeakMode: false,
 };
 
 /**
@@ -347,6 +349,7 @@ const DefaultJerichoPlayerOptions = {
  * @property {Number} LeaveOnEmptyTimedout
  * @property {Number} LeaveOnEndTimedout
  * @property {Number} LeaveOnBotOnlyTimedout
+ * @property {Boolean} NoMemoryLeakMode
  */
 
 const DefaultQueueCreateOptions = {
@@ -360,6 +363,7 @@ const DefaultQueueCreateOptions = {
   LeaveOnEmptyTimedout: 0,
   LeaveOnEndTimedout: 0,
   LeaveOnBotOnlyTimedout: 0,
+  NoMemoryLeakMode: false,
 };
 
 /**

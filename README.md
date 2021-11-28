@@ -12,7 +12,7 @@
 </p>
 </div>
 
-LightWeight Framework for **[discord.js v13](https://discord.js.org)** Music Bots and Radio Bots with fast moderation with commands and no memory leak.
+LightWeight Framework for **[discord.js v13](https://discord.js.org)** Music Bots and Radio Bots with fast moderation with commands and no memory leak mode.
 
 ## Installation
 
@@ -22,10 +22,12 @@ LightWeight Framework for **[discord.js v13](https://discord.js.org)** Music Bot
 $ npm install --save jericho-player
 ```
 
-### Install **[@discordjs/opus](https://npmjs.com/package/@discordjs/opus)**
+### Install **[@discordjs/opus](https://npmjs.com/package/@discordjs/opus) OR [opusscript](https://npmjs.com/package/opusscript)**
 
 ```sh
 $ npm install --save @discordjs/opus
+              OR
+$ npm install --save opusscript
 ```
 
 ### Install **[@discordjs/voice](https://npmjs.com/package/@discordjs/voice)**
@@ -48,6 +50,7 @@ $ npm install --save @discordjs/voice
 - Beginner friendly 😱
 - Auto Proxy Feature
 - Lightweight 🛬
+- No-Memory-Leak-Mode Present and optimised based on [@discordjs/voice](https://npmjs.com/package/@discordjs/voice)
 - play-dl or youtube-dl extractors support 🌌
 - Multiple sources support ✌
 - Supports Custom Youtube Cookies and Proxies
@@ -63,14 +66,14 @@ By default, jericho-player supports **YouTube**, **Spotify**, **facebook**, **So
 
 Jericho Player got some **Custom Extractors** that enables you to use and fast Extraction. Some packages have been made by the Sid is Live YT to add new features using this Extractors.
 
-#### [playdl-music-extractor](https://npmjs.com/package/playdl-music-extractor) (optional)
+#### [playdl-music-extractor](https://npmjs.com/package/playdl-music-extractor) (optional and latest)
 
 Optional package that adds support for `vimeo`, `reverbnation`, `facebook`.
 You just need to install it using `npm i --save playdl-music-extractor` (jericho-player will automatically detect and use it).
 
 #### [video-extractor](https://npmjs.com/package/video-extractor) (optional)
 
-`video-extractor` is an optional package that brings support for +700 websites. The documentation is available [here](https://npmjs.com/package/video-extractor).
+`video-extractor` is an optional package that brings support for +700 websites by using `youtube-dl` . The Npm Package Link is available [here](https://npmjs.com/package/video-extractor). And You can install Custom Extractor by `npm i --save video-extractor`
 
 # Community Bots made with Jericho Player
 

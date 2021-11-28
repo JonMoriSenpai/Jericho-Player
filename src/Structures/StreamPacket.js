@@ -285,13 +285,17 @@ class StreamPacketGen {
         ? VoiceChannel
         : this.VoiceChannel;
       !this.VoiceChannel
-        || !getVoiceConnection(this.guildId)
-        || (this.VoiceChannel && VoiceChannel.id !== this.VoiceChannel.id)
+      || !getVoiceConnection(this.guildId)
+      || (this.VoiceChannel && VoiceChannel.id !== this.VoiceChannel.id)
         ? await VoiceUtils.join(this.Client, VoiceChannel, {
           force: true,
         })
         : getVoiceConnection(this.guildId);
-    } else if (!VoiceChannel && !this.VoiceChannel && !getVoiceConnection(this.guildId)) {
+    } else if (
+      !VoiceChannel
+      && !this.VoiceChannel
+      && !getVoiceConnection(this.guildId)
+    ) {
       return void this.Player.emit(
         'connectionError',
         'Invalid Voice Connection or Invalid Voice Channel Error',
@@ -680,10 +684,19 @@ class StreamPacketGen {
         metadata: {
           metadata: this.metadata ?? undefined,
         },
-        inlineVolume: true,
+        inlineVolume:
+          this.Player.GetQueue(this.guildId)
+          && this.Player.GetQueue(this.guildId).QueueOptions
+          && !this.Player.GetQueue(this.guildId).QueueOptions.NoMemoryLeakMode
+            ? true
+            : undefined,
       });
       this.AudioResource = AudioResource;
-      AudioResource.volume.setVolume(this.volume ?? 0.095);
+      this.Player.GetQueue(this.guildId)
+      && this.Player.GetQueue(this.guildId).QueueOptions
+      && !this.Player.GetQueue(this.guildId).QueueOptions.NoMemoryLeakMode
+        ? AudioResource.volume.setVolume(this.volume ?? 0.095)
+        : undefined;
       return this.AudioResource;
     } catch (error) {
       this.AudioResource = undefined;
