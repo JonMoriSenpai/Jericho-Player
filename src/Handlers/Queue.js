@@ -1199,15 +1199,7 @@ class Queue {
 
   get volume() {
     if (this.destroyed) return void null;
-    if (this.QueueOptions && this.QueueOptions.NoMemoryLeakMode) {
-      this.Player.emit(
-        'error',
-        "You can't Alter Volume of the Stream if No-Memory-Leak-Mode is enabled",
-        this,
-        0.1,
-      );
-      return 0.1;
-    }
+    if (this.QueueOptions && this.QueueOptions.NoMemoryLeakMode) return 100;
     return (this.StreamPacket.volume ?? 0.095) * 1000;
   }
 
