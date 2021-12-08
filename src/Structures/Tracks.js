@@ -165,7 +165,9 @@ class TrackGenerator {
         || (RawData && !RawData.tracks)
         || (RawData && RawData.tracks && !RawData.tracks[0])
       )
-    ) { return RawData; }
+    ) {
+      return RawData;
+    }
     RawData = await TrackGenerator.#PlayDLExtractor(
       Query,
       FetchOptions.ExtractorStreamOptions,
@@ -177,7 +179,9 @@ class TrackGenerator {
         || (RawData && !RawData.tracks)
         || (RawData && RawData.tracks && !RawData.tracks[0])
       )
-    ) { return RawData; }
+    ) {
+      return RawData;
+    }
     RawData = await TrackGenerator.#YoutubeDLExtractor(
       Query,
       FetchOptions.ExtractorStreamOptions,
@@ -189,7 +193,9 @@ class TrackGenerator {
         || (RawData && !RawData.tracks)
         || (RawData && RawData.tracks && !RawData.tracks[0])
       )
-    ) { return RawData; }
+    ) {
+      return RawData;
+    }
     RawData = !RawData
       || (RawData && !RawData.tracks)
       || (RawData && RawData.tracks && !RawData.tracks[0])
@@ -220,7 +226,9 @@ class TrackGenerator {
       if (
         !(extractor && extractor.includes('youtube-dl'))
         || !ClassUtils.ScanDeps('video-extractor')
-      ) { return resolve(undefined); }
+      ) {
+        return resolve(undefined);
+      }
       const { StreamDownloader, Extractor } = require('video-extractor');
       if (NoStreamif) {
         return resolve(
@@ -234,6 +242,7 @@ class TrackGenerator {
               ExtractorStreamOptions.ByPassYoutubeDLRatelimit ?? undefined,
             YoutubeDLCookiesFilePath:
               ExtractorStreamOptions.YoutubeDLCookiesFilePath,
+            SkipVideoDataOverRide: true,
           }),
         );
       }
@@ -248,6 +257,7 @@ class TrackGenerator {
             ExtractorStreamOptions.ByPassYoutubeDLRatelimit ?? undefined,
           YoutubeDLCookiesFilePath:
             ExtractorStreamOptions.YoutubeDLCookiesFilePath,
+          SkipVideoDataOverRide: true,
         }),
       );
     });
@@ -263,7 +273,9 @@ class TrackGenerator {
 
   static async #PlayDLExtractor(Query, ExtractorStreamOptions, NoStreamif) {
     return new Promise(async (resolve) => {
-      if (!ClassUtils.ScanDeps('playdl-music-extractor')) { return resolve(undefined); }
+      if (!ClassUtils.ScanDeps('playdl-music-extractor')) {
+        return resolve(undefined);
+      }
       const { StreamDownloader, Extractor } = require('playdl-music-extractor');
       if (NoStreamif) {
         return resolve(await Extractor(Query, ExtractorStreamOptions));
@@ -289,7 +301,9 @@ class TrackGenerator {
           || ArbitaryUrl.endsWith('.mp3/')
           || ArbitaryUrl.endsWith('.mp4/'))
       )
-    ) { return void null; }
+    ) {
+      return void null;
+    }
     const RawDataModel = {
       playlist: false,
       tracks: [DefaultStream],
