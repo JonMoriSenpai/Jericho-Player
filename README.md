@@ -106,3 +106,14 @@ const player = new Player(client, {
   },
 });
 ```
+
+### Use Custom User-Agents
+
+```js
+
+const player = new Player(client, {
+  ExtractorStreamOptions: {
+    UserAgents: [user-agent], //User-Agents from browser to avoid 429 Errors in 'playdl-music-extractor'
+  },
+});
+```

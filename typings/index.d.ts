@@ -14,6 +14,7 @@ import {
   PlayerEvents,
   QueueAudioFilters,
   Awaitable,
+  PlayerRepeatModes
 } from './instances'
 import { VoiceConnection } from '@discordjs/voice'
 import { EventEmitter } from 'events'
@@ -68,4 +69,5 @@ export {
   DefaultModesTypes as PlayerModesTypes,
   QueueAudioFilters,
   QueueAudioFilters as AudioFilters,
+  PlayerRepeatModes
 }

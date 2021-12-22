@@ -4,6 +4,7 @@ const VoiceUtils = require('./Utilities/VoiceUtils');
 const {
   DefaultModesType,
   DefaultUserDrivenAudioFilters,
+  DefaultModesName,
 } = require('./types/interfaces');
 
 module.exports = {
@@ -14,4 +15,5 @@ module.exports = {
   PlayerModesTypes: DefaultModesType,
   QueueAudioFilters: DefaultUserDrivenAudioFilters,
   AudioFilters: DefaultUserDrivenAudioFilters,
+  PlayerRepeatModes: DefaultModesName,
 };

@@ -10,11 +10,6 @@ const {
  */
 class ClassUtils {
   /**
-   * @private
-   * Caching Time Lapse Data for Class Utils
-   */
-  static #CacheTimeLapseCore = {};
-  /**
    * stablizingoptions() -> Stabilizing Local and Parent Options with accuracy 80%
    * @param {Object} Local Local function/method options
    * @param {Object} Parent Parent function/method options

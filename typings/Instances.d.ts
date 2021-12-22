@@ -30,6 +30,7 @@ export type Queue = {
       ByPassYoutubeDLRatelimit: Boolean | void
       YoutubeDLCookiesFilePath: String | '/path/to/Cookie.txt'
       Proxy: String | Array<String> | 'IPAdress:PortNumber'
+      UserAgents: Array<String>
     }
     readonly LeaveOnEmpty: Boolean
     readonly LeaveOnEnd: Boolean
@@ -174,6 +175,7 @@ export type StreamPacket = {
     readonly ByPassYoutubeDLRatelimit: Boolean | void
     readonly YoutubeDLCookiesFilePath: String | '/path/to/Cookie.txt'
     readonly Proxy: String | Array<String> | 'IPAdress:PortNumber'
+    readonly UserAgents: Array<String>
   }
   readonly IgnoreError: Boolean
   readonly Player: Player
@@ -224,6 +226,7 @@ export type PlayerOptions = {
     readonly ByPassYoutubeDLRatelimit: Boolean | void
     readonly YoutubeDLCookiesFilePath: String | '/path/to/Cookie.txt'
     readonly Proxy: String | Array<String> | 'IPAdress:PortNumber'
+    readonly UserAgents: Array<String>
   }
   readonly IgnoreError: Boolean
   readonly LeaveOnEmpty: Boolean
@@ -244,6 +247,7 @@ export type PlayOptions = {
     readonly ByPassYoutubeDLRatelimit: Boolean | void
     readonly YoutubeDLCookiesFilePath: String | '/path/to/Cookie.txt'
     readonly Proxy: String | Array<String> | 'IPAdress:PortNumber'
+    readonly UserAgents: Array<String>
   }
   readonly IgnoreError: Boolean
 }
@@ -259,6 +263,7 @@ export type QueueOptions = {
     readonly ByPassYoutubeDLRatelimit: Boolean | void
     readonly YoutubeDLCookiesFilePath: String | '/path/to/Cookie.txt'
     readonly Proxy: String | Array<String> | 'IPAdress:PortNumber'
+    readonly UserAgents: Array<String>
   }
   readonly LeaveOnEmpty: Boolean
   readonly LeaveOnEnd: Boolean
@@ -356,4 +361,10 @@ export interface QueueAudioFilters {
   dim?: boolean;
   earrape?: boolean;
   echo?: boolean;
+}
+
+export enum PlayerRepeatModes  {
+  AutoPlay = 'autoplay',
+  Loop = 'loop',
+  Repeat = 'repeat'
 }

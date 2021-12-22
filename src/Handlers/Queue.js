@@ -61,6 +61,7 @@ class Queue {
         ByPassYoutubeDLRatelimit: true,
         YoutubeDLCookiesFilePath: undefined,
         Proxy: undefined,
+        UserAgents: undefined,
       },
       IgnoreError: undefined,
       LeaveOnEmpty: undefined,
@@ -225,6 +226,7 @@ class Queue {
         ByPassYoutubeDLRatelimit: true,
         YoutubeDLCookiesFilePath: undefined,
         Proxy: undefined,
+        UserAgents: undefined,
       },
     },
   ) {
@@ -314,6 +316,7 @@ class Queue {
         ByPassYoutubeDLRatelimit: true,
         YoutubeDLCookiesFilePath: undefined,
         Proxy: undefined,
+        UserAgents: undefined,
       },
     },
   ) {
@@ -550,6 +553,7 @@ class Queue {
         ByPassYoutubeDLRatelimit: true,
         YoutubeDLCookiesFilePath: undefined,
         Proxy: undefined,
+        UserAgents: undefined,
       },
     },
   ) {
@@ -794,6 +798,7 @@ class Queue {
         ByPassYoutubeDLRatelimit: true,
         YoutubeDLCookiesFilePath: undefined,
         Proxy: undefined,
+        UserAgents: undefined,
       },
     },
     forceback = true,
@@ -995,6 +1000,7 @@ class Queue {
         ByPassYoutubeDLRatelimit: true,
         YoutubeDLCookiesFilePath: undefined,
         Proxy: undefined,
+        UserAgents: undefined,
       },
     },
   ) {

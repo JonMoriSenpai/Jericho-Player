@@ -8,3 +8,4 @@ export const DefaultModesTypes = JerichoPlayerDatas.DefaultModesTypes
 export const PlayerModesTypes = JerichoPlayerDatas.PlayerModesTypes
 export const QueueAudioFilters = JerichoPlayerDatas.QueueAudioFilters
 export const AudioFilters = JerichoPlayerDatas.AudioFilters
+export const PlayerRepeatModes = JerichoPlayerDatas.PlayerRepeatModes

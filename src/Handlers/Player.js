@@ -48,6 +48,7 @@ class Player extends EventEmitter {
         ByPassYoutubeDLRatelimit: true,
         YoutubeDLCookiesFilePath: undefined,
         Proxy: undefined,
+        UserAgents: undefined,
       },
       IgnoreError: true,
       LeaveOnEmpty: true,
@@ -87,6 +88,15 @@ class Player extends EventEmitter {
      */
 
     this.Client.on('voiceStateUpdate', async (OldVoiceState, NewVoiceState) => {
+      /**
+       * - Player gets stop managing requests from invalid guild or channel to ignroe crashes
+       */
+      if (
+        !NewVoiceState.guild
+        || !OldVoiceState.guild
+        || !(OldVoiceState.channel || NewVoiceState.channel)
+      ) return undefined;
+
       /*
        * - QueueInstance Fetched from Private Raw Cache Fetching Method "Player.#QueueCacheFetch(guildId)"
        * - QueueIntance => will be used to filter Voice Events Related to our Queue or else return undefined for handling
@@ -197,6 +207,15 @@ class Player extends EventEmitter {
       }
       return void null;
     });
+
+    /**
+     * - Destroy Queue for Deleted Guild to avoid memory leaks and Free Memory for Unused Queue Caches
+     */
+
+    this.Client.on('guildDelete', (guild) => {
+      if (!this.GetQueue(guild.id)) return void null;
+      return void this.DeleteQueue(guild.id);
+    });
   }
 
   /**
@@ -218,6 +237,7 @@ class Player extends EventEmitter {
         ByPassYoutubeDLRatelimit: true,
         YoutubeDLCookiesFilePath: undefined,
         Proxy: undefined,
+        UserAgents: undefined,
       },
       IgnoreError: undefined,
       LeaveOnEmpty: undefined,
@@ -411,10 +431,7 @@ class Player extends EventEmitter {
    */
 
   async #__handleVoiceConnectionInterchange(QueueInstance, VoiceChannel) {
-    await join(
-      this.Client,
-      VoiceChannel,
-    );
+    await join(this.Client, VoiceChannel);
     QueueInstance.StreamPacket.VoiceChannel = VoiceChannel;
     if (
       QueueInstance.playing
@@ -422,9 +439,9 @@ class Player extends EventEmitter {
       && QueueInstance.StreamPacket.subscription
     ) {
       QueueInstance.StreamPacket.subscription.unsubscribe();
-      QueueInstance.StreamPacket.subscription = getVoiceConnection(QueueInstance.guildId).subscribe(
-        QueueInstance.MusicPlayer,
-      );
+      QueueInstance.StreamPacket.subscription = getVoiceConnection(
+        QueueInstance.guildId,
+      ).subscribe(QueueInstance.MusicPlayer);
     }
     Player.#QueueCaches[QueueInstance.guildId] = QueueInstance;
     return void null;

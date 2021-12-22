@@ -74,9 +74,9 @@ const DefaultPlayerMode = {
 
 /**
  * @typedef {Object} DefaultModesName
- * @property {String} Loop
- * @property {String} Repeat
- * @property {String} Autoplay
+ * @property {String} Loop Loop Mode for Queue and Player
+ * @property {String} Repeat Repeat Mode enum for Queue
+ * @property {String} Autoplay AutoPlauy Mode enum for Queue and Player
  */
 const DefaultModesName = {
   Loop: 'loop',
@@ -128,6 +128,7 @@ const DefaultExtractorStreamOptions = {
   ByPassYoutubeDLRatelimit: true,
   YoutubeDLCookiesFilePath: undefined,
   Proxy: undefined,
+  UserAgents: undefined,
 };
 
 /**
