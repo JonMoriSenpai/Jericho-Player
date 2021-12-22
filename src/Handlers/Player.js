@@ -7,6 +7,7 @@ const {
   Interaction,
   VoiceChannel,
   StageChannel,
+  Guild,
 } = require('discord.js');
 const { getVoiceConnection } = require('@discordjs/voice');
 const Queue = require('./Queue.js');
@@ -103,8 +104,12 @@ class Player extends EventEmitter {
        */
 
       const QueueInstance = Player.#QueueCacheFetch(
-        (NewVoiceState ? NewVoiceState.guild.id : undefined)
-          ?? (OldVoiceState ? OldVoiceState.guild.id : undefined),
+        (NewVoiceState && NewVoiceState.guild
+          ? NewVoiceState.guild.id
+          : undefined)
+          ?? (OldVoiceState && OldVoiceState.guild
+            ? OldVoiceState.guild.id
+            : undefined),
       );
 
       const clientchecks = (member) => member.user.id === this.Client.user.id;
@@ -289,6 +294,24 @@ class Player extends EventEmitter {
   DeleteQueue(guildId) {
     if (
       !guildId
+      || !(
+        guildId
+        && guildId.id
+        && (typeof guildId.id === typeof Guild.id
+          || typeof guildId.id === 'string'
+          || typeof guildId.id === 'number')
+      )
+    ) {
+      guildId = guildId.id;
+    }
+    if (
+      !guildId
+      || !(guildId && (typeof guildId === 'string' || typeof guildId === 'number'))
+    ) {
+      return void this.emit('error', 'Invalid Guild Id', this, guildId);
+    }
+    if (
+      !guildId
       || !(guildId && (typeof guildId === 'string' || typeof guildId === 'number'))
     ) {
       return void this.emit('error', 'Invalid Guild Id', this, guildId);
@@ -306,6 +329,18 @@ class Player extends EventEmitter {
    * @returns {Queue|void} Returns Queue Instance or else "undefined"
    */
   GetQueue(guildId) {
+    if (
+      !guildId
+      || !(
+        guildId
+        && guildId.id
+        && (typeof guildId.id === typeof Guild.id
+          || typeof guildId.id === 'string'
+          || typeof guildId.id === 'number')
+      )
+    ) {
+      guildId = guildId.id;
+    }
     if (
       !guildId
       || !(guildId && (typeof guildId === 'string' || typeof guildId === 'number'))
@@ -399,7 +434,7 @@ class Player extends EventEmitter {
         ? clearTimeout(Number(QueueInstance.StreamPacket.TimedoutId))
         : undefined;
       QueueInstance.StreamPacket.TimedoutId = QueueInstance.destroy(
-        QueueInstance.QueueOptions.LeaveOnBotOnlyTimedout ?? 0,
+        QueueInstance.QueueOptions.LeaveOnEmptyTimedout ?? 0,
       ) ?? undefined;
     }
     if (
