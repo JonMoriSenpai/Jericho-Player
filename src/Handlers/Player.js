@@ -295,24 +295,12 @@ class Player extends EventEmitter {
 
   DeleteQueue(guildId) {
     if (
-      !guildId
-      || !(
-        guildId
-        && guildId.id
-        && (typeof guildId.id === typeof Guild.id
-          || typeof guildId.id === 'string'
-          || typeof guildId.id === 'number')
-      )
+      guildId
+      && guildId.id
+      && (typeof guildId.id === 'string' || typeof guildId.id === 'number')
     ) {
       guildId = guildId.id;
-    }
-    if (
-      !guildId
-      || !(guildId && (typeof guildId === 'string' || typeof guildId === 'number'))
-    ) {
-      return void this.emit('error', 'Invalid Guild Id', this, guildId);
-    }
-    if (
+    } else if (
       !guildId
       || !(guildId && (typeof guildId === 'string' || typeof guildId === 'number'))
     ) {
@@ -332,14 +320,9 @@ class Player extends EventEmitter {
    */
   GetQueue(guildId) {
     if (
-      !guildId
-      || !(
-        guildId
-        && guildId.id
-        && (typeof guildId.id === typeof Guild.id
-          || typeof guildId.id === 'string'
-          || typeof guildId.id === 'number')
-      )
+      guildId
+      && guildId.id
+      && (typeof guildId.id === 'string' || typeof guildId.id === 'number')
     ) {
       guildId = guildId.id;
     }
