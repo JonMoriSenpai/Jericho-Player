@@ -122,7 +122,9 @@ class Player extends EventEmitter {
          * - events are in order to provide quick response with a minimal checks
          */
         if (
-          OldVoiceState.channel
+          QueueInstance
+          && QueueInstance.destroyed
+          && OldVoiceState.channel
           && OldVoiceState.channel.members
           && ((OldVoiceState.channel.members.size === 1
             && OldVoiceState.channel.members.some(clientchecks))
