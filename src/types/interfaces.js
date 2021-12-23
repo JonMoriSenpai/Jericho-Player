@@ -314,6 +314,7 @@ const DefaultStreamCreateOptions = {
 /**
  * @typedef {Object} DefaultJerichoPlayerOptions
  * @property {String} extractor
+ * @property {any} metadata
  * @property {DefaultExtractorStreamOptions} ExtractorStreamOptions
  * @property {Boolean} IgnoreError
  * @property {Boolean} LeaveOnEmpty
@@ -327,6 +328,7 @@ const DefaultStreamCreateOptions = {
 
 const DefaultJerichoPlayerOptions = {
   extractor: 'play-dl',
+  metadata: null,
   ExtractorStreamOptions: DefaultExtractorStreamOptions,
   IgnoreError: true,
   LeaveOnEmpty: true,
