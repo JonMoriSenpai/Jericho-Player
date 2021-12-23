@@ -274,6 +274,13 @@ class Player extends EventEmitter {
       return void this.emit('error', 'Invalid Guild Message', this, message);
     }
 
+    // Picking Default Stuff from Default Quese options
+
+    QueueCreateOptions = ClassUtils.stablizingoptions(
+      QueueCreateOptions,
+      DefaultQueueCreateOptions,
+    );
+
     // Picking up valid and user defined options if any and comparing them with Player Default Options
 
     QueueCreateOptions = ClassUtils.stablizingoptions(
