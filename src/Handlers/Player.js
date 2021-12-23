@@ -7,7 +7,6 @@ const {
   Interaction,
   VoiceChannel,
   StageChannel,
-  Guild,
 } = require('discord.js');
 const { getVoiceConnection } = require('@discordjs/voice');
 const Queue = require('./Queue.js');

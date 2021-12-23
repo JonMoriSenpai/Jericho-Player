@@ -15,7 +15,6 @@ const {
   Message,
 } = require('discord.js');
 const StreamPacketGen = require('../Structures/StreamPacket');
-const ClassUtils = require('../Utilities/ClassUtils');
 const { disconnect } = require('../Utilities/VoiceUtils');
 const Player = require('./Player');
 const {
@@ -33,6 +32,7 @@ const {
   HumanTimeConversion,
   AudioFiltersConverter,
   TimeWait,
+  stablizingoptions,
 } = require('../Utilities/ClassUtils');
 
 /**
@@ -87,7 +87,7 @@ class Queue {
      * @type {DefaultQueueCreateOptions}
      * @readonly
      */
-    this.QueueOptions = QueueOptions = ClassUtils.stablizingoptions(
+    this.QueueOptions = QueueOptions = stablizingoptions(
       QueueOptions,
       DefaultQueueCreateOptions,
     );
@@ -252,7 +252,7 @@ class Queue {
     }
 
     // Comparing and Placing Default Values if any
-    PlayOptions = ClassUtils.stablizingoptions(PlayOptions, this.QueueOptions);
+    PlayOptions = stablizingoptions(PlayOptions, this.QueueOptions);
 
     // Stream Packet created if <Queue>.destroyed is true to create Voice Connection store Values
     if (
@@ -353,7 +353,7 @@ class Queue {
     }
 
     // Comparing and Placing Default Values if any
-    PlayOptions = ClassUtils.stablizingoptions(PlayOptions, this.QueueOptions);
+    PlayOptions = stablizingoptions(PlayOptions, this.QueueOptions);
 
     // Stream Packet created if <Queue>.destroyed is true to create Voice Connection store Values
     this.StreamPacket = this.StreamPacket
@@ -568,7 +568,7 @@ class Queue {
     }
 
     // Stabilizing Insert Options with Insert Options to Create a Satisfied Options
-    InsertOptions = ClassUtils.stablizingoptions(
+    InsertOptions = stablizingoptions(
       InsertOptions,
       this.QueueOptions,
     );
@@ -828,7 +828,7 @@ class Queue {
         Number(TracksBackwardIndex),
       );
     }
-    PlayOptions = ClassUtils.stablizingoptions(PlayOptions, this.QueueOptions);
+    PlayOptions = stablizingoptions(PlayOptions, this.QueueOptions);
     return await this.StreamPacket.back(
       TracksBackwardIndex,
       User,
@@ -1004,7 +1004,7 @@ class Queue {
       },
     },
   ) {
-    SearchOptions = ClassUtils.stablizingoptions(
+    SearchOptions = stablizingoptions(
       SearchOptions,
       this.QueueOptions,
     );
@@ -1368,17 +1368,17 @@ class Queue {
     };
     return {
       ...TimeStamp,
-      human_track: ClassUtils.HumanTimeConversion(TimeStamp.track_ms),
-      human_totaltrack: ClassUtils.HumanTimeConversion(TimeStamp.totaltrack_ms),
-      human_previoustracks: ClassUtils.HumanTimeConversion(
+      human_track: HumanTimeConversion(TimeStamp.track_ms),
+      human_totaltrack: HumanTimeConversion(TimeStamp.totaltrack_ms),
+      human_previoustracks: HumanTimeConversion(
         TimeStamp.previoustracks_ms,
       ),
-      human_totalqueue: ClassUtils.HumanTimeConversion(TimeStamp.totalqueue_ms),
-      human_saved_queue: ClassUtils.HumanTimeConversion(
+      human_totalqueue: HumanTimeConversion(TimeStamp.totalqueue_ms),
+      human_saved_queue: HumanTimeConversion(
         TimeStamp.saved_queue_ms,
       ),
-      human_queue: ClassUtils.HumanTimeConversion(TimeStamp.queue_ms),
-      human_remainqueue: ClassUtils.HumanTimeConversion(
+      human_queue: HumanTimeConversion(TimeStamp.queue_ms),
+      human_remainqueue: HumanTimeConversion(
         TimeStamp.remainqueue_ms,
       ),
     };
@@ -1620,12 +1620,12 @@ class Queue {
           Credentials.TargetIcon = Credentials.TargetIcon ?? '●';
           Credentials.RemainingIcon = Credentials.RemainingIcon ?? '○';
           Credentials.StartingIcon = Credentials.StartingIcon
-            ?? `${ClassUtils.HumanTimeConversion(undefined, {
+            ?? `${HumanTimeConversion(undefined, {
               Time: FirstValue,
               ignore: ['milliseconds'],
             })} |  `;
           Credentials.EndIcon = Credentials.EndIcon
-            ?? `  | ${ClassUtils.HumanTimeConversion(undefined, {
+            ?? `  | ${HumanTimeConversion(undefined, {
               Time: TotalValue,
               ignore: ['milliseconds'],
             })}`;
@@ -1635,12 +1635,12 @@ class Queue {
           Credentials.TargetIcon = Credentials.TargetIcon ?? '●';
           Credentials.RemainingIcon = Credentials.RemainingIcon ?? '○';
           Credentials.StartingIcon = Credentials.StartingIcon
-            ?? `${ClassUtils.HumanTimeConversion(undefined, {
+            ?? `${HumanTimeConversion(undefined, {
               Time: FirstValue,
               ignore: ['milliseconds'],
             })} |  `;
           Credentials.EndIcon = Credentials.EndIcon
-            ?? `  | ${ClassUtils.HumanTimeConversion(undefined, {
+            ?? `  | ${HumanTimeConversion(undefined, {
               Time: TotalValue,
               ignore: ['milliseconds'],
             })}`;
@@ -1650,12 +1650,12 @@ class Queue {
           Credentials.TargetIcon = Credentials.TargetIcon ?? '◉';
           Credentials.RemainingIcon = Credentials.RemainingIcon ?? '○';
           Credentials.StartingIcon = Credentials.StartingIcon
-            ?? `${ClassUtils.HumanTimeConversion(undefined, {
+            ?? `${HumanTimeConversion(undefined, {
               Time: FirstValue,
               ignore: ['milliseconds'],
             })} |  `;
           Credentials.EndIcon = Credentials.EndIcon
-            ?? `  | ${ClassUtils.HumanTimeConversion(undefined, {
+            ?? `  | ${HumanTimeConversion(undefined, {
               Time: TotalValue,
               ignore: ['milliseconds'],
             })}`;
@@ -1665,12 +1665,12 @@ class Queue {
           Credentials.TargetIcon = Credentials.TargetIcon ?? '■';
           Credentials.RemainingIcon = Credentials.RemainingIcon ?? '□';
           Credentials.StartingIcon = Credentials.StartingIcon
-            ?? `${ClassUtils.HumanTimeConversion(undefined, {
+            ?? `${HumanTimeConversion(undefined, {
               Time: FirstValue,
               ignore: ['milliseconds'],
             })} |  `;
           Credentials.EndIcon = Credentials.EndIcon
-            ?? `  | ${ClassUtils.HumanTimeConversion(undefined, {
+            ?? `  | ${HumanTimeConversion(undefined, {
               Time: TotalValue,
               ignore: ['milliseconds'],
             })}`;
@@ -1680,12 +1680,12 @@ class Queue {
           Credentials.TargetIcon = Credentials.TargetIcon ?? '◉';
           Credentials.RemainingIcon = Credentials.RemainingIcon ?? '○';
           Credentials.StartingIcon = Credentials.StartingIcon
-            ?? `${ClassUtils.HumanTimeConversion(undefined, {
+            ?? `${HumanTimeConversion(undefined, {
               Time: FirstValue,
               ignore: ['milliseconds'],
             })} |  `;
           Credentials.EndIcon = Credentials.EndIcon
-            ?? `  | ${ClassUtils.HumanTimeConversion(undefined, {
+            ?? `  | ${HumanTimeConversion(undefined, {
               Time: TotalValue,
               ignore: ['milliseconds'],
             })}`;
@@ -1695,12 +1695,12 @@ class Queue {
           Credentials.TargetIcon = Credentials.TargetIcon ?? '🔘';
           Credentials.RemainingIcon = Credentials.RemainingIcon ?? '▬';
           Credentials.StartingIcon = Credentials.StartingIcon
-            ?? `${ClassUtils.HumanTimeConversion(undefined, {
+            ?? `${HumanTimeConversion(undefined, {
               Time: FirstValue,
               ignore: ['milliseconds'],
             })} |  `;
           Credentials.EndIcon = Credentials.EndIcon
-            ?? `  | ${ClassUtils.HumanTimeConversion(undefined, {
+            ?? `  | ${HumanTimeConversion(undefined, {
               Time: TotalValue,
               ignore: ['milliseconds'],
             })}`;
@@ -1718,7 +1718,7 @@ class Queue {
       if (count === 0.7) {
         ProgressBar.push(
           Credentials.StartingIcon
-            ?? `${ClassUtils.HumanTimeConversion(undefined, {
+            ?? `${HumanTimeConversion(undefined, {
               Time: FirstValue,
               ignore: ['milliseconds'],
             })} |  `,
@@ -1733,7 +1733,7 @@ class Queue {
     if (Size >= 11) ProgressBar.push(Credentials.TargetIcon);
     ProgressBar.push(
       Credentials.EndIcon
-        ?? `  | ${ClassUtils.HumanTimeConversion(undefined, {
+        ?? `  | ${HumanTimeConversion(undefined, {
           Time: TotalValue,
           ignore: ['milliseconds'],
         })}`,

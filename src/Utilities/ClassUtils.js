@@ -24,19 +24,19 @@ class ClassUtils {
       ? Object.keys(Local)
       : Object.keys(Parent);
     for (let count = 0, len = Options.length; count < len; ++count) {
-      ProcessOptions[Options[count]] = (typeof Local[Options[count]] === 'object'
+      if (
+        typeof Local[Options[count]] === 'object'
         && Local[Options[count]] !== undefined
         && Parent[Options[count]] !== undefined
         && Local[Options[count]]
-        && !Local[Options[count]][0]
-        ? ClassUtils.stablizingoptions(
+        && !Array.isArray(Local[Options[count]])
+      ) {
+        ProcessOptions[Options[count]] = ClassUtils.stablizingoptions(
           Local[Options[count]],
           Parent[Options[count]],
-        )
-        : undefined)
-        ?? (Local[Options[count]] === undefined
-          ? Parent[Options[count]]
-          : Local[Options[count]]);
+        );
+      } else if (Local[Options[count]] === undefined) ProcessOptions[Options[count]] = Parent[Options[count]];
+      else ProcessOptions[Options[count]] = Local[Options[count]];
     }
     return ProcessOptions;
   }
@@ -293,12 +293,14 @@ class ClassUtils {
     const SearchMatchResults = Url.match(ProtocolAndDomainRegEx);
     if (!SearchMatchResults || (SearchMatchResults && !SearchMatchResults[1])) {
       return false;
-    } if (
+    }
+    if (
       LocalHostDomainRegEx.test(SearchMatchResults[1])
       || NonLocalHostDomainRegEx.test(SearchMatchResults[1])
     ) {
       return true;
-    } return false;
+    }
+    return false;
   }
 }
 
