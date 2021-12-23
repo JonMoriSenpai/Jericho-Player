@@ -81,17 +81,6 @@ class Queue {
      */
     this.Client = Client;
 
-    // overwritting Queue Options with Default Queue Options Saved in Package
-    /**
-     * QueueOptions Queue Default Options for Upcoming methods operations
-     * @type {DefaultQueueCreateOptions}
-     * @readonly
-     */
-    this.QueueOptions = QueueOptions = stablizingoptions(
-      QueueOptions,
-      DefaultQueueCreateOptions,
-    );
-
     /**
      * StreamPacket Stream packet for Queue | Simply Handling Voice Connections and Tracks/Streams
      * @type {StreamPacketGen}

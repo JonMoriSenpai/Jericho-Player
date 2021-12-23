@@ -41,7 +41,6 @@ class Player extends EventEmitter {
     Client,
     JerichoPlayerOptions = {
       extractor: 'play-dl',
-      metadata: null,
       ExtractorStreamOptions: {
         Limit: 1,
         Quality: 'high',
@@ -276,10 +275,10 @@ class Player extends EventEmitter {
 
     // Picking up valid and user defined options if any and comparing them with Player Default Options
 
-    QueueCreateOptions = ClassUtils.stablizingoptions(
-      QueueCreateOptions,
-      this.JerichoPlayerOptions,
-    );
+    QueueCreateOptions = ClassUtils.stablizingoptions(QueueCreateOptions, {
+      ...this.JerichoPlayerOptions,
+      metadata: null,
+    });
 
     // To Avoid excess use of memory and Space in Large bots , We will always Cache Queue and Create one if is Deleted by DeleteQueue() method
     const QueueInstance = Player.#QueueCacheFetch(message.guild.id, QueueCreateOptions)
