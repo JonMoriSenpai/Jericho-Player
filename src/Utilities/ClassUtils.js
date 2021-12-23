@@ -17,12 +17,12 @@ class ClassUtils {
    */
 
   static stablizingoptions(Local, Parent) {
-    if (!Local) return Parent;
-    if (!Parent) return Local;
+    if (!Local || typeof Local !== 'object') return Parent;
+    if (!Parent || typeof Parent !== 'object') return Local;
     const ProcessOptions = {};
-    const Options = Object.keys(Local).length > Object.keys(Parent).length
-      ? Object.keys(Local)
-      : Object.keys(Parent);
+    const LocalObjects = Object.keys(Local);
+    const ParentObjects = Object.keys(Parent);
+    const Options = LocalObjects.length > ParentObjects.length ? LocalObjects : ParentObjects;
     for (let count = 0, len = Options.length; count < len; ++count) {
       if (
         typeof Local[Options[count]] === 'object'
