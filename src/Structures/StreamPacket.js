@@ -284,15 +284,10 @@ class StreamPacketGen {
       this.VoiceChannel = !this.VoiceChannel
         || !getVoiceConnection(this.guildId)
         || (this.VoiceChannel && VoiceChannel.id !== this.VoiceChannel.id)
-        ? VoiceChannel
-        : this.VoiceChannel;
-      !this.VoiceChannel
-      || !getVoiceConnection(this.guildId)
-      || (this.VoiceChannel && VoiceChannel.id !== this.VoiceChannel.id)
         ? await VoiceUtils.join(this.Client, VoiceChannel, {
           force: true,
         })
-        : getVoiceConnection(this.guildId);
+        : this.VoiceChannel;
     } else if (
       !VoiceChannel
       && !this.VoiceChannel
