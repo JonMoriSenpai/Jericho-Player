@@ -94,6 +94,13 @@ class Queue {
       QueueOptions.ExtractorStreamOptions,
       Player,
     );
+    /**
+     * Queue Options Cache for Future Refrences
+     * @type {DefaultQueueCreateOptions}
+     * @readonly
+     */
+
+    this.QueueOptions = QueueOptions;
 
     /**
      * Guild Text Channel's message instance
