@@ -13,10 +13,12 @@ class ClassUtils {
    * stablizingoptions() -> Stabilizing Local and Parent Options with accuracy 80%
    * @param {Object} Local Local function/method options
    * @param {Object} Parent Parent function/method options
+   * @param {Number|void} RecursiveTimes Limit for Infinite Loop of Stabilizing
    * @returns {Object} Finalized Options with Structure or Array Types
    */
 
-  static stablizingoptions(Local, Parent) {
+  static stablizingoptions(Local, Parent, RecursiveTimes = 0) {
+    if (RecursiveTimes > 3 || Array.isArray(Local) || Array.isArray(Parent)) return Local;
     if (!Local || typeof Local !== 'object') return Parent;
     if (!Parent || typeof Parent !== 'object') return Local;
     const ProcessOptions = {};
@@ -29,11 +31,13 @@ class ClassUtils {
         && Local[Options[count]] !== undefined
         && Parent[Options[count]] !== undefined
         && Local[Options[count]]
+        && !['metadata'].includes(Options[count].toLowerCase().trim())
         && !Array.isArray(Local[Options[count]])
       ) {
         ProcessOptions[Options[count]] = ClassUtils.stablizingoptions(
           Local[Options[count]],
           Parent[Options[count]],
+          ++RecursiveTimes,
         );
       } else if (Local[Options[count]] === undefined) ProcessOptions[Options[count]] = Parent[Options[count]];
       else ProcessOptions[Options[count]] = Local[Options[count]];

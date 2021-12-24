@@ -349,7 +349,7 @@ class Queue {
     }
 
     // Comparing and Placing Default Values if any
-    PlayOptions = stablizingoptions(PlayOptions, this.QueueOptions);
+    PlayOptions = PlayOptions !== this.QueueOptions ? stablizingoptions(PlayOptions, this.QueueOptions) : PlayOptions;
 
     // Stream Packet created if <Queue>.destroyed is true to create Voice Connection store Values
     this.StreamPacket = this.StreamPacket
