@@ -103,15 +103,15 @@ class Player extends EventEmitter {
        */
 
       const QueueInstance = Player.#QueueCacheFetch(
-        (NewVoiceState && NewVoiceState.guild
+        (NewVoiceState && NewVoiceState.guild && NewVoiceState.guild.id
           ? NewVoiceState.guild.id
           : undefined)
-          ?? (OldVoiceState && OldVoiceState.guild
+          ?? (OldVoiceState && OldVoiceState.guild && OldVoiceState.guild.id
             ? OldVoiceState.guild.id
             : undefined),
       );
 
-      const clientchecks = (member) => member.user.id === this.Client.user.id;
+      const clientchecks = (member) => member.id === this.Client.user.id;
 
       // - QueueInstance checking if its related to Queue Voice Connection Events
 
@@ -120,9 +120,9 @@ class Player extends EventEmitter {
          * - event "channelEmpty" and "botDisconnect" will trigger on bot leaving the VC | Timeout will be Handlerd in - "Queue.#__ResourcePlay()"
          * - events are in order to provide quick response with a minimal checks
          */
+
         if (
           QueueInstance
-          && QueueInstance.destroyed
           && OldVoiceState.channel
           && OldVoiceState.channel.members
           && ((OldVoiceState.channel.members.size === 1
@@ -138,8 +138,8 @@ class Player extends EventEmitter {
             OldVoiceState.channel ?? undefined,
           );
         }
-        return QueueInstance && QueueInstance.guildId
-          ? this.DeleteQueue(QueueInstance.guildId)
+        return QueueInstance
+          ? this.DeleteQueue(OldVoiceState.guild.id)
           : undefined;
       }
       if (
@@ -149,18 +149,6 @@ class Player extends EventEmitter {
         || (NewVoiceState.channel
           && OldVoiceState.channel
           && OldVoiceState.channel.id === NewVoiceState.channel.id)
-        || !(
-          (NewVoiceState.channel
-            && QueueInstance.StreamPacket
-            && QueueInstance.StreamPacket.VoiceChannel
-            && QueueInstance.StreamPacket.VoiceChannel.id
-              === NewVoiceState.channel.id)
-          || (OldVoiceState.channel
-            && QueueInstance.StreamPacket
-            && QueueInstance.StreamPacket.VoiceChannel
-            && QueueInstance.StreamPacket.VoiceChannel.id
-              === OldVoiceState.channel.id)
-        )
       ) {
         return void null;
       }
@@ -361,12 +349,7 @@ class Player extends EventEmitter {
         QueueCreateOptions,
         QueueInstance.QueueOptions,
       );
-      if (
-        QueueInstance
-        && QueueInstance.destroyed
-        && typeof QueueInstance.destroyed !== 'boolean'
-      ) clearTimeout(QueueInstance.destroyed);
-      QueueInstance.destroyed = false;
+
       Player.#QueueCaches[`${guildId}`] = QueueInstance;
     }
     return Player.#QueueCaches[`${guildId}`];
@@ -387,6 +370,12 @@ class Player extends EventEmitter {
       Player.#QueueCaches[`${guildId}`].stop();
     }
     if (!QueueInstance.destroyed) QueueInstance.destroy();
+    else if (
+      QueueInstance.destroyed
+      && (typeof QueueInstance.destroyed === 'number'
+        || !Number.isNaN(QueueInstance.destroyed))
+    ) clearTimeout(Number(QueueInstance.destroyed));
+
     const Garbage = {};
     QueueInstance = Player.#QueueCaches[`${guildId}`] = undefined;
     Garbage.container1 = QueueInstance;
@@ -414,10 +403,12 @@ class Player extends EventEmitter {
         && VoiceChannel.members.some(clientchecks))
         || VoiceChannel.members.size === 0)
     ) {
-      QueueInstance.StreamPacket.TimedoutId
-        ? clearTimeout(Number(QueueInstance.StreamPacket.TimedoutId))
+      QueueInstance.destroyed
+      && !Number.isNaN(QueueInstance.destroyed)
+      && Number(QueueInstance.destroyed) > 0
+        ? clearTimeout(Number(QueueInstance.destroyed))
         : undefined;
-      QueueInstance.StreamPacket.TimedoutId = QueueInstance.destroy(
+      QueueInstance.destroyed = QueueInstance.destroy(
         QueueInstance.QueueOptions.LeaveOnEmptyTimedout ?? 0,
       ) ?? undefined;
     }
@@ -430,10 +421,12 @@ class Player extends EventEmitter {
         && !VoiceChannel.members.some(clientchecks)
         && VoiceChannel.members.size <= 1)
     ) {
-      QueueInstance.StreamPacket.TimedoutId
-        ? clearTimeout(Number(QueueInstance.StreamPacket.TimedoutId))
+      QueueInstance.destroyed
+      && !Number.isNaN(QueueInstance.destroyed)
+      && Number(QueueInstance.destroyed) > 0
+        ? clearTimeout(Number(QueueInstance.destroyed))
         : undefined;
-      QueueInstance.StreamPacket.TimedoutId = QueueInstance.destroy(
+      QueueInstance.destroyed = QueueInstance.destroy(
         QueueInstance.QueueOptions.LeaveOnBotOnlyTimedout ?? 0,
       ) ?? undefined;
     }

@@ -193,7 +193,7 @@ class Queue {
         this.StreamPacket.TrackTimeStamp.Starting = new Date().getTime()
           - (this.StreamPacket.TrackTimeStamp.Filtered ?? 0);
         this.StreamPacket.TrackTimeStamp.Filtered = undefined;
-        this.StreamPacket.TimedoutId = undefined;
+        this.destroyed = false;
       }
     });
   }
@@ -349,7 +349,9 @@ class Queue {
     }
 
     // Comparing and Placing Default Values if any
-    PlayOptions = PlayOptions !== this.QueueOptions ? stablizingoptions(PlayOptions, this.QueueOptions) : PlayOptions;
+    PlayOptions = PlayOptions !== this.QueueOptions
+      ? stablizingoptions(PlayOptions, this.QueueOptions)
+      : PlayOptions;
 
     // Stream Packet created if <Queue>.destroyed is true to create Voice Connection store Values
     this.StreamPacket = this.StreamPacket
@@ -564,10 +566,7 @@ class Queue {
     }
 
     // Stabilizing Insert Options with Insert Options to Create a Satisfied Options
-    InsertOptions = stablizingoptions(
-      InsertOptions,
-      this.QueueOptions,
-    );
+    InsertOptions = stablizingoptions(InsertOptions, this.QueueOptions);
 
     // Create StreamPacket if any chance it got deleted or changed
     this.StreamPacket
@@ -625,7 +624,7 @@ class Queue {
   /**
    * destroy() -> Destroy Queue | Also Destroy Connection with it , method is quite powerfull
    * @param {Number|void} connectionTimedout NodejsTimeout Number to destroy with a timer
-   * @returns {Boolean|void} true if operation emits green signal or undefined for errors
+   * @returns {Boolean|Number|void} true if operation emits green signal or undefined for errors
    */
 
   destroy(connectionTimedout = 0) {
@@ -648,12 +647,17 @@ class Queue {
      * - Above , Cached Destruction Timeout ID , incase Queue got recovered before destruction to cancel out the destroy Timedout
      * - Below is to completely Destroy Stream Packet
      */
-    const NodeTimeoutId = connectionTimedout || connectionTimedout === 0
+    const NodeTimeoutId = connectionTimedout
+      || (!Number.isNaN(connectionTimedout) && Number(connectionTimedout) > 0)
       ? disconnect(
         this.guildId,
-        { destroy: true },
+        {
+          destroy: true,
+          MusicPlayer: this.MusicPlayer,
+          Subscription: this.StreamPacket.subscription,
+          Player: this.Player,
+        },
         Number(connectionTimedout) ?? 0,
-        this,
       )
       : undefined;
 
@@ -1000,10 +1004,7 @@ class Queue {
       },
     },
   ) {
-    SearchOptions = stablizingoptions(
-      SearchOptions,
-      this.QueueOptions,
-    );
+    SearchOptions = stablizingoptions(SearchOptions, this.QueueOptions);
     SearchOptions = { ...SearchOptions, NoStreamif: true };
     const Chunks = await TrackGenerator.fetch(
       Query,
@@ -1366,17 +1367,11 @@ class Queue {
       ...TimeStamp,
       human_track: HumanTimeConversion(TimeStamp.track_ms),
       human_totaltrack: HumanTimeConversion(TimeStamp.totaltrack_ms),
-      human_previoustracks: HumanTimeConversion(
-        TimeStamp.previoustracks_ms,
-      ),
+      human_previoustracks: HumanTimeConversion(TimeStamp.previoustracks_ms),
       human_totalqueue: HumanTimeConversion(TimeStamp.totalqueue_ms),
-      human_saved_queue: HumanTimeConversion(
-        TimeStamp.saved_queue_ms,
-      ),
+      human_saved_queue: HumanTimeConversion(TimeStamp.saved_queue_ms),
       human_queue: HumanTimeConversion(TimeStamp.queue_ms),
-      human_remainqueue: HumanTimeConversion(
-        TimeStamp.remainqueue_ms,
-      ),
+      human_remainqueue: HumanTimeConversion(TimeStamp.remainqueue_ms),
     };
   }
 
@@ -1512,12 +1507,12 @@ class Queue {
             || this.playerMode.mode === DefaultModesName.Autoplay)
           && !GarbagePlayerModeHandle))
     ) {
-      this.StreamPacket.TimedoutId = this.#__QueueAudioPlayerStatusManager();
+      this.#__QueueAudioPlayerStatusManager();
       return void this.Player.emit('queueEnd', this);
     }
     if (!this.StreamPacket) return void null;
-    this.StreamPacket.TimedoutId = this.StreamPacket && this.StreamPacket.TimedoutId
-      ? clearTimeout(Number(this.StreamPacket.TimedoutId))
+    this.destroyed = this.destroyed && Number(this.destroyed) > 0
+      ? clearTimeout(Number(this.destroyed))
       : undefined;
     try {
       const AudioResource = this.StreamPacket.StreamAudioResourceExtractor(
@@ -1589,8 +1584,8 @@ class Queue {
   #__QueueAudioPlayerStatusManager() {
     if (this.destroyed) return void null;
     if (this.QueueOptions.LeaveOnEnd && !this.tracks[0]) {
-      this.StreamPacket.TimedoutId && this.StreamPacket.TimedoutId > 0
-        ? clearTimeout(Number(this.StreamPacket.TimedoutId))
+      this.destroyed && Number(this.destroyed) > 0
+        ? clearTimeout(Number(this.destroyed))
         : undefined;
       return (
         this.destroy(this.QueueOptions.LeaveOnEndTimedout ?? 0) ?? undefined

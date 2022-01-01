@@ -176,14 +176,6 @@ class StreamPacketGen {
 
     /**
      * @private
-     * TimedoutId Queue Timedout ID value or undefined
-     * @type {String|Number|void|Boolean}
-     * @readonly
-     */
-    this.TimedoutId = undefined;
-
-    /**
-     * @private
      * TrackTimeStamp Track's Live Status and Storing Value of the Time
      * @type {Object}
      * @readonly

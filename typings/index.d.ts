@@ -14,9 +14,13 @@ import {
   PlayerEvents,
   QueueAudioFilters,
   Awaitable,
-  PlayerRepeatModes
+  PlayerRepeatModes,
 } from './instances'
-import { VoiceConnection } from '@discordjs/voice'
+import {
+  AudioPlayer,
+  PlayerSubscription,
+  VoiceConnection,
+} from '@discordjs/voice'
 import { EventEmitter } from 'events'
 
 export class Player extends EventEmitter {
@@ -41,9 +45,7 @@ export class Player extends EventEmitter {
 }
 
 export class Utils {
-  public static ScanDeps(
-    PackageName: String | void,
-  ): String | Number | void
+  public static ScanDeps(PackageName: String | void): String | Number | void
 }
 
 export class VoiceUtils {
@@ -59,6 +61,9 @@ export class VoiceUtils {
     guildId: Guild['id'] | String | Number,
     DisconnectChannelOptions: {
       destroy: Boolean
+      MusicPlayer: AudioPlayer
+      Subscription: PlayerSubscription
+      Player: Player
     },
     Timedout?: Number | String | void,
   ): undefined
@@ -69,5 +74,5 @@ export {
   DefaultModesTypes as PlayerModesTypes,
   QueueAudioFilters,
   QueueAudioFilters as AudioFilters,
-  PlayerRepeatModes
+  PlayerRepeatModes,
 }

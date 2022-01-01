@@ -182,7 +182,6 @@ export type StreamPacket = {
   readonly volume: Number
   readonly AudioResource: AudioResource
   readonly previousTracks: Track[] | void
-  readonly TimedoutId: Number | void
 }
 
 export type Stream = {

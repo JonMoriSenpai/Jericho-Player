@@ -15,7 +15,7 @@ class VoiceUtils {
   /**
    * @constructor
    */
-  constructor() { }
+  constructor() {}
 
   /**
    * Join Channel function for Voice Utils with Client and Channel and JoinChannelOptions Credentials
@@ -34,17 +34,25 @@ class VoiceUtils {
     if (
       getVoiceConnection(Channel.guild.id)
       && getVoiceConnection(Channel.guild.id).state
-      && getVoiceConnection(Channel.guild.id).state.status !== VoiceConnectionStatus.Destroyed
-      && getVoiceConnection(Channel.guild.id).state.status !== VoiceConnectionStatus.Disconnected
+      && getVoiceConnection(Channel.guild.id).state.status
+        !== VoiceConnectionStatus.Destroyed
+      && getVoiceConnection(Channel.guild.id).state.status
+        !== VoiceConnectionStatus.Disconnected
       && !JoinChannelOptions.force
-    ) { return getVoiceConnection(Channel.guild.id); }
+    ) {
+      return getVoiceConnection(Channel.guild.id);
+    }
 
     joinVoiceChannel({
       channelId: Channel.id,
       guildId: Channel.guild.id,
       adapterCreator: Channel.guild.voiceAdapterCreator,
     });
-    await entersState(getVoiceConnection(Channel.guild.id), VoiceConnectionStatus.Ready, 30e3);
+    await entersState(
+      getVoiceConnection(Channel.guild.id),
+      VoiceConnectionStatus.Ready,
+      30e3,
+    );
     Channel = Client.channels.cache.get(`${Channel.id}`)
       ?? (await Client.channels.fetch(`${Channel.id}`));
     if (
@@ -65,7 +73,6 @@ class VoiceUtils {
    * @param {String|Number} guildId Guild's id as Snowflake
    * @param {DefaultDisconnectChannelOptions|void} DisconnectChannelOptions Disconnect Options for Connection
    * @param {Number|String|void} Timedout Nodejs Timedout duration if delay has been issues
-   * @param {Queue} QueueInstance Queue Instance for fetching Player and Stream Packet
    * @returns {void|Number|String} Returns Nodejs Timedout for Delays and undefined on completion or errors
    */
 
@@ -73,9 +80,11 @@ class VoiceUtils {
     guildId,
     DisconnectChannelOptions = {
       destroy: true,
+      MusicPlayer: null,
+      Subscription: null,
+      Player: null,
     },
     Timedout = 0,
-    QueueInstance = undefined,
   ) {
     if (Timedout && Timedout > 0) {
       return setTimeout(() => {
@@ -84,30 +93,33 @@ class VoiceUtils {
           && DisconnectChannelOptions
           && DisconnectChannelOptions.destroy
         ) {
-          if (QueueInstance && !QueueInstance.destroyed) {
-            QueueInstance.MusicPlayer.stop();
-            QueueInstance.StreamPacket.subscription
-              ? QueueInstance.StreamPacket.subscription.unsubscribe()
-              : undefined;
-          }
+          DisconnectChannelOptions.MusicPlayer
+            ? DisconnectChannelOptions.MusicPlayer.stop()
+            : undefined;
+          DisconnectChannelOptions.Subscription
+            ? DisconnectChannelOptions.Subscription.unsubscribe()
+            : undefined;
           return void getVoiceConnection(guildId).destroy(true);
         }
         if (getVoiceConnection(guildId)) {
-          if (QueueInstance && !QueueInstance.destroyed) {
-            QueueInstance.MusicPlayer.stop();
-            QueueInstance.StreamPacket.subscription
-              ? QueueInstance.StreamPacket.subscription.unsubscribe()
-              : undefined;
-          }
+          DisconnectChannelOptions.MusicPlayer
+            ? DisconnectChannelOptions.MusicPlayer.stop()
+            : undefined;
+          DisconnectChannelOptions.Subscription
+            ? DisconnectChannelOptions.Subscription.unsubscribe()
+            : undefined;
           return void getVoiceConnection(guildId).disconnect();
         }
-        return void QueueInstance.Player.emit(
-          'connectionError',
-          "Voice Connection Can't be destroyed",
-          QueueInstance.Player.GetQueue(QueueInstance.guildId),
-          getVoiceConnection(guildId),
-          guildId,
-        );
+        DisconnectChannelOptions.Player
+          ? DisconnectChannelOptions.Player.emit(
+            'connectionError',
+            "Voice Connection Can't be destroyed",
+            DisconnectChannelOptions.Player.GetQueue(guildId),
+            getVoiceConnection(guildId),
+            guildId,
+          )
+          : undefined;
+        return undefined;
       }, Number(Timedout) * 1000);
     }
     if (
@@ -115,30 +127,33 @@ class VoiceUtils {
       && DisconnectChannelOptions
       && DisconnectChannelOptions.destroy
     ) {
-      if (QueueInstance && !QueueInstance.destroyed) {
-        QueueInstance.MusicPlayer.stop();
-        QueueInstance.StreamPacket.subscription
-          ? QueueInstance.StreamPacket.subscription.unsubscribe()
-          : undefined;
-      }
+      DisconnectChannelOptions.MusicPlayer
+        ? DisconnectChannelOptions.MusicPlayer.stop()
+        : undefined;
+      DisconnectChannelOptions.Subscription
+        ? DisconnectChannelOptions.Subscription.unsubscribe()
+        : undefined;
       return void getVoiceConnection(guildId).destroy(true);
     }
     if (getVoiceConnection(guildId)) {
-      if (QueueInstance && !QueueInstance.destroyed) {
-        QueueInstance.MusicPlayer.stop();
-        QueueInstance.StreamPacket.subscription
-          ? QueueInstance.StreamPacket.subscription.unsubscribe()
-          : undefined;
-      }
+      DisconnectChannelOptions.MusicPlayer
+        ? DisconnectChannelOptions.MusicPlayer.stop()
+        : undefined;
+      DisconnectChannelOptions.Subscription
+        ? DisconnectChannelOptions.Subscription.unsubscribe()
+        : undefined;
       return void getVoiceConnection(guildId).disconnect();
     }
-    return void QueueInstance.Player.emit(
-      'connectionError',
-      "Voice Connection Can't be destroyed",
-      QueueInstance.Player.GetQueue(QueueInstance.guildId),
-      getVoiceConnection(guildId),
-      guildId,
-    );
+    DisconnectChannelOptions.Player
+      ? DisconnectChannelOptions.Player.emit(
+        'connectionError',
+        "Voice Connection Can't be destroyed",
+        DisconnectChannelOptions.Player.GetQueue(guildId),
+        getVoiceConnection(guildId),
+        guildId,
+      )
+      : undefined;
+    return undefined;
   }
 }
 

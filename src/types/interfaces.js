@@ -110,6 +110,9 @@ const DefaultJoinChannelOptions = {
  */
 const DefaultDisconnectChannelOptions = {
   destroy: true,
+  MusicPlayer: undefined,
+  Subscription: undefined,
+  Player: undefined,
 };
 
 /**
@@ -269,7 +272,6 @@ const DefaultStreamPacket = {
   volume: 0,
   AudioResource: undefined,
   previousTracks: undefined,
-  TimedoutId: 0,
   TrackTimeStamp: undefined,
 };
 
