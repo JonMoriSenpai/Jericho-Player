@@ -287,8 +287,7 @@ class TrackGenerator {
   }
 
   /**
-   * @static @private
-   * Arbitary Url Fetching Method
+   * @private #ArbitaryFetching -> Arbitary Url Fetching Method
    * @param {String} ArbitaryUrl A url ends with .mp3 or .mp4
    * @returns {DefaultExtractorData} Returns Extractor Data Type for Song Fetching Method
    */

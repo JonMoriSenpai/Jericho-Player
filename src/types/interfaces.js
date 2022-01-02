@@ -11,11 +11,11 @@ const Player = require('../Handlers/Player');
 
 /**
  * @typedef {Object} DefaultProgressBar
- * @property {String} CompleteIcon
- * @property {String} TargetIcon
- * @property {String} RemainingIcon
- * @property {String} StartingIcon
- * @property {String} EndIcon
+ * @property {String} CompleteIcon Emoji for starting background Same as "Remaining Icon"  | Default -> " ▬ "
+ * @property {String} TargetIcon Emoji for Progress Pointer in Bar , Accurate Pointing in Progress Bar  | Default -> " 🔘 "
+ * @property {String} RemainingIcon Emoji for Ednding background Same as "Complete Icon"  | Default -> " ▬ "
+ * @property {String} StartingIcon Emoji for Starting Bar to make actual Progress Bar | Default -> "Timecodes | "
+ * @property {String} EndIcon Emoji for Ending Bar to make actual Progress Bar | Default -> "| Timecodes"
  */
 const DefaultProgressBar = {
   CompleteIcon: '▬',
@@ -27,19 +27,19 @@ const DefaultProgressBar = {
 
 /**
  * @typedef {Object} DefaultcurrentTimestamp
- * @property {String} track_ms
- * @property {String} totaltrack_ms
- * @property {String} previoustracks_ms
- * @property {String} saved_queue_ms
- * @property {String} queue_ms
- * @property {String} remainqueue_ms
- * @property {String} human_track
- * @property {String} human_totaltrack
- * @property {String} human_previoustracks
- * @property {String} human_totalqueue
- * @property {String} human_saved_queue
- * @property {String} human_queue
- * @property {String} human_remainqueue
+ * @property {String} track_ms Current Track Duration in Milliseconds But return as String
+ * @property {String} totaltrack_ms Total Tracks Duration in Milliseconds But return as String
+ * @property {String} previoustracks_ms Previous Track Duration in Milliseconds But return as String
+ * @property {String} saved_queue_ms Saved Queue Duration in Milliseconds But return as String
+ * @property {String} queue_ms Queue Duration in Milliseconds But return as String
+ * @property {String} remainqueue_ms Remaining Queue Duration in Milliseconds But return as String
+ * @property {String} human_track Total Tracks Duration in Milliseconds But return as String
+ * @property {String} human_totaltrack Human Readable Current Track Duration in "Time-Codes"
+ * @property {String} human_previoustracks Human Readable Total Tracks Duration in "Time-Codes"
+ * @property {String} human_totalqueue Human Readable Total Queue Duration in "Time-Codes"
+ * @property {String} human_saved_queue Human Readable Saved Queue Duration in "Time-Codes"
+ * @property {String} human_queue Human Readable Queue Duration in "Time-Codes"
+ * @property {String} human_remainqueue Human Readable Remaining Queue Duration in "Time-Codes"
  */
 
 const DefaultcurrentTimestamp = {
@@ -61,9 +61,9 @@ const DefaultcurrentTimestamp = {
 
 /**
  * @typedef {Object} DefaultPlayerMode
- * @property {String} mode
- * @property {String} type
- * @property {String} times
+ * @property {String} mode Player Mode name like -> "autoplay"/"repeat"/"loop"/undefined
+ * @property {String} type Player Mode type like -> "queue"/"track"
+ * @property {String} times Player Mode Work times lin Number | Majourly for Repeat Mode Name
  */
 
 const DefaultPlayerMode = {
@@ -74,9 +74,9 @@ const DefaultPlayerMode = {
 
 /**
  * @typedef {Object} DefaultModesName
- * @property {String} Loop Loop Mode for Queue and Player
- * @property {String} Repeat Repeat Mode enum for Queue
- * @property {String} Autoplay AutoPlauy Mode enum for Queue and Player
+ * @property {String} Loop Loop Mode for Queue and Player | "loop"
+ * @property {String} Repeat Repeat Mode enum for Queue | "repeat"
+ * @property {String} Autoplay AutoPlauy Mode enum for Queue and Player | "autoplay"
  */
 const DefaultModesName = {
   Loop: 'loop',
@@ -584,6 +584,17 @@ const DefaultPlayerEvents = {
   },
 };
 
+/**
+ * @typedef {Object} DefaultSearchResults
+ * @property {Boolean} playlist Boolean value if Query was Playlist "true/false"
+ * @property {Array<DefaultTrack>} tracks Array of tracks on Positive Search Results from extractors
+ */
+
+const DefaultSearchResults = {
+  playlist: false,
+  tracks: [DefaultTrack],
+};
+
 module.exports = {
   DefaultQueueCreateOptions,
   DefaultJerichoPlayerOptions,
@@ -605,4 +616,5 @@ module.exports = {
   DefaultPlayerEvents,
   DefaultUserDrivenAudioFilters,
   DefaultAudioFilters,
+  DefaultSearchResults,
 };

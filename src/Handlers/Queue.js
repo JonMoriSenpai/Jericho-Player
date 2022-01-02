@@ -26,6 +26,7 @@ const {
   DefaultModesType,
   DefaultcurrentTimestamp,
   DefaultUserDrivenAudioFilters,
+  DefaultSearchResults,
 } = require('../types/interfaces');
 const TrackGenerator = require('../Structures/Tracks');
 const {
@@ -984,7 +985,7 @@ class Queue {
    * @param {String} Query Query as URLs or Youtube Searches
    * @param {GuildMember|User} User user Value for Track.requestedBy Object
    * @param {DefaultQueueCreateOptions|void} SearchOptions Stream Options for Query Processing | Same as Queue Creation and Play Method
-   * @returns {Promise<Object>|void} Returns Tracks if operation emits green signal or undefined for errors
+   * @returns {Promise<DefaultSearchResults>|void} Returns Tracks if operation emits green signal or undefined for errors
    */
   async search(
     Query,

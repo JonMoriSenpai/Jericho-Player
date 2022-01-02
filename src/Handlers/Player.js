@@ -7,14 +7,17 @@ const {
   Interaction,
   VoiceChannel,
   StageChannel,
+  User,
 } = require('discord.js');
 const { getVoiceConnection } = require('@discordjs/voice');
 const Queue = require('./Queue.js');
 const ClassUtils = require('../Utilities/ClassUtils');
+const TrackGenerator = require('../Structures/Tracks');
 const { join } = require('../Utilities/VoiceUtils');
 const {
   DefaultJerichoPlayerOptions,
   DefaultQueueCreateOptions,
+  DefaultSearchResults,
 } = require('../types/interfaces');
 
 /**
@@ -320,6 +323,50 @@ class Player extends EventEmitter {
       return void this.emit('error', 'Invalid Guild Id', this, guildId);
     }
     return Player.#QueueCacheFetch(guildId);
+  }
+
+  /**
+   * search -> Search keywords or Title/Urls for List Related Videos
+   * @param {String} Query Song Name or Song URL for search
+   * @param {User|void} User Discord User Data for Request By or else undefined is accepted
+   * @param {DefaultJerichoPlayerOptions|void} SearchOptions Search Options for Limitations and Restrictions
+   * @returns {Promise<DefaultSearchResults | void>} Returns Track Data Extracted from Various Extractors
+   */
+
+  async search(
+    Query,
+    User,
+    SearchOptions = {
+      IgnoreError: true,
+      extractor: undefined,
+      metadata: null,
+      ExtractorStreamOptions: {
+        Limit: 1,
+        Quality: 'high',
+        Cookies: undefined,
+        ByPassYoutubeDLRatelimit: true,
+        YoutubeDLCookiesFilePath: undefined,
+        Proxy: undefined,
+        UserAgents: undefined,
+      },
+    },
+  ) {
+    SearchOptions = ClassUtils.stablizingoptions(
+      SearchOptions,
+      DefaultJerichoPlayerOptions,
+    );
+    SearchOptions = { ...SearchOptions, NoStreamif: true };
+    const Chunks = await TrackGenerator.fetch(
+      Query,
+      User,
+      SearchOptions,
+      SearchOptions.extractor ?? 'play-dl',
+      0,
+    );
+    if (Chunks.error) {
+      return void this.emit('error', Chunks.error, this);
+    }
+    return { playlist: Chunks.playlist, tracks: Chunks.tracks };
   }
 
   /**
