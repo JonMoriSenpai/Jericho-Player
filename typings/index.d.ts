@@ -4,7 +4,11 @@ import {
   Message,
   Snowflake,
   VoiceChannel,
-  Interaction,
+  TextChannel,
+  CategoryChannel,
+  StageChannel,
+  NewsChannel,
+  ThreadChannel,
 } from 'discord.js'
 import {
   Queue,
@@ -46,6 +50,22 @@ export class Player extends EventEmitter {
 
 export class Utils {
   public static ScanDeps(PackageName: String | void): String | Number | void
+  public static ResolverLTE(
+    RawValue:
+      | String
+      | Number
+      | Object
+      | Snowflake
+      | Guild
+      | Message
+      | TextChannel
+      | CategoryChannel
+      | VoiceChannel
+      | StageChannel
+      | NewsChannel
+      | ThreadChannel,
+    ReturnType: String | void,
+  ): String | Snowflake | void
 }
 
 export class VoiceUtils {

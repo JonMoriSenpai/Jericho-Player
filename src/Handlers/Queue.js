@@ -5,7 +5,7 @@ const {
   NoSubscriberBehavior,
   AudioPlayer,
   getVoiceConnection,
-} = require('@discordjs/voice');
+} = require('@discordjs/voice')
 const {
   User,
   Client,
@@ -13,10 +13,10 @@ const {
   VoiceChannel,
   StageChannel,
   Message,
-} = require('discord.js');
-const StreamPacketGen = require('../Structures/StreamPacket');
-const { disconnect } = require('../Utilities/VoiceUtils');
-const Player = require('./Player');
+} = require('discord.js')
+const StreamPacketGen = require('../Structures/StreamPacket')
+const { disconnect } = require('../Utilities/VoiceUtils')
+const Player = require('./Player')
 const {
   DefaultQueueCreateOptions,
   DefaultProgressBar,
@@ -27,14 +27,15 @@ const {
   DefaultcurrentTimestamp,
   DefaultUserDrivenAudioFilters,
   DefaultSearchResults,
-} = require('../types/interfaces');
-const TrackGenerator = require('../Structures/Tracks');
+} = require('../types/interfaces')
+const TrackGenerator = require('../Structures/Tracks')
 const {
   HumanTimeConversion,
   AudioFiltersConverter,
   TimeWait,
   stablizingoptions,
-} = require('../Utilities/ClassUtils');
+  ResolverLTE,
+} = require('../Utilities/ClassUtils')
 
 /**
  * @class Queue -> Queue Class for Creating Queue Instances for Guild
@@ -80,7 +81,7 @@ class Queue {
      * @type {Client} Client Discord Client Instance
      * @readonly
      */
-    this.Client = Client;
+    this.Client = Client
 
     /**
      * StreamPacket Stream packet for Queue | Simply Handling Voice Connections and Tracks/Streams
@@ -94,41 +95,41 @@ class Queue {
       QueueOptions.extractor,
       QueueOptions.ExtractorStreamOptions,
       Player,
-    );
+    )
     /**
      * Queue Options Cache for Future Refrences
      * @type {DefaultQueueCreateOptions}
      * @readonly
      */
 
-    this.QueueOptions = QueueOptions;
+    this.QueueOptions = QueueOptions
 
     /**
      * Metadata value in Queue for Audio Resources
      * @type {Object|void}
      */
-    this.metadata = QueueOptions.metadata;
+    this.metadata = QueueOptions.metadata
 
     /**
      * Queue.tracks[] holds all the Queue's tracks Cache
      * @type {DefaultTrack[]}
      * @readonly
      */
-    this.tracks = [];
+    this.tracks = []
 
     /**
      * Guild's id Object cached from new constructor's guild value
      * @type {String|Number}
      * @readonly
      */
-    this.guildId = GuildId;
+    this.guildId = GuildId
 
     /**
      * Queue has been destroyed with Queue.destroy() respond with Boolean or else in delay for destruction will return Timedout ID for clearInterval fucntion
      * @type {Boolean|Number}
      * @readonly
      */
-    this.destroyed = false;
+    this.destroyed = false
 
     /**
      * MusicPlayer New Music Player for the Queue Instance to carry out the Basic Stream Operations
@@ -139,14 +140,14 @@ class Queue {
       behaviors: {
         noSubscriber: NoSubscriberBehavior.Play,
       },
-    });
+    })
 
     /**
      * Player Player's Instance for fetching Queue from Cache , Just in case it is required
      * @type {Player}
      * @readonly
      */
-    this.Player = Player;
+    this.Player = Player
 
     /**
      * "statechange" Voice Event for Audio Player for quick filtered Decision making
@@ -154,42 +155,44 @@ class Queue {
     this.MusicPlayer.on('stateChange', async (oldState, newState) => {
       if (newState.status === AudioPlayerStatus.Idle) {
         if (
-          this.StreamPacket
-          && this.tracks
-          && this.tracks[0]
-          && this.StreamPacket.AudioResource
+          this.StreamPacket &&
+          this.tracks &&
+          this.tracks[0] &&
+          this.StreamPacket.AudioResource
         ) {
-          this.StreamPacket.AudioResource = undefined;
+          this.StreamPacket.AudioResource = undefined
           if (
             !(
-              this.StreamPacket.ExternalModes
-              && this.StreamPacket.ExternalModes.filtersUpdateChecks
+              this.StreamPacket.ExternalModes &&
+              this.StreamPacket.ExternalModes.filtersUpdateChecks
             )
           ) {
-            this.StreamPacket.previousTracks.push(this.StreamPacket.searches[0]);
+            this.StreamPacket.previousTracks.push(this.StreamPacket.searches[0])
             !(
               this.playerMode && this.playerMode.type === DefaultModesType.Track
             )
               ? this.Player.emit('trackEnd', this, this.tracks[0])
-              : undefined;
+              : undefined
           }
         }
         if (
-          !this.destroyed
-          && !(
-            this.StreamPacket.ExternalModes
-            && this.StreamPacket.ExternalModes.filtersUpdateChecks
+          !this.destroyed &&
+          !(
+            this.StreamPacket.ExternalModes &&
+            this.StreamPacket.ExternalModes.filtersUpdateChecks
           )
-        ) this.#__CleaningTrackMess();
-        this.StreamPacket.FFmpegArgsHandling(0);
-        this.#__ResourcePlay();
+        )
+          this.#__CleaningTrackMess()
+        this.StreamPacket.FFmpegArgsHandling(0)
+        this.#__ResourcePlay()
       } else if (newState && newState.status === AudioPlayerStatus.Playing) {
-        this.StreamPacket.TrackTimeStamp.Starting = new Date().getTime()
-          - (this.StreamPacket.TrackTimeStamp.Filtered ?? 0);
-        this.StreamPacket.TrackTimeStamp.Filtered = undefined;
-        this.destroyed = false;
+        this.StreamPacket.TrackTimeStamp.Starting =
+          new Date().getTime() -
+          (this.StreamPacket.TrackTimeStamp.Filtered ?? 0)
+        this.StreamPacket.TrackTimeStamp.Filtered = undefined
+        this.destroyed = false
       }
-    });
+    })
   }
 
   /**
@@ -222,34 +225,38 @@ class Queue {
   ) {
     // Watch for Queue.destroyed Property for ignoring Invalid operation and further un-wanted Errors
     if (this.destroyed) {
-      return void this.Player.emit('error', 'Destroyed Queue', this);
+      return void this.Player.emit('error', 'Destroyed Queue', this)
     }
+    // Voice Channel resolves if possible
+    VoiceChannel = ResolverLTE(VoiceChannel, 'voicechannel')
+
     // Checks for Valid Voice Channel Type to avoid further meaningless operations
     if (
-      !VoiceChannel
-      || !(
-        VoiceChannel
-        && VoiceChannel.id
-        && VoiceChannel.guild
-        && VoiceChannel.guild.id
-        && VoiceChannel.type
-        && ['guild_voice', 'guild_stage_voice'].includes(
-          VoiceChannel.type.toLowerCase().trim(),
-        )
+      !(
+        (this.StreamPacket && this.StreamPacket.VoiceChannel) ||
+        (VoiceChannel &&
+          VoiceChannel.id &&
+          VoiceChannel.guild &&
+          VoiceChannel.guild.id &&
+          VoiceChannel.type &&
+          ['guild_voice', 'guild_stage_voice'].includes(
+            VoiceChannel.type.toLowerCase().trim(),
+          ))
       )
     ) {
-      return void this.Player.emit('error', 'Invalid Voice Channel', this);
+      return void this.Player.emit('error', 'Invalid Voice Channel', this)
     }
 
     // Comparing and Placing Default Values if any
-    PlayOptions = stablizingoptions(PlayOptions, this.QueueOptions);
+    PlayOptions = stablizingoptions(PlayOptions, this.QueueOptions)
 
     // Stream Packet created if <Queue>.destroyed is true to create Voice Connection store Values
     if (
-      this.StreamPacket
-      && this.StreamPacket.Tempdelay
-      && this.StreamPacket.Tempdelay.Track
-    ) await TimeWait(1000);
+      this.StreamPacket &&
+      this.StreamPacket.Tempdelay &&
+      this.StreamPacket.Tempdelay.Track
+    )
+      await TimeWait(1000)
     this.StreamPacket = this.StreamPacket
       ? this.StreamPacket
       : new StreamPacketGen(
@@ -259,27 +266,27 @@ class Queue {
         PlayOptions.extractor,
         PlayOptions.ExtractorStreamOptions,
         this.Player,
-      );
+      )
     if (this.StreamPacket && this.StreamPacket.Tempdelay) {
       this.StreamPacket.Tempdelay = {
         Track: !this.StreamPacket.Tempdelay.Track,
         FilterUpdate: !!this.StreamPacket.Tempdelay.FilterUpdate,
-      };
+      }
     }
     // Dynamically | In-directly fetches Data about Query and store it as StreamPacket
     await this.StreamPacket.create(
       Query,
-      VoiceChannel,
+      this.StreamPacket.VoiceChannel ?? VoiceChannel,
       PlayOptions,
       PlayOptions.extractor,
       User ?? undefined,
-    );
-    this.tracks = this.StreamPacket.searches;
+    )
+    this.tracks = this.StreamPacket.searches
     // __ResourcePlay() is quite powerfull and shouldbe placed after double checks as it is the main component for Playing Streams
     if (!this.playing && !this.paused && this.tracks && this.tracks[0]) {
-      await this.#__ResourcePlay();
+      await this.#__ResourcePlay()
     }
-    return true;
+    return true
   }
 
   /**
@@ -311,41 +318,45 @@ class Queue {
     },
   ) {
     if (this.destroyed) {
-      return void this.Player.emit('error', 'Destroyed Queue', this);
+      return void this.Player.emit('error', 'Destroyed Queue', this)
     }
+    // Voice Channel resolves if possible
+    VoiceChannel = ResolverLTE(VoiceChannel, 'voicechannel')
+
     if (!(QueryArray && Array.isArray(QueryArray))) {
       return void this.Player.emit(
         'error',
         'Invalid Queries Type',
         this,
         QueryArray,
-      );
+      )
     }
-    QueryArray = QueryArray.filter(Boolean);
+    QueryArray = QueryArray.filter(Boolean)
     if (!QueryArray[0]) {
-      return void this.Player.emit('error', 'Invalid Queries', this, QueryArray);
+      return void this.Player.emit('error', 'Invalid Queries', this, QueryArray)
     }
     // Checks for Valid Voice Channel Type to avoid further meaningless operations
     if (
-      !VoiceChannel
-      || !(
-        VoiceChannel
-        && VoiceChannel.id
-        && VoiceChannel.guild
-        && VoiceChannel.guild.id
-        && VoiceChannel.type
-        && ['guild_voice', 'guild_stage_voice'].includes(
-          VoiceChannel.type.toLowerCase().trim(),
-        )
+      !(
+        (this.StreamPacket && this.StreamPacket.VoiceChannel) ||
+        (VoiceChannel &&
+          VoiceChannel.id &&
+          VoiceChannel.guild &&
+          VoiceChannel.guild.id &&
+          VoiceChannel.type &&
+          ['guild_voice', 'guild_stage_voice'].includes(
+            VoiceChannel.type.toLowerCase().trim(),
+          ))
       )
     ) {
-      return void this.Player.emit('error', 'Invalid Voice Channel', this);
+      return void this.Player.emit('error', 'Invalid Voice Channel', this)
     }
 
     // Comparing and Placing Default Values if any
-    PlayOptions = PlayOptions !== this.QueueOptions
-      ? stablizingoptions(PlayOptions, this.QueueOptions)
-      : PlayOptions;
+    PlayOptions =
+      PlayOptions !== this.QueueOptions
+        ? stablizingoptions(PlayOptions, this.QueueOptions)
+        : PlayOptions
 
     // Stream Packet created if <Queue>.destroyed is true to create Voice Connection store Values
     this.StreamPacket = this.StreamPacket
@@ -357,42 +368,43 @@ class Queue {
         PlayOptions.extractor,
         PlayOptions.ExtractorStreamOptions,
         this.Player,
-      );
+      )
     await Promise.all(
       QueryArray.map(async (Query) => {
         if (!(Query && typeof Query === 'string')) {
-          this.Player.emit('error', 'Invalid Query is Detected', this, Query);
+          this.Player.emit('error', 'Invalid Query is Detected', this, Query)
         } else {
           if (
-            this.StreamPacket
-            && this.StreamPacket.Tempdelay
-            && this.StreamPacket.Tempdelay.Track
-          ) await TimeWait(1000);
+            this.StreamPacket &&
+            this.StreamPacket.Tempdelay &&
+            this.StreamPacket.Tempdelay.Track
+          )
+            await TimeWait(1000)
 
           if (this.StreamPacket && this.StreamPacket.Tempdelay) {
             this.StreamPacket.Tempdelay = {
               Track: !this.StreamPacket.Tempdelay.Track,
               FilterUpdate: !!this.StreamPacket.Tempdelay.FilterUpdate,
-            };
+            }
           }
           // Dynamically | In-directly fetches Data about Query and store it as StreamPacket
           await this.StreamPacket.create(
             Query,
-            VoiceChannel,
+            this.StreamPacket.VoiceChannel ?? VoiceChannel,
             PlayOptions,
             PlayOptions.extractor,
             User ?? undefined,
-          );
-          this.tracks = this.StreamPacket.searches;
+          )
+          this.tracks = this.StreamPacket.searches
 
           // __ResourcePlay() is quite powerfull and shouldbe placed after double checks as it is the main component for Playing Streams
           if (!this.playing && !this.paused && this.tracks && this.tracks[0]) {
-            await this.#__ResourcePlay();
+            await this.#__ResourcePlay()
           }
         }
       }),
-    );
-    return true;
+    )
+    return true
   }
 
   /**
@@ -403,23 +415,23 @@ class Queue {
 
   skip(TrackIndex) {
     if (this.destroyed) {
-      return void this.Player.emit('error', 'Destroyed Queue', this);
+      return void this.Player.emit('error', 'Destroyed Queue', this)
     }
     if (
-      TrackIndex
-      && !(typeof TrackIndex === 'number' || typeof TrackIndex === 'string')
+      TrackIndex &&
+      !(typeof TrackIndex === 'number' || typeof TrackIndex === 'string')
     ) {
-      return void this.Player.emit('error', 'Invalid Index', this, TrackIndex);
+      return void this.Player.emit('error', 'Invalid Index', this, TrackIndex)
     }
     if (
-      (!this.playing
-        || (this.playing && !this.playerMode && !this.StreamPacket.tracks[1]))
-      && !(
-        this.StreamPacket.ExternalModes
-        && this.StreamPacket.ExternalModes.filtersUpdateChecks
+      (!this.playing ||
+        (this.playing && !this.playerMode && !this.StreamPacket.tracks[1])) &&
+      !(
+        this.StreamPacket.ExternalModes &&
+        this.StreamPacket.ExternalModes.filtersUpdateChecks
       )
     ) {
-      return void this.Player.emit('error', 'Empty Queue', this);
+      return void this.Player.emit('error', 'Empty Queue', this)
     }
     if (Number(TrackIndex) <= 0 && Number(TrackIndex) >= this.tracks.length) {
       return void this.Player.emit(
@@ -427,21 +439,21 @@ class Queue {
         'Invalid Index',
         this,
         Number(TrackIndex),
-      );
+      )
     }
 
     // Lastly Cleaning of the Tracks if any
 
-    TrackIndex
-    && Number(TrackIndex) > 1
-    && Number(TrackIndex) < this.tracks.length
+    TrackIndex &&
+    Number(TrackIndex) > 1 &&
+    Number(TrackIndex) < this.tracks.length
       ? this.#__CleaningTrackMess(
         undefined,
         Number(TrackIndex) - 1 ?? undefined,
       )
-      : undefined;
-    this.MusicPlayer.stop();
-    return true;
+      : undefined
+    this.MusicPlayer.stop()
+    return true
   }
 
   /**
@@ -451,27 +463,27 @@ class Queue {
 
   stop() {
     if (this.destroyed) {
-      return void this.Player.emit('error', 'Destroyed Queue', this);
+      return void this.Player.emit('error', 'Destroyed Queue', this)
     }
     if (!this.playing) {
-      return void this.Player.emit('error', 'Not Playing', this);
+      return void this.Player.emit('error', 'Not Playing', this)
     }
     if (!this.StreamPacket.tracks[0]) {
-      return void this.Player.emit('error', 'Empty Queue', this);
+      return void this.Player.emit('error', 'Empty Queue', this)
     }
     this.#__CleaningTrackMess(
       0,
       (this.StreamPacket.tracks.length > 1
         ? this.StreamPacket.tracks.length
         : undefined) ?? undefined,
-    );
+    )
 
     // Extra Cleanup for Music Player to avoid certain leaks
     this.StreamPacket.subscription
       ? this.StreamPacket.subscription.unsubscribe()
-      : undefined;
-    this.MusicPlayer.stop();
-    return true;
+      : undefined
+    this.MusicPlayer.stop()
+    return true
   }
 
   /**
@@ -481,19 +493,19 @@ class Queue {
 
   pause() {
     if (this.destroyed) {
-      return void this.Player.emit('error', 'Destroyed Queue', this);
+      return void this.Player.emit('error', 'Destroyed Queue', this)
     }
     if (!this.playing) {
-      return void this.Player.emit('error', 'Not Playing', this);
+      return void this.Player.emit('error', 'Not Playing', this)
     }
     if (!this.StreamPacket.tracks[0]) {
-      return void this.Player.emit('error', 'Empty Queue', this);
+      return void this.Player.emit('error', 'Empty Queue', this)
     }
     if (this.MusicPlayer.pause(true)) {
-      this.StreamPacket.TrackTimeStamp.Paused = new Date().getTime();
-      return true;
+      this.StreamPacket.TrackTimeStamp.Paused = new Date().getTime()
+      return true
     }
-    return false;
+    return false
   }
 
   /**
@@ -503,23 +515,23 @@ class Queue {
 
   resume() {
     if (this.destroyed) {
-      return void this.Player.emit('error', 'Destroyed Queue', this);
+      return void this.Player.emit('error', 'Destroyed Queue', this)
     }
     if (!this.playing) {
-      return void this.Player.emit('error', 'Not Playing', this);
+      return void this.Player.emit('error', 'Not Playing', this)
     }
     if (!this.StreamPacket.tracks[0]) {
-      return void this.Player.emit('error', 'Empty Queue', this);
+      return void this.Player.emit('error', 'Empty Queue', this)
     }
     if (!this.paused) {
-      return void this.Player.emit('error', 'Not Paused', this);
+      return void this.Player.emit('error', 'Not Paused', this)
     }
     if (this.MusicPlayer.unpause()) {
-      this.StreamPacket.TrackTimeStamp.Starting
-        += new Date().getTime() - this.StreamPacket.TrackTimeStamp.Paused;
-      return true;
+      this.StreamPacket.TrackTimeStamp.Starting +=
+        new Date().getTime() - this.StreamPacket.TrackTimeStamp.Paused
+      return true
     }
-    return true;
+    return true
   }
 
   /**
@@ -550,17 +562,17 @@ class Queue {
     },
   ) {
     if (this.destroyed) {
-      return void this.Player.emit('error', 'Destroyed Queue', this);
+      return void this.Player.emit('error', 'Destroyed Queue', this)
     }
     if (
-      TrackIndex
-      && !(typeof TrackIndex === 'number' || typeof TrackIndex === 'string')
+      TrackIndex &&
+      !(typeof TrackIndex === 'number' || typeof TrackIndex === 'string')
     ) {
-      return void this.Player.emit('error', 'Invalid Index', this, TrackIndex);
+      return void this.Player.emit('error', 'Invalid Index', this, TrackIndex)
     }
 
     // Stabilizing Insert Options with Insert Options to Create a Satisfied Options
-    InsertOptions = stablizingoptions(InsertOptions, this.QueueOptions);
+    InsertOptions = stablizingoptions(InsertOptions, this.QueueOptions)
 
     // Create StreamPacket if any chance it got deleted or changed
     this.StreamPacket
@@ -572,16 +584,17 @@ class Queue {
         InsertOptions.extractor,
         InsertOptions.ExtractorStreamOptions,
         this.Player,
-      );
-    this.StreamPacket = (await this.StreamPacket.insert(
-      Number(TrackIndex) ?? -1,
-      Query,
-      InsertOptions.ExtractorStreamOptions,
-      InsertOptions.extractor,
-      User ?? undefined,
-    )) ?? this.StreamPacket;
-    this.tracks = this.StreamPacket.searches;
-    return true;
+      )
+    this.StreamPacket =
+      (await this.StreamPacket.insert(
+        Number(TrackIndex) ?? -1,
+        Query,
+        InsertOptions.ExtractorStreamOptions,
+        InsertOptions.extractor,
+        User ?? undefined,
+      )) ?? this.StreamPacket
+    this.tracks = this.StreamPacket.searches
+    return true
   }
 
   /**
@@ -593,13 +606,13 @@ class Queue {
 
   remove(Index = -1, Amount = 1) {
     if (this.destroyed) {
-      return void this.Player.emit('error', 'Destroyed Queue', this);
+      return void this.Player.emit('error', 'Destroyed Queue', this)
     }
     if (Number.isNaN(Index)) {
-      return void this.Player.emit('error', 'Invalid Index', this, Index);
+      return void this.Player.emit('error', 'Invalid Index', this, Index)
     }
     if (Number.isNaN(Amount)) {
-      return void this.Player.emit('error', 'Invalid Amount', this, Amount);
+      return void this.Player.emit('error', 'Invalid Amount', this, Amount)
     }
     if (Number(Index) < -1 && Number(Index) >= this.tracks.length) {
       return void this.Player.emit(
@@ -607,12 +620,12 @@ class Queue {
         'Invalid Index',
         this,
         Number(Index),
-      );
+      )
     }
 
     // Called StreamPacket.remove() function to remove it completely internally and to avoid Messup Code Snippets
-    this.StreamPacket = this.StreamPacket.remove(Number(Index), Number(Amount));
-    return true;
+    this.StreamPacket = this.StreamPacket.remove(Number(Index), Number(Amount))
+    return true
   }
 
   /**
@@ -623,53 +636,55 @@ class Queue {
 
   destroy(connectionTimedout = 0) {
     if (this.destroyed) {
-      return void this.Player.emit('error', 'Destroyed Queue', this);
+      return void this.Player.emit('error', 'Destroyed Queue', this)
     }
-    this.StreamPacket.tracks = [];
-    this.StreamPacket.searches = [];
-    this.StreamPacket.volume = 0.095;
-    this.StreamPacket.AudioResource = undefined;
-    this.StreamPacket.previousTracks = [];
-    this.StreamPacket.MusicPlayerMode = undefined;
+    this.StreamPacket.tracks = []
+    this.StreamPacket.searches = []
+    this.StreamPacket.volume = 0.095
+    this.StreamPacket.AudioResource = undefined
+    this.StreamPacket.previousTracks = []
+    this.StreamPacket.MusicPlayerMode = undefined
     this.StreamPacket.TrackTimeStamp = {
       Starting: undefined,
       Paused: undefined,
-    };
+    }
 
     /*
      * - Timeout Session and Call for Voice Utils's disconnect method/function
      * - Above , Cached Destruction Timeout ID , incase Queue got recovered before destruction to cancel out the destroy Timedout
      * - Below is to completely Destroy Stream Packet
      */
-    const NodeTimeoutId = connectionTimedout
-      || (!Number.isNaN(connectionTimedout) && Number(connectionTimedout) > 0)
-      ? disconnect(
-        this.guildId,
-        {
-          destroy: true,
-          MusicPlayer: this.MusicPlayer,
-          Subscription: this.StreamPacket.subscription,
-          Player: this.Player,
-        },
-        Number(connectionTimedout) ?? 0,
-      )
-      : undefined;
+    const NodeTimeoutId =
+      connectionTimedout ||
+      (!Number.isNaN(connectionTimedout) && Number(connectionTimedout) > 0)
+        ? disconnect(
+          this.guildId,
+          {
+            destroy: true,
+            MusicPlayer: this.MusicPlayer,
+            Subscription: this.StreamPacket.subscription,
+            Player: this.Player,
+          },
+          Number(connectionTimedout) ?? 0,
+        )
+        : undefined
 
-    this.destroyed = NodeTimeoutId && !Number.isNaN(NodeTimeoutId) && Number(NodeTimeoutId) > 0
-      ? Number(NodeTimeoutId)
-      : true;
+    this.destroyed =
+      NodeTimeoutId && !Number.isNaN(NodeTimeoutId) && Number(NodeTimeoutId) > 0
+        ? Number(NodeTimeoutId)
+        : true
 
     // StreamPacket Destruction
-    const Garbage = {};
-    Garbage.container1 = this.StreamPacket.tracks;
-    Garbage.container2 = this.StreamPacket.searches;
-    Garbage.container3 = this.StreamPacket.previousTracks;
-    Garbage.container4 = this.StreamPacket;
-    delete Garbage.container1;
-    delete Garbage.container2;
-    delete Garbage.container3;
-    delete Garbage.container4;
-    return this.destroyed ?? undefined;
+    const Garbage = {}
+    Garbage.container1 = this.StreamPacket.tracks
+    Garbage.container2 = this.StreamPacket.searches
+    Garbage.container3 = this.StreamPacket.previousTracks
+    Garbage.container4 = this.StreamPacket
+    delete Garbage.container1
+    delete Garbage.container2
+    delete Garbage.container3
+    delete Garbage.container4
+    return this.destroyed ?? undefined
   }
 
   /**
@@ -679,13 +694,13 @@ class Queue {
 
   mute() {
     if (this.destroyed) {
-      return void this.Player.emit('error', 'Destroyed Queue', this);
+      return void this.Player.emit('error', 'Destroyed Queue', this)
     }
     if (!this.playing) {
-      return void this.Player.emit('error', 'Not Playing', this);
+      return void this.Player.emit('error', 'Not Playing', this)
     }
     if (!this.StreamPacket.tracks[0]) {
-      return void this.Player.emit('error', 'Empty Queue', this);
+      return void this.Player.emit('error', 'Empty Queue', this)
     }
     if (this.QueueOptions && this.QueueOptions.NoMemoryLeakMode) {
       return void this.Player.emit(
@@ -693,10 +708,10 @@ class Queue {
         "You can't Alter Volume of the Stream if No-Memory-Leak-Mode is enabled",
         this,
         0.095,
-      );
+      )
     }
-    this.volume = 0;
-    return true;
+    this.volume = 0
+    return true
   }
 
   /**
@@ -707,13 +722,13 @@ class Queue {
 
   unmute(Volume) {
     if (this.destroyed) {
-      return void this.Player.emit('error', 'Destroyed Queue', this);
+      return void this.Player.emit('error', 'Destroyed Queue', this)
     }
     if (!this.playing) {
-      return void this.Player.emit('error', 'Not Playing', this);
+      return void this.Player.emit('error', 'Not Playing', this)
     }
     if (!this.StreamPacket.tracks[0]) {
-      return void this.Player.emit('error', 'Empty Queue', this);
+      return void this.Player.emit('error', 'Empty Queue', this)
     }
     if (this.QueueOptions && this.QueueOptions.NoMemoryLeakMode) {
       return void this.Player.emit(
@@ -721,13 +736,13 @@ class Queue {
         "You can't Alter Volume of the Stream if No-Memory-Leak-Mode is enabled",
         this,
         Volume,
-      );
+      )
     }
     if (Volume && Number.isNaN(Volume)) {
-      return void this.Player.emit('error', 'Invalid Volume', this, Volume);
+      return void this.Player.emit('error', 'Invalid Volume', this, Volume)
     }
-    this.volume = Volume ? Number(Volume) : 95;
-    return this.volume;
+    this.volume = Volume ? Number(Volume) : 95
+    return this.volume
   }
 
   /**
@@ -738,13 +753,13 @@ class Queue {
 
   clear(TracksAmount = this.tracks.length - 1) {
     if (this.destroyed) {
-      return void this.Player.emit('error', 'Destroyed Queue', this);
+      return void this.Player.emit('error', 'Destroyed Queue', this)
     }
     if (!this.playing) {
-      return void this.Player.emit('error', 'Not Playing', this);
+      return void this.Player.emit('error', 'Not Playing', this)
     }
     if (!this.StreamPacket.tracks[0] || !this.StreamPacket.tracks[1]) {
-      return void this.Player.emit('error', 'Empty Queue', this);
+      return void this.Player.emit('error', 'Empty Queue', this)
     }
     if (TracksAmount && Number.isNaN(TracksAmount)) {
       return void this.Player.emit(
@@ -752,21 +767,21 @@ class Queue {
         'Invalid TracksAmount',
         this,
         TracksAmount,
-      );
+      )
     }
     if (
-      Number(TracksAmount) < 1
-      && Number(TracksAmount) >= this.tracks.length
+      Number(TracksAmount) < 1 &&
+      Number(TracksAmount) >= this.tracks.length
     ) {
       return void this.Player.emit(
         'error',
         'Invalid Index',
         this,
         Number(TracksAmount),
-      );
+      )
     }
-    this.#__CleaningTrackMess(1, Number(TracksAmount));
-    return true;
+    this.#__CleaningTrackMess(1, Number(TracksAmount))
+    return true
   }
 
   /**
@@ -798,10 +813,10 @@ class Queue {
     forceback = true,
   ) {
     if (this.destroyed) {
-      return void this.Player.emit('error', 'Destroyed Queue', this);
+      return void this.Player.emit('error', 'Destroyed Queue', this)
     }
     if (!this.previousTrack) {
-      return void this.Player.emit('error', 'Empty Previous Tracks', this);
+      return void this.Player.emit('error', 'Empty Previous Tracks', this)
     }
     if (TracksBackwardIndex && Number.isNaN(TracksBackwardIndex)) {
       return void this.Player.emit(
@@ -809,26 +824,26 @@ class Queue {
         'Invalid Track Index',
         this,
         TracksBackwardIndex,
-      );
+      )
     }
     if (
-      Number(TracksBackwardIndex) < 0
-      && Number(TracksBackwardIndex) > this.StreamPacket.previousTracks.length
+      Number(TracksBackwardIndex) < 0 &&
+      Number(TracksBackwardIndex) > this.StreamPacket.previousTracks.length
     ) {
       return void this.Player.emit(
         'error',
         'Previous Track Limit Exceeding',
         this,
         Number(TracksBackwardIndex),
-      );
+      )
     }
-    PlayOptions = stablizingoptions(PlayOptions, this.QueueOptions);
+    PlayOptions = stablizingoptions(PlayOptions, this.QueueOptions)
     return await this.StreamPacket.back(
       TracksBackwardIndex,
       User,
       PlayOptions,
       forceback,
-    );
+    )
   }
 
   /**
@@ -851,10 +866,10 @@ class Queue {
     },
   ) {
     if (this.destroyed) {
-      return void this.Player.emit('error', 'Destroyed Queue', this);
+      return void this.Player.emit('error', 'Destroyed Queue', this)
     }
     if (!this.StreamPacket) {
-      return void this.Player.emit('error', 'Destroyed Queue', this);
+      return void this.Player.emit('error', 'Destroyed Queue', this)
     }
     if (DefaultType && Number.isNaN(DefaultType)) {
       return void this.Player.emit(
@@ -862,61 +877,61 @@ class Queue {
         'Invalid Default Type',
         this,
         DefaultType,
-      );
+      )
     }
     switch (Work.toLowerCase().trim()) {
       case 'track':
         if (!this.StreamPacket.tracks[0]) {
-          return void this.Player.emit('error', 'Nothing Playing', this);
+          return void this.Player.emit('error', 'Nothing Playing', this)
         }
         return this.#__StructureProgressBar(
           Bar,
           Number(this.currentTimestamp.track_ms),
           Number(this.currentTimestamp.totaltrack_ms),
           DefaultType,
-        );
+        )
       case 'queue':
         if (!this.StreamPacket.tracks[0]) {
-          return void this.Player.emit('error', 'Empty Queue', this);
+          return void this.Player.emit('error', 'Empty Queue', this)
         }
         return this.#__StructureProgressBar(
           Bar,
-          Number(this.currentTimestamp.saved_queue_ms)
-            - Number(this.currentTimestamp.remainqueue_ms)
-            + Number(this.currentTimestamp.previoustracks_ms),
+          Number(this.currentTimestamp.saved_queue_ms) -
+            Number(this.currentTimestamp.remainqueue_ms) +
+            Number(this.currentTimestamp.previoustracks_ms),
           Number(this.currentTimestamp.totalqueue_ms),
           DefaultType,
-        );
+        )
       case 'tracks':
         if (!this.StreamPacket.tracks[0]) {
-          return void this.Player.emit('error', 'Empty Queue', this);
+          return void this.Player.emit('error', 'Empty Queue', this)
         }
         return this.#__StructureProgressBar(
           Bar,
           Number(this.currentTimestamp.track_ms),
           Number(this.currentTimestamp.saved_queue_ms),
           DefaultType,
-        );
+        )
       case 'previousTracks':
         if (!this.previousTrack) {
-          return void this.Player.emit('error', 'Empty Previous Tracks', this);
+          return void this.Player.emit('error', 'Empty Previous Tracks', this)
         }
         return this.#__StructureProgressBar(
           Bar,
           Number(this.currentTimestamp.previoustracks_ms),
           Number(this.currentTimestamp.totalqueue_ms),
           DefaultType,
-        );
+        )
       default:
         if (!this.StreamPacket.tracks[0]) {
-          return void this.Player.emit('error', 'Nothing Playing', this);
+          return void this.Player.emit('error', 'Nothing Playing', this)
         }
         return this.#__StructureProgressBar(
           Bar,
           Number(this.currentTimestamp.track_ms),
           Number(this.currentTimestamp.totaltrack_ms),
           DefaultType,
-        );
+        )
     }
   }
 
@@ -928,12 +943,12 @@ class Queue {
 
   loop(Choice = DefaultModesType.Track) {
     if (this.destroyed) {
-      return void this.Player.emit('error', 'Destroyed Queue', this);
+      return void this.Player.emit('error', 'Destroyed Queue', this)
     }
     if (!this.StreamPacket) {
-      return void this.Player.emit('error', 'Destroyed Queue', this);
+      return void this.Player.emit('error', 'Destroyed Queue', this)
     }
-    return this.StreamPacket.setMode(DefaultModesName.Loop, Choice);
+    return this.StreamPacket.setMode(DefaultModesName.Loop, Choice)
   }
 
   /**
@@ -945,16 +960,16 @@ class Queue {
 
   repeat(Choice = DefaultModesType.Track, Times = 1) {
     if (this.destroyed) {
-      return void this.Player.emit('error', 'Destroyed Queue', this);
+      return void this.Player.emit('error', 'Destroyed Queue', this)
     }
     if (!this.StreamPacket) {
-      return void this.Player.emit('error', 'Destroyed Queue', this);
+      return void this.Player.emit('error', 'Destroyed Queue', this)
     }
     return this.StreamPacket.setMode(
       DefaultModesName.Repeat,
       Choice,
       Number(Times) < 1 ? 1 : Number(Times),
-    );
+    )
   }
 
   /**
@@ -965,12 +980,12 @@ class Queue {
 
   autoplay(ChoiceORQuery = undefined) {
     if (this.destroyed) {
-      return void this.Player.emit('error', 'Destroyed Queue', this);
+      return void this.Player.emit('error', 'Destroyed Queue', this)
     }
     if (!this.StreamPacket) {
-      return void this.Player.emit('error', 'Destroyed Queue', this);
+      return void this.Player.emit('error', 'Destroyed Queue', this)
     }
-    return this.StreamPacket.setMode(DefaultModesName.Autoplay, ChoiceORQuery);
+    return this.StreamPacket.setMode(DefaultModesName.Autoplay, ChoiceORQuery)
   }
 
   /**
@@ -998,19 +1013,19 @@ class Queue {
       },
     },
   ) {
-    SearchOptions = stablizingoptions(SearchOptions, this.QueueOptions);
-    SearchOptions = { ...SearchOptions, NoStreamif: true };
+    SearchOptions = stablizingoptions(SearchOptions, this.QueueOptions)
+    SearchOptions = { ...SearchOptions, NoStreamif: true }
     const Chunks = await TrackGenerator.fetch(
       Query,
       User,
       SearchOptions,
       this.extractor,
       0,
-    );
+    )
     if (Chunks.error) {
-      return void this.Player.emit('error', Chunks.error, this);
+      return void this.Player.emit('error', Chunks.error, this)
     }
-    return { playlist: Chunks.playlist, tracks: Chunks.tracks };
+    return { playlist: Chunks.playlist, tracks: Chunks.tracks }
   }
 
   /**
@@ -1022,80 +1037,80 @@ class Queue {
 
   seek(StartingPoint, EndingPoint = 0) {
     if (this.destroyed) {
-      return void this.Player.emit('error', 'Destroyed Queue', this);
+      return void this.Player.emit('error', 'Destroyed Queue', this)
     }
     if (!this.StreamPacket) {
-      return void this.Player.emit('error', 'Destroyed Queue', this);
+      return void this.Player.emit('error', 'Destroyed Queue', this)
     }
     if (!this.StreamPacket.tracks[0]) {
-      return void this.Player.emit('error', 'Empty Queue', this);
+      return void this.Player.emit('error', 'Empty Queue', this)
     }
     if (
-      !StartingPoint
-      || !(
-        (StartingPoint && !Number.isNaN(StartingPoint))
-        || (typeof StartingPoint === 'string' && StartingPoint.includes(':'))
+      !StartingPoint ||
+      !(
+        (StartingPoint && !Number.isNaN(StartingPoint)) ||
+        (typeof StartingPoint === 'string' && StartingPoint.includes(':'))
       )
     ) {
       return void this.Player.emit(
         'error',
         'Invalid Starting Time | Try to give in milliseconds or hh:mm:ss format',
         this,
-      );
+      )
     }
     if (
-      EndingPoint
-      && !(
-        !Number.isNaN(EndingPoint)
-        || (typeof EndingPoint === 'string' && EndingPoint.includes(':'))
+      EndingPoint &&
+      !(
+        !Number.isNaN(EndingPoint) ||
+        (typeof EndingPoint === 'string' && EndingPoint.includes(':'))
       )
     ) {
       return void this.Player.emit(
         'error',
         'Invalid Ending Time | Try to give in milliseconds or hh:mm:ss format',
         this,
-      );
+      )
     }
     EndingPoint = parseInt(
-      EndingPoint
-        && typeof EndingPoint === 'string'
-        && EndingPoint.includes(':')
+      EndingPoint &&
+        typeof EndingPoint === 'string' &&
+        EndingPoint.includes(':')
         ? HumanTimeConversion(undefined, undefined, EndingPoint)
         : EndingPoint,
-    );
+    )
     StartingPoint = parseInt(
-      StartingPoint
-        && typeof StartingPoint === 'string'
-        && StartingPoint.includes(':')
+      StartingPoint &&
+        typeof StartingPoint === 'string' &&
+        StartingPoint.includes(':')
         ? HumanTimeConversion(undefined, undefined, StartingPoint)
         : StartingPoint,
-    );
+    )
     if (
-      StartingPoint
-      >= Math.floor(Number(this.tracks[0].duration) / 1000) - 1
+      StartingPoint >=
+      Math.floor(Number(this.tracks[0].duration) / 1000) - 1
     ) {
       return void this.Player.emit(
         'error',
         "Invalid Seek Config | Try to Give less than track's Duration",
         this,
-      );
+      )
     }
     if (
-      StartingPoint + EndingPoint
-      >= Math.floor(Number(this.tracks[0].duration) / 1000) - 1
+      StartingPoint + EndingPoint >=
+      Math.floor(Number(this.tracks[0].duration) / 1000) - 1
     ) {
       return void this.Player.emit(
         'error',
         "Invalid Seek Config | Try to Give less than track's Computed End Duration",
         this,
-      );
+      )
     }
     if (StartingPoint <= 0 || (EndingPoint !== 0 && EndingPoint < 0)) {
       return void this.Player.emit(
         'error',
         "Invalid Seek Config | Try to Give less than track's Duration",
         this,
-      );
+      )
     }
     this.StreamPacket.ExternalModes = {
       seek: {
@@ -1106,9 +1121,9 @@ class Queue {
         ? this.StreamPacket.ExternalModes.audioFilters
         : [],
       filtersUpdateChecks: true,
-    };
-    this.skip();
-    return true;
+    }
+    this.skip()
+    return true
   }
 
   /**
@@ -1120,13 +1135,13 @@ class Queue {
 
   setFilters(FilterStructure = undefined, forceApply = false) {
     if (this.destroyed) {
-      return void this.Player.emit('error', 'Destroyed Queue', this);
+      return void this.Player.emit('error', 'Destroyed Queue', this)
     }
     if (!this.StreamPacket) {
-      return void this.Player.emit('error', 'Destroyed Queue', this);
+      return void this.Player.emit('error', 'Destroyed Queue', this)
     }
     if (!this.StreamPacket.tracks[0]) {
-      return void this.Player.emit('error', 'Empty Queue', this);
+      return void this.Player.emit('error', 'Empty Queue', this)
     }
     this.StreamPacket.ExternalModes = {
       seek: forceApply
@@ -1139,9 +1154,9 @@ class Queue {
         ? AudioFiltersConverter(FilterStructure) ?? []
         : ['off'],
       filtersUpdateChecks: !!forceApply,
-    };
-    forceApply ? this.skip() : undefined;
-    return true;
+    }
+    forceApply ? this.skip() : undefined
+    return true
   }
 
   /**
@@ -1151,41 +1166,41 @@ class Queue {
 
   shuffle() {
     if (this.destroyed) {
-      return void this.Player.emit('error', 'Destroyed Queue', this);
+      return void this.Player.emit('error', 'Destroyed Queue', this)
     }
     if (!this.StreamPacket) {
-      return void this.Player.emit('error', 'Destroyed Queue', this);
+      return void this.Player.emit('error', 'Destroyed Queue', this)
     }
     if (
       !(
-        this.StreamPacket.tracks
-        && this.StreamPacket.tracks[0]
-        && this.StreamPacket.tracks.length > 2
+        this.StreamPacket.tracks &&
+        this.StreamPacket.tracks[0] &&
+        this.StreamPacket.tracks.length > 2
       )
     ) {
-      return void this.Player.emit('error', 'Less Tracks for Shuffling', this);
+      return void this.Player.emit('error', 'Less Tracks for Shuffling', this)
     }
 
-    let Arraycount = this.StreamPacket.tracks.length;
-    let RandomIndex;
-    const Cache = { search: undefined, track: undefined };
+    let Arraycount = this.StreamPacket.tracks.length
+    let RandomIndex
+    const Cache = { search: undefined, track: undefined }
     while (Arraycount > 2) {
-      RandomIndex = Math.floor(Math.random() * (Arraycount - 3) + 3 || 3);
-      Cache.track = this.StreamPacket.tracks[Arraycount];
-      Cache.search = this.StreamPacket.searches[Arraycount];
+      RandomIndex = Math.floor(Math.random() * (Arraycount - 3) + 3 || 3)
+      Cache.track = this.StreamPacket.tracks[Arraycount]
+      Cache.search = this.StreamPacket.searches[Arraycount]
       this.StreamPacket.tracks[Arraycount] = this.StreamPacket.tracks[
         RandomIndex
-      ];
+      ]
       this.StreamPacket.searches[Arraycount] = this.StreamPacket.searches[
         RandomIndex
-      ];
-      this.StreamPacket.tracks[RandomIndex] = Cache.track;
-      this.StreamPacket.searches[RandomIndex] = Cache.search;
-      Arraycount -= 1;
+      ]
+      this.StreamPacket.tracks[RandomIndex] = Cache.track
+      this.StreamPacket.searches[RandomIndex] = Cache.search
+      Arraycount -= 1
     }
-    this.StreamPacket.track.filter(Boolean);
-    this.StreamPacket.searches.filter(Boolean);
-    return true;
+    this.StreamPacket.track.filter(Boolean)
+    this.StreamPacket.searches.filter(Boolean)
+    return true
   }
 
   /**
@@ -1195,14 +1210,14 @@ class Queue {
    */
 
   get volume() {
-    if (this.destroyed) return void null;
-    if (this.QueueOptions && this.QueueOptions.NoMemoryLeakMode) return 100;
-    return (this.StreamPacket.volume ?? 0.095) * 1000;
+    if (this.destroyed) return void null
+    if (this.QueueOptions && this.QueueOptions.NoMemoryLeakMode) return 100
+    return (this.StreamPacket.volume ?? 0.095) * 1000
   }
 
   set volume(Volume = 0) {
     if (this.destroyed) {
-      return void this.Player.emit('error', 'Destroyed Queue', this);
+      return void this.Player.emit('error', 'Destroyed Queue', this)
     }
     if (this.QueueOptions && this.QueueOptions.NoMemoryLeakMode) {
       return void this.Player.emit(
@@ -1210,19 +1225,19 @@ class Queue {
         "You can't Alter Volume of the Stream if No-Memory-Leak-Mode is enabled",
         this,
         Volume,
-      );
+      )
     }
     if (
-      !(typeof Volume === 'number' || typeof Volume === 'string')
-      && (Number(Volume) > 200 || Number(Volume) < 0)
+      !(typeof Volume === 'number' || typeof Volume === 'string') &&
+      (Number(Volume) > 200 || Number(Volume) < 0)
     ) {
-      return void this.Player.emit('error', 'Invalid Volume', this, Volume);
+      return void this.Player.emit('error', 'Invalid Volume', this, Volume)
     }
-    this.StreamPacket.volume = Number(Volume) / 1000;
+    this.StreamPacket.volume = Number(Volume) / 1000
     if (this.tracks && this.tracks[0] && this.StreamPacket.AudioResource) {
-      this.StreamPacket.AudioResource.volume.setVolume(this.StreamPacket.volume);
+      this.StreamPacket.AudioResource.volume.setVolume(this.StreamPacket.volume)
     }
-    return this.StreamPacket.volume;
+    return this.StreamPacket.volume
   }
 
   /**
@@ -1233,17 +1248,17 @@ class Queue {
   get paused() {
     if (
       !(
-        this.MusicPlayer
-        && this.MusicPlayer.state
-        && this.MusicPlayer.state.status
+        this.MusicPlayer &&
+        this.MusicPlayer.state &&
+        this.MusicPlayer.state.status
       )
     ) {
-      return false;
+      return false
     }
     return (
-      this.MusicPlayer.state.status === AudioPlayerStatus.Paused
-      || this.MusicPlayer.state.status === AudioPlayerStatus.AutoPaused
-    );
+      this.MusicPlayer.state.status === AudioPlayerStatus.Paused ||
+      this.MusicPlayer.state.status === AudioPlayerStatus.AutoPaused
+    )
   }
 
   /**
@@ -1255,14 +1270,14 @@ class Queue {
   get playing() {
     if (
       !(
-        this.MusicPlayer
-        && this.MusicPlayer.state
-        && this.MusicPlayer.state.status
+        this.MusicPlayer &&
+        this.MusicPlayer.state &&
+        this.MusicPlayer.state.status
       )
     ) {
-      return false;
+      return false
     }
-    return this.MusicPlayer.state.status !== AudioPlayerStatus.Idle;
+    return this.MusicPlayer.state.status !== AudioPlayerStatus.Idle
   }
 
   /**
@@ -1271,8 +1286,8 @@ class Queue {
    * @readonly
    */
   get current() {
-    if (!this.playing || this.destroyed) return undefined;
-    return this.StreamPacket.searches[0];
+    if (!this.playing || this.destroyed) return undefined
+    return this.StreamPacket.searches[0]
   }
 
   /**
@@ -1283,17 +1298,17 @@ class Queue {
 
   get currentTimestamp() {
     if (this.destroyed) {
-      return void this.Player.emit('error', 'Destroyed Queue', this);
+      return void this.Player.emit('error', 'Destroyed Queue', this)
     }
     if (!this.StreamPacket.tracks[0]) {
-      return void this.Player.emit('error', 'Empty Queue', this);
+      return void this.Player.emit('error', 'Empty Queue', this)
     }
-    this.StreamPacket.A;
+    this.StreamPacket.A
     const TimeStamp = {
       track_ms: `${
         this.paused
-          ? this.StreamPacket.TrackTimeStamp.Paused
-            - this.StreamPacket.TrackTimeStamp.Starting
+          ? this.StreamPacket.TrackTimeStamp.Paused -
+            this.StreamPacket.TrackTimeStamp.Starting
           : new Date().getTime() - this.StreamPacket.TrackTimeStamp.Starting
       }`,
       totaltrack_ms: `${this.StreamPacket.tracks[0].duration}`,
@@ -1311,8 +1326,8 @@ class Queue {
             (TotalValue, CurrentTrack) => TotalValue + CurrentTrack.duration,
             0,
           )
-          : 0)
-        + (this.StreamPacket.tracks && this.StreamPacket.tracks[0]
+          : 0) +
+        (this.StreamPacket.tracks && this.StreamPacket.tracks[0]
           ? this.StreamPacket.tracks
             .slice(0, this.StreamPacket.tracks.length)
             .reduce(
@@ -1331,11 +1346,11 @@ class Queue {
       queue_ms: `${
         (this.StreamPacket.tracks && this.StreamPacket.tracks[0]
           ? this.paused
-            ? this.StreamPacket.TrackTimeStamp.Paused
-              - this.StreamPacket.TrackTimeStamp.Starting
+            ? this.StreamPacket.TrackTimeStamp.Paused -
+              this.StreamPacket.TrackTimeStamp.Starting
             : new Date().getTime() - this.StreamPacket.TrackTimeStamp.Starting
-          : 0)
-        + (this.StreamPacket.tracks && this.StreamPacket.tracks[1]
+          : 0) +
+        (this.StreamPacket.tracks && this.StreamPacket.tracks[1]
           ? this.StreamPacket.tracks
             .slice(1, this.StreamPacket.tracks.length)
             .reduce(
@@ -1350,13 +1365,13 @@ class Queue {
             (TotalValue, CurrentTrack) => TotalValue + CurrentTrack.duration,
             0,
           )
-          : 0)
-        - (this.paused
-          ? this.StreamPacket.TrackTimeStamp.Paused
-            - this.StreamPacket.TrackTimeStamp.Starting
+          : 0) -
+        (this.paused
+          ? this.StreamPacket.TrackTimeStamp.Paused -
+            this.StreamPacket.TrackTimeStamp.Starting
           : new Date().getTime() - this.StreamPacket.TrackTimeStamp.Starting)
       }`,
-    };
+    }
     return {
       ...TimeStamp,
       human_track: HumanTimeConversion(TimeStamp.track_ms),
@@ -1366,7 +1381,7 @@ class Queue {
       human_saved_queue: HumanTimeConversion(TimeStamp.saved_queue_ms),
       human_queue: HumanTimeConversion(TimeStamp.queue_ms),
       human_remainqueue: HumanTimeConversion(TimeStamp.remainqueue_ms),
-    };
+    }
   }
 
   /**
@@ -1376,11 +1391,11 @@ class Queue {
    */
 
   get previousTrack() {
-    if (this.destroyed) return void null;
-    if (this.StreamPacket.previousTracks.length < 1) return void null;
+    if (this.destroyed) return void null
+    if (this.StreamPacket.previousTracks.length < 1) return void null
     return this.StreamPacket.previousTracks[
       this.StreamPacket.previousTracks.length - 1
-    ];
+    ]
   }
 
   /**
@@ -1390,30 +1405,30 @@ class Queue {
    */
 
   get playerMode() {
-    if (this.destroyed) return void null;
-    if (!this.StreamPacket) return void null;
-    if (this.StreamPacket.previousTracks.length < 1) return void null;
-    if (!this.StreamPacket.MusicPlayerMode) return void null;
+    if (this.destroyed) return void null
+    if (!this.StreamPacket) return void null
+    if (this.StreamPacket.previousTracks.length < 1) return void null
+    if (!this.StreamPacket.MusicPlayerMode) return void null
     if (this.StreamPacket.MusicPlayerMode.Loop) {
       return {
         mode: DefaultModesName.Loop,
         type: this.StreamPacket.MusicPlayerMode.Loop,
-      };
+      }
     }
     if (this.StreamPacket.MusicPlayerMode.Repeat) {
       return {
         mode: DefaultModesName.Repeat,
         type: this.StreamPacket.MusicPlayerMode.Repeat[0],
         times: this.StreamPacket.MusicPlayerMode.Repeat[1],
-      };
+      }
     }
     if (this.StreamPacket.MusicPlayerMode.Autoplay) {
       return {
         mode: DefaultModesName.Autoplay,
         type: this.StreamPacket.MusicPlayerMode.Autoplay,
-      };
+      }
     }
-    return void null;
+    return void null
   }
 
   /**
@@ -1423,20 +1438,21 @@ class Queue {
    */
 
   get filters() {
-    if (this.destroyed) return void null;
-    if (!this.StreamPacket) return void null;
+    if (this.destroyed) return void null
+    if (!this.StreamPacket) return void null
     if (
-      !this.StreamPacket.ExternalModes
-      || !(
-        this.StreamPacket.ExternalModes
-        && this.StreamPacket.ExternalModes.audioFilters
-        && this.StreamPacket.ExternalModes.audioFilters[0]
+      !this.StreamPacket.ExternalModes ||
+      !(
+        this.StreamPacket.ExternalModes &&
+        this.StreamPacket.ExternalModes.audioFilters &&
+        this.StreamPacket.ExternalModes.audioFilters[0]
       )
-    ) return DefaultUserDrivenAudioFilters;
+    )
+      return DefaultUserDrivenAudioFilters
     return (
-      AudioFiltersConverter(this.StreamPacket.ExternalModes.audioFilters)
-      ?? DefaultUserDrivenAudioFilters
-    );
+      AudioFiltersConverter(this.StreamPacket.ExternalModes.audioFilters) ??
+      DefaultUserDrivenAudioFilters
+    )
   }
 
   /**
@@ -1446,16 +1462,17 @@ class Queue {
    */
 
   get enabledFilters() {
-    if (this.destroyed) return void null;
-    if (!this.StreamPacket) return void null;
-    if (!this.filters) return void null;
+    if (this.destroyed) return void null
+    if (!this.StreamPacket) return void null
+    if (!this.filters) return void null
 
-    const ObjectKeys = Object.keys(this.filters);
-    const CachedEnabled = [];
+    const ObjectKeys = Object.keys(this.filters)
+    const CachedEnabled = []
     for (let count = 0, len = ObjectKeys.length; count < len; ++count) {
-      if (this.filters[`${ObjectKeys[count]}`]) CachedEnabled.push(ObjectKeys[count]);
+      if (this.filters[`${ObjectKeys[count]}`])
+        CachedEnabled.push(ObjectKeys[count])
     }
-    return CachedEnabled;
+    return CachedEnabled
   }
 
   /**
@@ -1465,16 +1482,17 @@ class Queue {
    */
 
   get disabledFilters() {
-    if (this.destroyed) return void null;
-    if (!this.StreamPacket) return void null;
-    if (!this.filters) return void null;
+    if (this.destroyed) return void null
+    if (!this.StreamPacket) return void null
+    if (!this.filters) return void null
 
-    const ObjectKeys = Object.keys(this.filters);
-    const CachedDisabled = [];
+    const ObjectKeys = Object.keys(this.filters)
+    const CachedDisabled = []
     for (let count = 0, len = ObjectKeys.length; count < len; ++count) {
-      if (!this.filters[`${ObjectKeys[count]}`]) CachedDisabled.push(ObjectKeys[count]);
+      if (!this.filters[`${ObjectKeys[count]}`])
+        CachedDisabled.push(ObjectKeys[count])
     }
-    return CachedDisabled;
+    return CachedDisabled
   }
 
   /**
@@ -1486,43 +1504,46 @@ class Queue {
   async #__ResourcePlay() {
     const GarbagePlayerModeHandle = this.StreamPacket
       ? await this.StreamPacket.__handleMusicPlayerModes(this)
-      : undefined;
-    if (this.destroyed) return void null;
+      : undefined
+    if (this.destroyed) return void null
     if (
-      this.StreamPacket
-      && !(
-        this.StreamPacket
-        && this.StreamPacket.tracks
-        && this.StreamPacket.tracks[0]
-      )
-      && (!this.playerMode
-        || (this.playerMode
-          && (this.playerMode.type === DefaultModesType.Queue
-            || this.playerMode.mode === DefaultModesName.Autoplay)
-          && !GarbagePlayerModeHandle))
+      this.StreamPacket &&
+      !(
+        this.StreamPacket &&
+        this.StreamPacket.tracks &&
+        this.StreamPacket.tracks[0]
+      ) &&
+      (!this.playerMode ||
+        (this.playerMode &&
+          (this.playerMode.type === DefaultModesType.Queue ||
+            this.playerMode.mode === DefaultModesName.Autoplay) &&
+          !GarbagePlayerModeHandle))
     ) {
-      this.#__QueueAudioPlayerStatusManager();
-      return void this.Player.emit('queueEnd', this);
+      this.#__QueueAudioPlayerStatusManager()
+      return void this.Player.emit('queueEnd', this)
     }
-    if (!this.StreamPacket) return void null;
-    this.destroyed = this.destroyed && Number(this.destroyed) > 0
-      ? clearTimeout(Number(this.destroyed))
-      : undefined;
+    if (!this.StreamPacket) return void null
+    this.destroyed =
+      this.destroyed && Number(this.destroyed) > 0
+        ? clearTimeout(Number(this.destroyed))
+        : undefined
     try {
       const AudioResource = this.StreamPacket.StreamAudioResourceExtractor(
         this.StreamPacket.tracks[0],
-      );
-      if (!(this.StreamPacket && this.StreamPacket.tracks[0].tampered)) this.Player.emit('trackStart', this, this.tracks[0]);
-      this.MusicPlayer.play(AudioResource);
+      )
+      if (!(this.StreamPacket && this.StreamPacket.tracks[0].tampered))
+        this.Player.emit('trackStart', this, this.tracks[0])
+      this.MusicPlayer.play(AudioResource)
       if (!this.StreamPacket.subscription && getVoiceConnection(this.guildId)) {
-        this.StreamPacket.subscription = getVoiceConnection(this.guildId).subscribe(this.MusicPlayer)
-          ?? undefined;
+        this.StreamPacket.subscription =
+          getVoiceConnection(this.guildId).subscribe(this.MusicPlayer) ??
+          undefined
       }
       return void (await entersState(
         this.MusicPlayer,
         AudioPlayerStatus.Playing,
         5e3,
-      ));
+      ))
     } catch (error) {
       this.Player.emit(
         'connectionError',
@@ -1530,9 +1551,9 @@ class Queue {
         this,
         getVoiceConnection(this.guildId),
         this.guildId,
-      );
-      if (this.tracks[1]) return void this.MusicPlayer.stop();
-      return void this.destroy();
+      )
+      if (this.tracks[1]) return void this.MusicPlayer.stop()
+      return void this.destroy()
     }
   }
 
@@ -1546,28 +1567,28 @@ class Queue {
   #__CleaningTrackMess(StartingTrackIndex = 0, DeleteTracksCount) {
     if (
       !(
-        this.StreamPacket
-        && this.StreamPacket.tracks
-        && this.StreamPacket.tracks[0]
-        && this.StreamPacket.searches[0]
+        this.StreamPacket &&
+        this.StreamPacket.tracks &&
+        this.StreamPacket.tracks[0] &&
+        this.StreamPacket.searches[0]
       )
     ) {
-      return void null;
+      return void null
     }
     DeleteTracksCount
       ? this.StreamPacket.tracks.splice(
         StartingTrackIndex ?? 0,
         DeleteTracksCount,
       )
-      : this.StreamPacket.tracks.shift();
+      : this.StreamPacket.tracks.shift()
     DeleteTracksCount
       ? this.StreamPacket.searches.splice(
         StartingTrackIndex ?? 0,
         DeleteTracksCount,
       )
-      : this.StreamPacket.searches.shift();
+      : this.StreamPacket.searches.shift()
 
-    return void null;
+    return void null
   }
 
   /**
@@ -1576,16 +1597,16 @@ class Queue {
    */
 
   #__QueueAudioPlayerStatusManager() {
-    if (this.destroyed) return void null;
+    if (this.destroyed) return void null
     if (this.QueueOptions.LeaveOnEnd && !this.tracks[0]) {
       this.destroyed && Number(this.destroyed) > 0
         ? clearTimeout(Number(this.destroyed))
-        : undefined;
+        : undefined
       return (
         this.destroy(this.QueueOptions.LeaveOnEndTimedout ?? 0) ?? undefined
-      );
+      )
     }
-    return void null;
+    return void null
   }
 
   /**
@@ -1601,130 +1622,143 @@ class Queue {
     if (DefaultType || DefaultType === 0) {
       switch (`${DefaultType}`) {
         case '1':
-          Credentials.CompleteIcon = Credentials.CompleteIcon ?? '●';
-          Credentials.TargetIcon = Credentials.TargetIcon ?? '●';
-          Credentials.RemainingIcon = Credentials.RemainingIcon ?? '○';
-          Credentials.StartingIcon = Credentials.StartingIcon
-            ?? `${HumanTimeConversion(undefined, {
+          Credentials.CompleteIcon = Credentials.CompleteIcon ?? '●'
+          Credentials.TargetIcon = Credentials.TargetIcon ?? '●'
+          Credentials.RemainingIcon = Credentials.RemainingIcon ?? '○'
+          Credentials.StartingIcon =
+            Credentials.StartingIcon ??
+            `${HumanTimeConversion(undefined, {
               Time: FirstValue,
               ignore: ['milliseconds'],
-            })} |  `;
-          Credentials.EndIcon = Credentials.EndIcon
-            ?? `  | ${HumanTimeConversion(undefined, {
+            })} |  `
+          Credentials.EndIcon =
+            Credentials.EndIcon ??
+            `  | ${HumanTimeConversion(undefined, {
               Time: TotalValue,
               ignore: ['milliseconds'],
-            })}`;
-          break;
+            })}`
+          break
         case '2':
-          Credentials.CompleteIcon = Credentials.CompleteIcon ?? '○';
-          Credentials.TargetIcon = Credentials.TargetIcon ?? '●';
-          Credentials.RemainingIcon = Credentials.RemainingIcon ?? '○';
-          Credentials.StartingIcon = Credentials.StartingIcon
-            ?? `${HumanTimeConversion(undefined, {
+          Credentials.CompleteIcon = Credentials.CompleteIcon ?? '○'
+          Credentials.TargetIcon = Credentials.TargetIcon ?? '●'
+          Credentials.RemainingIcon = Credentials.RemainingIcon ?? '○'
+          Credentials.StartingIcon =
+            Credentials.StartingIcon ??
+            `${HumanTimeConversion(undefined, {
               Time: FirstValue,
               ignore: ['milliseconds'],
-            })} |  `;
-          Credentials.EndIcon = Credentials.EndIcon
-            ?? `  | ${HumanTimeConversion(undefined, {
+            })} |  `
+          Credentials.EndIcon =
+            Credentials.EndIcon ??
+            `  | ${HumanTimeConversion(undefined, {
               Time: TotalValue,
               ignore: ['milliseconds'],
-            })}`;
-          break;
+            })}`
+          break
         case '3':
-          Credentials.CompleteIcon = Credentials.CompleteIcon ?? '○';
-          Credentials.TargetIcon = Credentials.TargetIcon ?? '◉';
-          Credentials.RemainingIcon = Credentials.RemainingIcon ?? '○';
-          Credentials.StartingIcon = Credentials.StartingIcon
-            ?? `${HumanTimeConversion(undefined, {
+          Credentials.CompleteIcon = Credentials.CompleteIcon ?? '○'
+          Credentials.TargetIcon = Credentials.TargetIcon ?? '◉'
+          Credentials.RemainingIcon = Credentials.RemainingIcon ?? '○'
+          Credentials.StartingIcon =
+            Credentials.StartingIcon ??
+            `${HumanTimeConversion(undefined, {
               Time: FirstValue,
               ignore: ['milliseconds'],
-            })} |  `;
-          Credentials.EndIcon = Credentials.EndIcon
-            ?? `  | ${HumanTimeConversion(undefined, {
+            })} |  `
+          Credentials.EndIcon =
+            Credentials.EndIcon ??
+            `  | ${HumanTimeConversion(undefined, {
               Time: TotalValue,
               ignore: ['milliseconds'],
-            })}`;
-          break;
+            })}`
+          break
         case '4':
-          Credentials.CompleteIcon = Credentials.CompleteIcon ?? '■';
-          Credentials.TargetIcon = Credentials.TargetIcon ?? '■';
-          Credentials.RemainingIcon = Credentials.RemainingIcon ?? '□';
-          Credentials.StartingIcon = Credentials.StartingIcon
-            ?? `${HumanTimeConversion(undefined, {
+          Credentials.CompleteIcon = Credentials.CompleteIcon ?? '■'
+          Credentials.TargetIcon = Credentials.TargetIcon ?? '■'
+          Credentials.RemainingIcon = Credentials.RemainingIcon ?? '□'
+          Credentials.StartingIcon =
+            Credentials.StartingIcon ??
+            `${HumanTimeConversion(undefined, {
               Time: FirstValue,
               ignore: ['milliseconds'],
-            })} |  `;
-          Credentials.EndIcon = Credentials.EndIcon
-            ?? `  | ${HumanTimeConversion(undefined, {
+            })} |  `
+          Credentials.EndIcon =
+            Credentials.EndIcon ??
+            `  | ${HumanTimeConversion(undefined, {
               Time: TotalValue,
               ignore: ['milliseconds'],
-            })}`;
-          break;
+            })}`
+          break
         case '5':
-          Credentials.CompleteIcon = Credentials.CompleteIcon ?? '◉';
-          Credentials.TargetIcon = Credentials.TargetIcon ?? '◉';
-          Credentials.RemainingIcon = Credentials.RemainingIcon ?? '○';
-          Credentials.StartingIcon = Credentials.StartingIcon
-            ?? `${HumanTimeConversion(undefined, {
+          Credentials.CompleteIcon = Credentials.CompleteIcon ?? '◉'
+          Credentials.TargetIcon = Credentials.TargetIcon ?? '◉'
+          Credentials.RemainingIcon = Credentials.RemainingIcon ?? '○'
+          Credentials.StartingIcon =
+            Credentials.StartingIcon ??
+            `${HumanTimeConversion(undefined, {
               Time: FirstValue,
               ignore: ['milliseconds'],
-            })} |  `;
-          Credentials.EndIcon = Credentials.EndIcon
-            ?? `  | ${HumanTimeConversion(undefined, {
+            })} |  `
+          Credentials.EndIcon =
+            Credentials.EndIcon ??
+            `  | ${HumanTimeConversion(undefined, {
               Time: TotalValue,
               ignore: ['milliseconds'],
-            })}`;
-          break;
+            })}`
+          break
         default:
-          Credentials.CompleteIcon = Credentials.CompleteIcon ?? '▬';
-          Credentials.TargetIcon = Credentials.TargetIcon ?? '🔘';
-          Credentials.RemainingIcon = Credentials.RemainingIcon ?? '▬';
-          Credentials.StartingIcon = Credentials.StartingIcon
-            ?? `${HumanTimeConversion(undefined, {
+          Credentials.CompleteIcon = Credentials.CompleteIcon ?? '▬'
+          Credentials.TargetIcon = Credentials.TargetIcon ?? '🔘'
+          Credentials.RemainingIcon = Credentials.RemainingIcon ?? '▬'
+          Credentials.StartingIcon =
+            Credentials.StartingIcon ??
+            `${HumanTimeConversion(undefined, {
               Time: FirstValue,
               ignore: ['milliseconds'],
-            })} |  `;
-          Credentials.EndIcon = Credentials.EndIcon
-            ?? `  | ${HumanTimeConversion(undefined, {
+            })} |  `
+          Credentials.EndIcon =
+            Credentials.EndIcon ??
+            `  | ${HumanTimeConversion(undefined, {
               Time: TotalValue,
               ignore: ['milliseconds'],
-            })}`;
-          break;
+            })}`
+          break
       }
     }
-    const Size = Math.floor(
-      (
-        parseFloat(parseInt(FirstValue * 100) / parseInt(TotalValue)) / 10
-      ).toFixed(1),
-    ) + 1;
-    const ProgressBar = [];
-    let TargetHit = true;
+    const Size =
+      Math.floor(
+        (
+          parseFloat(parseInt(FirstValue * 100) / parseInt(TotalValue)) / 10
+        ).toFixed(1),
+      ) + 1
+    const ProgressBar = []
+    let TargetHit = true
     for (let count = 0.7; count <= 10.5; count += 0.7) {
       if (count === 0.7) {
         ProgressBar.push(
-          Credentials.StartingIcon
-            ?? `${HumanTimeConversion(undefined, {
+          Credentials.StartingIcon ??
+            `${HumanTimeConversion(undefined, {
               Time: FirstValue,
               ignore: ['milliseconds'],
             })} |  `,
-        );
+        )
       }
       if (count <= Size && count >= Size - 0.7 && TargetHit) {
-        ProgressBar.push(Credentials.TargetIcon);
-        TargetHit = false;
-      } else if (count < Size) ProgressBar.push(Credentials.CompleteIcon);
-      else ProgressBar.push(Credentials.RemainingIcon);
+        ProgressBar.push(Credentials.TargetIcon)
+        TargetHit = false
+      } else if (count < Size) ProgressBar.push(Credentials.CompleteIcon)
+      else ProgressBar.push(Credentials.RemainingIcon)
     }
-    if (Size >= 11) ProgressBar.push(Credentials.TargetIcon);
+    if (Size >= 11) ProgressBar.push(Credentials.TargetIcon)
     ProgressBar.push(
-      Credentials.EndIcon
-        ?? `  | ${HumanTimeConversion(undefined, {
+      Credentials.EndIcon ??
+        `  | ${HumanTimeConversion(undefined, {
           Time: TotalValue,
           ignore: ['milliseconds'],
         })}`,
-    );
-    return ProgressBar.join('').trim();
+    )
+    return ProgressBar.join('').trim()
   }
 }
 
-module.exports = Queue;
+module.exports = Queue

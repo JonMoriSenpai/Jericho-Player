@@ -35,6 +35,11 @@
     "default-param-last": "off",
     "no-setter-return": "off",
     "no-promise-executor-return": "off",
-    "no-async-promise-executor": "off"
+    "no-async-promise-executor": "off",
+    "operator-linebreak": "off",
+    "curly": "off",
+    "nonblock-statement-body-position": "off",
+    "no-else-return": "off",
+    "semi": "off"
   }
 }
