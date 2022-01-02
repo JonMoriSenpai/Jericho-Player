@@ -321,7 +321,7 @@ class ClassUtils {
    * @param {String|void} ReturnType Return Type after resolve
    * @return {String|Object|void} returns undefined on completion
    */
-  static async ResolverLTE(RawValue, ReturnType) {
+  static ResolverLTE(RawValue, ReturnType) {
     if (!RawValue || !(ReturnType && typeof ReturnType === 'string'))
       return undefined
     if (
