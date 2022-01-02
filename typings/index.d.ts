@@ -28,7 +28,7 @@ export class Player extends EventEmitter {
   public readonly Client: Client
   public readonly PlayerOptions: PlayerOptions
   public CreateQueue(
-    message: Message | Interaction,
+    GuildId: Guild['id'] | String,
     QueueCreateOptions?: QueueOptions,
   ): Queue | void
   public GetQueue(guildId: Guild['id'] | Snowflake | String): Queue | void

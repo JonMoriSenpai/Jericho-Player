@@ -6,7 +6,7 @@ var player = new Player(Client)
 
 
 //Create Queue or Fetch Queue from Cache
-const Queue = player.CreateQueue(message)
+const Queue = player.CreateQueue(GuildId)
 
 //Play Command for Queue per Guild scenerio
 await Queue.play('Despacito', message.member.voice.channel, message.author)

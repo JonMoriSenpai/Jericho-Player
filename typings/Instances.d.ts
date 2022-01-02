@@ -40,7 +40,6 @@ export type Queue = {
     readonly LeaveOnBotOnlyTimedout: Number | 'Time in Seconds'
     readonly NoMemoryLeakMode: Boolean | 'No Memory Leak Mode for Music Player'
   }
-  message: Message | Interaction
   metadata: any
   volume: Number
   readonly tracks: Array<Track>

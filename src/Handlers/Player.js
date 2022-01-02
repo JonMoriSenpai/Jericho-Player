@@ -217,13 +217,13 @@ class Player extends EventEmitter {
 
   /**
    * CreateQueue => Create Queue Instance for Player and per Guild
-   * @param {Message | Interaction} message Guild Message Only for getting info about guild and guildId
+   * @param {String } GuildId Guild Id Only for getting info about guild and guildId
    * @param {DefaultQueueCreateOptions|void} QueueCreateOptions => Queue Create Options for Queue Instance ( for making ByDefault Values for Queue.<methods> )
    * @returns {Queue} Queue Instance => ( for Queue.<methods> like Queue.play() )
    */
 
   CreateQueue(
-    message,
+    GuildId,
     QueueCreateOptions = {
       extractor: undefined,
       metadata: null,
@@ -249,19 +249,10 @@ class Player extends EventEmitter {
     // this.#__buildsandDepschecks() -> Checks for Invalid Client , Missing Dependencies with Missing Discord Client Voice Intents
 
     this.#__buildsandDepschecks(this.Client);
-    if (
-      !message
-      || !(
-        message
-        && message.guild
-        && message.guild.id
-        && message.channel
-        && message.channel.id
-      )
-    ) {
-      // Throw Error in Player Events as "error" event for Invalid Guild's Message
+    if (!GuildId || !(GuildId && typeof GuildId === 'string')) {
+      // Throw Error in Player Events as "error" event for Invalid Guild's Id
 
-      return void this.emit('error', 'Invalid Guild Message', this, message);
+      return void this.emit('error', 'Invalid Guild Id', this, GuildId);
     }
 
     // Picking up valid and user defined options if any and comparing them with Player Default Options
@@ -272,8 +263,8 @@ class Player extends EventEmitter {
     });
 
     // To Avoid excess use of memory and Space in Large bots , We will always Cache Queue and Create one if is Deleted by DeleteQueue() method
-    const QueueInstance = Player.#QueueCacheFetch(message.guild.id, QueueCreateOptions)
-      ?? new Queue(this.Client, message, QueueCreateOptions, this);
+    const QueueInstance = Player.#QueueCacheFetch(GuildId, QueueCreateOptions)
+      ?? new Queue(this.Client, GuildId, QueueCreateOptions, this);
     return Player.#QueueCacheAdd(QueueInstance);
   }
 

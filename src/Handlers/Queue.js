@@ -45,13 +45,13 @@ const {
 class Queue {
   /**
    * @param {Client} Client Discord Client Instance
-   * @param {Message} message Guild's Text Messsage
+   * @param {String} GuildId Guild's Id
    * @param {DefaultQueueCreateOptions|void} QueueOptions Queue Create Options
    * @param {Player} Player Jericho Player Instance
    */
   constructor(
     Client,
-    message,
+    GuildId,
     QueueOptions = {
       extractor: undefined,
       metadata: null,
@@ -89,7 +89,7 @@ class Queue {
      */
     this.StreamPacket = new StreamPacketGen(
       Client,
-      message.guild.id,
+      GuildId,
       QueueOptions.metadata,
       QueueOptions.extractor,
       QueueOptions.ExtractorStreamOptions,
@@ -102,13 +102,6 @@ class Queue {
      */
 
     this.QueueOptions = QueueOptions;
-
-    /**
-     * Guild Text Channel's message instance
-     * @type {Message}
-     * @readonly
-     */
-    this.message = message;
 
     /**
      * Metadata value in Queue for Audio Resources
@@ -128,7 +121,7 @@ class Queue {
      * @type {String|Number}
      * @readonly
      */
-    this.guildId = message.guild.id;
+    this.guildId = GuildId;
 
     /**
      * Queue has been destroyed with Queue.destroy() respond with Boolean or else in delay for destruction will return Timedout ID for clearInterval fucntion
