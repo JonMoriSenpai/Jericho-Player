@@ -1198,7 +1198,7 @@ class Queue {
       this.StreamPacket.searches[RandomIndex] = Cache.search
       Arraycount -= 1
     }
-    this.StreamPacket.track.filter(Boolean)
+    this.StreamPacket.tracks.filter(Boolean)
     this.StreamPacket.searches.filter(Boolean)
     return true
   }
@@ -1286,7 +1286,7 @@ class Queue {
    * @readonly
    */
   get current() {
-    if (!this.playing || this.destroyed) return undefined
+    if (this.destroyed || !(this.tracks && this.tracks[0])) return undefined
     return this.StreamPacket.searches[0]
   }
 

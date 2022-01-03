@@ -1,6 +1,6 @@
 {
   "name": "jericho-player",
-  "version": "1.1.19",
+  "version": "1.1.20",
   "description": "LightWeight Framework for discord.js v13 Music Bots and Radio Bots with fast moderation with commands and no memory leak mode",
   "main": "./src/index.js",
   "module": "./src/index.mjs",
@@ -30,7 +30,7 @@
     "cz-conventional-changelog": "^3.3.0",
     "eslint": "^8.6.0",
     "eslint-config-airbnb-base": "^15.0.0",
-    "eslint-plugin-import": "^2.25.3",
+    "eslint-plugin-import": "^2.25.4",
     "jsdoc": "^3.6.7",
     "jsdoc-babel": "^0.5.0",
     "jsdoc-skyceil": "^2.0.0",
