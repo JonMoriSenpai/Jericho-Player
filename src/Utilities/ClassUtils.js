@@ -470,26 +470,32 @@ class ClassUtils {
       else if (
         ReturnType &&
         RawValue.type === 'GUILD_STAGE_VOICE' &&
-        ReturnType.toLowerCase().trim() === 'stagechannel'
+        (ReturnType.toLowerCase().trim() === 'stagechannel' ||
+          ReturnType.toLowerCase().trim() === 'stagechannelonly' ||
+          ReturnType.toLowerCase().trim() === 'voicechannel')
       )
         return RawValue
       else if (
         ReturnType &&
         RawValue.type === 'GUILD_STAGE_VOICE' &&
-        ReturnType.toLowerCase().trim() === 'stagechannelid' &&
+        (ReturnType.toLowerCase().trim() === 'stagechannelid' ||
+          ReturnType.toLowerCase().trim() === 'stagechannelidonly' ||
+          ReturnType.toLowerCase().trim() === 'voicechannelid') &&
         RawValue.id
       )
         return RawValue.id
       else if (
         ReturnType &&
         RawValue.type === 'GUILD_VOICE' &&
-        ReturnType.toLowerCase().trim() === 'voicechannel'
+        (ReturnType.toLowerCase().trim() === 'voicechannelonly' ||
+          ReturnType.toLowerCase().trim() === 'voicechannel')
       )
         return RawValue
       else if (
         ReturnType &&
         RawValue.type === 'GUILD_VOICE' &&
-        ReturnType.toLowerCase().trim() === 'voicechannelid' &&
+        (ReturnType.toLowerCase().trim() === 'voicechannelidonly' ||
+          ReturnType.toLowerCase().trim() === 'voicechannelid') &&
         RawValue.id
       )
         return RawValue.id
