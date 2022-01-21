@@ -31,6 +31,7 @@ export class Player extends EventEmitter {
   public constructor(Client: Client, PlayerOptions?: PlayerOptions)
   public readonly Client: Client
   public readonly PlayerOptions: PlayerOptions
+  public readonly type: String
   public CreateQueue(
     GuildId: Guild['id'] | String,
     QueueCreateOptions?: QueueOptions,

@@ -71,6 +71,7 @@ export type Queue = {
   readonly filters: QueueAudioFilters | void
   readonly enabledFilters: String[] | void
   readonly disabledFilters: String[] | void
+  readonly type: String
   play(
     Query: String,
     VoiceChannel: VoiceChannel,
@@ -290,6 +291,7 @@ export interface PlayerEvents {
     message: string,
     queue: Queue | Player | void,
     extradata: any | void,
+    location: string | void,
   ]
   channelEmpty: [
     queue: Queue,

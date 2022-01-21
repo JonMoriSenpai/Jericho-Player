@@ -1,6 +1,6 @@
 {
   "name": "jericho-player",
-  "version": "1.1.21",
+  "version": "1.1.22",
   "description": "LightWeight Framework for discord.js v13 Music Bots and Radio Bots with fast moderation with commands and no memory leak mode",
   "main": "./src/index.js",
   "module": "./src/index.mjs",
@@ -19,6 +19,7 @@
   "scripts": {
     "lint": "eslint ./src",
     "lint:fix": "eslint ./src --fix",
+    "lint:commit": "npm run lint:fix && npm run commit:push",
     "commit": "git-cz",
     "semantic-release": "semantic-release --branches main",
     "commit:push": "git add . && npm run commit && git push",
@@ -26,16 +27,16 @@
   },
   "devDependencies": {
     "@babel/eslint-parser": "^7.16.5",
-    "@babel/preset-env": "^7.16.8",
+    "@babel/preset-env": "^7.16.11",
     "cz-conventional-changelog": "^3.3.0",
-    "eslint": "^8.6.0",
+    "eslint": "^8.7.0",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-plugin-import": "^2.25.4",
     "jsdoc": "^3.6.7",
     "jsdoc-babel": "^0.5.0",
     "jsdoc-skyceil": "^2.0.0",
     "nyc": "^15.1.0",
-    "semantic-release": "^18.0.1"
+    "semantic-release": "^19.0.2"
   },
   "config": {
     "commitizen": {
@@ -48,11 +49,11 @@
   },
   "dependencies": {
     "@discordjs/voice": "^0.7.5",
-    "discord.js": "^13.5.1",
+    "discord.js": "^13.6.0",
     "is-url": "^1.2.4",
-    "playdl-music-extractor": "^2.5.9",
+    "playdl-music-extractor": "^2.5.10",
     "prism-media": "^1.3.2",
-    "youtube-suggest-gen": "^1.0.4"
+    "youtube-suggest-gen": "^1.0.5"
   },
   "directories": {
     "example": "example"

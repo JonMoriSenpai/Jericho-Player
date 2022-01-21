@@ -5,20 +5,20 @@ const {
   AudioResource,
   PlayerSubscription,
   getVoiceConnection,
-} = require('@discordjs/voice');
+} = require('@discordjs/voice')
 const {
   User,
   Client,
   GuildMember,
   VoiceChannel,
   StageChannel,
-} = require('discord.js');
-const { suggestions } = require('youtube-suggest-gen');
-const { FFmpeg } = require('prism-media');
-const Player = require('../Handlers/Player');
-const TracksGen = require('./Tracks');
-const VoiceUtils = require('../Utilities/VoiceUtils');
-const ClassUtils = require('../Utilities/ClassUtils');
+} = require('discord.js')
+const { suggestions } = require('youtube-suggest-gen')
+const { FFmpeg } = require('prism-media')
+const Player = require('../Handlers/Player')
+const TracksGen = require('./Tracks')
+const VoiceUtils = require('../Utilities/VoiceUtils')
+const ClassUtils = require('../Utilities/ClassUtils')
 const {
   DefaultExtractorStreamOptions,
   DefaultTrack,
@@ -26,8 +26,8 @@ const {
   DefaultChunk,
   DefaultModesType,
   DefaultModesName,
-} = require('../types/interfaces');
-const Queue = require('../Handlers/Queue');
+} = require('../types/interfaces')
+const Queue = require('../Handlers/Queue')
 
 /**
  * @private
@@ -67,55 +67,55 @@ class StreamPacketGen {
      * @type {Client}
      * @readonly
      */
-    this.Client = Client;
+    this.Client = Client
 
     /**
      * VoiceChannel Voice Channel Instance from Guild's Voice Channel
      * @type {VoiceChannel|StageChannel}
      * @readonly
      */
-    this.VoiceChannel = null;
+    this.VoiceChannel = null
 
     /**
      * Extractor Extractor name as "play-dl" OR "youtube-dl"
      * @type {String|void}
      * @readonly
      */
-    this.extractor = extractor;
+    this.extractor = extractor
 
     /**
      * searches User Readable Tracks
      * @type {DefaultTrack[]}
      * @readonly
      */
-    this.searches = [];
+    this.searches = []
 
     /**
      * Tracks Stream Datas from Extractors and then parent Data of searches
      * @type {DefaultStream[]}
      * @readonly
      */
-    this.tracks = [];
+    this.tracks = []
 
     /**
      * Metadata Metadata value in Streampacket for Audio Resources
      * @type {any|void}
      */
-    this.metadata = MetadataValue;
+    this.metadata = MetadataValue
 
     /**
      * subscription Player Subscription Socket to Subscribe or Subscription is ON
      * @type {PlayerSubscription}
      * @readonly
      */
-    this.subscription = undefined;
+    this.subscription = undefined
 
     /**
      * Guild's id Object cached from new constructor's guild value
      * @type {String|Number}
      * @readonly
      */
-    this.guildId = guildId;
+    this.guildId = guildId
 
     /**
      * ExtractorStreamOptions Extractor Fetching Options
@@ -125,42 +125,42 @@ class StreamPacketGen {
     this.ExtractorStreamOptions = ExtractorStreamOptions = ClassUtils.stablizingoptions(
       ExtractorStreamOptions,
       DefaultExtractorStreamOptions,
-    );
+    )
 
     /**
      * IgnoreError IgnoreError's true Value if its required
      * @type {Boolean|void}
      * @readonly
      */
-    this.IgnoreError = !!IgnoreError ?? true;
+    this.IgnoreError = !!IgnoreError ?? true
 
     /**
      * Player's Instance for further operations
      * @type {Player}
      * @readonly
      */
-    this.Player = Player;
+    this.Player = Player
 
     /**
      * volume Volume of the Music Player
      * @type {Number}
      * @readonly
      */
-    this.volume = 0.095;
+    this.volume = 0.095
 
     /**
      * AudioResource Track's Audio Resource
      * @type {AudioResource|void}
      * @readonly
      */
-    this.AudioResource = undefined;
+    this.AudioResource = undefined
 
     /**
      * previousTracks Previous Tracks Cache
      * @type {Object[]}
      * @readonly
      */
-    this.previousTracks = [];
+    this.previousTracks = []
 
     /**
      * @private
@@ -172,7 +172,7 @@ class StreamPacketGen {
       seek: { StartingPoint: undefined, EndingPoint: undefined },
       audioFilters: [],
       filtersUpdateChecks: false,
-    };
+    }
 
     /**
      * @private
@@ -184,7 +184,7 @@ class StreamPacketGen {
       Starting: undefined,
       Paused: undefined,
       Filtered: undefined,
-    };
+    }
 
     /**
      * @private
@@ -196,7 +196,7 @@ class StreamPacketGen {
       Loop: undefined,
       Repeat: undefined,
       Autoplay: undefined,
-    };
+    }
 
     /**
      * @private
@@ -207,7 +207,7 @@ class StreamPacketGen {
     this.Tempdelay = {
       Track: false,
       FilterUpdate: false,
-    };
+    }
   }
 
   /**
@@ -217,6 +217,7 @@ class StreamPacketGen {
    * @param {DefaultExtractorStreamOptions} StreamCreateOptions Stream Options for TracksGen methods
    * @param {String|Boolean|void} extractor extractor to be used as "play-dl" or "youtube-dl"
    * @param {User|GuildMember|void} requestedBy user Data as who requested if given during insert or play method of Queue Instance
+   * @param {Boolean | void} IgnoreEvent Ignore for "tracksAdd" event for TracksAdd() method of <Queue>
    * @returns {Promise<this|void>|void} Returns StreamPacket with Updated values of tracks
    */
 
@@ -237,11 +238,12 @@ class StreamPacketGen {
     },
     extractor = 'play-dl',
     requestedBy = undefined,
+    IgnoreEvent = false,
   ) {
     StreamCreateOptions.ExtractorStreamOptions = ClassUtils.stablizingoptions(
       StreamCreateOptions.ExtractorStreamOptions,
       this.ExtractorStreamOptions,
-    );
+    )
     const Chunks = await TracksGen.fetch(
       Query,
       requestedBy ?? undefined,
@@ -250,40 +252,44 @@ class StreamPacketGen {
       this.tracks.length > 0
         ? Number(this.tracks[this.tracks.length - 1].Id)
         : 0,
-    );
+    )
     if (Chunks.error) {
       return void this.Player.emit(
         'error',
         Chunks.error,
         this.Player.GetQueue(this.guildId),
-      );
+      )
     }
-    this.searches = this.searches.concat(Chunks.tracks);
-    this.tracks = this.tracks.concat(Chunks.streamdatas);
-    Chunks.playlist === true || Chunks.playlist
+    this.searches = this.searches.concat(Chunks.tracks)
+    this.tracks = this.tracks.concat(Chunks.streamdatas)
+    !IgnoreEvent && (Chunks.playlist === true || Chunks.playlist)
       ? this.Player.emit(
         'playlistAdd',
         this.Player.GetQueue(this.guildId),
         Chunks.tracks,
       )
-      : undefined;
-    this.Player.emit(
-      'tracksAdd',
-      this.Player.GetQueue(this.guildId),
-      Chunks.tracks,
-    );
+      : undefined
+    !IgnoreEvent
+      ? this.Player.emit(
+        'tracksAdd',
+        this.Player.GetQueue(this.guildId),
+        Chunks.tracks,
+      )
+      : undefined
     if (VoiceChannel) {
-      this.VoiceChannel = !this.VoiceChannel
-        || !getVoiceConnection(this.guildId)
-        || (this.VoiceChannel && VoiceChannel.id !== this.VoiceChannel.id)
-        ? await VoiceUtils.join(this.Client, VoiceChannel, {
-          force: true,
-        })
-        : this.VoiceChannel;
+      this.VoiceChannel =
+        !this.VoiceChannel ||
+        !getVoiceConnection(this.guildId) ||
+        (this.VoiceChannel && VoiceChannel.id !== this.VoiceChannel.id)
+          ? await VoiceUtils.join(this.Client, VoiceChannel, {
+            force: true,
+          })
+          : this.VoiceChannel
     } else if (
-      !VoiceChannel
-      && !this.VoiceChannel
-      && !getVoiceConnection(this.guildId)
+      !IgnoreEvent &&
+      !VoiceChannel &&
+      !this.VoiceChannel &&
+      !getVoiceConnection(this.guildId)
     ) {
       return void this.Player.emit(
         'connectionError',
@@ -291,10 +297,10 @@ class StreamPacketGen {
         this.Player.GetQueue(this.guildId),
         getVoiceConnection(this.guildId),
         this.guildId,
-      );
+      )
     }
 
-    return this;
+    return this
   }
 
   /**
@@ -305,9 +311,9 @@ class StreamPacketGen {
    */
 
   remove(Index = -1, Amount = 1) {
-    this.tracks.splice(Index, Amount);
-    this.searches.splice(Index, Amount);
-    return this;
+    this.tracks.splice(Index, Amount)
+    this.searches.splice(Index, Amount)
+    return this
   }
 
   /**
@@ -341,14 +347,14 @@ class StreamPacketGen {
     StreamFetchOptions.ExtractorStreamOptions = ClassUtils.stablizingoptions(
       StreamFetchOptions.ExtractorStreamOptions,
       this.ExtractorStreamOptions,
-    );
+    )
     if (!this.VoiceChannel && !getVoiceConnection(this.guildId)) {
       return void this.Player.emit(
         'error',
         'Invalid Connection',
         getVoiceConnection(this.guildId),
         this.guildId,
-      );
+      )
     }
     if (Number(Index) <= -1 && Number(Index) >= this.searches.length) {
       return void this.Player.emit(
@@ -356,7 +362,7 @@ class StreamPacketGen {
         'Invalid Index',
         this.Player.GetQueue(this.guildId),
         Number(Index),
-      );
+      )
     }
     const Chunk = await TracksGen.fetch(
       Query,
@@ -366,13 +372,13 @@ class StreamPacketGen {
       this.tracks.length > 0
         ? Number(this.tracks[this.tracks.length - 1].Id)
         : 0,
-    );
+    )
     if (Chunk.error) {
       return void this.Player.emit(
         'error',
         Chunk.error,
         this.Player.GetQueue(this.guildId),
-      );
+      )
     }
     Chunk.playlist === true || Chunk.playlist
       ? this.Player.emit(
@@ -381,20 +387,20 @@ class StreamPacketGen {
         Chunk.tracks,
         'insert',
       )
-      : undefined;
+      : undefined
     this.Player.emit(
       'tracksAdd',
       this.Player.GetQueue(this.guildId),
       Chunk.tracks,
       'insert',
-    );
-    this.#__HandleInsertion(Number(Index) ?? -1, Chunk);
+    )
+    this.#__HandleInsertion(Number(Index) ?? -1, Chunk)
     this.Player.emit(
       'tracksAdd',
       this.Player.GetQueue(this.guildId),
       Chunk.tracks,
-    );
-    return this;
+    )
+    return this
   }
 
   /**
@@ -424,46 +430,47 @@ class StreamPacketGen {
     forceback,
   ) {
     if (
-      !this.Player.GetQueue(this.guildId)
-      || (this.Player.GetQueue(this.guildId)
-        && this.Player.GetQueue(this.guildId).destroyed)
-    ) return void null;
+      !this.Player.GetQueue(this.guildId) ||
+      (this.Player.GetQueue(this.guildId) &&
+        this.Player.GetQueue(this.guildId).destroyed)
+    )
+      return void null
     StreamCreateOptions.ExtractorStreamOptions = ClassUtils.stablizingoptions(
       StreamCreateOptions.ExtractorStreamOptions,
       this.ExtractorStreamOptions,
-    );
+    )
     const Chunks = await TracksGen.fetch(
       this.previousTracks[this.previousTracks.length - TracksBackwardIndex - 1]
         .url,
-      requestedBy
-        ?? this.previousTracks[
+      requestedBy ??
+        this.previousTracks[
           this.previousTracks.length - TracksBackwardIndex - 1
-        ].requestedBy
-        ?? undefined,
+        ].requestedBy ??
+        undefined,
       StreamCreateOptions,
       StreamCreateOptions.extractor,
       this.tracks.length > 0
         ? Number(this.tracks[this.tracks.length - 1].Id)
         : 0,
-    );
+    )
     if (Chunks.error) {
       return void this.Player.emit(
         'error',
         Chunks.error,
         this.Player.GetQueue(this.guildId),
-      );
+      )
     }
 
-    this.tracks.splice(forceback ? 1 : 0, 0, Chunks.streamdatas[0]);
-    this.searches.splice(forceback ? 1 : 0, 0, Chunks.tracks[0]);
-    forceback ? this.searches.splice(2, 0, this.searches[0]) : undefined;
-    forceback ? this.tracks.splice(2, 0, this.tracks[0]) : undefined;
+    this.tracks.splice(forceback ? 1 : 0, 0, Chunks.streamdatas[0])
+    this.searches.splice(forceback ? 1 : 0, 0, Chunks.tracks[0])
+    forceback ? this.searches.splice(2, 0, this.searches[0]) : undefined
+    forceback ? this.tracks.splice(2, 0, this.tracks[0]) : undefined
     this.previousTracks.splice(
       this.previousTracks.length - TracksBackwardIndex - 1,
       1,
-    );
-    forceback ? this.Player.GetQueue(this.guildId).skip() : undefined;
-    return true;
+    )
+    forceback ? this.Player.GetQueue(this.guildId).skip() : undefined
+    return true
   }
   /**
    * FFmpegArgsHandling() -> Ffmpeg Args handling for Audio Streaming Manupulations
@@ -474,14 +481,14 @@ class StreamPacketGen {
   FFmpegArgsHandling(SaveTrackIndex = 0) {
     if (
       !(
-        this.ExternalModes
-        && ((this.ExternalModes.seek
-          && (this.ExternalModes.seek.StartingPoint
-            || this.ExternalModes.seek.EndingPoint))
-          || (this.ExternalModes.audioFilters
-            && this.ExternalModes.audioFilters[0]))
-      )
-      || !this.tracks[0]
+        this.ExternalModes &&
+        ((this.ExternalModes.seek &&
+          (this.ExternalModes.seek.StartingPoint ||
+            this.ExternalModes.seek.EndingPoint)) ||
+          (this.ExternalModes.audioFilters &&
+            this.ExternalModes.audioFilters[0]))
+      ) ||
+      !this.tracks[0]
     ) {
       this.ExternalModes = {
         seek: undefined,
@@ -489,8 +496,8 @@ class StreamPacketGen {
           ? this.ExternalModes.audioFilters
           : undefined,
         filtersUpdateChecks: false,
-      };
-      return void null;
+      }
+      return void null
     }
     const ffmpegArgs = [
       '-analyzeduration',
@@ -505,74 +512,76 @@ class StreamPacketGen {
       '48000',
       '-ac',
       '2',
-    ];
+    ]
     if (
-      this.ExternalModes.audioFilters
-      && Array.isArray(this.ExternalModes.audioFilters)
-      && this.ExternalModes.audioFilters[0]
+      this.ExternalModes.audioFilters &&
+      Array.isArray(this.ExternalModes.audioFilters) &&
+      this.ExternalModes.audioFilters[0]
     ) {
       if (
-        this.ExternalModes.audioFilters.length === 1
-        && this.ExternalModes.audioFilters[0] === 'off'
+        this.ExternalModes.audioFilters.length === 1 &&
+        this.ExternalModes.audioFilters[0] === 'off'
       ) {
-        this.ExternalModes.audioFilters = undefined;
-      } else ffmpegArgs.unshift('-af', this.ExternalModes.audioFilters.join(','));
+        this.ExternalModes.audioFilters = undefined
+      } else
+        ffmpegArgs.unshift('-af', this.ExternalModes.audioFilters.join(','))
     }
-    ffmpegArgs.unshift('-i', this.tracks[0].stream_url);
+    ffmpegArgs.unshift('-i', this.tracks[0].stream_url)
     if (
-      this.ExternalModes
-      && this.ExternalModes.seek
-      && this.ExternalModes.seek.EndingPoint
+      this.ExternalModes &&
+      this.ExternalModes.seek &&
+      this.ExternalModes.seek.EndingPoint
     ) {
-      ffmpegArgs.unshift('-to', `${this.ExternalModes.seek.EndingPoint}`);
+      ffmpegArgs.unshift('-to', `${this.ExternalModes.seek.EndingPoint}`)
     }
     if (
-      this.ExternalModes
-      && this.ExternalModes.seek
-      && this.ExternalModes.seek.StartingPoint
-      && this.ExternalModes.seek.StartingPoint > 0
+      this.ExternalModes &&
+      this.ExternalModes.seek &&
+      this.ExternalModes.seek.StartingPoint &&
+      this.ExternalModes.seek.StartingPoint > 0
     ) {
       ffmpegArgs.unshift(
         '-ss',
         `${this.ExternalModes.seek.StartingPoint}`,
         '-accurate_seek',
-      );
+      )
     }
     this.tracks[0].tampered = !!(
       this.ExternalModes && this.ExternalModes.filtersUpdateChecks
-    );
+    )
     this.Tempdelay = {
       Track: !!this.Tempdelay.Track,
       FilterUpdate: !this.Tempdelay.FilterUpdate,
-    };
-    this.TrackTimeStamp.Filtered = this.ExternalModes
-      && this.ExternalModes.seek
-      && this.ExternalModes.seek.StartingPoint
-      ? Number(this.ExternalModes.seek.StartingPoint) * 1000
-      : 0;
+    }
+    this.TrackTimeStamp.Filtered =
+      this.ExternalModes &&
+      this.ExternalModes.seek &&
+      this.ExternalModes.seek.StartingPoint
+        ? Number(this.ExternalModes.seek.StartingPoint) * 1000
+        : 0
     this.ExternalModes = {
       seek: !!(
-        this.ExternalModes.seek
-        && (this.ExternalModes.seek.StartingPoint
-          || this.ExternalModes.seek.EndingPoint)
+        this.ExternalModes.seek &&
+        (this.ExternalModes.seek.StartingPoint ||
+          this.ExternalModes.seek.EndingPoint)
       ),
       audioFilters: this.ExternalModes
         ? this.ExternalModes.audioFilters
         : undefined,
       filtersUpdateChecks: false,
-    };
+    }
     const FFmpegProcess = new FFmpeg({
       args: ffmpegArgs,
-    });
-    this.tracks[0].stream = FFmpegProcess ?? this.tracks[0].stream;
-    this.tracks[0].stream_type = StreamType.OggOpus;
+    })
+    this.tracks[0].stream = FFmpegProcess ?? this.tracks[0].stream
+    this.tracks[0].stream_type = StreamType.OggOpus
     SaveTrackIndex && Number(SaveTrackIndex) !== 0
       ? this.searches.splice(Number(SaveTrackIndex), 0, this.searches[0])
-      : (this.searches[Number(SaveTrackIndex)] = this.searches[0]);
+      : (this.searches[Number(SaveTrackIndex)] = this.searches[0])
     SaveTrackIndex && Number(SaveTrackIndex) !== 0
       ? this.tracks.splice(Number(SaveTrackIndex), 0, this.tracks[0])
-      : (this.tracks[Number(SaveTrackIndex)] = this.tracks[0]);
-    return true;
+      : (this.tracks[Number(SaveTrackIndex)] = this.tracks[0])
+    return true
   }
 
   /**
@@ -585,81 +594,81 @@ class StreamPacketGen {
 
   setMode(ModeName, ModeType, Times) {
     if (
-      ModeName === DefaultModesName.Loop
-      && (!ModeType || (ModeType && ModeType === DefaultModesType.Track))
+      ModeName === DefaultModesName.Loop &&
+      (!ModeType || (ModeType && ModeType === DefaultModesType.Track))
     ) {
       this.MusicPlayerMode = {
         Loop: DefaultModesType.Track,
-      };
-      return true;
+      }
+      return true
     }
     if (
-      ModeName === DefaultModesName.Loop
-      && ModeType
-      && ModeType === DefaultModesType.Queue
+      ModeName === DefaultModesName.Loop &&
+      ModeType &&
+      ModeType === DefaultModesType.Queue
     ) {
       this.MusicPlayerMode = {
         Loop: DefaultModesType.Queue,
-      };
-      return true;
+      }
+      return true
     }
     if (
-      ModeName === DefaultModesName.Loop
-      && ModeType
-      && ModeType === DefaultModesType.Off
+      ModeName === DefaultModesName.Loop &&
+      ModeType &&
+      ModeType === DefaultModesType.Off
     ) {
       this.MusicPlayerMode = {
         Loop: undefined,
-      };
-      return true;
+      }
+      return true
     }
     if (
-      ModeName === DefaultModesName.Repeat
-      && (!ModeType || (ModeType && ModeType === DefaultModesType.Track))
+      ModeName === DefaultModesName.Repeat &&
+      (!ModeType || (ModeType && ModeType === DefaultModesType.Track))
     ) {
       this.MusicPlayerMode = {
         Repeat: [DefaultModesType.Track, Number(Times)],
-      };
-      return true;
+      }
+      return true
     }
     if (
-      ModeName === DefaultModesName.Repeat
-      && ModeType
-      && ModeType === DefaultModesType.Queue
+      ModeName === DefaultModesName.Repeat &&
+      ModeType &&
+      ModeType === DefaultModesType.Queue
     ) {
       this.MusicPlayerMode = {
         Repeat: [DefaultModesType.Queue, Number(Times)],
-      };
-      return true;
+      }
+      return true
     }
     if (
-      ModeName === DefaultModesName.Repeat
-      && ModeType
-      && ModeType === DefaultModesType.Off
+      ModeName === DefaultModesName.Repeat &&
+      ModeType &&
+      ModeType === DefaultModesType.Off
     ) {
       this.MusicPlayerMode = {
         Repeat: undefined,
-      };
-      return true;
+      }
+      return true
     }
     if (
-      ModeName === DefaultModesName.Autoplay
-      && ModeType
-      && ModeType === DefaultModesType.Off
+      ModeName === DefaultModesName.Autoplay &&
+      ModeType &&
+      ModeType === DefaultModesType.Off
     ) {
       this.MusicPlayerMode = {
         Autoplay: undefined,
-      };
-      return true;
+      }
+      return true
     }
     if (ModeName === DefaultModesName.Autoplay) {
       this.MusicPlayerMode = {
         Autoplay: ModeType ?? true,
-      };
-      return true;
+      }
+      return true
     }
 
-    return void null;
+    return void null
   }
 
   /**
@@ -676,28 +685,28 @@ class StreamPacketGen {
           metadata: this.metadata ?? undefined,
         },
         inlineVolume:
-          this.Player.GetQueue(this.guildId)
-          && this.Player.GetQueue(this.guildId).QueueOptions
-          && !this.Player.GetQueue(this.guildId).QueueOptions.NoMemoryLeakMode
+          this.Player.GetQueue(this.guildId) &&
+          this.Player.GetQueue(this.guildId).QueueOptions &&
+          !this.Player.GetQueue(this.guildId).QueueOptions.NoMemoryLeakMode
             ? true
             : undefined,
-      });
-      this.AudioResource = AudioResource;
-      this.Player.GetQueue(this.guildId)
-      && this.Player.GetQueue(this.guildId).QueueOptions
-      && !this.Player.GetQueue(this.guildId).QueueOptions.NoMemoryLeakMode
+      })
+      this.AudioResource = AudioResource
+      this.Player.GetQueue(this.guildId) &&
+      this.Player.GetQueue(this.guildId).QueueOptions &&
+      !this.Player.GetQueue(this.guildId).QueueOptions.NoMemoryLeakMode
         ? AudioResource.volume.setVolume(this.volume ?? 0.095)
-        : undefined;
-      return this.AudioResource;
+        : undefined
+      return this.AudioResource
     } catch (error) {
-      this.AudioResource = undefined;
+      this.AudioResource = undefined
       return void this.Player.emit(
         'connectionError',
         `${error.message ?? error ?? 'Audio Resource Streaming Error'}`,
         this.Player.GetQueue(this.guildId),
         getVoiceConnection(this.guildId),
         this.guildId,
-      );
+      )
     }
   }
 
@@ -707,14 +716,14 @@ class StreamPacketGen {
    * @returns {Boolean|void|Promise<Boolean|void>} returns true if operation went gree signal ro undefined on errors
    */
   async __handleMusicPlayerModes(QueueInstance) {
-    if (!QueueInstance.playerMode) return void null;
-    const ModeName = QueueInstance.playerMode.mode;
-    const ModeType = QueueInstance.playerMode.type;
-    const ModeTimes = Number(QueueInstance.playerMode.times ?? 0);
-    let CacheTracks = [];
+    if (!QueueInstance.playerMode) return void null
+    const ModeName = QueueInstance.playerMode.mode
+    const ModeType = QueueInstance.playerMode.type
+    const ModeTimes = Number(QueueInstance.playerMode.times ?? 0)
+    let CacheTracks = []
     if (
-      ModeName === DefaultModesName.Loop
-      && (!ModeType || (ModeType && ModeType === DefaultModesType.Track))
+      ModeName === DefaultModesName.Loop &&
+      (!ModeType || (ModeType && ModeType === DefaultModesType.Track))
     ) {
       const Chunks = await TracksGen.fetch(
         QueueInstance.previousTrack.url,
@@ -722,16 +731,16 @@ class StreamPacketGen {
         this.ExtractorStreamOptions,
         this.extractor ?? 'play-dl',
         Number(QueueInstance.previousTrack.Id ?? 0) - 1,
-      );
-      this.previousTracks.splice(this.previousTracks.length - 1, 1);
-      this.tracks.splice(0, 0, Chunks.streamdatas[0]);
-      this.searches.splice(0, 0, Chunks.tracks[0]);
-      return true;
+      )
+      this.previousTracks.splice(this.previousTracks.length - 1, 1)
+      this.tracks.splice(0, 0, Chunks.streamdatas[0])
+      this.searches.splice(0, 0, Chunks.tracks[0])
+      return true
     }
     if (
-      ModeName === DefaultModesName.Loop
-      && ModeType
-      && ModeType === DefaultModesType.Queue
+      ModeName === DefaultModesName.Loop &&
+      ModeType &&
+      ModeType === DefaultModesType.Queue
     ) {
       await Promise.all(
         this.previousTracks.map(async (previousTrack) => {
@@ -741,17 +750,17 @@ class StreamPacketGen {
             this.ExtractorStreamOptions,
             this.extractor ?? 'play-dl',
             Number(previousTrack.Id ?? 0) - 1,
-          );
-          this.tracks.push(Chunks.streamdatas[0]);
-          this.searches.push(Chunks.tracks[0]);
+          )
+          this.tracks.push(Chunks.streamdatas[0])
+          this.searches.push(Chunks.tracks[0])
         }),
-      );
-      this.previousTracks = [];
-      return true;
+      )
+      this.previousTracks = []
+      return true
     }
     if (
-      ModeName === DefaultModesName.Repeat
-      && (!ModeType || (ModeType && ModeType === DefaultModesType.Track))
+      ModeName === DefaultModesName.Repeat &&
+      (!ModeType || (ModeType && ModeType === DefaultModesType.Track))
     ) {
       const Chunks = await TracksGen.fetch(
         QueueInstance.previousTrack.url,
@@ -759,19 +768,20 @@ class StreamPacketGen {
         this.ExtractorStreamOptions,
         this.extractor ?? 'play-dl',
         Number(QueueInstance.previousTrack.Id ?? 0) - 1,
-      );
-      this.previousTracks.splice(this.previousTracks.length - 1, 1);
-      this.tracks.splice(0, 0, Chunks.streamdatas[0]);
-      this.searches.splice(0, 0, Chunks.tracks[0]);
-      this.MusicPlayerMode.Repeat = ModeTimes && ModeTimes > 1 ? [ModeType, ModeTimes - 1] : undefined;
-      return true;
+      )
+      this.previousTracks.splice(this.previousTracks.length - 1, 1)
+      this.tracks.splice(0, 0, Chunks.streamdatas[0])
+      this.searches.splice(0, 0, Chunks.tracks[0])
+      this.MusicPlayerMode.Repeat =
+        ModeTimes && ModeTimes > 1 ? [ModeType, ModeTimes - 1] : undefined
+      return true
     }
     if (
-      ModeName === DefaultModesName.Repeat
-      && ModeType
-      && ModeType === DefaultModesType.Queue
+      ModeName === DefaultModesName.Repeat &&
+      ModeType &&
+      ModeType === DefaultModesType.Queue
     ) {
-      CacheTracks = [...this.previousTracks].reverse();
+      CacheTracks = [...this.previousTracks].reverse()
       await Promise.all(
         CacheTracks.map(async (previousTrack) => {
           const Chunks = await TracksGen.fetch(
@@ -780,52 +790,54 @@ class StreamPacketGen {
             this.ExtractorStreamOptions,
             this.extractor ?? 'play-dl',
             Number(previousTrack.Id ?? 0) - 1,
-          );
-          this.tracks.push(Chunks.streamdatas[0]);
-          this.searches.push(Chunks.tracks[0]);
+          )
+          this.tracks.push(Chunks.streamdatas[0])
+          this.searches.push(Chunks.tracks[0])
         }),
-      );
-      this.MusicPlayerMode.Repeat = ModeTimes && ModeTimes > 1 ? [ModeType, ModeTimes - 1] : undefined;
-      this.previousTracks = [];
-      return true;
+      )
+      this.MusicPlayerMode.Repeat =
+        ModeTimes && ModeTimes > 1 ? [ModeType, ModeTimes - 1] : undefined
+      this.previousTracks = []
+      return true
     }
     if (
-      ModeName === DefaultModesName.Autoplay
-      && QueueInstance.tracks.length === 0
+      ModeName === DefaultModesName.Autoplay &&
+      QueueInstance.tracks.length === 0
     ) {
-      const SearchResults = typeof this.MusicPlayerMode.Autoplay === 'string'
-        ? await QueueInstance.search(
-          this.MusicPlayerMode.Autoplay,
-          QueueInstance.previousTrack.requestedBy,
-          this.ExtractorStreamOptions,
-          this.extractor ?? 'play-dl',
-          Number(QueueInstance.previousTrack.Id ?? 0) - 1,
-        )
-        : undefined;
+      const SearchResults =
+        typeof this.MusicPlayerMode.Autoplay === 'string'
+          ? await QueueInstance.search(
+            this.MusicPlayerMode.Autoplay,
+            QueueInstance.previousTrack.requestedBy,
+            this.ExtractorStreamOptions,
+            this.extractor ?? 'play-dl',
+            Number(QueueInstance.previousTrack.Id ?? 0) - 1,
+          )
+          : undefined
       if (SearchResults && SearchResults.error) {
         return void this.Player.emit(
           'error',
           SearchResults.error,
           QueueInstance,
-        );
+        )
       }
       const GarbageSuggestion = await suggestions(
         (SearchResults && SearchResults.tracks
           ? SearchResults.tracks[0].title
           : undefined) ?? QueueInstance.previousTrack.title,
-      );
+      )
       if (
         !(
-          GarbageSuggestion
-          && GarbageSuggestion[0]
-          && GarbageSuggestion[0].title
+          GarbageSuggestion &&
+          GarbageSuggestion[0] &&
+          GarbageSuggestion[0].title
         )
       ) {
         return void this.Player.emit(
           'error',
           'No AutoPlay Track Result',
           QueueInstance,
-        );
+        )
       }
       const Chunks = await TracksGen.fetch(
         GarbageSuggestion[0].title,
@@ -833,17 +845,17 @@ class StreamPacketGen {
         this.ExtractorStreamOptions,
         this.extractor ?? 'play-dl',
         Number(QueueInstance.previousTrack.Id ?? 0) - 1,
-      );
+      )
       if (Chunks && Chunks.error) {
-        return void this.Player.emit('error', Chunks.error, QueueInstance);
+        return void this.Player.emit('error', Chunks.error, QueueInstance)
       }
-      this.tracks.push(Chunks.streamdatas[0]);
-      this.searches.push(Chunks.tracks[0]);
-      QueueInstance.tracks[0] = Chunks.tracks[0];
+      this.tracks.push(Chunks.streamdatas[0])
+      this.searches.push(Chunks.tracks[0])
+      QueueInstance.tracks[0] = Chunks.tracks[0]
 
-      return true;
+      return true
     }
-    return void null;
+    return void null
   }
 
   /**
@@ -855,18 +867,18 @@ class StreamPacketGen {
 
   #__HandleInsertion(Index = -1, Chunk) {
     if (!Index || (Index && Index < 0)) {
-      this.searches = this.searches.concat(Chunk.tracks);
-      this.tracks = this.tracks.concat(Chunk.streamdatas);
+      this.searches = this.searches.concat(Chunk.tracks)
+      this.tracks = this.tracks.concat(Chunk.streamdatas)
     } else {
-      let GarbageFirstPhase = this.searches.splice(0, Index);
-      let GarbageSecondPhase = GarbageFirstPhase.concat(Chunk.tracks);
-      this.searches = GarbageSecondPhase.concat(this.searches);
-      GarbageFirstPhase = this.tracks.splice(0, Index);
-      GarbageSecondPhase = GarbageFirstPhase.concat(Chunk.streamdatas);
-      this.tracks = GarbageSecondPhase.concat(this.tracks);
+      let GarbageFirstPhase = this.searches.splice(0, Index)
+      let GarbageSecondPhase = GarbageFirstPhase.concat(Chunk.tracks)
+      this.searches = GarbageSecondPhase.concat(this.searches)
+      GarbageFirstPhase = this.tracks.splice(0, Index)
+      GarbageSecondPhase = GarbageFirstPhase.concat(Chunk.streamdatas)
+      this.tracks = GarbageSecondPhase.concat(this.tracks)
     }
-    return void null;
+    return void null
   }
 }
 
-module.exports = StreamPacketGen;
+module.exports = StreamPacketGen

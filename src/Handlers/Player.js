@@ -298,7 +298,13 @@ class Player extends EventEmitter {
     if (Player.#QueueCacheFetch(guildId)) {
       return void Player.#QueueCacheRemove(guildId)
     }
-    return void this.emit('error', 'Destroyed Queue', undefined)
+    return void this.emit(
+      'error',
+      'Destroyed Queue',
+      this,
+      undefined,
+      'Player Section #1',
+    )
   }
 
   /**
@@ -366,6 +372,16 @@ class Player extends EventEmitter {
       return void this.emit('error', Chunks.error, this)
     }
     return { playlist: Chunks.playlist, tracks: Chunks.tracks }
+  }
+
+  /**
+   * @type {string}
+   * @readonly
+   * Jericho-Player Type Player | value -> "queue"
+   */
+
+  get type() {
+    return 'player'
   }
 
   /**

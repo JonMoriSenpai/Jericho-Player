@@ -225,7 +225,13 @@ class Queue {
   ) {
     // Watch for Queue.destroyed Property for ignoring Invalid operation and further un-wanted Errors
     if (this.destroyed) {
-      return void this.Player.emit('error', 'Destroyed Queue', this)
+      return void this.Player.emit(
+        'error',
+        'Destroyed Queue',
+        this,
+        undefined,
+        '<Queue>.play() | Queue Section #1',
+      )
     }
     // Voice Channel resolves if possible
     VoiceChannel = ResolverLTE(VoiceChannel, 'voicechannel')
@@ -318,7 +324,13 @@ class Queue {
     },
   ) {
     if (this.destroyed) {
-      return void this.Player.emit('error', 'Destroyed Queue', this)
+      return void this.Player.emit(
+        'error',
+        'Destroyed Queue',
+        this,
+        undefined,
+        '<Queue>.playTracks() | Queue Section #2',
+      )
     }
     // Voice Channel resolves if possible
     VoiceChannel = ResolverLTE(VoiceChannel, 'voicechannel')
@@ -387,6 +399,7 @@ class Queue {
               FilterUpdate: !!this.StreamPacket.Tempdelay.FilterUpdate,
             }
           }
+
           // Dynamically | In-directly fetches Data about Query and store it as StreamPacket
           await this.StreamPacket.create(
             Query,
@@ -394,8 +407,20 @@ class Queue {
             PlayOptions,
             PlayOptions.extractor,
             User ?? undefined,
+            true,
           )
-          this.tracks = this.StreamPacket.searches
+
+          this.Player.emit(
+            'tracksAdd',
+            this,
+            [...this.tracks]?.splice(
+              this.tracks?.length || 0,
+              (this.StreamPacket?.searches.length || 0) -
+                (this.tracks?.length || 0),
+            ) ?? this.tracks,
+          )
+
+          this.tracks = this.StreamPacket?.searches ?? this.tracks
 
           // __ResourcePlay() is quite powerfull and shouldbe placed after double checks as it is the main component for Playing Streams
           if (!this.playing && !this.paused && this.tracks && this.tracks[0]) {
@@ -415,7 +440,13 @@ class Queue {
 
   skip(TrackIndex) {
     if (this.destroyed) {
-      return void this.Player.emit('error', 'Destroyed Queue', this)
+      return void this.Player.emit(
+        'error',
+        'Destroyed Queue',
+        this,
+        undefined,
+        '<Queue>.skip() | Queue Section #3',
+      )
     }
     if (
       TrackIndex &&
@@ -463,7 +494,13 @@ class Queue {
 
   stop() {
     if (this.destroyed) {
-      return void this.Player.emit('error', 'Destroyed Queue', this)
+      return void this.Player.emit(
+        'error',
+        'Destroyed Queue',
+        this,
+        undefined,
+        '<Queue>.stop() | Queue Section #4',
+      )
     }
     if (!this.playing) {
       return void this.Player.emit('error', 'Not Playing', this)
@@ -493,7 +530,13 @@ class Queue {
 
   pause() {
     if (this.destroyed) {
-      return void this.Player.emit('error', 'Destroyed Queue', this)
+      return void this.Player.emit(
+        'error',
+        'Destroyed Queue',
+        this,
+        undefined,
+        '<Queue>.pause() | Queue Section #5',
+      )
     }
     if (!this.playing) {
       return void this.Player.emit('error', 'Not Playing', this)
@@ -515,7 +558,13 @@ class Queue {
 
   resume() {
     if (this.destroyed) {
-      return void this.Player.emit('error', 'Destroyed Queue', this)
+      return void this.Player.emit(
+        'error',
+        'Destroyed Queue',
+        this,
+        undefined,
+        '<Queue>.resume() | Queue Section #6',
+      )
     }
     if (!this.playing) {
       return void this.Player.emit('error', 'Not Playing', this)
@@ -562,7 +611,13 @@ class Queue {
     },
   ) {
     if (this.destroyed) {
-      return void this.Player.emit('error', 'Destroyed Queue', this)
+      return void this.Player.emit(
+        'error',
+        'Destroyed Queue',
+        this,
+        undefined,
+        '<Queue>.insert() | Queue Section #7',
+      )
     }
     if (
       TrackIndex &&
@@ -606,7 +661,13 @@ class Queue {
 
   remove(Index = -1, Amount = 1) {
     if (this.destroyed) {
-      return void this.Player.emit('error', 'Destroyed Queue', this)
+      return void this.Player.emit(
+        'error',
+        'Destroyed Queue',
+        this,
+        undefined,
+        '<Queue>.remove() | Queue Section #8',
+      )
     }
     if (Number.isNaN(Index)) {
       return void this.Player.emit('error', 'Invalid Index', this, Index)
@@ -636,7 +697,13 @@ class Queue {
 
   destroy(connectionTimedout = 0) {
     if (this.destroyed) {
-      return void this.Player.emit('error', 'Destroyed Queue', this)
+      return void this.Player.emit(
+        'error',
+        'Destroyed Queue',
+        this,
+        undefined,
+        '<Queue>.destroy() | Queue Section #9',
+      )
     }
     this.StreamPacket.tracks = []
     this.StreamPacket.searches = []
@@ -654,20 +721,18 @@ class Queue {
      * - Above , Cached Destruction Timeout ID , incase Queue got recovered before destruction to cancel out the destroy Timedout
      * - Below is to completely Destroy Stream Packet
      */
-    const NodeTimeoutId =
-      connectionTimedout ||
-      (!Number.isNaN(connectionTimedout) && Number(connectionTimedout) > 0)
-        ? disconnect(
-          this.guildId,
-          {
-            destroy: true,
-            MusicPlayer: this.MusicPlayer,
-            Subscription: this.StreamPacket.subscription,
-            Player: this.Player,
-          },
-          Number(connectionTimedout) ?? 0,
-        )
-        : undefined
+    const NodeTimeoutId = disconnect(
+      this.guildId,
+      {
+        destroy: true,
+        MusicPlayer: this.MusicPlayer,
+        Subscription: this.StreamPacket.subscription,
+        Player: this.Player,
+      },
+      !(!Number.isNaN(connectionTimedout) && parseInt(connectionTimedout) >= 0)
+        ? 0
+        : parseInt(connectionTimedout ?? 0) || 0,
+    )
 
     this.destroyed =
       NodeTimeoutId && !Number.isNaN(NodeTimeoutId) && Number(NodeTimeoutId) > 0
@@ -694,7 +759,13 @@ class Queue {
 
   mute() {
     if (this.destroyed) {
-      return void this.Player.emit('error', 'Destroyed Queue', this)
+      return void this.Player.emit(
+        'error',
+        'Destroyed Queue',
+        this,
+        undefined,
+        '<Queue>.mute() | Queue Section #10',
+      )
     }
     if (!this.playing) {
       return void this.Player.emit('error', 'Not Playing', this)
@@ -722,7 +793,13 @@ class Queue {
 
   unmute(Volume) {
     if (this.destroyed) {
-      return void this.Player.emit('error', 'Destroyed Queue', this)
+      return void this.Player.emit(
+        'error',
+        'Destroyed Queue',
+        this,
+        undefined,
+        '<Queue>.unmute() | Queue Section #11',
+      )
     }
     if (!this.playing) {
       return void this.Player.emit('error', 'Not Playing', this)
@@ -753,7 +830,13 @@ class Queue {
 
   clear(TracksAmount = this.tracks.length - 1) {
     if (this.destroyed) {
-      return void this.Player.emit('error', 'Destroyed Queue', this)
+      return void this.Player.emit(
+        'error',
+        'Destroyed Queue',
+        this,
+        undefined,
+        '<Queue>.clear() | Queue Section #12',
+      )
     }
     if (!this.playing) {
       return void this.Player.emit('error', 'Not Playing', this)
@@ -813,7 +896,13 @@ class Queue {
     forceback = true,
   ) {
     if (this.destroyed) {
-      return void this.Player.emit('error', 'Destroyed Queue', this)
+      return void this.Player.emit(
+        'error',
+        'Destroyed Queue',
+        this,
+        undefined,
+        '<Queue>.back() | Queue Section #13',
+      )
     }
     if (!this.previousTrack) {
       return void this.Player.emit('error', 'Empty Previous Tracks', this)
@@ -865,11 +954,14 @@ class Queue {
       EndIcon: undefined,
     },
   ) {
-    if (this.destroyed) {
-      return void this.Player.emit('error', 'Destroyed Queue', this)
-    }
-    if (!this.StreamPacket) {
-      return void this.Player.emit('error', 'Destroyed Queue', this)
+    if (this.destroyed || !this.StreamPacket) {
+      return void this.Player.emit(
+        'error',
+        'Destroyed Queue',
+        this,
+        undefined,
+        '<Queue>.createProgressBar() | Queue Section #14',
+      )
     }
     if (DefaultType && Number.isNaN(DefaultType)) {
       return void this.Player.emit(
@@ -942,11 +1034,14 @@ class Queue {
    */
 
   loop(Choice = DefaultModesType.Track) {
-    if (this.destroyed) {
-      return void this.Player.emit('error', 'Destroyed Queue', this)
-    }
-    if (!this.StreamPacket) {
-      return void this.Player.emit('error', 'Destroyed Queue', this)
+    if (this.destroyed || !this.StreamPacket) {
+      return void this.Player.emit(
+        'error',
+        'Destroyed Queue',
+        this,
+        undefined,
+        '<Queue>.loop() | Queue Section #15',
+      )
     }
     return this.StreamPacket.setMode(DefaultModesName.Loop, Choice)
   }
@@ -959,11 +1054,14 @@ class Queue {
    */
 
   repeat(Choice = DefaultModesType.Track, Times = 1) {
-    if (this.destroyed) {
-      return void this.Player.emit('error', 'Destroyed Queue', this)
-    }
-    if (!this.StreamPacket) {
-      return void this.Player.emit('error', 'Destroyed Queue', this)
+    if (this.destroyed || !this.StreamPacket) {
+      return void this.Player.emit(
+        'error',
+        'Destroyed Queue',
+        this,
+        undefined,
+        '<Queue>.repeat() | Queue Section #16',
+      )
     }
     return this.StreamPacket.setMode(
       DefaultModesName.Repeat,
@@ -979,11 +1077,14 @@ class Queue {
    */
 
   autoplay(ChoiceORQuery = undefined) {
-    if (this.destroyed) {
-      return void this.Player.emit('error', 'Destroyed Queue', this)
-    }
-    if (!this.StreamPacket) {
-      return void this.Player.emit('error', 'Destroyed Queue', this)
+    if (this.destroyed || !this.StreamPacket) {
+      return void this.Player.emit(
+        'error',
+        'Destroyed Queue',
+        this,
+        undefined,
+        '<Queue>.autoplay() | Queue Section #17',
+      )
     }
     return this.StreamPacket.setMode(DefaultModesName.Autoplay, ChoiceORQuery)
   }
@@ -1036,13 +1137,16 @@ class Queue {
    */
 
   seek(StartingPoint, EndingPoint = 0) {
-    if (this.destroyed) {
-      return void this.Player.emit('error', 'Destroyed Queue', this)
+    if (this.destroyed || !this.StreamPacket) {
+      return void this.Player.emit(
+        'error',
+        'Destroyed Queue',
+        this,
+        undefined,
+        '<Queue>.autoplay() | Queue Section #18',
+      )
     }
-    if (!this.StreamPacket) {
-      return void this.Player.emit('error', 'Destroyed Queue', this)
-    }
-    if (!this.StreamPacket.tracks[0]) {
+    if (!this?.StreamPacket?.tracks?.[0]) {
       return void this.Player.emit('error', 'Empty Queue', this)
     }
     if (
@@ -1134,11 +1238,14 @@ class Queue {
    */
 
   setFilters(FilterStructure = undefined, forceApply = false) {
-    if (this.destroyed) {
-      return void this.Player.emit('error', 'Destroyed Queue', this)
-    }
-    if (!this.StreamPacket) {
-      return void this.Player.emit('error', 'Destroyed Queue', this)
+    if (this.destroyed || !this.StreamPacket) {
+      return void this.Player.emit(
+        'error',
+        'Destroyed Queue',
+        this,
+        undefined,
+        '<Queue>.autoplay() | Queue Section #19',
+      )
     }
     if (!this.StreamPacket.tracks[0]) {
       return void this.Player.emit('error', 'Empty Queue', this)
@@ -1165,11 +1272,14 @@ class Queue {
    */
 
   shuffle() {
-    if (this.destroyed) {
-      return void this.Player.emit('error', 'Destroyed Queue', this)
-    }
-    if (!this.StreamPacket) {
-      return void this.Player.emit('error', 'Destroyed Queue', this)
+    if (this.destroyed || !this.StreamPacket) {
+      return void this.Player.emit(
+        'error',
+        'Destroyed Queue',
+        this,
+        undefined,
+        '<Queue>.autoplay() | Queue Section #20',
+      )
     }
     if (
       !(
@@ -1216,8 +1326,14 @@ class Queue {
   }
 
   set volume(Volume = 0) {
-    if (this.destroyed) {
-      return void this.Player.emit('error', 'Destroyed Queue', this)
+    if (this.destroyed || !this.StreamPacket) {
+      return void this.Player.emit(
+        'error',
+        'Destroyed Queue',
+        this,
+        undefined,
+        '<Queue>.autoplay() | Queue Section #21',
+      )
     }
     if (this.QueueOptions && this.QueueOptions.NoMemoryLeakMode) {
       return void this.Player.emit(
@@ -1297,8 +1413,14 @@ class Queue {
    */
 
   get currentTimestamp() {
-    if (this.destroyed) {
-      return void this.Player.emit('error', 'Destroyed Queue', this)
+    if (this.destroyed || !this.StreamPacket) {
+      return void this.Player.emit(
+        'error',
+        'Destroyed Queue',
+        this,
+        undefined,
+        '<Queue>.autoplay() | Queue Section #22',
+      )
     }
     if (!this.StreamPacket.tracks[0]) {
       return void this.Player.emit('error', 'Empty Queue', this)
@@ -1493,6 +1615,16 @@ class Queue {
         CachedDisabled.push(ObjectKeys[count])
     }
     return CachedDisabled
+  }
+
+  /**
+   * @type {string}
+   * @readonly
+   * Jericho-Player Type Queue | value -> "queue"
+   */
+
+  get type() {
+    return 'queue'
   }
 
   /**
