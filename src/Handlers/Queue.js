@@ -5,6 +5,7 @@ const {
   NoSubscriberBehavior,
   AudioPlayer,
   getVoiceConnection,
+  VoiceConnection,
 } = require('@discordjs/voice')
 const {
   User,
@@ -12,7 +13,6 @@ const {
   GuildMember,
   VoiceChannel,
   StageChannel,
-  Message,
 } = require('discord.js')
 const StreamPacketGen = require('../Structures/StreamPacket')
 const { disconnect } = require('../Utilities/VoiceUtils')
@@ -381,49 +381,51 @@ class Queue {
         PlayOptions.ExtractorStreamOptions,
         this.Player,
       )
-    await Promise.all(
+    let cachedData = await Promise.all(
       QueryArray.map(async (Query) => {
-        if (!(Query && typeof Query === 'string')) {
-          this.Player.emit('error', 'Invalid Query is Detected', this, Query)
-        } else {
-          if (
-            this.StreamPacket &&
-            this.StreamPacket.Tempdelay &&
-            this.StreamPacket.Tempdelay.Track
-          )
-            await TimeWait(1000)
-
-          if (this.StreamPacket && this.StreamPacket.Tempdelay) {
-            this.StreamPacket.Tempdelay = {
-              Track: !this.StreamPacket.Tempdelay.Track,
-              FilterUpdate: !!this.StreamPacket.Tempdelay.FilterUpdate,
-            }
-          }
-
-          // Dynamically | In-directly fetches Data about Query and store it as StreamPacket
-          await this.StreamPacket.create(
+        if (!(Query && typeof Query === 'string'))
+          return this.Player.emit(
+            'error',
+            'Invalid Query is Detected',
+            this,
             Query,
-            this.StreamPacket.VoiceChannel ?? VoiceChannel,
-            PlayOptions,
-            PlayOptions.extractor,
-            User ?? undefined,
-            true,
           )
 
-          // __ResourcePlay() is quite powerfull and shouldbe placed after double checks as it is the main component for Playing Streams
-          if (!this.playing && !this.paused && this.tracks && this.tracks[0]) {
-            await this.#__ResourcePlay()
-          }
-        }
+        await TimeWait(1000)
+
+        // Dynamically | In-directly fetches Data about Query and store it as StreamPacket
+        await this.StreamPacket.create(
+          Query,
+          this.StreamPacket.VoiceChannel ?? VoiceChannel,
+          PlayOptions,
+          PlayOptions.extractor,
+          User ?? undefined,
+          true,
+        )
+
+        // __ResourcePlay() is quite powerfull and shouldbe placed after double checks as it is the main component for Playing Streams
+        if (
+          !this.playing &&
+          !this.paused &&
+          this.tracks &&
+          this.tracks?.length <= 1
+        )
+          await this.#__ResourcePlay()
+        if (this.tracks[0]) return this.tracks[this.tracks.length - 1]
+        else return undefined
       }),
     )
+    cachedData = cachedData?.length > 0 ? cachedData.filter(Boolean) : undefined
     this.Player.emit(
       'tracksAdd',
       this,
-      [...(this.StreamPacket?.searches ?? [])]?.splice(
-        this.tracks?.length || 0,
-        (this.StreamPacket?.searches.length || 0) - (this.tracks?.length || 0),
-      ) ?? this.tracks,
+      cachedData ??
+        [...(this.StreamPacket?.searches ?? [])]?.splice(
+          this.tracks?.length || 0,
+          (this.StreamPacket?.searches.length || 0) -
+            (this.tracks?.length || 0),
+        ) ??
+        this.tracks,
     )
 
     this.tracks = this.StreamPacket?.searches ?? this.tracks
@@ -1312,13 +1314,24 @@ class Queue {
   }
 
   /**
+   * Voice Connection of the Queue Synced
+   * @type {VoiceConnection | void}
+   * @readonly
+   */
+
+  get voiceConnection() {
+    if (!this.guildId) return undefined
+    else return getVoiceConnection(this.guildId) ?? undefined
+  }
+
+  /**
    * Volume of the Music Player Currently OR to set new Volume for Music Player
-   * @type {Number|void}
+   * @type {Number | void}
    * @readonly
    */
 
   get volume() {
-    if (this.destroyed) return void null
+    if (this.destroyed) return undefined
     if (this.QueueOptions && this.QueueOptions.NoMemoryLeakMode) return 100
     return (this.StreamPacket.volume ?? 0.095) * 1000
   }
@@ -1382,16 +1395,8 @@ class Queue {
    */
 
   get playing() {
-    if (
-      !(
-        this.MusicPlayer &&
-        this.MusicPlayer.state &&
-        this.MusicPlayer.state.status
-      )
-    ) {
-      return false
-    }
-    return this.MusicPlayer.state.status !== AudioPlayerStatus.Idle
+    if (this.destroyed || !this?.MusicPlayer?.state?.status) return false
+    else return this.MusicPlayer?.state?.status !== AudioPlayerStatus.Idle
   }
 
   /**
@@ -1400,8 +1405,8 @@ class Queue {
    * @readonly
    */
   get current() {
-    if (this.destroyed || !(this.tracks && this.tracks[0])) return undefined
-    return this.StreamPacket.searches[0]
+    if (this.destroyed || !(this.tracks && this.tracks?.[0])) return undefined
+    else return this.tracks[0]
   }
 
   /**
@@ -1511,8 +1516,8 @@ class Queue {
    */
 
   get previousTrack() {
-    if (this.destroyed) return void null
-    if (this.StreamPacket.previousTracks.length < 1) return void null
+    if (this.destroyed) return undefined
+    if (this.StreamPacket.previousTracks.length < 1) return undefined
     return this.StreamPacket.previousTracks[
       this.StreamPacket.previousTracks.length - 1
     ]
@@ -1525,10 +1530,10 @@ class Queue {
    */
 
   get playerMode() {
-    if (this.destroyed) return void null
-    if (!this.StreamPacket) return void null
-    if (this.StreamPacket.previousTracks.length < 1) return void null
-    if (!this.StreamPacket.MusicPlayerMode) return void null
+    if (this.destroyed) return undefined
+    if (!this.StreamPacket) return undefined
+    if (this.StreamPacket.previousTracks.length < 1) return undefined
+    if (!this.StreamPacket.MusicPlayerMode) return undefined
     if (this.StreamPacket.MusicPlayerMode.Loop) {
       return {
         mode: DefaultModesName.Loop,
@@ -1548,7 +1553,7 @@ class Queue {
         type: this.StreamPacket.MusicPlayerMode.Autoplay,
       }
     }
-    return void null
+    return undefined
   }
 
   /**
@@ -1558,16 +1563,9 @@ class Queue {
    */
 
   get filters() {
-    if (this.destroyed) return void null
-    if (!this.StreamPacket) return void null
-    if (
-      !this.StreamPacket.ExternalModes ||
-      !(
-        this.StreamPacket.ExternalModes &&
-        this.StreamPacket.ExternalModes.audioFilters &&
-        this.StreamPacket.ExternalModes.audioFilters[0]
-      )
-    )
+    if (this.destroyed) return undefined
+    if (!this.StreamPacket) return undefined
+    if (!this?.StreamPacket?.ExternalModes?.audioFilters?.[0])
       return DefaultUserDrivenAudioFilters
     return (
       AudioFiltersConverter(this.StreamPacket.ExternalModes.audioFilters) ??
@@ -1582,9 +1580,9 @@ class Queue {
    */
 
   get enabledFilters() {
-    if (this.destroyed) return void null
-    if (!this.StreamPacket) return void null
-    if (!this.filters) return void null
+    if (this.destroyed) return undefined
+    if (!this.StreamPacket) return undefined
+    if (!this.filters) return undefined
 
     const ObjectKeys = Object.keys(this.filters)
     const CachedEnabled = []
@@ -1602,9 +1600,9 @@ class Queue {
    */
 
   get disabledFilters() {
-    if (this.destroyed) return void null
-    if (!this.StreamPacket) return void null
-    if (!this.filters) return void null
+    if (this.destroyed) return undefined
+    if (!this.StreamPacket) return undefined
+    if (!this.filters) return undefined
 
     const ObjectKeys = Object.keys(this.filters)
     const CachedDisabled = []
@@ -1635,7 +1633,7 @@ class Queue {
     const GarbagePlayerModeHandle = this.StreamPacket
       ? await this.StreamPacket.__handleMusicPlayerModes(this)
       : undefined
-    if (this.destroyed) return void null
+    if (this.destroyed) return undefined
     if (
       this.StreamPacket &&
       !(
@@ -1652,7 +1650,7 @@ class Queue {
       this.#__QueueAudioPlayerStatusManager()
       return void this.Player.emit('queueEnd', this)
     }
-    if (!this.StreamPacket) return void null
+    if (!this.StreamPacket) return undefined
     this.destroyed =
       this.destroyed && Number(this.destroyed) > 0
         ? clearTimeout(Number(this.destroyed))
@@ -1703,7 +1701,7 @@ class Queue {
         this.StreamPacket.searches[0]
       )
     ) {
-      return void null
+      return undefined
     }
     DeleteTracksCount
       ? this.StreamPacket.tracks.splice(
@@ -1718,7 +1716,7 @@ class Queue {
       )
       : this.StreamPacket.searches.shift()
 
-    return void null
+    return undefined
   }
 
   /**
@@ -1727,7 +1725,7 @@ class Queue {
    */
 
   #__QueueAudioPlayerStatusManager() {
-    if (this.destroyed) return void null
+    if (this.destroyed) return undefined
     if (this.QueueOptions.LeaveOnEnd && !this.tracks[0]) {
       this.destroyed && Number(this.destroyed) > 0
         ? clearTimeout(Number(this.destroyed))
@@ -1736,7 +1734,7 @@ class Queue {
         this.destroy(this.QueueOptions.LeaveOnEndTimedout ?? 0) ?? undefined
       )
     }
-    return void null
+    return undefined
   }
 
   /**

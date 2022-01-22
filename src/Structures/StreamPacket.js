@@ -434,7 +434,7 @@ class StreamPacketGen {
       (this.Player.GetQueue(this.guildId) &&
         this.Player.GetQueue(this.guildId).destroyed)
     )
-      return void null
+      return undefined
     StreamCreateOptions.ExtractorStreamOptions = ClassUtils.stablizingoptions(
       StreamCreateOptions.ExtractorStreamOptions,
       this.ExtractorStreamOptions,
@@ -497,7 +497,7 @@ class StreamPacketGen {
           : undefined,
         filtersUpdateChecks: false,
       }
-      return void null
+      return undefined
     }
     const ffmpegArgs = [
       '-analyzeduration',
@@ -668,7 +668,7 @@ class StreamPacketGen {
       return true
     }
 
-    return void null
+    return undefined
   }
 
   /**
@@ -716,7 +716,7 @@ class StreamPacketGen {
    * @returns {Boolean|void|Promise<Boolean|void>} returns true if operation went gree signal ro undefined on errors
    */
   async __handleMusicPlayerModes(QueueInstance) {
-    if (!QueueInstance.playerMode) return void null
+    if (!QueueInstance.playerMode) return undefined
     const ModeName = QueueInstance.playerMode.mode
     const ModeType = QueueInstance.playerMode.type
     const ModeTimes = Number(QueueInstance.playerMode.times ?? 0)
@@ -855,7 +855,7 @@ class StreamPacketGen {
 
       return true
     }
-    return void null
+    return undefined
   }
 
   /**
@@ -877,7 +877,7 @@ class StreamPacketGen {
       GarbageSecondPhase = GarbageFirstPhase.concat(Chunk.streamdatas)
       this.tracks = GarbageSecondPhase.concat(this.tracks)
     }
-    return void null
+    return undefined
   }
 }
 

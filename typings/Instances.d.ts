@@ -50,6 +50,7 @@ export type Queue = {
   readonly paused: Boolean
   readonly IgnoreError: Boolean
   readonly MusicPlayer: AudioPlayer
+  readonly voiceConnection: VoiceConnection
   readonly previousTrack: Track | void
   readonly currentTimestamp: {
     track_ms: String

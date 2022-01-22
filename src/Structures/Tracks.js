@@ -303,7 +303,7 @@ class TrackGenerator {
           || ArbitaryUrl.endsWith('.mp4/'))
       )
     ) {
-      return void null;
+      return undefined;
     }
     const RawDataModel = {
       playlist: false,

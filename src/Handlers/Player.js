@@ -9,7 +9,7 @@ const {
   StageChannel,
   User,
 } = require('discord.js')
-const { getVoiceConnection } = require('@discordjs/voice')
+const { getVoiceConnection, VoiceConnection } = require('@discordjs/voice')
 const Queue = require('./Queue.js')
 const ClassUtils = require('../Utilities/ClassUtils')
 const TrackGenerator = require('../Structures/Tracks')
@@ -154,7 +154,7 @@ class Player extends EventEmitter {
           OldVoiceState.channel &&
           OldVoiceState.channel.id === NewVoiceState.channel.id)
       ) {
-        return void null
+        return undefined
       }
       if (
         OldVoiceState.channel &&
@@ -203,7 +203,7 @@ class Player extends EventEmitter {
           NewVoiceState.channel ?? OldVoiceState.channel,
         )
       }
-      return void null
+      return undefined
     })
 
     /**
@@ -211,7 +211,7 @@ class Player extends EventEmitter {
      */
 
     this.Client.on('guildDelete', (guild) => {
-      if (!this.GetQueue(guild.id)) return void null
+      if (!this.GetQueue(guild.id)) return undefined
       return void this.DeleteQueue(guild.id)
     })
   }
@@ -375,6 +375,33 @@ class Player extends EventEmitter {
   }
 
   /**
+   * @type {Object | void}
+   * @readonly
+   * Jericho-Player Multiple Queue's Connections Data like Voice Connections and Playing Status and paused Status
+   */
+
+  get connections() {
+    const objectEntries = Player.#QueueCaches
+      ? Object.entries(Player.#QueueCaches)
+      : []
+    const cachedConnections = []
+    const cachedplaying = []
+    const cachedpaused = []
+    for (let count = 0, len = objectEntries?.length; count < len; ++count) {
+      if (objectEntries[count][1]?.playing)
+        cachedplaying.push(objectEntries[count][1])
+      if (objectEntries[count][1]?.paused)
+        cachedpaused.push(objectEntries[count][1])
+      cachedConnections.push(objectEntries[count][1]?.voiceConnection)
+    }
+    return {
+      voiceConnection: cachedConnections ?? [],
+      playing: cachedplaying ?? [],
+      paused: cachedpaused ?? [],
+    }
+  }
+
+  /**
    * @type {string}
    * @readonly
    * Jericho-Player Type Player | value -> "queue"
@@ -440,7 +467,7 @@ class Player extends EventEmitter {
     if (QueueInstance?.playing) {
       disconnect(guildId, {
         destroy: true,
-        Player: QueueInstance?.MusicPlayer,
+        MusicPlayer: QueueInstance?.MusicPlayer,
         Subscription: QueueInstance?.StreamPacket?.subscription,
       })
     }
@@ -458,7 +485,7 @@ class Player extends EventEmitter {
     Garbage.container2 = Player.#QueueCaches[`${guildId}`]
     delete Garbage.container1
     delete Garbage.container2
-    return void null
+    return undefined
   }
 
   /**
@@ -508,7 +535,7 @@ class Player extends EventEmitter {
           QueueInstance.QueueOptions.LeaveOnBotOnlyTimedout ?? 0,
         ) ?? undefined
     }
-    return void null
+    return undefined
   }
 
   /**
@@ -534,7 +561,7 @@ class Player extends EventEmitter {
       ).subscribe(QueueInstance.MusicPlayer)
     }
     Player.#QueueCaches[QueueInstance.guildId] = QueueInstance
-    return void null
+    return undefined
   }
 
   /**
@@ -636,7 +663,7 @@ class Player extends EventEmitter {
       throw SyntaxError(
         'Missing Intents in Discord Client\n - GUILDS || Intents.FLAGS.GUILDS',
       )
-    } else return void null
+    } else return undefined
   }
 }
 
