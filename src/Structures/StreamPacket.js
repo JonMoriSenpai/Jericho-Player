@@ -238,7 +238,7 @@ class StreamPacketGen {
     },
     extractor = 'play-dl',
     requestedBy = undefined,
-    IgnoreEvent = false,
+    IgnoreEvent = undefined,
   ) {
     StreamCreateOptions.ExtractorStreamOptions = ClassUtils.stablizingoptions(
       StreamCreateOptions.ExtractorStreamOptions,

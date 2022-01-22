@@ -13,7 +13,7 @@ const { getVoiceConnection } = require('@discordjs/voice')
 const Queue = require('./Queue.js')
 const ClassUtils = require('../Utilities/ClassUtils')
 const TrackGenerator = require('../Structures/Tracks')
-const { join } = require('../Utilities/VoiceUtils')
+const { join, disconnect } = require('../Utilities/VoiceUtils')
 const {
   DefaultJerichoPlayerOptions,
   DefaultQueueCreateOptions,
@@ -434,8 +434,15 @@ class Player extends EventEmitter {
     if (!guildId) return false
     if (!this.#QueueCacheFetch(guildId)) return false
     let QueueInstance = Player.#QueueCaches[`${guildId}`]
-    if (Player.#QueueCaches[`${guildId}`].playing) {
-      Player.#QueueCaches[`${guildId}`].stop()
+    if (QueueInstance?.playing && !QueueInstance?.destroyed) {
+      QueueInstance?.stop()
+    }
+    if (QueueInstance?.playing) {
+      disconnect(guildId, {
+        destroy: true,
+        Player: QueueInstance?.MusicPlayer,
+        Subscription: QueueInstance?.StreamPacket?.subscription,
+      })
     }
     if (!QueueInstance.destroyed) QueueInstance.destroy()
     else if (

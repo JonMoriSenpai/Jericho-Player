@@ -410,18 +410,6 @@ class Queue {
             true,
           )
 
-          this.Player.emit(
-            'tracksAdd',
-            this,
-            [...this.tracks]?.splice(
-              this.tracks?.length || 0,
-              (this.StreamPacket?.searches.length || 0) -
-                (this.tracks?.length || 0),
-            ) ?? this.tracks,
-          )
-
-          this.tracks = this.StreamPacket?.searches ?? this.tracks
-
           // __ResourcePlay() is quite powerfull and shouldbe placed after double checks as it is the main component for Playing Streams
           if (!this.playing && !this.paused && this.tracks && this.tracks[0]) {
             await this.#__ResourcePlay()
@@ -429,6 +417,16 @@ class Queue {
         }
       }),
     )
+    this.Player.emit(
+      'tracksAdd',
+      this,
+      [...(this.StreamPacket?.searches ?? [])]?.splice(
+        this.tracks?.length || 0,
+        (this.StreamPacket?.searches.length || 0) - (this.tracks?.length || 0),
+      ) ?? this.tracks,
+    )
+
+    this.tracks = this.StreamPacket?.searches ?? this.tracks
     return true
   }
 
