@@ -721,18 +721,23 @@ class Queue {
      * - Above , Cached Destruction Timeout ID , incase Queue got recovered before destruction to cancel out the destroy Timedout
      * - Below is to completely Destroy Stream Packet
      */
-    const NodeTimeoutId = disconnect(
-      this.guildId,
-      {
-        destroy: true,
-        MusicPlayer: this.MusicPlayer,
-        Subscription: this.StreamPacket.subscription,
-        Player: this.Player,
-      },
-      !(!Number.isNaN(connectionTimedout) && parseInt(connectionTimedout) >= 0)
-        ? 0
-        : parseInt(connectionTimedout ?? 0) || 0,
-    )
+    const NodeTimeoutId = this.voiceConnection
+      ? disconnect(
+        this.guildId,
+        {
+          destroy: true,
+          MusicPlayer: this.MusicPlayer,
+          Subscription: this.StreamPacket.subscription,
+          Player: this.Player,
+        },
+        !(
+          !Number.isNaN(connectionTimedout) &&
+            parseInt(connectionTimedout) >= 0
+        )
+          ? 0
+          : parseInt(connectionTimedout ?? 0) || 0,
+      )
+      : undefined
 
     this.destroyed =
       NodeTimeoutId && !Number.isNaN(NodeTimeoutId) && Number(NodeTimeoutId) > 0

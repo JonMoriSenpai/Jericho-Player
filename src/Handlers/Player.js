@@ -388,11 +388,20 @@ class Player extends EventEmitter {
     const cachedplaying = []
     const cachedpaused = []
     for (let count = 0, len = objectEntries?.length; count < len; ++count) {
-      if (objectEntries[count][1]?.playing)
+      if (
+        objectEntries[count][1] &&
+        !objectEntries[count][1]?.destroyed &&
+        objectEntries[count][1]?.playing
+      )
         cachedplaying.push(objectEntries[count][1])
-      if (objectEntries[count][1]?.paused)
+      if (
+        objectEntries[count][1] &&
+        !objectEntries[count][1]?.destroyed &&
+        objectEntries[count][1]?.paused
+      )
         cachedpaused.push(objectEntries[count][1])
-      cachedConnections.push(objectEntries[count][1]?.voiceConnection)
+      if (objectEntries[count][1] && !objectEntries[count][1]?.destroyed)
+        cachedConnections.push(objectEntries[count][1]?.voiceConnection)
     }
     return {
       voiceConnection: cachedConnections ?? [],
@@ -464,15 +473,9 @@ class Player extends EventEmitter {
     if (QueueInstance?.playing && !QueueInstance?.destroyed) {
       QueueInstance?.stop()
     }
-    if (QueueInstance?.playing) {
-      disconnect(guildId, {
-        destroy: true,
-        MusicPlayer: QueueInstance?.MusicPlayer,
-        Subscription: QueueInstance?.StreamPacket?.subscription,
-      })
-    }
-    if (!QueueInstance.destroyed) QueueInstance.destroy()
-    else if (
+    if (!QueueInstance.destroyed) {
+      QueueInstance.destroy()
+    } else if (
       QueueInstance.destroyed &&
       (typeof QueueInstance.destroyed === 'number' ||
         !Number.isNaN(QueueInstance.destroyed))
