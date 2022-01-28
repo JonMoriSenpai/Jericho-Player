@@ -16,7 +16,7 @@ const {
 const { suggestions } = require('youtube-suggest-gen')
 const { FFmpeg } = require('prism-media')
 const Player = require('../Handlers/Player')
-const TracksGen = require('./Tracks')
+const TracksGen = require('./Downloader')
 const VoiceUtils = require('../Utilities/VoiceUtils')
 const ClassUtils = require('../Utilities/ClassUtils')
 const {
@@ -238,7 +238,7 @@ class StreamPacketGen {
     },
     extractor = 'play-dl',
     requestedBy = undefined,
-    IgnoreEvent = undefined,
+    AddTracksSpecial = undefined,
   ) {
     StreamCreateOptions.ExtractorStreamOptions = ClassUtils.stablizingoptions(
       StreamCreateOptions.ExtractorStreamOptions,
@@ -253,30 +253,30 @@ class StreamPacketGen {
         ? Number(this.tracks[this.tracks.length - 1].Id)
         : 0,
     )
-    if (Chunks.error) {
+    if (Chunks.error && !AddTracksSpecial) {
       return void this.Player.emit(
         'error',
         Chunks.error,
         this.Player.GetQueue(this.guildId),
       )
-    }
+    } else if (AddTracksSpecial) return void Chunks.error
     this.searches = this.searches.concat(Chunks.tracks)
     this.tracks = this.tracks.concat(Chunks.streamdatas)
-    !IgnoreEvent && (Chunks.playlist === true || Chunks.playlist)
+    !AddTracksSpecial && (Chunks.playlist === true || Chunks.playlist)
       ? this.Player.emit(
         'playlistAdd',
         this.Player.GetQueue(this.guildId),
         Chunks.tracks,
       )
       : undefined
-    !IgnoreEvent
+    !AddTracksSpecial
       ? this.Player.emit(
         'tracksAdd',
         this.Player.GetQueue(this.guildId),
         Chunks.tracks,
       )
       : undefined
-    if (VoiceChannel) {
+    if (!AddTracksSpecial && VoiceChannel) {
       this.VoiceChannel =
         !this.VoiceChannel ||
         !getVoiceConnection(this.guildId) ||
@@ -286,7 +286,7 @@ class StreamPacketGen {
           })
           : this.VoiceChannel
     } else if (
-      !IgnoreEvent &&
+      !AddTracksSpecial &&
       !VoiceChannel &&
       !this.VoiceChannel &&
       !getVoiceConnection(this.guildId)
@@ -299,7 +299,6 @@ class StreamPacketGen {
         this.guildId,
       )
     }
-
     return this
   }
 

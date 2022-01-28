@@ -8,8 +8,6 @@ import {
   Client,
   Guild,
   GuildMember,
-  Interaction,
-  Message,
   Snowflake,
   StageChannel,
   User,
@@ -82,6 +80,11 @@ export type Queue = {
   playTracks(
     QueryArray: String[],
     VoiceChannel: VoiceChannel,
+    User: User | GuildMember | void,
+    PlayOptions?: PlayOptions
+  ): Promise<Boolean> | Promise<undefined> | void
+  addTracks(
+    QueryArray: String[],
     User: User | GuildMember | void,
     PlayOptions?: PlayOptions
   ): Promise<Boolean> | Promise<undefined> | void

@@ -28,7 +28,7 @@ const {
   DefaultUserDrivenAudioFilters,
   DefaultSearchResults,
 } = require('../types/interfaces')
-const TrackGenerator = require('../Structures/Tracks')
+const TrackGenerator = require('../Structures/Downloader')
 const {
   HumanTimeConversion,
   AudioFiltersConverter,
@@ -381,52 +381,107 @@ class Queue {
         PlayOptions.ExtractorStreamOptions,
         this.Player,
       )
+    if (!this.tracks[0])
+      await this.play(QueryArray.shift(), VoiceChannel, User, PlayOptions)
+    const cachedResponse = await this.addTracks(QueryArray, User, PlayOptions)
+    if (!cachedResponse) return undefined
+    else return true
+  }
+
+  /**
+   * addTracks() ->  Add Tracks Options for Queue Instance , Accept any kind of URL if extractor is "youtube-dl" or set undefined | "play-dl" to fetch from custom extractor
+   * @param {String[]} QueryArray Array of Query like URls or Youtube Searches | Default Extractor accept 5 supported and big websites like youtube , spotify , soundcloud , retribution , facebook and for "youtube-dl" , it accept any follows official "youtube" searches
+   * @param {User|GuildMember} User Guild Member or Guild User for requestedBy Object in track
+   * @param {DefaultQueueCreateOptions} PlayOptions Play Options | Queue Create Options | Stream Options for Additional features
+   * @returns {Promise<Boolean|void>|void} undefined on successfull attempt or Promise rejection | true if operation went good signal
+   */
+
+  async addTracks(
+    QueryArray,
+    User,
+    PlayOptions = {
+      IgnoreError: true,
+      extractor: undefined,
+      metadata: this.metadata,
+      ExtractorStreamOptions: {
+        Limit: 1,
+        Quality: 'high',
+        Cookies: undefined,
+        ByPassYoutubeDLRatelimit: true,
+        YoutubeDLCookiesFilePath: undefined,
+        Proxy: undefined,
+        UserAgents: undefined,
+      },
+    },
+  ) {
+    if (this.destroyed) {
+      return void this.Player.emit(
+        'error',
+        'Destroyed Queue',
+        this,
+        undefined,
+        '<Queue>.addTracks() | Queue Section #2.2',
+      )
+    }
+
+    if (!(QueryArray && Array.isArray(QueryArray))) {
+      return void this.Player.emit(
+        'error',
+        'Invalid Queries Type',
+        this,
+        QueryArray,
+      )
+    }
+    QueryArray = QueryArray.filter(Boolean)
+    if (!QueryArray[0]) {
+      return void this.Player.emit('error', 'Invalid Queries', this, QueryArray)
+    }
+
+    // Comparing and Placing Default Values if any
+    PlayOptions =
+      PlayOptions !== this.QueueOptions
+        ? stablizingoptions(PlayOptions, this.QueueOptions)
+        : PlayOptions
+
+    // Stream Packet created if <Queue>.destroyed is true to create Voice Connection store Values
+    this.StreamPacket = this.StreamPacket
+      ? this.StreamPacket
+      : new StreamPacketGen(
+        this.Client,
+        this.guildId,
+        PlayOptions.metadata,
+        PlayOptions.extractor,
+        PlayOptions.ExtractorStreamOptions,
+        this.Player,
+      )
     let cachedData = await Promise.all(
       QueryArray.map(async (Query) => {
-        if (!(Query && typeof Query === 'string'))
-          return this.Player.emit(
-            'error',
-            'Invalid Query is Detected',
-            this,
-            Query,
-          )
-
+        if (!(Query && typeof Query === 'string' && !this.destroyed))
+          return undefined
         await TimeWait(1000)
-
-        // Dynamically | In-directly fetches Data about Query and store it as StreamPacket
-        await this.StreamPacket.create(
+        const cachedData = await this.StreamPacket.create(
           Query,
-          this.StreamPacket.VoiceChannel ?? VoiceChannel,
+          undefined,
           PlayOptions,
           PlayOptions.extractor,
           User ?? undefined,
           true,
         )
-
-        // __ResourcePlay() is quite powerfull and shouldbe placed after double checks as it is the main component for Playing Streams
         if (
-          !this.playing &&
-          !this.paused &&
-          this.tracks &&
-          this.tracks?.length <= 1
+          cachedData &&
+          this.StreamPacket?.searches &&
+          Array.isArray(this.StreamPacket?.searches) &&
+          this.StreamPacket?.searches?.length > 0
         )
-          await this.#__ResourcePlay()
-        if (this.tracks[0]) return this.tracks[this.tracks.length - 1]
+          return this.StreamPacket.searches[
+            this.StreamPacket.searches.length - 1
+          ]
         else return undefined
       }),
     )
+    if (this.destroyed) return undefined
     cachedData = cachedData?.length > 0 ? cachedData.filter(Boolean) : undefined
-    this.Player.emit(
-      'tracksAdd',
-      this,
-      cachedData ??
-        [...(this.StreamPacket?.searches ?? [])]?.splice(
-          this.tracks?.length || 0,
-          (this.StreamPacket?.searches.length || 0) -
-            (this.tracks?.length || 0),
-        ) ??
-        this.tracks,
-    )
+    this.Player.emit('tracksAdd', this, cachedData ?? this.tracks)
 
     this.tracks = this.StreamPacket?.searches ?? this.tracks
     return true

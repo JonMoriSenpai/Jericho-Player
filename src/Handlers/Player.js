@@ -12,7 +12,7 @@ const {
 const { getVoiceConnection, VoiceConnection } = require('@discordjs/voice')
 const Queue = require('./Queue.js')
 const ClassUtils = require('../Utilities/ClassUtils')
-const TrackGenerator = require('../Structures/Tracks')
+const TrackGenerator = require('../Structures/Downloader')
 const { join, disconnect } = require('../Utilities/VoiceUtils')
 const {
   DefaultJerichoPlayerOptions,
@@ -387,6 +387,7 @@ class Player extends EventEmitter {
     const cachedConnections = []
     const cachedplaying = []
     const cachedpaused = []
+    let cookedVoiceConnections
     for (let count = 0, len = objectEntries?.length; count < len; ++count) {
       if (
         objectEntries[count][1] &&
@@ -403,8 +404,12 @@ class Player extends EventEmitter {
       if (objectEntries[count][1] && !objectEntries[count][1]?.destroyed)
         cachedConnections.push(objectEntries[count][1]?.voiceConnection)
     }
+    if (parseInt(this.Client?.guilds?.cache?.size ?? 0) > 0) {
+      cookedVoiceConnections = this.Client?.guilds?.cache.map((guild) => (guild?.id ? getVoiceConnection(guild?.id) : undefined))
+      cookedVoiceConnections = cookedVoiceConnections.filter(Boolean)
+    }
     return {
-      voiceConnection: cachedConnections ?? [],
+      voiceConnection: cookedVoiceConnections ?? cachedConnections ?? [],
       playing: cachedplaying ?? [],
       paused: cachedpaused ?? [],
     }
