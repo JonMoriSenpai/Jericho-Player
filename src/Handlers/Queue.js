@@ -1592,7 +1592,6 @@ class Queue {
   get playerMode() {
     if (this.destroyed) return undefined
     if (!this.StreamPacket) return undefined
-    if (this.StreamPacket.previousTracks.length < 1) return undefined
     if (!this.StreamPacket.MusicPlayerMode) return undefined
     if (this.StreamPacket.MusicPlayerMode.Loop) {
       return {
