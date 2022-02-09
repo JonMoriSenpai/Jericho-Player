@@ -382,8 +382,14 @@ class Queue {
         this.Player,
       )
     if (!this.tracks[0])
-      await this.play(QueryArray.shift(), VoiceChannel, User, PlayOptions)
-    const cachedResponse = await this.addTracks(QueryArray, User, PlayOptions)
+      await this.play(QueryArray[0], VoiceChannel, User, PlayOptions)
+    if (!QueryArray[1]) return true
+    await TimeWait(1000)
+    const cachedResponse = await this.addTracks(
+      QueryArray.splice(1, QueryArray.length),
+      User,
+      PlayOptions,
+    )
     if (!cachedResponse) return undefined
     else return true
   }
@@ -467,6 +473,7 @@ class Queue {
           User ?? undefined,
           true,
         )
+        this.tracks = this.StreamPacket?.searches ?? this.tracks
         if (
           cachedData &&
           this.StreamPacket?.searches &&
@@ -480,10 +487,11 @@ class Queue {
       }),
     )
     if (this.destroyed) return undefined
-    cachedData = cachedData?.length > 0 ? cachedData.filter(Boolean) : undefined
+    cachedData = cachedData?.length > 0 ? cachedData.filter(Boolean) : []
     this.Player.emit('tracksAdd', this, cachedData ?? this.tracks)
-
-    this.tracks = this.StreamPacket?.searches ?? this.tracks
+    if (!this.playing && !this.paused && this.tracks && this.tracks[0]) {
+      await this.#__ResourcePlay()
+    }
     return true
   }
 
