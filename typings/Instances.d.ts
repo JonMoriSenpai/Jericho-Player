@@ -221,60 +221,60 @@ export type Stream = {
 }
 
 export type PlayerOptions = {
-  readonly extractor: String | 'play-dl' | 'youtube-dl'
+  readonly extractor?: String | 'play-dl' | 'youtube-dl'
   readonly ExtractorStreamOptions?: {
-    readonly Limit: Number
-    readonly Quality: String | 'high' | 'low' | 'medium'
-    readonly Cookies: String | 'YTCookies'
-    readonly ByPassYoutubeDLRatelimit: Boolean | void
-    readonly YoutubeDLCookiesFilePath: String | '/path/to/Cookie.txt'
-    readonly Proxy: String | Array<String> | 'IPAdress:PortNumber'
-    readonly UserAgents: Array<String>
+    readonly Limit?: Number
+    readonly Quality?: String | 'high' | 'low' | 'medium'
+    readonly Cookies?: String | 'YTCookies'
+    readonly ByPassYoutubeDLRatelimit?: Boolean | void
+    readonly YoutubeDLCookiesFilePath?: String | '/path/to/Cookie.txt'
+    readonly Proxy?: String | Array<String> | 'IPAdress:PortNumber'
+    readonly UserAgents?: Array<String>
   }
-  readonly IgnoreError: Boolean
-  readonly LeaveOnEmpty: Boolean
-  readonly LeaveOnEnd: Boolean
-  readonly LeaveOnBotOnly: Boolean
-  readonly readonlyLeaveOnEmptyTimedout: Number | 'Time in Seconds'
-  readonly LeaveOnEndTimedout: Number | 'Time in Seconds'
-  readonly LeaveOnBotOnlyTimedout: Number | 'Time in Seconds'
-  readonly NoMemoryLeakMode: Boolean | 'No Memory Leak Mode for Music Player'
+  readonly IgnoreError?: Boolean
+  readonly LeaveOnEmpty?: Boolean
+  readonly LeaveOnEnd?: Boolean
+  readonly LeaveOnBotOnly?: Boolean
+  readonly readonlyLeaveOnEmptyTimedout?: Number | 'Time in Seconds'
+  readonly LeaveOnEndTimedout?: Number | 'Time in Seconds'
+  readonly LeaveOnBotOnlyTimedout?: Number | 'Time in Seconds'
+  readonly NoMemoryLeakMode?: Boolean | 'No Memory Leak Mode for Music Player'
 }
 export type PlayOptions = {
-  readonly extractor: String | 'play-dl' | 'youtube-dl'
-  readonly metadata: any
+  readonly extractor?: String | 'play-dl' | 'youtube-dl'
+   metadata?: any
   readonly ExtractorStreamOptions?: {
-    readonly Limit: Number
-    readonly Quality: String | 'high' | 'low' | 'medium'
-    readonly Cookies: String | 'YTCookies'
-    readonly ByPassYoutubeDLRatelimit: Boolean | void
-    readonly YoutubeDLCookiesFilePath: String | '/path/to/Cookie.txt'
-    readonly Proxy: String | Array<String> | 'IPAdress:PortNumber'
-    readonly UserAgents: Array<String>
+    readonly Limit?: Number
+    readonly Quality?: String | 'high' | 'low' | 'medium'
+    readonly Cookies?: String | 'YTCookies'
+    readonly ByPassYoutubeDLRatelimit?: Boolean | void
+    readonly YoutubeDLCookiesFilePath?: String | '/path/to/Cookie.txt'
+    readonly Proxy?: String | Array<String> | 'IPAdress:PortNumber'
+    readonly UserAgents?: Array<String>
   }
   readonly IgnoreError: Boolean
 }
 
 export type QueueOptions = {
-  readonly extractor: String | 'play-dl' | 'youtube-dl'
-  metadata: any
-  readonly IgnoreError: Boolean
+  readonly extractor?: String | 'play-dl' | 'youtube-dl'
+  metadata?: any
+  readonly IgnoreError?: Boolean
   readonly ExtractorStreamOptions?: {
-    readonly Limit: Number
-    readonly Quality: String | 'high' | 'low' | 'medium'
-    readonly Cookies: String | 'YTCookies'
-    readonly ByPassYoutubeDLRatelimit: Boolean | void
-    readonly YoutubeDLCookiesFilePath: String | '/path/to/Cookie.txt'
-    readonly Proxy: String | Array<String> | 'IPAdress:PortNumber'
-    readonly UserAgents: Array<String>
+    readonly Limit?: Number
+    readonly Quality?: String | 'high' | 'low' | 'medium'
+    readonly Cookies?: String | 'YTCookies'
+    readonly ByPassYoutubeDLRatelimit?: Boolean | void
+    readonly YoutubeDLCookiesFilePath?: String | '/path/to/Cookie.txt'
+    readonly Proxy?: String | Array<String> | 'IPAdress:PortNumber'
+    readonly UserAgents?: Array<String>
   }
-  readonly LeaveOnEmpty: Boolean
-  readonly LeaveOnEnd: Boolean
-  readonly LeaveOnBotOnly: Boolean
-  readonly LeaveOnEmptyTimedout: Number | 'Time in Seconds'
-  readonly LeaveOnEndTimedout: Number | 'Time in Seconds'
-  readonly LeaveOnBotOnlyTimedout: Number | 'Time in Seconds'
-  readonly NoMemoryLeakMode: Boolean | 'No Memory Leak Mode for Music Player'
+  readonly LeaveOnEmpty?: Boolean
+  readonly LeaveOnEnd?: Boolean
+  readonly LeaveOnBotOnly?: Boolean
+  readonly LeaveOnEmptyTimedout?: Number | 'Time in Seconds'
+  readonly LeaveOnEndTimedout?: Number | 'Time in Seconds'
+  readonly LeaveOnBotOnlyTimedout?: Number | 'Time in Seconds'
+  readonly NoMemoryLeakMode?: Boolean | 'No Memory Leak Mode for Music Player'
 }
 
 export type PlayerMode = {

@@ -85,11 +85,11 @@ export class VoiceUtils {
 
   public static disconnect(
     guildId: Guild['id'] | String | Number,
-    DisconnectChannelOptions: {
-      destroy: Boolean
-      MusicPlayer: AudioPlayer
-      Subscription: PlayerSubscription
-      Player: Player
+    DisconnectChannelOptions?: {
+      destroy?: Boolean
+      MusicPlayer?: AudioPlayer
+      Subscription?: PlayerSubscription
+      Player?: Player
     },
     Timedout?: Number | String | void,
   ): undefined
