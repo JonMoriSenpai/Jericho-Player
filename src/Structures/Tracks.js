@@ -1,89 +1,96 @@
 class Track {
-  Id = undefined
+  Id = undefined;
 
-  url = undefined
+  url = undefined;
 
-  title = undefined
+  title = undefined;
 
-  author = undefined
+  author = undefined;
 
-  channel = undefined
+  channel = undefined;
 
-  description = undefined
+  description = undefined;
 
-  duration = undefined
+  duration = undefined;
 
-  human_duration = undefined
+  human_duration = undefined;
 
-  thumbnail = undefined
+  thumbnail = undefined;
 
-  channelId = undefined
+  channelId = undefined;
 
-  channel_url = undefined
+  channel_url = undefined;
 
-  lyrics = undefined
+  lyrics = undefined;
 
-  likes = undefined
+  likes = undefined;
 
-  is_live = undefined
+  is_live = undefined;
 
-  dislikes = undefined
+  dislikes = undefined;
 
-  requestedBy = undefined
+  requestedBy = undefined;
 
   constructor(extractorData, requestedBy, readable = false) {
     readable
       ? this.#__patch(extractorData, requestedBy)
-      : this.#__parse(extractorData, requestedBy)
+      : this.#__parse(extractorData, requestedBy);
   }
 
   #__patch(rawData, requestedBy) {
-    this.Id = rawData?.Id
-    this.url = rawData?.url
-    this.title = rawData?.title
-    this.author = rawData?.author
-    this.channel = rawData?.author
-    this.description = rawData?.description
-    this.duration = rawData?.duration
-    this.human_duration = rawData?.human_duration
-    this.thumbnail = rawData?.thumbnail
-    this.channelId = rawData?.channelId
-    this.channel_url = rawData?.channel_url
-    this.lyrics = rawData?.lyrics
-    this.likes = rawData?.likes
-    this.is_live = rawData?.is_live
-    this.dislikes = rawData?.dislikes
-    this.requestedBy = requestedBy ?? rawData?.requestedBy
-    return undefined
+    this.Id = rawData?.Id;
+    this.url = rawData?.url;
+    this.title = rawData?.title;
+    this.author = rawData?.author?.name;
+    this.description = rawData?.description;
+    this.custom_extractor = rawData?.extractorModel?.custom;
+    this.duration = rawData?.duration?.ms;
+    this.orignal_extractor =
+      rawData?.orignal_extractor ?? rawData?.extractorModel?.orignal;
+    this.human_duration =
+      rawData?.human_duration ?? rawData?.duration?.readable;
+    this.thumbnail = rawData?.thumbnail;
+    this.channelId = rawData?.channel?.Id;
+    this.channel_url = rawData?.channel?.url;
+    this.lyrics = rawData?.lyrics;
+    this.likes = rawData?.ratings?.likes;
+    this.is_live = rawData?.isLive;
+    this.dislikes = rawData?.ratings?.dislikes;
+    this.requestedBy = requestedBy ?? rawData?.requestedBy;
+    return undefined;
   }
 
   #__parse(rawData, requestedBy) {
-    this.Id = rawData?.Id
-    this.url = rawData?.url
-    this.title = rawData?.title
-    this.author = rawData?.author
-    this.description = rawData?.description
-    this.custom_extractor = rawData?.custom_extractor
-    this.duration = rawData?.duration
-    this.preview_stream_url = rawData?.preview_stream_url
-    this.stream = rawData?.stream
-    this.stream_url = rawData?.stream_url
-    this.stream_type = rawData?.stream_type
-    this.stream_duration = rawData?.stream_duration
-    this.stream_video_Id = rawData?.stream_video_Id
-    this.stream_human_duration = rawData?.stream_human_duration
-    this.orignal_extractor = rawData?.orignal_extractor
-    this.human_duration = rawData?.human_duration
-    this.thumbnail = rawData?.thumbnail
-    this.channelId = rawData?.channelId
-    this.channel_url = rawData?.channel_url
-    this.lyrics = rawData?.lyrics
-    this.likes = rawData?.likes
-    this.is_live = rawData?.is_live
-    this.dislikes = rawData?.dislikes
-    this.requestedBy = requestedBy ?? rawData?.requestedBy
-    return undefined
+    this.Id = rawData?.Id;
+    this.url = rawData?.url;
+    this.title = rawData?.title;
+    this.author = rawData?.author?.name;
+    this.description = rawData?.description;
+    this.custom_extractor = rawData?.extractorModel?.custom;
+    this.duration = rawData?.duration?.ms;
+    this.preview_stream_url = rawData?.preview_stream_url;
+    this.stream = rawData?.stream?.buffer;
+    this.stream_url = rawData?.stream_url ?? rawData?.stream?.url;
+    this.stream_type = rawData?.stream_type ?? rawData?.stream?.type;
+    this.stream_duration =
+      rawData?.stream_duration ?? rawData?.stream?.duration?.ms;
+    this.stream_video_Id = rawData?.stream_video_Id ?? rawData?.stream?.videoId;
+    this.stream_human_duration =
+      rawData?.stream_human_duration ?? rawData?.stream?.duration?.readable;
+    this.orignal_extractor =
+      rawData?.orignal_extractor ?? rawData?.extractorModel?.orignal;
+    this.human_duration =
+      rawData?.human_duration ?? rawData?.duration?.readable;
+    this.thumbnail = rawData?.thumbnail;
+    this.channelId = rawData?.channel?.Id;
+    this.channel_url = rawData?.channel?.url;
+    this.lyrics = rawData?.lyrics;
+    this.likes = rawData?.ratings?.likes;
+    this.is_live = rawData?.isLive;
+    this.dislikes = rawData?.ratings?.dislikes;
+    this.requestedBy = requestedBy ?? rawData?.requestedBy;
+    return undefined;
   }
 }
 
-module.exports = Track
+module.exports = Track;
