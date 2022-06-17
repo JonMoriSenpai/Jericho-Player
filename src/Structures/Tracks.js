@@ -49,7 +49,7 @@ class Track {
       rawData?.orignal_extractor ?? rawData?.extractorModel?.orignal;
     this.human_duration =
       rawData?.human_duration ?? rawData?.duration?.readable;
-    this.thumbnail = rawData?.thumbnail;
+    this.thumbnail = rawData?.thumbnail?.url;
     this.channelId = rawData?.channel?.Id;
     this.channel_url = rawData?.channel?.url;
     this.lyrics = rawData?.lyrics;
@@ -81,7 +81,7 @@ class Track {
       rawData?.orignal_extractor ?? rawData?.extractorModel?.orignal;
     this.human_duration =
       rawData?.human_duration ?? rawData?.duration?.readable;
-    this.thumbnail = rawData?.thumbnail;
+    this.thumbnail = rawData?.thumbnail?.url;
     this.channelId = rawData?.channel?.Id;
     this.channel_url = rawData?.channel?.url;
     this.lyrics = rawData?.lyrics;

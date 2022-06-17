@@ -3,13 +3,11 @@ const { FFmpeg } = require('prism-media')
 const {
   Intents,
   Client,
-  Message,
-  Interaction,
   VoiceChannel,
   StageChannel,
   User,
 } = require('discord.js')
-const { getVoiceConnection, VoiceConnection } = require('@discordjs/voice')
+const { getVoiceConnection } = require('@discordjs/voice')
 const Queue = require('./Queue.js')
 const ClassUtils = require('../Utilities/ClassUtils')
 const TrackGenerator = require('../Structures/Downloader')
