@@ -4,3 +4,6 @@ lib/
 node_modules/
 .nyc_output/
 test/
+.test/config.json
+example/config.json
+src/utils/cache

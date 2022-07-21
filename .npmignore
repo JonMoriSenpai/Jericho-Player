@@ -13,3 +13,4 @@ example/
 .npmrc
 .jsdoc.json
 static/
+.test/

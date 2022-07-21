@@ -40,6 +40,9 @@
     "curly": "off",
     "nonblock-statement-body-position": "off",
     "no-else-return": "off",
-    "semi": "off"
+    "semi": "off",
+    "new-cap": "off",
+    "no-restricted-globals": "off",
+    "max-classes-per-file": "off"
   }
 }
