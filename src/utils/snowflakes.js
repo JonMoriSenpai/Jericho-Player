@@ -6,6 +6,7 @@ const {
   GuildMember,
   Guild,
   GuildChannel,
+  User,
 } = require('discord.js');
 
 class snowFlakes {
@@ -58,6 +59,29 @@ class snowFlakes {
         discordClient.guilds.cache.get(snowflake?.trim()) ??
         discordClient.guilds.cache?.find((guild) => guild?.name?.includes(snowflake?.trim())) ??
         (await discordClient.guilds
+          .fetch(snowflake?.trim())
+          ?.catch(() => undefined))
+      );
+    else return undefined;
+  }
+
+  static async userResolver(discordClient, snowflake) {
+    if (!(discordClient && discordClient instanceof Client)) return undefined;
+    else if (snowflake && snowflake instanceof User) return snowflake;
+    else if (
+      snowflake &&
+      (snowflake instanceof Message || snowflake instanceof GuildMember)
+    )
+      return snowflake?.author ?? snowflake?.user ?? snowflake?.member;
+    else if (
+      snowflake &&
+      typeof snowflake === 'string' &&
+      snowflake?.trim() !== ''
+    )
+      return (
+        discordClient.users.cache.get(snowflake?.trim()) ??
+        discordClient.users.cache?.find((guild) => guild?.name?.includes(snowflake?.trim())) ??
+        (await discordClient.users
           .fetch(snowflake?.trim())
           ?.catch(() => undefined))
       );

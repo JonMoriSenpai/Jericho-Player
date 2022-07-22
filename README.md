@@ -12,14 +12,14 @@
 </p>
 </div>
 
-LightWeight Framework for **[discord.js v13](https://discord.js.org)** Music Bots and Radio Bots with fast moderation with commands and no memory leak mode.
+LightWeight Framework for **[discord.js v14](https://discord.js.org)** Music Bots and Radio Bots with fast moderation with commands and no memory leak mode.
 
 ## Installation
 
 ### Install **[jericho-player](https://npmjs.com/package/jericho-player)**
 
 ```sh
-$ npm install --save jericho-player
+$ npm install --save jericho-player@beta
 ```
 
 ### Install **[@discordjs/opus](https://npmjs.com/package/@discordjs/opus) OR [opusscript](https://npmjs.com/package/opusscript)**
@@ -66,12 +66,12 @@ By default, jericho-player supports **YouTube**, **Spotify**, **facebook**, **So
 
 Jericho Player got some **Custom Extractors** that enables you to use and fast Extraction. Some packages have been made by the Sid is Live YT to add new features using this Extractors.
 
-#### [playdl-music-extractor](https://npmjs.com/package/playdl-music-extractor) (optional and latest)
+#### [playdl-music-extractor](https://npmjs.com/package/playdl-music-extractor) (latest)
 
 Optional package that adds support for `vimeo`, `reverbnation`, `facebook`.
 You just need to install it using `npm i --save playdl-music-extractor` (jericho-player will automatically detect and use it).
 
-#### [video-extractor](https://npmjs.com/package/video-extractor) (optional)
+#### [video-extractor](https://npmjs.com/package/video-extractor) (optional) (may-break)
 
 `video-extractor` is an optional package that brings support for +700 websites by using `youtube-dl` . The Npm Package Link is available [here](https://npmjs.com/package/video-extractor). And You can install Custom Extractor by `npm i --save video-extractor`
 
@@ -80,39 +80,3 @@ You just need to install it using `npm i --save playdl-music-extractor` (jericho
 These bots are made by the community, they can help you build your own!
 
 - `[ Updated ] ` **[Fairy Tale - Jericho Player](https://github.com/SidisLiveYT/Jericho-Player-Discord-Bot)** by [SidisLiveYT](https://github.com/SidisLiveYT)
-
-# Advanced
-
-### Use cookies
-
-```js
-const player = new Player(client, {
-    ExtractorStreamOptions: {
-        Cookies: //Youtube Cookies String Value
-    }
-});
-```
-
-### Use custom proxies
-
-```js
-// Remove "user:pass@" if you don't need to authenticate to your proxy.
-const proxy = "http://user:pass@111.111.111.111:8080";
-
-const player = new Player(client, {
-  ExtractorStreamOptions: {
-    Proxy: [proxy], //Proxy Value from Array
-  },
-});
-```
-
-### Use Custom User-Agents
-
-```js
-
-const player = new Player(client, {
-  ExtractorStreamOptions: {
-    UserAgents: [user-agent], //User-Agents from browser to avoid 429 Errors in 'playdl-music-extractor'
-  },
-});
-```

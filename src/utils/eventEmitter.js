@@ -5,7 +5,7 @@ class eventEmitter {
   constructor(
     player,
     config = {
-      ignoreCrash: true,
+      ignoreCrash: false,
       emitPlayer: true,
       errorName: '[ Error ]',
       debugRegister: true,
@@ -21,7 +21,7 @@ class eventEmitter {
     eventLocation = 'unknown-location',
     eventVariable = undefined,
     config = {
-      ignoreCrash: true,
+      ignoreCrash: false,
       emitPlayer: true,
       errorName: '[ Error ]',
       debugRegister: true,
@@ -45,15 +45,15 @@ class eventEmitter {
       processedError = `${processedError}\n\nExtra Info :\n${extraMetadata}`;
     processedError += `\n\n Error Location: ${eventLocation}`;
     this.player?.emit('raw', new Date(), processedError, eventVariable);
-    if (config?.emitPlayer)
+    if (config?.emitPlayer && !config?.ignoreCrash)
       this.player?.emit(
         'error',
         new Date(),
+        eventVariable?.queue ?? eventVariable?.player,
         config?.errorName ?? eventMetadata?.name ?? '[Error]',
-        eventLocation,
         eventVariable,
+        eventLocation,
         processedError,
-        eventMetadata,
       );
     if (config?.debugRegister)
       this.emitDebug(
@@ -69,7 +69,7 @@ class eventEmitter {
   emitEvent(
     eventName,
     extraMetadata,
-    eventVariable = undefined,
+    eventVariable = {},
     config = {
       emitPlayer: true,
       debugRegister: true,
@@ -77,13 +77,8 @@ class eventEmitter {
   ) {
     config = { ...this.config, ...config };
     this.player?.emit('raw', new Date(), extraMetadata, eventVariable);
-    if (config?.emitPlayer)
-      this.player?.emit(
-        eventName ?? 'raw',
-        new Date(),
-        extraMetadata,
-        eventVariable,
-      );
+    if (config?.emitPlayer && eventName)
+      this.player?.emit(eventName, new Date(), extraMetadata, ...eventVariable);
     if (config?.debugRegister)
       this.emitDebug(
         eventName ?? 'Unknown-Event',
@@ -97,6 +92,7 @@ class eventEmitter {
     this.player?.emit(
       'debug',
       new Date(),
+      this.player,
       `( ${eventName} ) - ${extraMetadata}`,
       eventVariable,
     );

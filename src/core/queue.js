@@ -1,37 +1,92 @@
 const { AudioPlayerStatus } = require('@discordjs/voice');
-const { Track } = require('../enum/fetchRecords');
+const {
+  Client, VoiceChannel, Message, User,
+} = require('discord.js');
+const { Track } = require('../misc/fetchRecords');
 const packets = require('../gen/packets');
+const eventEmitter = require('../utils/eventEmitter');
 const { voiceResolver } = require('../utils/snowflakes');
 const voiceMod = require('../utils/voiceMod');
 const player = require('./player');
 
+/**
+ * @class queue -> Queue Class for making virtual space for per Discord Guild for making a non-conflicting connectionsn and requests from various stuff and web intefs
+ */
 class queue {
   /**
-   *
-   * @param {string | number} guildId
-   * @param {object<any>} options
-   * @param {player} player
+   * @constructor
+   * @param {string | number} guildId Discord Guild Id for queue creation
+   * @param {object} options Queue Creation/Destruction Options + packet,downlaoder Options and even more options for caching
+   * @param {player} player Actual player Instance for bring forth sub properties cached with it
    */
   constructor(guildId, options, player) {
+    /**
+     * @type {string | number} Discord Guild Id for queue creation
+     * @readonly
+     */
     this.guildId = guildId;
+
+    /**
+     * @type {object} Queue Creation/Destruction Options + packet,downlaoder Options and even more options for caching
+     * @readonly
+     */
     this.options = options;
+
+    /**
+     * @type {player} Actual player Instance for bring forth sub properties cached with it
+     * @readonly
+     */
     this.player = player;
+
+    /**
+     * @type {eventEmitter} Event Emitter Instance for Distributing Events based Info to the Users abou the Framework and Progress of certain Request
+     * @readonly
+     */
     this.eventEmitter = player?.eventEmitter;
+
+    /**
+     * @type {Client} Discord Client Instance for Discord Bot for Interaction with Discord Api
+     * @readonly
+     */
     this.discordClient = this.player?.discordClient;
+
+    /**
+     * @type {Boolean} Queue Destroyed Status for checking wheather progress or functions to flow or emit error
+     * @readonly
+     */
     this.destroyed = false;
-    this.voiceMod = new voiceMod(player);
+
+    /**
+     * @type {voiceMod} Voice Moderator for connecting and disconnecting from voice Channel
+     * @readonly
+     */
+    this.voiceMod = new voiceMod(this, options?.voiceOptions);
+
+    /**
+     * @type {packets} Packet Instance for moderating backend manupulation and request handlers and handle massive functions and events
+     * @readonly
+     */
     this.packet = new packets(this, options?.packetOptions);
 
     this.discordClient.on('voiceStateUpdate', async (oldState, newState) => (oldState?.guild?.id !== this.guildId &&
       newState?.guild?.id !== this.guildId &&
       newState?.channelId !== oldState?.channelId
-      ? await this.packet.__voiceHandler(
+      ? await this.packet?.__voiceHandler(
         oldState,
         newState,
         this.options?.voiceOptions,
       )
       : undefined));
   }
+
+  /**
+   * @method play Play Method of Queue Class to play raw Query Info after processing and fetch from web using extractors
+   * @param {string} rawQuery String Value for fetching/Parsing with the help of extractors
+   * @param {string | number | VoiceChannel | Message} voiceSnowflake voice Channel Snowflake in terms of further resolving value using in-built resolvers to connect to play song on it
+   * @param {string | number | Message | User} requestedBy requested By User Data for checks and avoid the further edits on it by some stranger to protect the integrity
+   * @param {object} options queue/play Options for further requirements
+   * @returns {Promise<Boolean | undefined>} Returns extractor Data based on progress or undefined
+   */
 
   async play(rawQuery, voiceSnowflake, requestedBy, options) {
     try {
@@ -84,6 +139,13 @@ class queue {
     }
   }
 
+  /**
+   * @method skip Skipping Current Track to specified Track-Counts or by-default on next song
+   * @param {Boolean | false} forceSkip Forced Skip to even fast skip the ending silence paddings for smooth audio play
+   * @param {Number | 1} trackCount Tracks Count to skip to in the queue.tracks array
+   * @returns {Promise<Boolean | undefined>}  Returns Boolean or undefined on failure or success rate!
+   */
+
   async skip(forceSkip = false, trackCount = 1) {
     try {
       if (this.destroyed || !this?.packet?.audioPlayer?.state?.status)
@@ -116,6 +178,13 @@ class queue {
     }
   }
 
+  /**
+   * @method stop Stopping Current Track along side with Queue to a complete silence with cleaning
+   * @param {Boolean | false} forceStop Forced Stop to even fast Stop the ending silence paddings for smooth audio play
+   * @param {Boolean | false} preserveTracks Tracks to save even after Queue got stoppped for new packet
+   * @returns {Promise<Boolean | undefined>} Returns Boolean or undefined on failure or success rate!
+   */
+
   async stop(forceStop = false, preserveTracks = false) {
     try {
       if (this.destroyed || !this?.packet?.audioPlayer?.state?.status)
@@ -125,7 +194,7 @@ class queue {
         preserveTracks ? this.tracks?.length : 0,
       );
       this.packet?.audioPlayer?.stop((Boolean(forceStop) ?? false) || false);
-      return true;
+      return await this.destroy();
     } catch (errorMetadata) {
       this.eventEmitter.emitError(
         errorMetadata,
@@ -140,6 +209,25 @@ class queue {
       );
       return undefined;
     }
+  }
+
+  /**
+   * @method destroy Destroy packet and internal workings of queue register/caches and with a complete clearence and even clear backend caches to remove all connections from every request or handlers (if any)
+   * @param {Number | 0} delayVoiceTimeout Delay Timeout for delaying after the destruction of queue of voice Connection from voice Channel
+   * @param {Boolean | false} destroyConnection Destroy Voice Connection properly in @discordjs/voice Package
+   * @returns {Promise<Boolean | undefined>} Returns Boolean or undefined on failure or success rate!
+   */
+  async destroy(delayVoiceTimeout = 0, destroyConnection = false) {
+    if (this.destroyed)
+      throw new Error('[Destroyed Queue] : Queue has been destroyed already');
+    const timeOutIdResidue = await this.voiceMod.disconnect(this.guildId, {
+      destroy: Boolean(destroyConnection),
+      delayVoiceTimeout,
+    });
+    this.packet.__perfectClean();
+    delete this.packet;
+    this.destroyed = timeOutIdResidue;
+    return true;
   }
 
   /**

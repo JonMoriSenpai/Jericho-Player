@@ -1,12 +1,12 @@
 class Playlist {
   #__raw = undefined;
 
-  constructor(rawMetadata) {
-    this.#__raw = rawMetadata;
-    this.patch(rawMetadata);
+  constructor(rawMetadata, requestedBy) {
+    this.#__raw = { ...rawMetadata, user: requestedBy };
+    this.patch(rawMetadata, requestedBy);
   }
 
-  patch(rawMetadata) {
+  patch(rawMetadata, requestedBy) {
     if (!rawMetadata || (rawMetadata && rawMetadata instanceof Boolean))
       rawMetadata = {};
     this.id = rawMetadata?.id ?? rawMetadata?.Id;
@@ -16,15 +16,17 @@ class Playlist {
     this.views = rawMetadata?.views;
     this.tracksCount = rawMetadata?.tracksCount;
     this.author = rawMetadata?.author ?? rawMetadata?.channel;
+    this.metadata = rawMetadata?.customMetadata;
+    this.user = requestedBy;
   }
 }
 
 class Track {
   #__raw = undefined;
 
-  constructor(rawMetadata) {
-    this.#__raw = rawMetadata;
-    this.patch(rawMetadata);
+  constructor(rawMetadata, requestedBy) {
+    this.#__raw = { ...rawMetadata, user: requestedBy };
+    this.patch(rawMetadata, requestedBy);
   }
 
   patch(rawMetadata) {
@@ -45,6 +47,7 @@ class Track {
         ? new Playlist(rawMetadata?.album ?? rawMetadata?.playlist)
         : undefined;
     this.lyrics = rawMetadata?.lyrics;
+    this.user = rawMetadata?.requestedBy;
   }
 
   __getStream(returnTrack = false) {
