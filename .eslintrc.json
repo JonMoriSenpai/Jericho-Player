@@ -43,6 +43,8 @@
     "semi": "off",
     "new-cap": "off",
     "no-restricted-globals": "off",
-    "max-classes-per-file": "off"
+    "max-classes-per-file": "off",
+    "no-case-declarations": "off",
+    "no-unsafe-optional-chaining": "off"
   }
 }
