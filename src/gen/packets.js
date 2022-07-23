@@ -9,13 +9,27 @@ const {
   AudioPlayerState,
 } = require('@discordjs/voice');
 
+const {
+  Message,
+  User,
+  CommandInteraction,
+  VoiceChannel,
+  StageChannel,
+  Guild,
+} = require('discord.js');
+
 const queue = require('../core/queue');
 const downloader = require('./downloader');
-const { Track, Playlist } = require('../misc/fetchRecords');
-const { voiceResolver, userResolver } = require('../utils/snowflakes');
+const { Track, Playlist } = require('../misc/enums');
+const {
+  voiceResolver,
+  messageResolver,
+  interactionResolver,
+} = require('../utils/snowflakes');
 const player = require('../core/player');
 const eventEmitter = require('../utils/eventEmitter');
 const voiceMod = require('../utils/voiceMod');
+const { invalidRequiredSource } = require('../misc/errorEvents');
 
 /**
  * @class packets -> Packets Class is for stream-packet of queue where it handles every backend request handlers without affecting the
@@ -101,17 +115,29 @@ class packets {
   /**
    * @method getQuery Fetching Tracks Data and Playlist Data Request from extractors using downloader class
    * @param {string} rawQuery String Value for fetching/Parsing with the help of extractors
-   * @param {string | number | VoiceChannel | Message} voiceSnowflake voice Channel Snowflake in terms of further resolving value using in-built resolvers to connect to play song on it
-   * @param {string | number | Message | User} requestedBy requested By User Data for checks and avoid the further edits on it by some stranger to protect the integrity
+   * @param {string | number | VoiceChannel | StageChannel | Message} voiceSnowflake voice Channel Snowflake in terms of further resolving value using in-built resolvers to connect to play song on it
+   * @param {string | number | Message | CommandInteraction } requestedSource requested By Source Data for checks and avoid the further edits on it by some stranger to protect the integrity
    * @param {object} options packets Options for further requirements
    * @returns {Promise<Boolean | undefined>} Returns Extractor Data from the defalt extractors
    */
 
-  async getQuery(rawQuery, voiceSnowflake, requestedBy, options) {
+  async getQuery(rawQuery, voiceSnowflake, requestedSource, options) {
     try {
-      if (!this.destroyed) return undefined;
+      if (this.destroyed) return undefined;
       else if (!(rawQuery && typeof rawQuery === 'string' && rawQuery !== ''))
         return undefined;
+      requestedSource =
+        interactionResolver(this.player?.discordClient, requestedSource) ??
+        (await messageResolver(this.player?.discordClient, requestedSource));
+      if (
+        !requestedSource ||
+        (requestedSource &&
+          (requestedSource?.user?.bot ||
+            requestedSource?.author?.bot ||
+            requestedSource?.member?.bot ||
+            requestedSource?.member?.user?.bot))
+      )
+        throw new invalidRequiredSource();
       const voiceChannel = await voiceResolver(
         this.queue?.discordClient,
         voiceSnowflake,
@@ -123,7 +149,7 @@ class packets {
           voiceSnowflake,
         },
       );
-      await this.voiceMod?.connect(voiceChannel, options?.voiceOptions);
+      await this.voiceMod?.connect(voiceChannel, requestedSource);
       this.eventEmitter.emitDebug(
         'Downloader',
         'Making Request to default extractors for parsing and fetch required Track Data',
@@ -132,14 +158,9 @@ class packets {
           downloaderOptions: options?.downloaderOptions,
         },
       );
-      requestedBy = await userResolver(this.player?.discordClient, requestedBy);
-      if (!requestedBy)
-        throw new TypeError(
-          '[ Invalid User Data - Requested By ] : Invalid Guild Member/User or User Data has been given for avoiding songs and queue collapse on listing on order',
-        );
       return await this.downloader.get(
         rawQuery,
-        requestedBy,
+        requestedSource,
         options?.downloaderOptions,
       );
     } catch (errorMetadata) {
@@ -167,7 +188,7 @@ class packets {
    */
 
   async __audioPlayerStateMod(oldState, newState) {
-    if (!this.destroyed) return undefined;
+    if (this.destroyed) return undefined;
     else if (newState?.status === AudioPlayerStatus.Idle) {
       this.eventEmitter.emitDebug(
         'AudioPlayerStatus Idle Status',
@@ -182,25 +203,30 @@ class packets {
         {
           queue: this.queue,
           track: this.tracksMetadata?.[0]?.track,
+          user: this.tracksMetadata?.[0]?.track?.user,
           remainingTracks: this.tracksMetadata?.slice(1) ?? [],
+          requestedSource: this.tracksMetadata?.[0]?.track?.requestedSource,
         },
       );
       this.__cacheAndCleanTracks();
       if (this.tracksMetadata?.length > 0)
         return await this.__audioResourceMod();
       else if (this.tracksMetadata?.length === 0) {
+        const lastTrack =
+          this.__privateCaches?.completedTracksMetadata?.length > 1
+            ? this.__privateCaches?.completedTracksMetadata?.[
+              this.__privateCaches?.completedTracksMetadata?.length - 1
+            ]
+            : undefined;
         this.eventEmitter.emitEvent(
           'queueEnd',
           'Tracks Queue has been Ended with no Tracks left to play',
           {
             queue: this.queue,
-            track:
-              this.__privateCaches?.completedTracksMetadata?.length > 1
-                ? this.__privateCaches?.completedTracksMetadata?.[
-                  this.__privateCaches?.completedTracksMetadata?.length - 1
-                ]
-                : undefined,
+            track: lastTrack,
+            user: lastTrack?.user,
             previousTracks: this.__privateCaches?.completedTracksMetadata,
+            requestedSource: lastTrack?.requestedSource,
           },
         );
         this.__privateCaches.completedTracksMetadata = [];
@@ -208,8 +234,6 @@ class packets {
       return undefined;
     } else return undefined;
   }
-
-  // async __voiceHandler(oldState, newState, options) {}
 
   /**
    * @method __cacheAndCleanTracks Cache and Clean Tracks on Track End event Trigger/Requirement
@@ -221,7 +245,7 @@ class packets {
     trackOptions = { startIndex: 0, cleanTracks: 1 },
     preserveTracks = 1,
   ) {
-    if (!this.destroyed) return undefined;
+    if (this.destroyed) return undefined;
     else if (
       !this.tracksMetadata?.[0] ||
       trackOptions?.cleanTracks > this.tracksMetadata?.length
@@ -262,7 +286,7 @@ class packets {
 
   async __audioResourceMod(rawTrackData = this.tracksMetadata?.[0]) {
     try {
-      if (!this.destroyed) return undefined;
+      if (this.destroyed) return undefined;
       const streamData = rawTrackData?.streamData;
       if (!streamData) return undefined;
       this.eventEmitter.emitDebug(
@@ -284,7 +308,12 @@ class packets {
       this.eventEmitter.emitEvent(
         'trackStart',
         'Processed Track will be Played now within few seconds',
-        { queue: this.queue, track: rawTrackData?.track },
+        {
+          queue: this.queue,
+          track: rawTrackData?.track,
+          user: rawTrackData?.track?.user,
+          requestedSource: rawTrackData?.track?.requestedSource,
+        },
       );
       this.__privateCaches.audioPlayerSubscription = voiceConnection.subscribe(
         this.audioPlayer,
@@ -320,16 +349,16 @@ class packets {
    */
 
   __playlistMod(playlist) {
-    if (!this.destroyed) return undefined;
-    const userData = playlist?.customMetadata?.requestedBy;
-    delete playlist?.customMetadata?.requestedBy;
+    if (this.destroyed) return undefined;
+    const parsedPlaylist = new Playlist(playlist);
     return this.eventEmitter.emitEvent(
       'playlistAdd',
       'Playlist has been recognised and related tracks will be slowly added to caches',
       {
         queue: this.queue,
-        playlist: new Playlist(playlist, userData),
-        userData,
+        playlist: parsedPlaylist,
+        user: parsedPlaylist?.user,
+        requestedSource: parsedPlaylist?.requestedSource,
       },
     );
   }
@@ -345,25 +374,18 @@ class packets {
 
   async __tracksMod(extractor, playlist, rawTrack, metadata) {
     try {
-      if (!this.destroyed) return undefined;
-      const userData =
-        metadata?.requestedBy ?? rawTrack?.customMetadata?.requestedBy;
-      delete metadata?.requestedBy;
-      delete rawTrack?.customMetadata?.requestedBy;
-      delete playlist?.customMetadata?.requestedBy;
+      if (this.destroyed) return undefined;
       this.eventEmitter.emitDebug(
         'Tracks Modification',
         'Tracks and Streams will be Modified for Audio Player',
         {
           rawTrack,
-          playlist: new Playlist(playlist, userData),
-          user: userData,
+          playlist: new Playlist(playlist),
           extractor,
           metadata,
         },
       );
-      if (this.queue?.destroyed) return undefined;
-      const track = new Track(rawTrack, userData);
+      const track = new Track(rawTrack);
       const streamData = track?.__getStream(true);
       this.tracksMetadata.push({ track, streamData });
       this.eventEmitter.emitEvent(
@@ -372,9 +394,10 @@ class packets {
         {
           queue: this.queue,
           track,
-          playlist: new Playlist(playlist, userData),
-          user: userData,
+          playlist: new Playlist(playlist),
+          user: track?.user,
           tracks: this.queue?.tracks,
+          requestedSource: track?.requestedSource,
         },
       );
       if (this.tracksMetadata?.length === 1) await this.__audioResourceMod();

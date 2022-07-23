@@ -59,17 +59,17 @@ class downloader {
   /**
    * @method get Get Tracks Data or triggering track event for Tracks Mod
    * @param {string} rawQuery String Value for fetching/Parsing with the help of extractors
-   * @param {User} requestedBy requested By User Data for checks and avoid the further edits on it by some stranger to protect the integrity
+   * @param {User} requestedSource requested By Source Data for checks and avoid the further edits on it by some stranger to protect the integrity
    * @param {object} options options Downloader Options for extractor's scrapping Options
    * @returns {Promise<Boolean | undefined>} Returns Raw Extractor Data on completion of processing and extracting
    */
-  async get(rawQuery, requestedBy, options) {
+  async get(rawQuery, requestedSource, options) {
     if (!(rawQuery && typeof rawQuery === 'string' && rawQuery !== ''))
       return undefined;
     else
       return await this.getPlaydl(
         rawQuery,
-        requestedBy,
+        requestedSource,
         options?.playdlOptions,
       );
   }
@@ -77,24 +77,25 @@ class downloader {
   /**
    * @method getPlaydl Play-dl extractor Function with repsect to internal functions to support the cause of usage
    * @param {string} rawQuery String Value for fetching/Parsing with the help of extractors
-   * @param {User} requestedBy requested By User Data for checks and avoid the further edits on it by some stranger to protect the integrity
+   * @param {User} requestedSource requested By Source Data for checks and avoid the further edits on it by some stranger to protect the integrity
    * @param {object} options options Downloader Options for extractor's scrapping Options
    * @returns {Promise<Boolean | undefined>} Returns Raw Extractor Data on completion of processing and extracting
    */
 
-  async getPlaydl(rawQuery, requestedBy, options) {
+  async getPlaydl(rawQuery, requestedSource, options) {
     this.eventEmitter.emitDebug(
       'playdl - Extractor',
       'Making Request to playdl extractors for parsing and fetch required Track Data',
       {
         rawQuery,
+        requestedSource,
         downloaderOptions: options,
       },
     );
     await this.playdl.exec(rawQuery, {
       ...options,
       eventReturn: {
-        metadata: { requestedBy },
+        metadata: { requestedSource },
       },
       streamDownload: true,
     });

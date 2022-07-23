@@ -7,6 +7,9 @@ const {
   Guild,
   GuildChannel,
   User,
+  ButtonInteraction,
+  CommandInteraction,
+  SelectMenuInteraction,
 } = require('discord.js');
 
 class snowFlakes {
@@ -75,6 +78,15 @@ class snowFlakes {
       return snowflake?.author ?? snowflake?.user ?? snowflake?.member;
     else if (
       snowflake &&
+      (snowflake instanceof ButtonInteraction ||
+        snowflake instanceof SelectMenuInteraction ||
+        snowflake instanceof CommandInteraction)
+    )
+      return (
+        snowflake?.user ?? snowflake?.message?.author ?? snowflake?.member?.user
+      );
+    else if (
+      snowflake &&
       typeof snowflake === 'string' &&
       snowflake?.trim() !== ''
     )
@@ -85,6 +97,33 @@ class snowFlakes {
           .fetch(snowflake?.trim())
           ?.catch(() => undefined))
       );
+    else return undefined;
+  }
+
+  static async messageResolver(discordClient, snowflake) {
+    if (!(discordClient && discordClient instanceof Client)) return undefined;
+    else if (snowflake && snowflake instanceof Message) return snowflake;
+    else if (
+      snowflake &&
+      (snowflake instanceof ButtonInteraction ||
+        snowflake instanceof SelectMenuInteraction ||
+        snowflake instanceof CommandInteraction) &&
+      snowflake?.message
+    )
+      return snowflake?.message;
+    else return undefined;
+  }
+
+  static interactionResolver(discordClient, snowflake) {
+    if (!(discordClient && discordClient instanceof Client)) return undefined;
+    else if (
+      snowflake &&
+      (snowflake instanceof ButtonInteraction ||
+        snowflake instanceof SelectMenuInteraction ||
+        snowflake instanceof CommandInteraction) &&
+      snowflake?.message
+    )
+      return snowflake;
     else return undefined;
   }
 }

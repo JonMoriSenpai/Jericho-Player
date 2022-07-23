@@ -1,4 +1,11 @@
-import { User } from "discord.js";
+import {
+  User,
+  VoiceBasedChannel,
+  Message,
+  CommandInteraction,
+  ButtonInteraction,
+  SelectMenuInteraction,
+} from "discord.js";
 
 export type eventOptions = {
   ignoreCrash?: Boolean | true;
@@ -23,6 +30,14 @@ export type downloaderOptions = {
 export type voiceOptions = {
   eventOptions?: eventOptions;
   delayTimeout?: Number | 0;
+  leaveOn: {
+    end: number | Boolean | false | 0;
+    empty: number | Boolean | false | 0;
+    bot: number | Boolean | false | 0;
+  };
+  anyoneCanMoveClient: Boolean | true;
+  altVoiceChannel: string | number | VoiceBasedChannel;
+  forceDestroy: Boolean | false;
 };
 
 export type packetOptions = {
@@ -43,8 +58,14 @@ export class Playlist {
   public readonly views: string | number | 0;
   public readonly tracksCount: number | 0;
   public readonly author: object;
-  public readonly metadata: any;
-  public readonly user: User;
+  public get raw(): object;
+  public get requestedSource():
+    | Message
+    | CommandInteraction
+    | ButtonInteraction
+    | SelectMenuInteraction;
+  public get user(): User;
+  public get metadata(): object;
   public get type(): string | "playlist";
 }
 export class Track {
@@ -62,8 +83,14 @@ export class Track {
   public readonly ratings: object;
   public readonly playlist: Playlist;
   public readonly lyrics: string;
-  public readonly user: User;
   public get raw(): object;
+  public get requestedSource():
+    | Message
+    | CommandInteraction
+    | ButtonInteraction
+    | SelectMenuInteraction;
+  public get user(): User;
+  public get metadata(): object;
   public get type(): string | "track";
 }
 

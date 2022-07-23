@@ -7,33 +7,99 @@ import {
   StageChannel,
   User,
   VoiceChannel,
-  Awaitable,
+  CommandInteraction,
+  ButtonInteraction,
+  SelectMenuInteraction,
 } from "discord.js";
-import { Options, Playlist, Track } from "./Instances";
+import { Options, Playlist, Track, Awaitable } from "./Instances";
 
 declare interface playerEvents {
   error: [
     date: Date,
     queue: queue | player | void,
-    message: string,
+    error: Error,
     variables: object,
     location: string | void,
-    metadata: string
+    metadata: string,
+    requestedSource:
+      | Message
+      | CommandInteraction
+      | ButtonInteraction
+      | SelectMenuInteraction
   ];
   raw: [data: Date, metadata: string, variables: object];
-  debug: [eventName: string, message: string, variables: object];
-  trackEnd: [queue: queue, track: Track, remainingTracks: Track[]];
-  queueEnd: [queue: queue, track: Track, previousTracks: Track[]];
-  trackStart: [queue: queue, track: Track];
-  playlistAdd: [queue: queue, playlist: Playlist, user: User | GuildMember];
+  debug: [eventName: string, eventMessage: string, variables: object];
+  trackEnd: [
+    queue: queue,
+    track: Track,
+    user: User,
+    remainingTracks: Track[],
+    requestedSource:
+      | Message
+      | CommandInteraction
+      | ButtonInteraction
+      | SelectMenuInteraction
+  ];
+  queueEnd: [
+    queue: queue,
+    track: Track,
+    user: User,
+    previousTracks: Track[],
+    requestedSource:
+      | Message
+      | CommandInteraction
+      | ButtonInteraction
+      | SelectMenuInteraction
+  ];
+  trackStart: [
+    queue: queue,
+    track: Track,
+    user: User,
+    requestedSource:
+      | Message
+      | CommandInteraction
+      | ButtonInteraction
+      | SelectMenuInteraction
+  ];
+  playlistAdd: [
+    queue: queue,
+    playlist: Playlist,
+    user: User | GuildMember,
+    requestedSource:
+      | Message
+      | CommandInteraction
+      | ButtonInteraction
+      | SelectMenuInteraction
+  ];
   trackAdd: [
     queue: queue,
     track: Track,
     playlist: Playlist,
     user: User | GuildMember,
-    tracks: Track[]
+    tracks: Track[],
+    requestedSource:
+      | Message
+      | CommandInteraction
+      | ButtonInteraction
+      | SelectMenuInteraction
   ];
-  connectionError: [queue: queue];
+  connectionError: [
+    queue: queue,
+    requestedSource:
+      | Message
+      | CommandInteraction
+      | ButtonInteraction
+      | SelectMenuInteraction
+  ];
+  channelEmpty: [
+    queue: queue,
+    channel: VoiceChannel,
+    requestedSource:
+      | Message
+      | CommandInteraction
+      | ButtonInteraction
+      | SelectMenuInteraction
+  ];
 }
 declare class player extends EventEmitter {
   constructor(discordClient: Client, options?: Options);

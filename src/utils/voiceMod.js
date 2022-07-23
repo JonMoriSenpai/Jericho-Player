@@ -6,6 +6,7 @@ const {
 } = require('@discordjs/voice');
 const { voiceResolver, guildResolver } = require('./snowflakes');
 const queue = require('../core/queue');
+const { invalidVoiceChannel } = require('../misc/errorEvents');
 
 class voiceMod {
   /**
@@ -21,16 +22,21 @@ class voiceMod {
     this.options = options;
   }
 
-  async connect(voiceSnowflake, options) {
+  async connect(
+    voiceSnowflake,
+    requestedSource = this.queue?.current?.requestedSource,
+  ) {
     try {
       const voiceChannel = await voiceResolver(
         this.discordClient,
         voiceSnowflake,
       );
       if (!voiceChannel)
-        throw new Error(
-          '[ Invalid Voice Channel ] : Wrong Voice Channel Snowflake/Resolve is Detected for voiceMod.connect()',
+        throw new invalidVoiceChannel(
+          'Wrong Voice Channel Snowflake/Resolve is Detected for voiceMod.connect()',
         );
+      if (this.queue.destroyed && typeof this.queue?.destroyed !== 'boolean')
+        clearTimeout(this.queue?.destroyed);
       const rawVoiceConnection = joinVoiceChannel({
         channelId: voiceChannel?.id,
         guildId: voiceChannel?.guildId,
@@ -51,50 +57,83 @@ class voiceMod {
       this.eventEmitter.emitEvent(
         'connectionError',
         errorMetadata?.message ?? `${errorMetadata}`,
-        { queue: this.queue },
+        { queue: this.queue, requestedSource },
         this.options?.eventOptions,
       );
       return undefined;
     }
   }
 
-  async disconnect(guildSnowflake, delayVoiceTimeout, options) {
+  async disconnect(
+    guildSnowflake,
+    delayVoiceTimeout,
+    requestedSource = this.queue?.current?.requestedSource,
+    options = this.options,
+  ) {
     try {
       const guild = await guildResolver(this.discordClient, guildSnowflake);
       if (!guild)
-        throw new Error(
-          '[ Invalid Discord Guild ] : Corrupt/Invalid Guild Data by guild Snowflake has been resolved',
+        throw new invalidVoiceChannel(
+          'Wrong Voice Channel Snowflake/Resolve is Detected for voiceMod.connect()',
         );
       const queue = await this.player.getQueue(guild);
+      if (queue.destroyed && typeof queue?.destroyed !== 'boolean')
+        clearTimeout(this.queue?.destroyed);
       if (queue?.packet?.audioPlayer && (queue?.playing || queue?.paused))
         queue?.packet?.audioPlayer?.stop();
       if (
         queue?.packet?.__privateCaches?.audioPlayerSubscription &&
         (queue?.playing || queue?.paused)
-      )
-        queue?.packet?.__privateCaches?.audioPlayerSubscription?.unsubscribe();
-      const voiceConnection = getVoiceConnection(guild?.id);
-      if (!voiceConnection)
-        throw new Error(
-          '[ Invalid Voice Connection ] : Corrupt/Invalid Voice Connection has been fetched',
-        );
-      if (options?.forceDestroy)
+      ) {
+        queue.packet.__privateCaches.audioPlayerSubscription.unsubscribe();
+        queue.packet.__privateCaches.audioPlayerSubscription = undefined;
+      }
+      const connectedChannel = await voiceResolver(
+        this.discordClient,
+        options?.altVoiceChannel ?? guild?.members?.me?.voice?.channel,
+      );
+      if (!connectedChannel) return undefined;
+      else if (options?.forceDestroy)
         return delayVoiceTimeout && delayVoiceTimeout > 0
           ? setTimeout(() => {
+            const voiceConnection = getVoiceConnection(guild?.id);
+            if (!voiceConnection) return undefined;
             voiceConnection.destroy(true);
+            this.eventEmitter.emitEvent(
+              'botDisconnect',
+              'Discord Client got Disconnected from the Channel',
+              {
+                queue: this.queue,
+                channel: connectedChannel,
+                requestedSource,
+              },
+            );
+            return true;
           }, delayVoiceTimeout * 1000)
           : true;
       else
         return delayVoiceTimeout && delayVoiceTimeout > 0
           ? setTimeout(() => {
+            const voiceConnection = getVoiceConnection(guild?.id);
+            if (!voiceConnection) return undefined;
             voiceConnection.disconnect();
+            this.eventEmitter.emitEvent(
+              'botDisconnect',
+              'Discord Client got Disconnected from the Channel',
+              {
+                queue: this.queue,
+                channel: connectedChannel,
+                requestedSource,
+              },
+            );
+            return true;
           }, delayVoiceTimeout * 1000)
           : true;
     } catch (errorMetadata) {
       this.eventEmitter.emitEvent(
         'connectionError',
         errorMetadata?.message ?? `${errorMetadata}`,
-        { queue: this.queue },
+        { queue: this.queue, requestedSource },
         this.options?.eventOptions,
       );
       return undefined;

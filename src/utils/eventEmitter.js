@@ -50,10 +50,9 @@ class eventEmitter {
         'error',
         new Date(),
         eventVariable?.queue ?? eventVariable?.player,
-        config?.errorName ?? eventMetadata?.name ?? '[Error]',
+        eventMetadata,
         eventVariable,
         eventLocation,
-        processedError,
       );
     if (config?.debugRegister)
       this.emitDebug(
@@ -78,7 +77,12 @@ class eventEmitter {
     config = { ...this.config, ...config };
     this.player?.emit('raw', new Date(), extraMetadata, eventVariable);
     if (config?.emitPlayer && eventName)
-      this.player?.emit(eventName, new Date(), extraMetadata, ...eventVariable);
+      this.player?.emit(
+        eventName,
+        new Date(),
+        extraMetadata,
+        ...Object.entries(eventVariable)?.map((d) => d?.[1]),
+      );
     if (config?.debugRegister)
       this.emitDebug(
         eventName ?? 'Unknown-Event',
