@@ -1,13 +1,23 @@
 const { AudioPlayerStatus } = require('@discordjs/voice');
 const {
-  Client, VoiceChannel, Message, User,
+  Client,
+  VoiceChannel,
+  Message,
+  CommandInteraction,
+  StageChannel,
 } = require('discord.js');
-const { Track } = require('../misc/fetchRecords');
+const { Track } = require('../misc/enums');
 const packets = require('../gen/packets');
 const eventEmitter = require('../utils/eventEmitter');
 const { voiceResolver } = require('../utils/snowflakes');
 const voiceMod = require('../utils/voiceMod');
 const player = require('./player');
+const {
+  destroyedQueue,
+  invalidQuery,
+  invalidVoiceChannel,
+  invalidTracksCount,
+} = require('../misc/errorEvents');
 
 /**
  * @class queue -> Queue Class for making virtual space for per Discord Guild for making a non-conflicting connectionsn and requests from various stuff and web intefs
@@ -67,41 +77,28 @@ class queue {
      * @readonly
      */
     this.packet = new packets(this, options?.packetOptions);
-
-    this.discordClient.on('voiceStateUpdate', async (oldState, newState) => (oldState?.guild?.id !== this.guildId &&
-      newState?.guild?.id !== this.guildId &&
-      newState?.channelId !== oldState?.channelId
-      ? await this.packet?.__voiceHandler(
-        oldState,
-        newState,
-        this.options?.voiceOptions,
-      )
-      : undefined));
   }
 
   /**
    * @method play Play Method of Queue Class to play raw Query Info after processing and fetch from web using extractors
    * @param {string} rawQuery String Value for fetching/Parsing with the help of extractors
-   * @param {string | number | VoiceChannel | Message} voiceSnowflake voice Channel Snowflake in terms of further resolving value using in-built resolvers to connect to play song on it
-   * @param {string | number | Message | User} requestedBy requested By User Data for checks and avoid the further edits on it by some stranger to protect the integrity
+   * @param {string | number | VoiceChannel | StageChannel | Message} voiceSnowflake voice Channel Snowflake in terms of further resolving value using in-built resolvers to connect to play song on it
+   * @param {string | number | Message | CommandInteraction } requestedSource requested By Source Data for checks and avoid the further edits on it by some stranger to protect the integrity
    * @param {object} options queue/play Options for further requirements
    * @returns {Promise<Boolean | undefined>} Returns extractor Data based on progress or undefined
    */
 
-  async play(rawQuery, voiceSnowflake, requestedBy, options) {
+  async play(rawQuery, voiceSnowflake, requestedSource, options) {
     try {
-      if (!(rawQuery && typeof rawQuery === 'string' && rawQuery !== ''))
-        throw new TypeError(
-          '[ Invalid Raw Query ] : Wrong Query for Songs is Detected for queue.play()',
-        );
+      if (this.destroyed)
+        throw new destroyedQueue('Queue has been destroyed already');
+      else if (!(rawQuery && typeof rawQuery === 'string' && rawQuery !== ''))
+        throw new invalidQuery();
       const voiceChannel = await voiceResolver(
         this.discordClient,
         voiceSnowflake,
       );
-      if (!voiceChannel)
-        throw new TypeError(
-          '[ Invalid Voice Channel ] : Wrong Voice Channel Snowflake/Resolve is Detected for queue.play()',
-        );
+      if (!voiceChannel) throw new invalidVoiceChannel();
       this.eventEmitter.emitDebug(
         'Packet get Request',
         'Request for backend Work to be Handled by packet of Queue',
@@ -110,16 +107,15 @@ class queue {
           packet: this.packet,
         },
       );
-      this.packet =
-        this.packet ??
-        new packets(
+      if (!(this.packet && this.packet?.destroyed))
+        this.packet = new packets(
           this,
           options?.packetOptions ?? this.options?.packetOptions,
         );
       return await this.packet?.getQuery(
         rawQuery,
         voiceChannel,
-        requestedBy,
+        requestedSource,
         options?.packetOptions,
       );
     } catch (errorMetadata) {
@@ -149,7 +145,7 @@ class queue {
   async skip(forceSkip = false, trackCount = 1) {
     try {
       if (this.destroyed || !this?.packet?.audioPlayer?.state?.status)
-        throw new Error('[Destroyed Queue] : Queue has been destroyed already');
+        throw new destroyedQueue();
       else if (
         !(
           trackCount &&
@@ -157,9 +153,7 @@ class queue {
           Number(trackCount) <= this.tracks?.length
         )
       )
-        throw new Error(
-          '[Invalid Track-Count] : Track Count has Invalid Counts to skip on queue.tracks',
-        );
+        throw new invalidTracksCount();
       this.packet.__cacheAndCleanTracks(
         { startIndex: 0, cleanTracks: trackCount },
         1,
@@ -188,7 +182,7 @@ class queue {
   async stop(forceStop = false, preserveTracks = false) {
     try {
       if (this.destroyed || !this?.packet?.audioPlayer?.state?.status)
-        throw new Error('[Destroyed Queue] : Queue has been destroyed already');
+        throw new destroyedQueue();
       this.packet.__cacheAndCleanTracks(
         { startIndex: 0, cleanTracks: this.tracks?.length },
         preserveTracks ? this.tracks?.length : 0,
@@ -218,12 +212,15 @@ class queue {
    * @returns {Promise<Boolean | undefined>} Returns Boolean or undefined on failure or success rate!
    */
   async destroy(delayVoiceTimeout = 0, destroyConnection = false) {
-    if (this.destroyed)
-      throw new Error('[Destroyed Queue] : Queue has been destroyed already');
-    const timeOutIdResidue = await this.voiceMod.disconnect(this.guildId, {
-      destroy: Boolean(destroyConnection),
-      delayVoiceTimeout,
-    });
+    if (this.destroyed) throw new destroyedQueue();
+    const timeOutIdResidue = await this.voiceMod.disconnect(
+      this.guildId,
+      {
+        destroy: Boolean(destroyConnection),
+        delayVoiceTimeout,
+      },
+      this.tracks?.find((t) => t.requestedSource)?.requestedSource,
+    );
     this.packet.__perfectClean();
     delete this.packet;
     this.destroyed = timeOutIdResidue;

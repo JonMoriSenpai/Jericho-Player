@@ -1,10 +1,16 @@
 const EventEmiiter = require('events').EventEmitter;
 const {
-  Client, Guild, Message, User, Channel,
+  Client,
+  Guild,
+  Message,
+  User,
+  Channel,
+  VoiceState,
 } = require('discord.js');
 const queue = require('./queue');
 const { guildResolver } = require('../utils/snowflakes');
 const eventEmitter = require('../utils/eventEmitter');
+const { invalidGuild, invalidQueue } = require('../misc/errorEvents');
 
 /**
  * @class player -> Player Class for Discord Client v14 for Jericho-Player Framework
@@ -41,6 +47,25 @@ class player extends EventEmiiter {
      * @readonly
      */
     this.eventEmitter = new eventEmitter(this, options?.eventOptions);
+
+    this.discordClient.on('voiceStateUpdate', async (oldState, newState) => {
+      const rawQueue = await this.getQueue(
+        oldState?.guild?.id ?? newState?.guild?.id,
+      );
+      if (
+        rawQueue &&
+        oldState?.guild?.id !== rawQueue.guildId &&
+        newState?.guild?.id !== rawQueue.guildId &&
+        newState?.channelId !== oldState?.channelId
+      )
+        return await this.#__voiceHandler(
+          oldState,
+          newState,
+          rawQueue,
+          rawQueue?.options?.voiceOptions ?? this.options?.voiceOptions,
+        );
+      else return undefined;
+    });
   }
 
   /**
@@ -54,10 +79,7 @@ class player extends EventEmiiter {
   async createQueue(guildSnowflake, forceCreate = false, options) {
     try {
       const guild = await guildResolver(this.discordClient, guildSnowflake);
-      if (!guild?.id)
-        throw new Error(
-          '[ Invalid Guild Snowflake ] : Guild Snowflake is Wrong and Un-Supported for Creation of Queue',
-        );
+      if (!guild?.id) throw new invalidGuild();
       this.eventEmitter.emitDebug(
         'queue Creation',
         'Creation of Queue Class Instance for Discord Guild Requests',
@@ -93,18 +115,12 @@ class player extends EventEmiiter {
   async destroyQueue(guildSnowflake, destroyConnection = true, options) {
     try {
       const guild = await guildResolver(this.discordClient, guildSnowflake);
-      if (!guild?.id)
-        throw new Error(
-          '[ Invalid Guild Snowflake ] : Guild Snowflake is Wrong and Un-Supported for Creation of Queue',
-        );
+      if (!guild?.id) throw new invalidGuild();
       const requestedQueue = this.#__queueMods('get', guild?.id, options);
-      if (!requestedQueue)
-        throw new Error(
-          '[ Invalid Queue ] : Requested Queue has been not Cached or was never created using given guild-snowflake',
-        );
+      if (!requestedQueue) throw new invalidQueue();
       this.eventEmitter.emitDebug(
         'queue Destruction',
-        'Destruction of Queue Class Instance from Actual Player Class Cahces',
+        'Destruction of Queue Class Instance from Actual Player Class Caches',
         {
           guildSnowflake,
         },
@@ -140,10 +156,7 @@ class player extends EventEmiiter {
   async getQueue(guildSnowflake, options, forceGet = false) {
     try {
       const guild = await guildResolver(this.discordClient, guildSnowflake);
-      if (!guild?.id)
-        throw new Error(
-          '[ Invalid Guild Snowflake ] : Guild Snowflake is Wrong and Un-Supported for Fetching of Queue',
-        );
+      if (!guild?.id) throw new invalidGuild();
       if (forceGet) return this.#__queueMods('forceget', guild?.id, options);
       else return this.#__queueMods('get', guild?.id);
     } catch (errorMetadata) {
@@ -199,8 +212,8 @@ class player extends EventEmiiter {
             )
           );
         case 'forcecreate':
-          let queue = this.#__queueMods('get', guildId);
-          if (queue) this.#__queueMods('delete', guildId);
+          const cachedQueue = this.#__queueMods('get', guildId);
+          if (cachedQueue) this.#__queueMods('delete', guildId);
           return this.#__queueMods(
             'submit',
             guildId,
@@ -229,6 +242,66 @@ class player extends EventEmiiter {
       );
       return undefined;
     }
+  }
+
+  /**
+   * @private
+   * @method __voiceHandler() Voice Handlers of Discord Client for moderating cached and working Queue on the respective Guild
+   * @param {VoiceState} oldState Old Voice State where previous State has been recorded from Client or Api
+   * @param {VoiceState} newState New Voice State where present State has been recorded from Client or Api
+   * @param {queue} queue Queue Data from Player's caches
+   * @param {object} options Voice Options if voiceMod is required
+   */
+  async #__voiceHandler(oldState, newState, queue, options) {
+    if (
+      (oldState?.member.id === queue?.current?.user.id ||
+        newState?.member.id === queue?.current?.user.id) &&
+      (!options?.leaveOn?.bot ||
+        (options?.leaveOn?.bot && !newState?.member?.user?.bot))
+    ) {
+      if (!newState?.channelId && !queue?.destroyed) {
+        if (oldState?.channel?.members?.size === 1)
+          this.eventEmitter.emitEvent(
+            'channelEmpty',
+            'Channel is Empty and have no members in it',
+            {
+              queue,
+              channel: oldState?.channel,
+              requestedSource: queue?.current?.requestedSource,
+            },
+          );
+
+        return await this.destroyQueue(queue?.guildId, true, {
+          delayTimeout:
+            options?.leaveOn?.bot && !isNaN(Number(options?.leaveOn?.bot)) > 0
+              ? options?.leaveOn?.bot
+              : 0,
+        });
+      } else if (newState?.channelId && !queue?.destroyed)
+        return await queue.voiceMod.connect(newState.channel);
+      else return undefined;
+    } else if (
+      oldState?.member.id === this.discordClient?.user?.id ||
+      newState?.member.id === this.discordClient?.user?.id
+    ) {
+      if (!newState?.channelId && !queue?.destroyed)
+        return await this.destroyQueue(queue?.guildId, true, {
+          ...options,
+          voiceOptions: {
+            ...options?.voiceOptions,
+            altVoiceChannel: oldState?.channelId,
+          },
+        });
+      else if (oldState?.channelId && newState?.channelId && !queue?.destroyed)
+        return await queue.voiceMod.connect(
+          options?.anyoneCanMoveClient ? newState.channel : oldState?.channel,
+        );
+      else return undefined;
+    } else return undefined;
+  }
+
+  get type() {
+    return 'player';
   }
 }
 
