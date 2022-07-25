@@ -6,7 +6,7 @@ const {
   CommandInteraction,
   StageChannel,
 } = require('discord.js');
-const { Track } = require('../misc/enums');
+const { Track, Options } = require('../misc/enums');
 const packets = require('../gen/packets');
 const eventEmitter = require('../utils/eventEmitter');
 const { voiceResolver } = require('../utils/snowflakes');
@@ -15,7 +15,6 @@ const player = require('./player');
 const {
   destroyedQueue,
   invalidQuery,
-  invalidVoiceChannel,
   invalidTracksCount,
 } = require('../misc/errorEvents');
 
@@ -26,10 +25,10 @@ class queue {
   /**
    * @constructor
    * @param {string | number} guildId Discord Guild Id for queue creation
-   * @param {object} options Queue Creation/Destruction Options + packet,downlaoder Options and even more options for caching
+   * @param {Options} options Queue Creation/Destruction Options + packet,downlaoder Options and even more options for caching
    * @param {player} player Actual player Instance for bring forth sub properties cached with it
    */
-  constructor(guildId, options, player) {
+  constructor(guildId, options = Options, player) {
     /**
      * @type {string | number} Discord Guild Id for queue creation
      * @readonly
@@ -37,7 +36,7 @@ class queue {
     this.guildId = guildId;
 
     /**
-     * @type {object} Queue Creation/Destruction Options + packet,downlaoder Options and even more options for caching
+     * @type {Options} Queue Creation/Destruction Options + packet,downlaoder Options and even more options for caching
      * @readonly
      */
     this.options = options;
@@ -84,21 +83,17 @@ class queue {
    * @param {string} rawQuery String Value for fetching/Parsing with the help of extractors
    * @param {string | number | VoiceChannel | StageChannel | Message} voiceSnowflake voice Channel Snowflake in terms of further resolving value using in-built resolvers to connect to play song on it
    * @param {string | number | Message | CommandInteraction } requestedSource requested By Source Data for checks and avoid the further edits on it by some stranger to protect the integrity
-   * @param {object} options queue/play Options for further requirements
+   * @param {Options} options queue/play Options for further requirements
    * @returns {Promise<Boolean | undefined>} Returns extractor Data based on progress or undefined
    */
 
-  async play(rawQuery, voiceSnowflake, requestedSource, options) {
+  async play(rawQuery, voiceSnowflake, requestedSource, options = Options) {
     try {
       if (this.destroyed)
         throw new destroyedQueue('Queue has been destroyed already');
       else if (!(rawQuery && typeof rawQuery === 'string' && rawQuery !== ''))
         throw new invalidQuery();
-      const voiceChannel = await voiceResolver(
-        this.discordClient,
-        voiceSnowflake,
-      );
-      if (!voiceChannel) throw new invalidVoiceChannel();
+
       this.eventEmitter.emitDebug(
         'Packet get Request',
         'Request for backend Work to be Handled by packet of Queue',
@@ -107,14 +102,15 @@ class queue {
           packet: this.packet,
         },
       );
-      if (!(this.packet && this.packet?.destroyed))
+      if (!(this.packet && !this.packet?.destroyed))
         this.packet = new packets(
           this,
           options?.packetOptions ?? this.options?.packetOptions,
         );
+
       return await this.packet?.getQuery(
         rawQuery,
-        voiceChannel,
+        voiceSnowflake,
         requestedSource,
         options?.packetOptions,
       );

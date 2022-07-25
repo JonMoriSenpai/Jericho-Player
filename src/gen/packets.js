@@ -11,16 +11,14 @@ const {
 
 const {
   Message,
-  User,
   CommandInteraction,
   VoiceChannel,
   StageChannel,
-  Guild,
 } = require('discord.js');
 
 const queue = require('../core/queue');
 const downloader = require('./downloader');
-const { Track, Playlist } = require('../misc/enums');
+const { Track, Playlist, Options } = require('../misc/enums');
 const {
   voiceResolver,
   messageResolver,
@@ -29,7 +27,10 @@ const {
 const player = require('../core/player');
 const eventEmitter = require('../utils/eventEmitter');
 const voiceMod = require('../utils/voiceMod');
-const { invalidRequiredSource } = require('../misc/errorEvents');
+const {
+  invalidRequiredSource,
+  invalidVoiceChannel,
+} = require('../misc/errorEvents');
 
 /**
  * @class packets -> Packets Class is for stream-packet of queue where it handles every backend request handlers without affecting the
@@ -38,9 +39,9 @@ class packets {
   /**
    * @constructor
    * @param {queue} queue Actual Related or Source Queue Data for fetching sub-property infos
-   * @param {object} options Options for backend stuffs
+   * @param {Options["packetOptions"]} options Options for backend stuffs
    */
-  constructor(queue, options) {
+  constructor(queue, options = Options.packetOptions) {
     /**
      * @type {queue} Actual Related or Source Queue Data for fetching sub-property infos
      * @readonly
@@ -54,7 +55,7 @@ class packets {
     this.guildId = queue?.guildId;
 
     /**
-     * @type {object} Cached Options for backend stuffs
+     * @type {Options["packetOptions"]} Cached Options for backend stuffs
      * @readonly
      */
     this.options = options;
@@ -117,11 +118,16 @@ class packets {
    * @param {string} rawQuery String Value for fetching/Parsing with the help of extractors
    * @param {string | number | VoiceChannel | StageChannel | Message} voiceSnowflake voice Channel Snowflake in terms of further resolving value using in-built resolvers to connect to play song on it
    * @param {string | number | Message | CommandInteraction } requestedSource requested By Source Data for checks and avoid the further edits on it by some stranger to protect the integrity
-   * @param {object} options packets Options for further requirements
+   * @param {Options["packetOptions"]} options packets Options for further requirements
    * @returns {Promise<Boolean | undefined>} Returns Extractor Data from the defalt extractors
    */
 
-  async getQuery(rawQuery, voiceSnowflake, requestedSource, options) {
+  async getQuery(
+    rawQuery,
+    voiceSnowflake,
+    requestedSource,
+    options = Options?.packetOptions,
+  ) {
     try {
       if (this.destroyed) return undefined;
       else if (!(rawQuery && typeof rawQuery === 'string' && rawQuery !== ''))
@@ -138,10 +144,15 @@ class packets {
             requestedSource?.member?.user?.bot))
       )
         throw new invalidRequiredSource();
-      const voiceChannel = await voiceResolver(
+      voiceSnowflake = await voiceResolver(
         this.queue?.discordClient,
         voiceSnowflake,
       );
+      if (
+        !voiceSnowflake ||
+        (voiceSnowflake && requestedSource?.guildId !== voiceSnowflake?.guildId)
+      )
+        throw new invalidVoiceChannel();
       this.eventEmitter.emitDebug(
         'voiceChannel Resolver',
         'Resolving Voice Snowflake Value for actual Voice Channel Data for Audio Player and Voice Connection',
@@ -149,7 +160,7 @@ class packets {
           voiceSnowflake,
         },
       );
-      await this.voiceMod?.connect(voiceChannel, requestedSource);
+      await this.voiceMod?.connect(voiceSnowflake, requestedSource);
       this.eventEmitter.emitDebug(
         'Downloader',
         'Making Request to default extractors for parsing and fetch required Track Data',

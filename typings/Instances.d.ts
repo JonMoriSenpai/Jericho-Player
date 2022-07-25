@@ -30,14 +30,14 @@ export type downloaderOptions = {
 export type voiceOptions = {
   eventOptions?: eventOptions;
   delayTimeout?: Number | 0;
-  leaveOn: {
-    end: number | Boolean | false | 0;
-    empty: number | Boolean | false | 0;
-    bot: number | Boolean | false | 0;
+  leaveOn?: {
+    end?: number | Boolean | false | 0;
+    empty?: number | Boolean | false | 0;
+    bot?: number | Boolean | false | 0;
   };
-  anyoneCanMoveClient: Boolean | true;
-  altVoiceChannel: string | number | VoiceBasedChannel;
-  forceDestroy: Boolean | false;
+  anyoneCanMoveClient?: Boolean | true;
+  altVoiceChannel?: string | number | VoiceBasedChannel;
+  forceDestroy?: Boolean | false;
 };
 
 export type packetOptions = {

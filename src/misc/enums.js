@@ -19,7 +19,6 @@ class Playlist {
     this.views = rawMetadata?.views;
     this.tracksCount = rawMetadata?.tracksCount;
     this.author = rawMetadata?.author ?? rawMetadata?.channel;
-    this.metadata = rawMetadata?.customMetadata;
   }
 
   get requestedSource() {
@@ -105,4 +104,55 @@ class Track {
   }
 }
 
-module.exports = { Track, Playlist };
+const eventOptions = {
+  ignoreCrash: true,
+  emitPlayer: true,
+  debugRegister: true,
+};
+
+const downloaderOptions = {
+  fetchLyrics: true,
+  eventReturn: { metadata: undefined },
+  ratelimit: 0,
+  ignoreInternalError: true,
+  fetchOptions: {
+    fetchLimit: Infinity,
+    streamQuality: 'high',
+    rawCookies: undefined,
+    userAgents: undefined,
+    skipalbumLimit: false,
+  },
+};
+
+const voiceOptions = {
+  eventOptions,
+  delayTimeout: 0,
+  leaveOn: {
+    end: false,
+    empty: false,
+    bot: false,
+  },
+  anyoneCanMoveClient: true,
+  altVoiceChannel: undefined,
+  forceDestroy: false,
+};
+
+const packetOptions = {
+  downloaderOptions,
+  voiceOptions,
+};
+
+const Options = {
+  eventOptions,
+  packetOptions,
+};
+
+module.exports = {
+  Track,
+  Playlist,
+  voiceOptions,
+  eventOptions,
+  packetOptions,
+  downloaderOptions,
+  Options,
+};
