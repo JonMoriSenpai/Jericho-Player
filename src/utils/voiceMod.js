@@ -7,14 +7,15 @@ const {
 const { voiceResolver, guildResolver } = require('./snowflakes');
 const queue = require('../core/queue');
 const { invalidVoiceChannel } = require('../misc/errorEvents');
+const { Options } = require('../misc/enums');
 
 class voiceMod {
   /**
    * @constructor
    * @param {queue} queue
-   * @param {object} options
+   * @param {Options["packetOptions"]["voiceOptions"]} options
    */
-  constructor(queue, options) {
+  constructor(queue, options = Options.packetOptions.voiceOptions) {
     this.queue = queue;
     this.player = queue?.player;
     this.discordClient = queue?.discordClient;
@@ -68,7 +69,7 @@ class voiceMod {
     guildSnowflake,
     delayVoiceTimeout,
     requestedSource = this.queue?.current?.requestedSource,
-    options = this.options,
+    options = this.options ?? Options.packetOptions.voiceOptions,
   ) {
     try {
       const guild = await guildResolver(this.discordClient, guildSnowflake);
@@ -94,8 +95,8 @@ class voiceMod {
       );
       if (!connectedChannel) return undefined;
       else if (options?.forceDestroy)
-        return delayVoiceTimeout && delayVoiceTimeout > 0
-          ? setTimeout(() => {
+        if (delayVoiceTimeout && delayVoiceTimeout > 0) {
+          return setTimeout(() => {
             const voiceConnection = getVoiceConnection(guild?.id);
             if (!voiceConnection) return undefined;
             voiceConnection.destroy(true);
@@ -109,26 +110,53 @@ class voiceMod {
               },
             );
             return true;
-          }, delayVoiceTimeout * 1000)
-          : true;
-      else
-        return delayVoiceTimeout && delayVoiceTimeout > 0
-          ? setTimeout(() => {
-            const voiceConnection = getVoiceConnection(guild?.id);
-            if (!voiceConnection) return undefined;
-            voiceConnection.disconnect();
-            this.eventEmitter.emitEvent(
-              'botDisconnect',
-              'Discord Client got Disconnected from the Channel',
-              {
-                queue: this.queue,
-                channel: connectedChannel,
-                requestedSource,
-              },
-            );
-            return true;
-          }, delayVoiceTimeout * 1000)
-          : true;
+          }, delayVoiceTimeout * 1000);
+        } else {
+          const voiceConnection = getVoiceConnection(guild?.id);
+          if (!voiceConnection) return undefined;
+          voiceConnection.destroy(true);
+          this.eventEmitter.emitEvent(
+            'botDisconnect',
+            'Discord Client got Disconnected from the Channel',
+            {
+              queue: this.queue,
+              channel: connectedChannel,
+              requestedSource,
+            },
+          );
+          return true;
+        }
+      else if (delayVoiceTimeout && delayVoiceTimeout > 0) {
+        return setTimeout(() => {
+          const voiceConnection = getVoiceConnection(guild?.id);
+          if (!voiceConnection) return undefined;
+          voiceConnection.disconnect();
+          this.eventEmitter.emitEvent(
+            'botDisconnect',
+            'Discord Client got Disconnected from the Channel',
+            {
+              queue: this.queue,
+              channel: connectedChannel,
+              requestedSource,
+            },
+          );
+          return true;
+        }, delayVoiceTimeout * 1000);
+      } else {
+        const voiceConnection = getVoiceConnection(guild?.id);
+        if (!voiceConnection) return undefined;
+        voiceConnection.disconnect();
+        this.eventEmitter.emitEvent(
+          'botDisconnect',
+          'Discord Client got Disconnected from the Channel',
+          {
+            queue: this.queue,
+            channel: connectedChannel,
+            requestedSource,
+          },
+        );
+        return true;
+      }
     } catch (errorMetadata) {
       this.eventEmitter.emitEvent(
         'connectionError',

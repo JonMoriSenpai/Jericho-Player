@@ -11,6 +11,7 @@ const queue = require('./queue');
 const { guildResolver } = require('../utils/snowflakes');
 const eventEmitter = require('../utils/eventEmitter');
 const { invalidGuild, invalidQueue } = require('../misc/errorEvents');
+const { Options } = require('../misc/enums');
 
 /**
  * @class player -> Player Class for Discord Client v14 for Jericho-Player Framework
@@ -25,9 +26,9 @@ class player extends EventEmiiter {
   /**
    * @constructor player -> Player Class for Discord Client v14 for Jericho-Player Framework
    * @param {Client} discordClient Discord Client Instance for Discord Bot for Interaction with Discord Api
-   * @param {object} options Object Wised Options for Player Creation and Saved to Cache for further Modifications for backend stuff of Framework
+   * @param {Options} options Object Wised Options for Player Creation and Saved to Cache for further Modifications for backend stuff of Framework
    */
-  constructor(discordClient, options) {
+  constructor(discordClient, options = Options) {
     super();
 
     /**
@@ -37,7 +38,7 @@ class player extends EventEmiiter {
     this.discordClient = discordClient;
 
     /**
-     * @type {object} Player/Queue Creation/Destruction Options + packet,downlaoder Options and even more options for caching
+     * @type {Options} Player/Queue Creation/Destruction Options + packet,downlaoder Options and even more options for caching
      * @readonly
      */
     this.options = options;
@@ -54,8 +55,8 @@ class player extends EventEmiiter {
       );
       if (
         rawQueue &&
-        oldState?.guild?.id !== rawQueue.guildId &&
-        newState?.guild?.id !== rawQueue.guildId &&
+        oldState?.guild?.id === rawQueue.guildId &&
+        newState?.guild?.id === rawQueue.guildId &&
         newState?.channelId !== oldState?.channelId
       )
         return await this.#__voiceHandler(
@@ -72,11 +73,11 @@ class player extends EventEmiiter {
    * @method createQueue Creation of Queue Instance with proper caching and Options formulator
    * @param {Guild | Message | User | Channel} guildSnowflake A Guild Snowflake - Meant by Resolving Raw Value to be parsed for Actual Guild Instance and use for further developments of Queue
    * @param {Boolean | false} forceCreate Force Create Queue by Deleting Old Queue if any present
-   * @param {object} options Object Wised Options for Queue Creation and Saved to Cache for further Modifications for backend stuff of Framework
+   * @param {Options} options Object Wised Options for Queue Creation and Saved to Cache for further Modifications for backend stuff of Framework
    * @returns {Promise<queue>} new queue(options) on Success Value with proper other sub-classes alignment
    */
 
-  async createQueue(guildSnowflake, forceCreate = false, options) {
+  async createQueue(guildSnowflake, forceCreate = false, options = Options) {
     try {
       const guild = await guildResolver(this.discordClient, guildSnowflake);
       if (!guild?.id) throw new invalidGuild();
@@ -109,10 +110,14 @@ class player extends EventEmiiter {
    * @method destroyQueue Destroy Queue from Player Caches and destroy Queue internally (if any process are running or on wait)
    * @param {Guild | Message | User | Channel} guildSnowflake A Guild Snowflake - Meant by Resolving Raw Value to be parsed for Actual Guild Instance and use for further developments of Queue
    * @param {Boolean | true} destroyConnection Destroy Connection if any present in guild with client
-   * @param {object} options Destruction of Options for internal Processes
+   * @param {Options} options Destruction of Options for internal Processes
    * @returns {Promise<Boolean | undefined>} Returns Boolean or undefined on failure or success rate!
    */
-  async destroyQueue(guildSnowflake, destroyConnection = true, options) {
+  async destroyQueue(
+    guildSnowflake,
+    destroyConnection = true,
+    options = Options,
+  ) {
     try {
       const guild = await guildResolver(this.discordClient, guildSnowflake);
       if (!guild?.id) throw new invalidGuild();
@@ -148,12 +153,12 @@ class player extends EventEmiiter {
   /**
    * @method getQueue Fetching/Getting of Queue Instance with proper caching and Options formulator
    * @param {Guild | Message | User | Channel} guildSnowflake A Guild Snowflake - Meant by Resolving Raw Value to be parsed for Actual Guild Instance and use for further developments of Queue
-   * @param {object} options Object Wised Options for Queue Fetching and Get from Cache for further Modifications for backend stuff of Framework
+   * @param {Options} options Object Wised Options for Queue Fetching and Get from Cache for further Modifications for backend stuff of Framework
    * @param {Boolean | false} forceGet Force Player to spawn new Queue and cached
    * @returns {Promise<queue>} On Success Value with proper other sub-classes alignments
    */
 
-  async getQueue(guildSnowflake, options, forceGet = false) {
+  async getQueue(guildSnowflake, options = Options, forceGet = false) {
     try {
       const guild = await guildResolver(this.discordClient, guildSnowflake);
       if (!guild?.id) throw new invalidGuild();
@@ -178,12 +183,12 @@ class player extends EventEmiiter {
    * @private @method __queueMods Manupulative Works related Queue and Player
    * @param {string} method swtich case method for queue mode work
    * @param {string | number | Guild.id} guildId Discord Guild Id for queue fetching and creation
-   * @param {object} options Queue Creation/Destruction Options
+   * @param {Options} options Queue Creation/Destruction Options
    * @param {queue | object} metadata Random or un-defined metadata or queue on major conditions
    * @returns {Boolean | queue} Returns Boolean on success or failure or Queue on creation of it
    */
 
-  #__queueMods(method, guildId, options, metadata) {
+  #__queueMods(method, guildId, options = Options, metadata = undefined) {
     try {
       switch (method?.toLowerCase()?.trim()) {
         case 'get':
@@ -252,7 +257,7 @@ class player extends EventEmiiter {
    * @param {queue} queue Queue Data from Player's caches
    * @param {object} options Voice Options if voiceMod is required
    */
-  async #__voiceHandler(oldState, newState, queue, options) {
+  async #__voiceHandler(oldState, newState, queue, options = Options?.packetOption?.voiceOptions) {
     if (
       (oldState?.member.id === queue?.current?.user.id ||
         newState?.member.id === queue?.current?.user.id) &&
@@ -270,14 +275,17 @@ class player extends EventEmiiter {
               requestedSource: queue?.current?.requestedSource,
             },
           );
-
         return await this.destroyQueue(queue?.guildId, true, {
           delayTimeout:
             options?.leaveOn?.bot && !isNaN(Number(options?.leaveOn?.bot)) > 0
               ? options?.leaveOn?.bot
               : 0,
         });
-      } else if (newState?.channelId && !queue?.destroyed)
+      } else if (
+        newState?.channelId &&
+        !queue?.destroyed &&
+        options?.anyoneCanMoveClient
+      )
         return await queue.voiceMod.connect(newState.channel);
       else return undefined;
     } else if (

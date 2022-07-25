@@ -121,7 +121,8 @@ class snowFlakes {
       (snowflake instanceof ButtonInteraction ||
         snowflake instanceof SelectMenuInteraction ||
         snowflake instanceof CommandInteraction) &&
-      snowflake?.message
+      snowflake?.commandId &&
+      snowflake?.commandName
     )
       return snowflake;
     else return undefined;

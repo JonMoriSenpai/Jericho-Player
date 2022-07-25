@@ -2,6 +2,7 @@ const { User } = require('discord.js');
 const { playdl } = require('playdl-music-extractor');
 const player = require('../core/player');
 const queue = require('../core/queue');
+const { Options } = require('../misc/enums');
 const eventEmitter = require('../utils/eventEmitter');
 const packets = require('./packets');
 
@@ -12,9 +13,9 @@ class downloader {
   /**
    * @constructor
    * @param {packets} packet Packet Instance for moderating backend manupulation and request handlers and handle massive functions and events
-   * @param {object} options Downloader Options for extractor's scrapping Options
+   * @param {Options["packetOptions"]["downloaderOptions"]} options Downloader Options for extractor's scrapping Options
    */
-  constructor(packet, options) {
+  constructor(packet, options = Options.packetOptions.downloaderOptions) {
     /**
      * @type {packets} Packet Instance for moderating backend manupulation and request handlers and handle massive functions and events
      * @readonly
@@ -38,7 +39,7 @@ class downloader {
     this.eventEmitter = packet?.eventEmitter;
 
     /**
-     * @type {object} options Downloader Options for extractor's scrapping Options
+     * @type {Options["packetOptions"]["downloaderOptions"]} options Downloader Options for extractor's scrapping Options
      * @readonly
      */
     this.options = options;
@@ -46,7 +47,7 @@ class downloader {
     /**
      * @type {playdl} Play-dl Class Instance for making solid and proper tunneled request inter-exchange
      */
-    this.playdl = new playdl(options?.playdlOptions);
+    this.playdl = new playdl(options);
 
     this.playdl.on('album', (playlist) => (playlist ? this.packet?.__playlistMod(playlist) : undefined));
 
@@ -60,10 +61,14 @@ class downloader {
    * @method get Get Tracks Data or triggering track event for Tracks Mod
    * @param {string} rawQuery String Value for fetching/Parsing with the help of extractors
    * @param {User} requestedSource requested By Source Data for checks and avoid the further edits on it by some stranger to protect the integrity
-   * @param {object} options options Downloader Options for extractor's scrapping Options
+   * @param {Options["packetOptions"]["downloaderOptions"]} options options Downloader Options for extractor's scrapping Options
    * @returns {Promise<Boolean | undefined>} Returns Raw Extractor Data on completion of processing and extracting
    */
-  async get(rawQuery, requestedSource, options) {
+  async get(
+    rawQuery,
+    requestedSource,
+    options = Options.packetOptions.downloaderOptions,
+  ) {
     if (!(rawQuery && typeof rawQuery === 'string' && rawQuery !== ''))
       return undefined;
     else
@@ -78,11 +83,15 @@ class downloader {
    * @method getPlaydl Play-dl extractor Function with repsect to internal functions to support the cause of usage
    * @param {string} rawQuery String Value for fetching/Parsing with the help of extractors
    * @param {User} requestedSource requested By Source Data for checks and avoid the further edits on it by some stranger to protect the integrity
-   * @param {object} options options Downloader Options for extractor's scrapping Options
+   * @param {Options["packetOptions"]["downloaderOptions"]} options options Downloader Options for extractor's scrapping Options
    * @returns {Promise<Boolean | undefined>} Returns Raw Extractor Data on completion of processing and extracting
    */
 
-  async getPlaydl(rawQuery, requestedSource, options) {
+  async getPlaydl(
+    rawQuery,
+    requestedSource,
+    options = Options.packetOptions.downloaderOptions,
+  ) {
     this.eventEmitter.emitDebug(
       'playdl - Extractor',
       'Making Request to playdl extractors for parsing and fetch required Track Data',

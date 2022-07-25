@@ -1,5 +1,6 @@
 const fileSystem = require('fs');
 const path = require('path');
+const { Options } = require('../misc/enums');
 
 class eventEmitter {
   constructor(
@@ -7,7 +8,7 @@ class eventEmitter {
     config = {
       ignoreCrash: false,
       emitPlayer: true,
-      errorName: '[ Error ]',
+      errorName: 'Error',
       debugRegister: true,
     },
   ) {
@@ -23,7 +24,7 @@ class eventEmitter {
     config = {
       ignoreCrash: false,
       emitPlayer: true,
-      errorName: '[ Error ]',
+      errorName: 'Error',
       debugRegister: true,
     },
   ) {
@@ -56,12 +57,16 @@ class eventEmitter {
       );
     if (config?.debugRegister)
       this.emitDebug(
-        config?.errorName ?? eventMetadata?.name ?? 'Error',
+        eventMetadata?.name ?? config?.errorName ?? 'Error',
         eventMetadata?.message ?? 'Unknown-Metadata',
         eventVariable,
       );
     if (config?.ignoreCrash)
-      this.__writeOff(config?.errorName, eventLocation, eventMetadata);
+      this.__writeOff(
+        eventMetadata?.name ?? config?.errorName ?? 'Error',
+        eventLocation,
+        eventMetadata,
+      );
     return true;
   }
 
