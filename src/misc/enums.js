@@ -1,3 +1,5 @@
+const { AudioResource } = require('@discordjs/voice');
+
 class Playlist {
   #__raw = undefined;
 
@@ -97,6 +99,17 @@ class Track {
       this.requestedSource?.author ??
       this.requestedSource?.member
     );
+  }
+
+  set audioResource(resource) {
+    this.#__raw.audioResource = resource;
+  }
+
+  /**
+   * @returns {AudioResource} Audio Resource of respected Track
+   */
+  get audioResource() {
+    return this.raw?.audioResource;
   }
 
   get raw() {

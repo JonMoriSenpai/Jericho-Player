@@ -133,15 +133,15 @@ class queue {
 
   /**
    * @method skip Skipping Current Track to specified Track-Counts or by-default on next song
-   * @param {Boolean | false} forceSkip Forced Skip to even fast skip the ending silence paddings for smooth audio play
+   * @param {Boolean | true} forceSkip Forced Skip to even fast skip the ending silence paddings for smooth audio play
    * @param {Number | 1} trackCount Tracks Count to skip to in the queue.tracks array
    * @returns {Promise<Boolean | undefined>}  Returns Boolean or undefined on failure or success rate!
    */
 
-  async skip(forceSkip = false, trackCount = 1) {
+  async skip(forceSkip = true, trackCount = 1) {
     try {
-      if (this.destroyed || !this?.packet?.audioPlayer?.state?.status)
-        throw new destroyedQueue();
+      if (this.destroyed) throw new destroyedQueue();
+      else if (this.tracks?.length < 2) return undefined;
       else if (
         !(
           trackCount &&
@@ -154,7 +154,7 @@ class queue {
         { startIndex: 0, cleanTracks: trackCount },
         1,
       );
-      this.packet?.audioPlayer?.stop((Boolean(forceSkip) ?? false) || false);
+      this.packet?.audioPlayer?.stop((Boolean(forceSkip) ?? true) || true);
       return true;
     } catch (errorMetadata) {
       this.eventEmitter.emitError(
@@ -170,20 +170,20 @@ class queue {
 
   /**
    * @method stop Stopping Current Track along side with Queue to a complete silence with cleaning
-   * @param {Boolean | false} forceStop Forced Stop to even fast Stop the ending silence paddings for smooth audio play
+   * @param {Boolean | true} forceStop Forced Stop to even fast Stop the ending silence paddings for smooth audio play
    * @param {Boolean | false} preserveTracks Tracks to save even after Queue got stoppped for new packet
    * @returns {Promise<Boolean | undefined>} Returns Boolean or undefined on failure or success rate!
    */
 
-  async stop(forceStop = false, preserveTracks = false) {
+  async stop(forceStop = true, preserveTracks = false) {
     try {
-      if (this.destroyed || !this?.packet?.audioPlayer?.state?.status)
-        throw new destroyedQueue();
+      if (this.destroyed) throw new destroyedQueue();
+      else if (!this.current) return undefined;
       this.packet.__cacheAndCleanTracks(
         { startIndex: 0, cleanTracks: this.tracks?.length },
         preserveTracks ? this.tracks?.length : 0,
       );
-      this.packet?.audioPlayer?.stop((Boolean(forceStop) ?? false) || false);
+      this.packet?.audioPlayer?.stop((Boolean(forceStop) ?? true) || true);
       return await this.destroy();
     } catch (errorMetadata) {
       this.eventEmitter.emitError(
@@ -224,6 +224,79 @@ class queue {
   }
 
   /**
+   * @method pause Pause Audio Player of the Queue
+   * @returns {Boolean} Returns true for Success and false for Failure operation
+   */
+
+  pause() {
+    try {
+      if (this.destroyed) throw new destroyedQueue();
+      else if (!(this.current && this.playing && !this.paused))
+        return undefined;
+      return this.packet?.audioPlayer?.pause(true);
+    } catch (errorMetadata) {
+      this.eventEmitter.emitError(
+        errorMetadata,
+        undefined,
+        'queue.pause()',
+        {
+          queue: this,
+        },
+        this.options?.eventOptions,
+      );
+      return undefined;
+    }
+  }
+
+  /**
+   * @method unpause Un-Pause Audio Player of the Queue
+   * @returns {Boolean} Returns true for Success and false for Failure operation
+   */
+
+  async unpause() {
+    try {
+      if (this.destroyed) throw new destroyedQueue();
+      else if (!(this.current && this.paused)) return undefined;
+      return this.packet?.audioPlayer?.unpause();
+    } catch (errorMetadata) {
+      this.eventEmitter.emitError(
+        errorMetadata,
+        undefined,
+        'queue.unpause()',
+        {
+          queue: this,
+        },
+        this.options?.eventOptions,
+      );
+      return undefined;
+    }
+  }
+
+  /**
+   * Audio Player's Volume for the Queue
+   * @type {Number}
+   * @readonly
+   */
+
+  get volume() {
+    if (this.destroyed) return undefined;
+    return this.current?.audioResource?.volume?.volume;
+  }
+
+  /**
+   * Audio Player's Non-Idle/Activity's Status as Boolean
+   * @type {Boolean}
+   * @readonly
+   */
+
+  get working() {
+    if (this.destroyed || !this?.packet?.audioPlayer?.state?.status)
+      return false;
+    else
+      return this.packet?.audioPlayer?.state?.status !== AudioPlayerStatus.Idle;
+  }
+
+  /**
    * Audio Player's Playing/Activity's Status as Boolean
    * @type {Boolean}
    * @readonly
@@ -233,7 +306,9 @@ class queue {
     if (this.destroyed || !this?.packet?.audioPlayer?.state?.status)
       return false;
     else
-      return this.packet?.audioPlayer?.state?.status !== AudioPlayerStatus.Idle;
+      return (
+        this.packet?.audioPlayer?.state?.status === AudioPlayerStatus.Playing
+      );
   }
 
   /**
@@ -245,8 +320,8 @@ class queue {
     if (!this.packet?.audioPlayer?.state?.status) return false;
     else
       return (
-        this.packet?.audioPlayer.state.status === AudioPlayerStatus.Paused ||
-        this.packet?.audioPlayer.state.status === AudioPlayerStatus.AutoPaused
+        this.packet?.audioPlayer?.state?.status === AudioPlayerStatus.Paused ||
+        this.packet?.audioPlayer?.state?.status === AudioPlayerStatus.AutoPaused
       );
   }
   /**

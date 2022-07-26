@@ -143,6 +143,8 @@ export class queue {
   public readonly player: player;
   public readonly destroyed: boolean | false;
   public get type(): string | "queue";
+  public get volume(): Number;
+  public get working(): Boolean;
   public get playing(): Boolean;
   public get paused(): Boolean;
   public get current(): Track | undefined;
@@ -154,15 +156,17 @@ export class queue {
     options?: Options
   ): Promise<Boolean | undefined>;
   skip(
-    forceSkip?: Boolean | false,
+    forceSkip?: Boolean | true,
     trackCount?: Number | 1
   ): Promise<Boolean | undefined>;
   stop(
-    forceStop?: Boolean | false,
+    forceStop?: Boolean | true,
     preserveTracks?: Boolean | false
   ): Promise<Boolean | undefined>;
   destroy(
     delayVoiceTimeout?: Number | 0,
     destroyConnection?: Boolean | false
   ): Promise<Boolean | undefined>;
+  pause(): Boolean;
+  unpause(): Boolean;
 }

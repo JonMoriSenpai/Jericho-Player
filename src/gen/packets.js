@@ -307,13 +307,13 @@ class packets {
           streamData,
         },
       );
-      const loadedAudioResource = createAudioResource(
+      rawTrackData.track.audioResource = createAudioResource(
         streamData?.stream?.buffer,
         {
           inputType: streamData?.type ?? StreamType.Arbitrary,
         },
       );
-      this.audioPlayer.play(loadedAudioResource);
+      this.audioPlayer.play(rawTrackData.track.audioResource);
       await entersState(this.audioPlayer, AudioPlayerStatus.Playing, 2e3);
       const voiceConnection = getVoiceConnection(this.guildId);
       this.eventEmitter.emitEvent(
