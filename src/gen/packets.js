@@ -22,6 +22,7 @@ const {
   Track,
   Playlist,
   Options,
+  packetOptions,
   packetPrivateCaches,
 } = require('../misc/enums');
 const {
@@ -44,7 +45,7 @@ class packets {
   /**
    * @constructor
    * @param {queue} queue Actual Related or Source Queue Data for fetching sub-property infos
-   * @param {Options["packetOptions"]} options Options for backend stuffs
+   * @param {packetOptions} options Options for backend stuffs
    */
   constructor(queue, options = Options.packetOptions) {
     /**
@@ -63,7 +64,7 @@ class packets {
 
     /**
      * Cached Options for backend stuffs
-     * @type {Options["packetOptions"]}
+     * @type {packetOptions}
      * @readonly
      */
     this.options = options;

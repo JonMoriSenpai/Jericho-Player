@@ -2,7 +2,7 @@ const { User } = require('discord.js');
 const { playdl, playdlQuick } = require('playdl-music-extractor');
 const player = require('../core/player');
 const queue = require('../core/queue');
-const { Options } = require('../misc/enums');
+const { Options, downloaderOptions } = require('../misc/enums');
 const eventEmitter = require('../utils/eventEmitter');
 const packets = require('./packets');
 
@@ -13,7 +13,7 @@ class downloader {
   /**
    * @constructor
    * @param {packets} packet Packet Instance for moderating backend manupulation and request handlers and handle massive functions and events
-   * @param {Options["packetOptions"]["downloaderOptions"]} options Downloader Options for extractor's scrapping Options
+   * @param {downloaderOptions} options Downloader Options for extractor's scrapping Options
    */
   constructor(packet, options = Options.packetOptions.downloaderOptions) {
     /**
@@ -44,7 +44,7 @@ class downloader {
 
     /**
      * options Downloader Options for extractor's scrapping Options
-     * @type {Options["packetOptions"]["downloaderOptions"]}
+     * @type {downloaderOptions}
      * @readonly
      */
     this.options = options;
