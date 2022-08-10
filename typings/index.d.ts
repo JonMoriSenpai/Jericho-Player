@@ -169,4 +169,5 @@ export class queue {
   ): Promise<Boolean | undefined>;
   pause(): Boolean;
   unpause(): Boolean;
+  setVolume(volume?: Number): Number | undefined;
 }

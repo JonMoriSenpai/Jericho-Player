@@ -65,6 +65,16 @@ class invalidTracksCount extends Error {
   }
 }
 
+class notPlaying extends Error {
+  constructor(message) {
+    super();
+    this.name = 'notPlaying';
+    this.message =
+      message ??
+      'No Track is Playing for the requested Operation related to Current Track';
+  }
+}
+
 module.exports = {
   invalidGuild,
   invalidRequiredSource,
@@ -73,4 +83,5 @@ module.exports = {
   destroyedQueue,
   invalidQuery,
   invalidTracksCount,
+  notPlaying,
 };

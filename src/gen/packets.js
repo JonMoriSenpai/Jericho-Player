@@ -18,7 +18,12 @@ const {
 
 const queue = require('../core/queue');
 const downloader = require('./downloader');
-const { Track, Playlist, Options } = require('../misc/enums');
+const {
+  Track,
+  Playlist,
+  Options,
+  packetPrivateCaches,
+} = require('../misc/enums');
 const {
   voiceResolver,
   messageResolver,
@@ -91,15 +96,10 @@ class packets {
     this.tracksMetadata = [];
 
     /**
-     * @type {object} Comprise of private caches and settings for rare used stuff or misc stuff
+     * @type {packetPrivateCaches} Comprise of private caches and settings for rare used stuff or misc stuff
      * @readonly
      */
-    this.__privateCaches = {
-      completedTracksMetadata: [],
-      audioPlayerSubscription: undefined,
-      conditions: {},
-      timeMetadata: {},
-    };
+    this.__privateCaches = packetPrivateCaches;
 
     /**
      * @type {downloader} Downloader Class Instance for extractors works and fetching of tracks from raw Query and other stuff
@@ -313,6 +313,9 @@ class packets {
           inputType: streamData?.type ?? StreamType.Arbitrary,
         },
       );
+      rawTrackData.track.audioResource.volume.setVolume(
+        (this.__privateCaches.volumeMetadata ?? 95) / 1000,
+      );
       this.audioPlayer.play(rawTrackData.track.audioResource);
       await entersState(this.audioPlayer, AudioPlayerStatus.Playing, 2e3);
       const voiceConnection = getVoiceConnection(this.guildId);
@@ -339,6 +342,7 @@ class packets {
           packet: this,
         },
       );
+
       return true;
     } catch (errorMetadata) {
       this.eventEmitter.emitError(
@@ -399,18 +403,19 @@ class packets {
       const track = new Track(rawTrack);
       const streamData = track?.__getStream(true);
       this.tracksMetadata.push({ track, streamData });
-      this.eventEmitter.emitEvent(
-        'trackAdd',
-        'Tracks has been Added to Cache for Further Modification',
-        {
-          queue: this.queue,
-          track,
-          playlist: new Playlist(playlist),
-          user: track?.user,
-          tracks: this.queue?.tracks,
-          requestedSource: track?.requestedSource,
-        },
-      );
+      if (!track.playlistId)
+        this.eventEmitter.emitEvent(
+          'trackAdd',
+          'Tracks has been Added to Cache for Further Modification',
+          {
+            queue: this.queue,
+            track,
+            playlist: new Playlist(playlist),
+            user: track?.user,
+            tracks: this.queue?.tracks,
+            requestedSource: track?.requestedSource,
+          },
+        );
       if (this.tracksMetadata?.length === 1) await this.__audioResourceMod();
       return true;
     } catch (errorMetadata) {
