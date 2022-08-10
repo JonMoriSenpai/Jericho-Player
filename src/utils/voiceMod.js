@@ -7,13 +7,13 @@ const {
 const { voiceResolver, guildResolver } = require('./snowflakes');
 const queue = require('../core/queue');
 const { invalidVoiceChannel } = require('../misc/errorEvents');
-const { Options } = require('../misc/enums');
+const { Options, voiceOptions } = require('../misc/enums');
 
 class voiceMod {
   /**
    * @constructor
    * @param {queue} queue
-   * @param {Options["packetOptions"]["voiceOptions"]} options
+   * @param {voiceOptions} options
    */
   constructor(queue, options = Options.packetOptions.voiceOptions) {
     this.queue = queue;

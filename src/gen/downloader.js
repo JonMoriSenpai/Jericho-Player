@@ -67,7 +67,7 @@ class downloader {
    * @method get Get Tracks Data or triggering track event for Tracks Mod
    * @param {string} rawQuery String Value for fetching/Parsing with the help of extractors
    * @param {User} requestedSource requested By Source Data for checks and avoid the further edits on it by some stranger to protect the integrity
-   * @param {Options["packetOptions"]["downloaderOptions"]} options options Downloader Options for extractor's scrapping Options
+   * @param {downloaderOptions} options options Downloader Options for extractor's scrapping Options
    * @returns {Promise<Boolean | undefined>} Returns Raw Extractor Data on completion of processing and extracting
    */
   async get(
@@ -89,7 +89,7 @@ class downloader {
    * @method getPlaydl Play-dl extractor Function with repsect to internal functions to support the cause of usage
    * @param {string} rawQuery String Value for fetching/Parsing with the help of extractors
    * @param {User} requestedSource requested By Source Data for checks and avoid the further edits on it by some stranger to protect the integrity
-   * @param {Options["packetOptions"]["downloaderOptions"]} options options Downloader Options for extractor's scrapping Options
+   * @param {downloaderOptions} options options Downloader Options for extractor's scrapping Options
    * @returns {Promise<Boolean | undefined>} Returns Raw Extractor Data on completion of processing and extracting
    */
 

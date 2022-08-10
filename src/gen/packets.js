@@ -129,7 +129,7 @@ class packets {
    * @param {string} rawQuery String Value for fetching/Parsing with the help of extractors
    * @param {string | number | VoiceChannel | StageChannel | Message} voiceSnowflake voice Channel Snowflake in terms of further resolving value using in-built resolvers to connect to play song on it
    * @param {string | number | Message | CommandInteraction } requestedSource requested By Source Data for checks and avoid the further edits on it by some stranger to protect the integrity
-   * @param {Options["packetOptions"]} options packets Options for further requirements
+   * @param {packetOptions} options packets Options for further requirements
    * @returns {Promise<Boolean | undefined>} Returns Extractor Data from the defalt extractors
    */
 
