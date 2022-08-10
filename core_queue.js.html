@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Source: core/queue.js</title>
+
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <script src="scripts/nav.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/skyceil.css">
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+</head>
+
+<body>
+
+<nav class="navbar">
+    <h4><a href="index.html">Home</a></h4><h5 class="no-bottom must-underline">Classes</h5><ul><li><span class="small-icon C">C</span><b><a href="downloader.html">downloader</a></b><ul class="has-class-methods"><li><span class="small-icon M">M</span><a href="downloader.html#eventEmitter">eventEmitter</a></li><li><span class="small-icon M">M</span><a href="downloader.html#options">options</a></li><li><span class="small-icon M">M</span><a href="downloader.html#packet">packet</a></li><li><span class="small-icon M">M</span><a href="downloader.html#playdl">playdl</a></li><li><span class="small-icon M">M</span><a href="downloader.html#player">player</a></li><li><span class="small-icon M">M</span><a href="downloader.html#queue">queue</a></li></ul></li><li><span class="small-icon C">C</span><b><a href="packets.html">packets</a></b><ul class="has-class-methods"><li><span class="small-icon M">M</span><a href="packets.html#__privateCaches">__privateCaches</a></li><li><span class="small-icon M">M</span><a href="packets.html#audioPlayer">audioPlayer</a></li><li><span class="small-icon M">M</span><a href="packets.html#destroyed">destroyed</a></li><li><span class="small-icon M">M</span><a href="packets.html#downloader">downloader</a></li><li><span class="small-icon M">M</span><a href="packets.html#eventEmitter">eventEmitter</a></li><li><span class="small-icon M">M</span><a href="packets.html#guildId">guildId</a></li><li><span class="small-icon M">M</span><a href="packets.html#options">options</a></li><li><span class="small-icon M">M</span><a href="packets.html#player">player</a></li><li><span class="small-icon M">M</span><a href="packets.html#queue">queue</a></li><li><span class="small-icon M">M</span><a href="packets.html#tracksMetadata">tracksMetadata</a></li><li><span class="small-icon M">M</span><a href="packets.html#type">type</a></li><li><span class="small-icon M">M</span><a href="packets.html#voiceMod">voiceMod</a></li></ul></li><li><span class="small-icon C">C</span><b><a href="player.html">player</a></b><ul class="has-class-methods"><li><span class="small-icon M">M</span><a href="player.html#__privateCaches">__privateCaches</a></li><li><span class="small-icon M">M</span><a href="player.html#discordClient">discordClient</a></li><li><span class="small-icon M">M</span><a href="player.html#eventEmitter">eventEmitter</a></li><li><span class="small-icon M">M</span><a href="player.html#options">options</a></li></ul></li><li><span class="small-icon C">C</span><a href="player%2520-_%2520Player%2520Class%2520for%2520Discord%2520Client%2520v14%2520for%2520Jericho-Player%2520Framework.html">player -> Player Class for Discord Client v14 for Jericho-Player Framework</a></li><li><span class="small-icon C">C</span><b><a href="queue.html">queue</a></b><ul class="has-class-methods"><li><span class="small-icon M">M</span><a href="queue.html#current">current</a></li><li><span class="small-icon M">M</span><a href="queue.html#destroyed">destroyed</a></li><li><span class="small-icon M">M</span><a href="queue.html#discordClient">discordClient</a></li><li><span class="small-icon M">M</span><a href="queue.html#eventEmitter">eventEmitter</a></li><li><span class="small-icon M">M</span><a href="queue.html#guildId">guildId</a></li><li><span class="small-icon M">M</span><a href="queue.html#options">options</a></li><li><span class="small-icon M">M</span><a href="queue.html#packet">packet</a></li><li><span class="small-icon M">M</span><a href="queue.html#paused">paused</a></li><li><span class="small-icon M">M</span><a href="queue.html#player">player</a></li><li><span class="small-icon M">M</span><a href="queue.html#playing">playing</a></li><li><span class="small-icon M">M</span><a href="queue.html#tracks">tracks</a></li><li><span class="small-icon M">M</span><a href="queue.html#voiceMod">voiceMod</a></li><li><span class="small-icon M">M</span><a href="queue.html#volume">volume</a></li><li><span class="small-icon M">M</span><a href="queue.html#working">working</a></li></ul></li><li><span class="small-icon C">C</span><a href="voiceMod.html">voiceMod</a></li></ul><h4>Global</h4><ul><li><a href="global.html#__cacheAndCleanTracksCacheandCleanTracksonTrackEndeventTrigger/Requirement">__cacheAndCleanTracks Cache and Clean Tracks on Track End event Trigger/Requirement</a></li><li><a href="global.html#__perfectCleanPerfectcleanforavoidingMemoryleakandreleasethetidewithRAMusuage">__perfectClean Perfect clean for avoiding Memory leak and release the tide with RAM usuage</a></li><li><a href="global.html#__playlistModPlaylistModeratorforeventsandparsingrawPlaylist/AlbumData">__playlistMod Playlist Moderator for events and parsing raw Playlist/Album Data</a></li><li><a href="global.html#__tracksModTracksModeratorforeventsandparsingrawTracksDatafromdefaultextractors">__tracksMod Tracks Moderator for events and parsing raw Tracks Data from default extractors</a></li><li><a href="global.html#createQueueCreationofQueueInstancewithpropercachingandOptionsformulator">createQueue Creation of Queue Instance with proper caching and Options formulator</a></li><li><a href="global.html#destroyDestroypacketandinternalworkingsofqueueregister/cachesandwithacompleteclearenceandevenclearbackendcachestoremoveallconnectionsfromeveryrequestorhandlersifany">destroy Destroy packet and internal workings of queue register/caches and with a complete clearence and even clear backend caches to remove all connections from every request or handlers </a></li><li><a href="global.html#destroyQueueDestroyQueuefromPlayerCachesanddestroyQueueinternallyifanyprocessarerunningoronwait">destroyQueue Destroy Queue from Player Caches and destroy Queue internally </a></li><li><a href="global.html#getGetTracksDataortriggeringtrackeventforTracksMod">get Get Tracks Data or triggering track event for Tracks Mod</a></li><li><a href="global.html#getPlaydlPlay-dlextractorFunctionwithrepsecttointernalfunctionstosupportthecauseofusage">getPlaydl Play-dl extractor Function with repsect to internal functions to support the cause of usage</a></li><li><a href="global.html#getQueryFetchingTracksDataandPlaylistDataRequestfromextractorsusingdownloaderclass">getQuery Fetching Tracks Data and Playlist Data Request from extractors using downloader class</a></li><li><a href="global.html#getQueueFetching/GettingofQueueInstancewithpropercachingandOptionsformulator">getQueue Fetching/Getting of Queue Instance with proper caching and Options formulator</a></li><li><a href="global.html#pausePauseAudioPlayeroftheQueue">pause Pause Audio Player of the Queue</a></li><li><a href="global.html#playPlayMethodofQueueClasstoplayrawQueryInfoafterprocessingandfetchfromwebusingextractors">play Play Method of Queue Class to play raw Query Info after processing and fetch from web using extractors</a></li><li><a href="global.html#setVolumeSettingVolumeoftheAudioPlayer">setVolume Setting Volume of the Audio Player</a></li><li><a href="global.html#skipSkippingCurrentTracktospecifiedTrack-Countsorby-defaultonnextsong">skip Skipping Current Track to specified Track-Counts or by-default on next song</a></li><li><a href="global.html#stopStoppingCurrentTrackalongsidewithQueuetoacompletesilencewithcleaning">stop Stopping Current Track along side with Queue to a complete silence with cleaning</a></li><li><a href="global.html#unpauseUn-PauseAudioPlayeroftheQueue">unpause Un-Pause Audio Player of the Queue</a></li></ul>
+</nav>
+
+<div id="main">
+    <div class="burger">
+        <div class="burger-line-1"></div>
+        <div class="burger-line-2"></div>
+        <div class="burger-line-3"></div>
+    </div>
+
+    <h1 class="page-title">Source: core/queue.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>const { AudioPlayerStatus } = require('@discordjs/voice');
+const {
+  Client,
+  VoiceChannel,
+  Message,
+  CommandInteraction,
+  StageChannel,
+} = require('discord.js');
+const { Track, Options } = require('../misc/enums');
+const packets = require('../gen/packets');
+const eventEmitter = require('../utils/eventEmitter');
+const voiceMod = require('../utils/voiceMod');
+const player = require('./player');
+const {
+  destroyedQueue,
+  invalidQuery,
+  invalidTracksCount,
+  notPlaying,
+} = require('../misc/errorEvents');
+
+/**
+ * @class queue -> Queue Class for making virtual space for per Discord Guild for making a non-conflicting connectionsn and requests from various stuff and web intefs
+ */
+class queue {
+  /**
+   * @constructor
+   * @param {string | number} guildId Discord Guild Id for queue creation
+   * @param {Options} options Queue Creation/Destruction Options + packet,downlaoder Options and even more options for caching
+   * @param {player} player Actual player Instance for bring forth sub properties cached with it
+   */
+  constructor(guildId, options = Options, player) {
+    /**
+     * Discord Guild Id for queue creation
+     * @type {string | number}
+     * @readonly
+     */
+    this.guildId = guildId;
+
+    /**
+     * Queue Creation/Destruction Options + packet,downlaoder Options and even more options for caching
+     * @type {Options}
+     * @readonly
+     */
+    this.options = options;
+
+    /**
+     * Actual player Instance for bring forth sub properties cached with it
+     * @type {player}
+     * @readonly
+     */
+    this.player = player;
+
+    /**
+     * Event Emitter Instance for Distributing Events based Info to the Users abou the Framework and Progress of certain Request
+     * @type {eventEmitter}
+     * @readonly
+     */
+    this.eventEmitter = player?.eventEmitter;
+
+    /**
+     * Discord Client Instance for Discord Bot for Interaction with Discord Api
+     * @type {Client}
+     * @readonly
+     */
+    this.discordClient = this.player?.discordClient;
+
+    /**
+     * Queue Destroyed Status for checking wheather progress or functions to flow or emit error
+     * @type {Boolean}
+     * @readonly
+     */
+    this.destroyed = false;
+
+    /**
+     * Voice Moderator for connecting and disconnecting from voice Channel
+     * @type {voiceMod}
+     * @readonly
+     */
+    this.voiceMod = new voiceMod(this, options?.voiceOptions);
+
+    /**
+     * Packet Instance for moderating backend manupulation and request handlers and handle massive functions and events
+     * @type {packets}
+     * @readonly
+     */
+    this.packet = new packets(this, options?.packetOptions);
+  }
+
+  /**
+   * @method play Play Method of Queue Class to play raw Query Info after processing and fetch from web using extractors
+   * @param {string} rawQuery String Value for fetching/Parsing with the help of extractors
+   * @param {string | number | VoiceChannel | StageChannel | Message} voiceSnowflake voice Channel Snowflake in terms of further resolving value using in-built resolvers to connect to play song on it
+   * @param {string | number | Message | CommandInteraction } requestedSource requested By Source Data for checks and avoid the further edits on it by some stranger to protect the integrity
+   * @param {Options} options queue/play Options for further requirements
+   * @returns {Promise&lt;Boolean | undefined>} Returns extractor Data based on progress or undefined
+   */
+
+  async play(rawQuery, voiceSnowflake, requestedSource, options = Options) {
+    try {
+      if (this.destroyed)
+        throw new destroyedQueue('Queue has been destroyed already');
+      else if (!(rawQuery &amp;&amp; typeof rawQuery === 'string' &amp;&amp; rawQuery !== ''))
+        throw new invalidQuery();
+
+      this.eventEmitter.emitDebug(
+        'Packet get Request',
+        'Request for backend Work to be Handled by packet of Queue',
+        {
+          rawQuery,
+          packet: this.packet,
+        },
+      );
+      if (!(this.packet &amp;&amp; !this.packet?.destroyed))
+        this.packet = new packets(
+          this,
+          options?.packetOptions ?? this.options?.packetOptions,
+        );
+
+      return await this.packet?.getQuery(
+        rawQuery,
+        voiceSnowflake,
+        requestedSource,
+        options?.packetOptions,
+      );
+    } catch (errorMetadata) {
+      this.eventEmitter.emitError(
+        errorMetadata,
+        ' - Provide Correct Query or Voice Channel for Connection and Audio Processing\n - Provide Correct Raw Query for Songs like Url or Simple Query from Supported Platforms',
+        'queue.play()',
+        {
+          rawQuery,
+          voiceSnowflake,
+          queue: this,
+          options,
+        },
+        options?.eventOptions,
+      );
+      return undefined;
+    }
+  }
+
+  /**
+   * @method skip Skipping Current Track to specified Track-Counts or by-default on next song
+   * @param {Boolean | true} forceSkip Forced Skip to even fast skip the ending silence paddings for smooth audio play
+   * @param {Number | 1} trackCount Tracks Count to skip to in the queue.tracks array
+   * @returns {Promise&lt;Boolean | undefined>}  Returns Boolean or undefined on failure or success rate!
+   */
+
+  async skip(forceSkip = true, trackCount = 1) {
+    try {
+      if (this.destroyed) throw new destroyedQueue();
+      else if (!this.working) throw new notPlaying();
+      else if (this.tracks?.length &lt; 2) return undefined;
+      else if (
+        !(
+          trackCount &amp;&amp;
+          !isNaN(Number(trackCount)) &amp;&amp;
+          Number(trackCount) &lt;= this.tracks?.length
+        )
+      )
+        throw new invalidTracksCount();
+      return this.packet?.audioPlayer?.stop(Boolean(forceSkip) ?? true);
+    } catch (errorMetadata) {
+      this.eventEmitter.emitError(
+        errorMetadata,
+        ' - Please create new Queue for specific Guild if destroyed\n - Check if trackIndex is correct based/under on actual queue.tracks length',
+        'queue.skip()',
+        { forceSkip, trackCount, queue: this },
+        this.options?.eventOptions,
+      );
+      return undefined;
+    }
+  }
+
+  /**
+   * @method stop Stopping Current Track along side with Queue to a complete silence with cleaning
+   * @param {Boolean | true} forceStop Forced Stop to even fast Stop the ending silence paddings for smooth audio play
+   * @param {Boolean | false} preserveTracks Tracks to save even after Queue got stoppped for new packet
+   * @returns {Promise&lt;Boolean | undefined>} Returns Boolean or undefined on failure or success rate!
+   */
+
+  async stop(forceStop = true, preserveTracks = false) {
+    try {
+      if (this.destroyed) throw new destroyedQueue();
+      else if (!this.current || !this.working) throw new notPlaying();
+      this.packet.__cacheAndCleanTracks(
+        { startIndex: 0, cleanTracks: this.tracks?.length },
+        preserveTracks ? this.tracks?.length : 0,
+      );
+      this.packet?.audioPlayer?.stop((Boolean(forceStop) ?? true) || true);
+      return await this.destroy();
+    } catch (errorMetadata) {
+      this.eventEmitter.emitError(
+        errorMetadata,
+        ' - Please create new Queue for specific Guild if destroyed',
+        'queue.stop()',
+        {
+          forceStop,
+          preserveTracks,
+          queue: this,
+        },
+        this.options?.eventOptions,
+      );
+      return undefined;
+    }
+  }
+
+  /**
+   * @method destroy Destroy packet and internal workings of queue register/caches and with a complete clearence and even clear backend caches to remove all connections from every request or handlers (if any)
+   * @param {Number | 0} delayVoiceTimeout Delay Timeout for delaying after the destruction of queue of voice Connection from voice Channel
+   * @param {Boolean | false} destroyConnection Destroy Voice Connection properly in @discordjs/voice Package
+   * @returns {Promise&lt;Boolean | undefined>} Returns Boolean or undefined on failure or success rate!
+   */
+  async destroy(delayVoiceTimeout = 0, destroyConnection = false) {
+    if (this.destroyed) throw new destroyedQueue();
+    const timeOutIdResidue = await this.voiceMod.disconnect(
+      this.guildId,
+      {
+        destroy: Boolean(destroyConnection),
+        delayVoiceTimeout,
+      },
+      this.tracks?.find((t) => t.requestedSource)?.requestedSource,
+    );
+    this.packet.__perfectClean();
+    delete this.packet;
+    this.destroyed = timeOutIdResidue;
+    return true;
+  }
+
+  /**
+   * @method pause Pause Audio Player of the Queue
+   * @returns {Boolean} Returns true for Success and false for Failure operation
+   */
+
+  pause() {
+    try {
+      if (this.destroyed) throw new destroyedQueue();
+      else if (!(this.current &amp;&amp; this.playing)) throw new notPlaying();
+      else if (!this.paused) return undefined;
+      return this.packet?.audioPlayer?.pause(true);
+    } catch (errorMetadata) {
+      this.eventEmitter.emitError(
+        errorMetadata,
+        undefined,
+        'queue.pause()',
+        {
+          queue: this,
+        },
+        this.options?.eventOptions,
+      );
+      return undefined;
+    }
+  }
+
+  /**
+   * @method unpause Un-Pause Audio Player of the Queue
+   * @returns {Boolean} Returns true for Success and false for Failure operation
+   */
+
+  unpause() {
+    try {
+      if (this.destroyed) throw new destroyedQueue();
+      else if (!this.current) throw new notPlaying();
+      else if (this.paused) return undefined;
+      return this.packet?.audioPlayer?.unpause();
+    } catch (errorMetadata) {
+      this.eventEmitter.emitError(
+        errorMetadata,
+        undefined,
+        'queue.unpause()',
+        {
+          queue: this,
+        },
+        this.options?.eventOptions,
+      );
+      return undefined;
+    }
+  }
+
+  /**
+   * @method setVolume Setting Volume of the Audio Player
+   * @param {Number} volume Volume in Number in Audio Player
+   * @returns {Number | undefined} Volume as residue or undefined on failure
+   */
+
+  setVolume(volume = 95) {
+    try {
+      if (this.destroyed) throw new destroyedQueue();
+      else if (
+        !(
+          this.current?.audioResource?.volume &amp;&amp;
+          !isNaN(Number(volume)) &amp;&amp;
+          Number(volume) >= 0 &amp;&amp;
+          Number(volume) &lt;= 100 &amp;&amp;
+          this.volume !== Number(volume)
+        )
+      )
+        return undefined;
+      else this.current.audioResource.volume.setVolume(parseInt(volume) / 1000);
+      this.packet.__privateCaches.volumeMetadata = parseInt(volume);
+      return volume;
+    } catch (errorMetadata) {
+      this.eventEmitter.emitError(
+        errorMetadata,
+        undefined,
+        'queue.setVolume()',
+        {
+          queue: this,
+          volume,
+        },
+        this.options?.eventOptions,
+      );
+      return undefined;
+    }
+  }
+
+  /**
+   * Audio Player's Volume for the Queue
+   * @type {Number}
+   * @readonly
+   */
+
+  get volume() {
+    if (this.destroyed) return undefined;
+    return this.packet.__privateCaches.volumeMetadata;
+  }
+
+  /**
+   * Audio Player's Non-Idle/Activity's Status as Boolean
+   * @type {Boolean}
+   * @readonly
+   */
+
+  get working() {
+    if (this.destroyed || !this?.packet?.audioPlayer?.state?.status)
+      return false;
+    else
+      return this.packet?.audioPlayer?.state?.status !== AudioPlayerStatus.Idle;
+  }
+
+  /**
+   * Audio Player's Playing/Activity's Status as Boolean
+   * @type {Boolean}
+   * @readonly
+   */
+
+  get playing() {
+    if (this.destroyed || !this?.packet?.audioPlayer?.state?.status)
+      return false;
+    else
+      return (
+        this.packet?.audioPlayer?.state?.status === AudioPlayerStatus.Playing
+      );
+  }
+
+  /**
+   * Audio Player's Paused's Status as Boolean
+   * @type {Boolean}
+   * @readonly
+   */
+  get paused() {
+    if (!this.packet?.audioPlayer?.state?.status) return false;
+    else
+      return (
+        this.packet?.audioPlayer?.state?.status === AudioPlayerStatus.Paused ||
+        this.packet?.audioPlayer?.state?.status === AudioPlayerStatus.AutoPaused
+      );
+  }
+  /**
+   * Returns Current Track Cached in Packet or Queue.tracks
+   * @type {Track}
+   * @readonly
+   */
+
+  get current() {
+    if (this.destroyed || !this.tracks?.[0]) return undefined;
+    else return this.tracks?.[0];
+  }
+
+  /**
+   * Returns Tracks Cached Metadata from packet
+   * @type {Track[]}
+   * @readonly
+   */
+  get tracks() {
+    if (this.destroyed || !this.packet?.tracksMetadata?.[0]?.track)
+      return undefined;
+    else return this.packet?.tracksMetadata?.map((ob) => ob?.track);
+  }
+}
+
+module.exports = queue;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.7</a> on Wed Aug 10 2022 06:31:54 GMT+0000 (Coordinated Universal Time) using <a href="https://github.com/zyrouge/jsdoc-skyceil">Skyceil Theme</a>
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/linenumber.js"></script>
+
+</body>
+</html>

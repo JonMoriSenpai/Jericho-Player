@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>Home</title>
+    <title>Source: misc/enums.js</title>
 
     <script src="scripts/prettify/prettify.js"></script>
     <script src="scripts/prettify/lang-css.js"></script>
@@ -27,100 +27,198 @@
         <div class="burger-line-3"></div>
     </div>
 
-    <h1 class="page-title">Home</h1>
+    <h1 class="page-title">Source: misc/enums.js</h1>
 
     
 
 
 
     
-
-
-    <h3>jericho-player 1.2.0</h3>
-
-
-
-
-
-
-
-
-
-
-    
-
-
-
-
     <section>
-        <article><div align="center">
-  <br />
-  <p>
-    <a href="https://jericho-player.js.org"><img src="https://raw.githubusercontent.com/SidisLiveYT/Jericho-Player/main/.github/asserts/logo.svg" width="546" alt="jericho-player" /></a>
-  </p>
-  <br />
-<p>
-<a href="https://discord.gg/MfME24sJ2a"><img src="https://img.shields.io/discord/795434308005134406?color=5865F2&logo=discord&logoColor=white" alt="Discord server" /></a>
-<a href="https://www.npmjs.com/package/jericho-player"><img src="https://img.shields.io/npm/v/jericho-player.svg?maxAge=3600" alt="npm version" /></a>
-<a href="https://www.npmjs.com/package/jericho-player"><img src="https://img.shields.io/npm/dt/jericho-player.svg?maxAge=3600" alt="npm downloads" /></a>
-<a href="https://github.com/SidisLiveYT/Jericho-Player/actions"><img src="https://github.com/discordjs/discord.js/workflows/Testing/badge.svg" alt="Tests status" /></a>
-</p>
-</div>
-<p>LightWeight Framework for <strong><a href="https://discord.js.org">discord.js v14</a></strong> Music Bots and Radio Bots with fast moderation with commands and no memory leak mode.</p>
-<h2>Installation</h2>
-<h3>Install <strong><a href="https://npmjs.com/package/jericho-player">jericho-player</a></strong></h3>
-<pre class="prettyprint source lang-sh"><code>$ npm install --save jericho-player@beta
+        <article>
+            <pre class="prettyprint source linenums"><code>const { AudioResource } = require('@discordjs/voice');
+
+class Playlist {
+  #__raw = undefined;
+
+  constructor(rawMetadata) {
+    this.#__raw = {
+      ...rawMetadata,
+      metadata: rawMetadata?.metadata,
+    };
+    this.patch(rawMetadata);
+  }
+
+  patch(rawMetadata) {
+    if (!rawMetadata || (rawMetadata &amp;&amp; rawMetadata instanceof Boolean))
+      rawMetadata = {};
+    this.id = rawMetadata?.id ?? rawMetadata?.Id;
+    this.name = rawMetadata?.title ?? rawMetadata?.name;
+    this.url = rawMetadata?.url;
+    this.thumbnail = rawMetadata?.thumbnail;
+    this.views = rawMetadata?.views;
+    this.tracksCount = rawMetadata?.tracksCount;
+    this.author = rawMetadata?.author ?? rawMetadata?.channel;
+  }
+
+  get requestedSource() {
+    return this.metadata?.requestedSource;
+  }
+
+  get metadata() {
+    return this.#__raw?.metadata;
+  }
+
+  get user() {
+    return (
+      this.requestedSource?.user ??
+      this.requestedSource?.author ??
+      this.requestedSource?.member
+    );
+  }
+
+  get raw() {
+    return this.#__raw;
+  }
+}
+
+class Track {
+  #__raw = undefined;
+
+  constructor(rawMetadata) {
+    this.#__raw = {
+      ...rawMetadata,
+      metadata: rawMetadata?.metadata,
+    };
+    this.patch(rawMetadata);
+  }
+
+  patch(rawMetadata) {
+    this.id = rawMetadata?.id ?? rawMetadata?.videoId ?? rawMetadata?.Id;
+    this.playlistId = rawMetadata?.albumId ?? rawMetadata?.playlistId;
+    this.title = rawMetadata?.title ?? rawMetadata?.name;
+    this.url = rawMetadata?.url;
+    this.description = rawMetadata?.description;
+    this.author = rawMetadata?.author ?? rawMetadata?.channel;
+    this.views =
+      rawMetadata?.views ??
+      rawMetadata?.view ??
+      rawMetadata?.viewsCount ??
+      rawMetadata?.viewCount;
+    this.extractors = rawMetadata?.extractorModel;
+    this.thumbnail = rawMetadata?.thumbnail;
+    this.isLive = rawMetadata?.isLive ?? false;
+    this.duration = rawMetadata?.duration;
+    this.ratings = rawMetadata?.ratings ?? { likes: 0, dislikes: 0 };
+    this.playlist =
+      rawMetadata?.album || rawMetadata?.playlist
+        ? new Playlist(rawMetadata?.album ?? rawMetadata?.playlist)
+        : undefined;
+    this.lyrics = rawMetadata?.lyrics;
+  }
+
+  __getStream(returnTrack = false) {
+    if (!this.id || !this.raw?.stream?.buffer) return undefined;
+    if (returnTrack) return { ...this, stream: this.raw?.stream };
+    else return { stream: this.raw?.stream };
+  }
+
+  get requestedSource() {
+    return this.metadata?.requestedSource;
+  }
+
+  get metadata() {
+    return this.#__raw?.metadata;
+  }
+
+  get user() {
+    return (
+      this.requestedSource?.user ??
+      this.requestedSource?.author ??
+      this.requestedSource?.member
+    );
+  }
+
+  set audioResource(resource) {
+    this.#__raw.audioResource = resource;
+  }
+
+  /**
+   * @returns {AudioResource} Audio Resource of respected Track
+   */
+  get audioResource() {
+    return this.raw?.audioResource;
+  }
+
+  get raw() {
+    return this.#__raw;
+  }
+}
+
+const eventOptions = {
+  ignoreCrash: true,
+  emitPlayer: true,
+  debugRegister: true,
+};
+
+const downloaderOptions = {
+  fetchLyrics: true,
+  eventReturn: { metadata: undefined },
+  ratelimit: 0,
+  ignoreInternalError: true,
+  fetchOptions: {
+    fetchLimit: Infinity,
+    streamQuality: 'high',
+    rawCookies: undefined,
+    userAgents: undefined,
+    skipalbumLimit: false,
+  },
+};
+
+const voiceOptions = {
+  eventOptions,
+  delayTimeout: 0,
+  leaveOn: {
+    end: false,
+    empty: false,
+    bot: false,
+  },
+  anyoneCanMoveClient: true,
+  altVoiceChannel: undefined,
+  forceDestroy: false,
+};
+
+const packetOptions = {
+  downloaderOptions,
+  voiceOptions,
+};
+
+const Options = {
+  eventOptions,
+  packetOptions,
+};
+
+const packetPrivateCaches = {
+  completedTracksMetadata: [],
+  audioPlayerSubscription: undefined,
+  customModes: { repeat: {}, loop: {}, autoplay: {} },
+  timeMetadata: {},
+  volumeMetadata: 95,
+};
+
+module.exports = {
+  Track,
+  Playlist,
+  voiceOptions,
+  eventOptions,
+  packetOptions,
+  downloaderOptions,
+  Options,
+  packetPrivateCaches,
+};
 </code></pre>
-<h3>Install <strong><a href="https://npmjs.com/package/@discordjs/opus">@discordjs/opus</a> OR <a href="https://npmjs.com/package/opusscript">opusscript</a></strong></h3>
-<pre class="prettyprint source lang-sh"><code>$ npm install --save @discordjs/opus
-              OR
-$ npm install --save opusscript
-</code></pre>
-<h3>Install <strong><a href="https://npmjs.com/package/@discordjs/voice">@discordjs/voice</a></strong></h3>
-<pre class="prettyprint source lang-sh"><code>$ npm install --save @discordjs/voice
-</code></pre>
-<h3>Install FFmpeg or Avconv</h3>
-<ul>
-<li>
-<p>Official FFMPEG Website: <strong><a href="https://www.ffmpeg.org/download.html">https://www.ffmpeg.org/download.html</a></strong></p>
-</li>
-<li>
-<p>Node Module (FFMPEG): <strong><a href="https://npmjs.com/package/ffmpeg-static">https://npmjs.com/package/ffmpeg-static</a></strong></p>
-</li>
-<li>
-<p>Avconv: <strong><a href="https://libav.org/download">https://libav.org/download</a></strong></p>
-</li>
-</ul>
-<h1>Features</h1>
-<ul>
-<li>Simple &amp; easy to use 🤘</li>
-<li>Beginner friendly 😱</li>
-<li>Auto Proxy Feature</li>
-<li>Lightweight 🛬</li>
-<li>No-Memory-Leak-Mode Present and optimised based on <a href="https://npmjs.com/package/@discordjs/voice">@discordjs/voice</a></li>
-<li>play-dl or youtube-dl extractors support 🌌</li>
-<li>Multiple sources support ✌</li>
-<li>Supports Custom Youtube Cookies and Proxies</li>
-<li>Play in multiple servers at the same time 🚗</li>
-</ul>
-<h2><a href="https://jericho-player.js.org">Documentation</a></h2>
-<h1>Supported websites</h1>
-<p>By default, jericho-player supports <strong>YouTube</strong>, <strong>Spotify</strong>, <strong>facebook</strong>, <strong>SoundCloud</strong> and <strong>Arbitary Links</strong> streams only.</p>
-<h3>Optional dependencies</h3>
-<p>Jericho Player got some <strong>Custom Extractors</strong> that enables you to use and fast Extraction. Some packages have been made by the Sid is Live YT to add new features using this Extractors.</p>
-<h4><a href="https://npmjs.com/package/playdl-music-extractor">playdl-music-extractor</a> (latest)</h4>
-<p>Optional package that adds support for <code>vimeo</code>, <code>reverbnation</code>, <code>facebook</code>.
-You just need to install it using <code>npm i --save playdl-music-extractor</code> (jericho-player will automatically detect and use it).</p>
-<h4><a href="https://npmjs.com/package/video-extractor">video-extractor</a> (optional) (may-break)</h4>
-<p><code>video-extractor</code> is an optional package that brings support for +700 websites by using <code>youtube-dl</code> . The Npm Package Link is available <a href="https://npmjs.com/package/video-extractor">here</a>. And You can install Custom Extractor by <code>npm i --save video-extractor</code></p>
-<h1>Community Bots made with Jericho Player</h1>
-<p>These bots are made by the community, they can help you build your own!</p>
-<ul>
-<li><code>[ Updated ] </code> <strong><a href="https://github.com/SidisLiveYT/Jericho-Player-Discord-Bot">Fairy Tale - Jericho Player</a></strong> by <a href="https://github.com/SidisLiveYT">SidisLiveYT</a></li>
-</ul></article>
+        </article>
     </section>
-
-
 
 
 

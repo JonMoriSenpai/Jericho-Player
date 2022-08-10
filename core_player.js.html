@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Source: core/player.js</title>
+
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <script src="scripts/nav.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/skyceil.css">
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+</head>
+
+<body>
+
+<nav class="navbar">
+    <h4><a href="index.html">Home</a></h4><h5 class="no-bottom must-underline">Classes</h5><ul><li><span class="small-icon C">C</span><b><a href="downloader.html">downloader</a></b><ul class="has-class-methods"><li><span class="small-icon M">M</span><a href="downloader.html#eventEmitter">eventEmitter</a></li><li><span class="small-icon M">M</span><a href="downloader.html#options">options</a></li><li><span class="small-icon M">M</span><a href="downloader.html#packet">packet</a></li><li><span class="small-icon M">M</span><a href="downloader.html#playdl">playdl</a></li><li><span class="small-icon M">M</span><a href="downloader.html#player">player</a></li><li><span class="small-icon M">M</span><a href="downloader.html#queue">queue</a></li></ul></li><li><span class="small-icon C">C</span><b><a href="packets.html">packets</a></b><ul class="has-class-methods"><li><span class="small-icon M">M</span><a href="packets.html#__privateCaches">__privateCaches</a></li><li><span class="small-icon M">M</span><a href="packets.html#audioPlayer">audioPlayer</a></li><li><span class="small-icon M">M</span><a href="packets.html#destroyed">destroyed</a></li><li><span class="small-icon M">M</span><a href="packets.html#downloader">downloader</a></li><li><span class="small-icon M">M</span><a href="packets.html#eventEmitter">eventEmitter</a></li><li><span class="small-icon M">M</span><a href="packets.html#guildId">guildId</a></li><li><span class="small-icon M">M</span><a href="packets.html#options">options</a></li><li><span class="small-icon M">M</span><a href="packets.html#player">player</a></li><li><span class="small-icon M">M</span><a href="packets.html#queue">queue</a></li><li><span class="small-icon M">M</span><a href="packets.html#tracksMetadata">tracksMetadata</a></li><li><span class="small-icon M">M</span><a href="packets.html#type">type</a></li><li><span class="small-icon M">M</span><a href="packets.html#voiceMod">voiceMod</a></li></ul></li><li><span class="small-icon C">C</span><b><a href="player.html">player</a></b><ul class="has-class-methods"><li><span class="small-icon M">M</span><a href="player.html#__privateCaches">__privateCaches</a></li><li><span class="small-icon M">M</span><a href="player.html#discordClient">discordClient</a></li><li><span class="small-icon M">M</span><a href="player.html#eventEmitter">eventEmitter</a></li><li><span class="small-icon M">M</span><a href="player.html#options">options</a></li></ul></li><li><span class="small-icon C">C</span><a href="player%2520-_%2520Player%2520Class%2520for%2520Discord%2520Client%2520v14%2520for%2520Jericho-Player%2520Framework.html">player -> Player Class for Discord Client v14 for Jericho-Player Framework</a></li><li><span class="small-icon C">C</span><b><a href="queue.html">queue</a></b><ul class="has-class-methods"><li><span class="small-icon M">M</span><a href="queue.html#current">current</a></li><li><span class="small-icon M">M</span><a href="queue.html#destroyed">destroyed</a></li><li><span class="small-icon M">M</span><a href="queue.html#discordClient">discordClient</a></li><li><span class="small-icon M">M</span><a href="queue.html#eventEmitter">eventEmitter</a></li><li><span class="small-icon M">M</span><a href="queue.html#guildId">guildId</a></li><li><span class="small-icon M">M</span><a href="queue.html#options">options</a></li><li><span class="small-icon M">M</span><a href="queue.html#packet">packet</a></li><li><span class="small-icon M">M</span><a href="queue.html#paused">paused</a></li><li><span class="small-icon M">M</span><a href="queue.html#player">player</a></li><li><span class="small-icon M">M</span><a href="queue.html#playing">playing</a></li><li><span class="small-icon M">M</span><a href="queue.html#tracks">tracks</a></li><li><span class="small-icon M">M</span><a href="queue.html#voiceMod">voiceMod</a></li><li><span class="small-icon M">M</span><a href="queue.html#volume">volume</a></li><li><span class="small-icon M">M</span><a href="queue.html#working">working</a></li></ul></li><li><span class="small-icon C">C</span><a href="voiceMod.html">voiceMod</a></li></ul><h4>Global</h4><ul><li><a href="global.html#__cacheAndCleanTracksCacheandCleanTracksonTrackEndeventTrigger/Requirement">__cacheAndCleanTracks Cache and Clean Tracks on Track End event Trigger/Requirement</a></li><li><a href="global.html#__perfectCleanPerfectcleanforavoidingMemoryleakandreleasethetidewithRAMusuage">__perfectClean Perfect clean for avoiding Memory leak and release the tide with RAM usuage</a></li><li><a href="global.html#__playlistModPlaylistModeratorforeventsandparsingrawPlaylist/AlbumData">__playlistMod Playlist Moderator for events and parsing raw Playlist/Album Data</a></li><li><a href="global.html#__tracksModTracksModeratorforeventsandparsingrawTracksDatafromdefaultextractors">__tracksMod Tracks Moderator for events and parsing raw Tracks Data from default extractors</a></li><li><a href="global.html#createQueueCreationofQueueInstancewithpropercachingandOptionsformulator">createQueue Creation of Queue Instance with proper caching and Options formulator</a></li><li><a href="global.html#destroyDestroypacketandinternalworkingsofqueueregister/cachesandwithacompleteclearenceandevenclearbackendcachestoremoveallconnectionsfromeveryrequestorhandlersifany">destroy Destroy packet and internal workings of queue register/caches and with a complete clearence and even clear backend caches to remove all connections from every request or handlers </a></li><li><a href="global.html#destroyQueueDestroyQueuefromPlayerCachesanddestroyQueueinternallyifanyprocessarerunningoronwait">destroyQueue Destroy Queue from Player Caches and destroy Queue internally </a></li><li><a href="global.html#getGetTracksDataortriggeringtrackeventforTracksMod">get Get Tracks Data or triggering track event for Tracks Mod</a></li><li><a href="global.html#getPlaydlPlay-dlextractorFunctionwithrepsecttointernalfunctionstosupportthecauseofusage">getPlaydl Play-dl extractor Function with repsect to internal functions to support the cause of usage</a></li><li><a href="global.html#getQueryFetchingTracksDataandPlaylistDataRequestfromextractorsusingdownloaderclass">getQuery Fetching Tracks Data and Playlist Data Request from extractors using downloader class</a></li><li><a href="global.html#getQueueFetching/GettingofQueueInstancewithpropercachingandOptionsformulator">getQueue Fetching/Getting of Queue Instance with proper caching and Options formulator</a></li><li><a href="global.html#pausePauseAudioPlayeroftheQueue">pause Pause Audio Player of the Queue</a></li><li><a href="global.html#playPlayMethodofQueueClasstoplayrawQueryInfoafterprocessingandfetchfromwebusingextractors">play Play Method of Queue Class to play raw Query Info after processing and fetch from web using extractors</a></li><li><a href="global.html#setVolumeSettingVolumeoftheAudioPlayer">setVolume Setting Volume of the Audio Player</a></li><li><a href="global.html#skipSkippingCurrentTracktospecifiedTrack-Countsorby-defaultonnextsong">skip Skipping Current Track to specified Track-Counts or by-default on next song</a></li><li><a href="global.html#stopStoppingCurrentTrackalongsidewithQueuetoacompletesilencewithcleaning">stop Stopping Current Track along side with Queue to a complete silence with cleaning</a></li><li><a href="global.html#unpauseUn-PauseAudioPlayeroftheQueue">unpause Un-Pause Audio Player of the Queue</a></li></ul>
+</nav>
+
+<div id="main">
+    <div class="burger">
+        <div class="burger-line-1"></div>
+        <div class="burger-line-2"></div>
+        <div class="burger-line-3"></div>
+    </div>
+
+    <h1 class="page-title">Source: core/player.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>const EventEmiiter = require('events').EventEmitter;
+const {
+  Client,
+  Guild,
+  Message,
+  User,
+  Channel,
+  VoiceState,
+} = require('discord.js');
+const queue = require('./queue');
+const { guildResolver } = require('../utils/snowflakes');
+const eventEmitter = require('../utils/eventEmitter');
+const { invalidGuild, invalidQueue } = require('../misc/errorEvents');
+const { Options } = require('../misc/enums');
+
+/**
+ * @class player -> Player Class for Discord Client v14 for Jericho-Player Framework
+ */
+class player extends EventEmiiter {
+  /**
+   * @static @private @property {object} __privateCaches Private Caches Library in the form of object submission and redmeption based on time and choices of function
+   */
+
+  static __privateCaches = {};
+
+  /**
+   * @constructor player -> Player Class for Discord Client v14 for Jericho-Player Framework
+   * @param {Client} discordClient Discord Client Instance for Discord Bot for Interaction with Discord Api
+   * @param {Options} options Object Wised Options for Player Creation and Saved to Cache for further Modifications for backend stuff of Framework
+   */
+  constructor(discordClient, options = Options) {
+    super();
+
+    /**
+     * Discord Client Instance for Discord Bot for Interaction with Discord Api
+     * @type {Client}
+     * @readonly
+     */
+    this.discordClient = discordClient;
+
+    /**
+     * Player/Queue Creation/Destruction Options + packet,downlaoder Options and even more options for caching
+     * @type {Options}
+     * @readonly
+     */
+    this.options = options;
+
+    /**
+     * Event Emitter Instance for Distributing Events based Info to the Users abou the Framework and Progress of certain Request
+     * @type {eventEmitter}
+     * @readonly
+     */
+    this.eventEmitter = new eventEmitter(this, options?.eventOptions);
+
+    this.discordClient.on('voiceStateUpdate', async (oldState, newState) => {
+      const rawQueue = await this.getQueue(
+        oldState?.guild?.id ?? newState?.guild?.id,
+      );
+      if (
+        rawQueue &amp;&amp;
+        oldState?.guild?.id === rawQueue.guildId &amp;&amp;
+        newState?.guild?.id === rawQueue.guildId &amp;&amp;
+        newState?.channelId !== oldState?.channelId
+      )
+        return await this.#__voiceHandler(
+          oldState,
+          newState,
+          rawQueue,
+          rawQueue?.options?.voiceOptions ?? this.options?.voiceOptions,
+        );
+      else return undefined;
+    });
+  }
+
+  /**
+   * @method createQueue Creation of Queue Instance with proper caching and Options formulator
+   * @param {Guild | Message | User | Channel} guildSnowflake A Guild Snowflake - Meant by Resolving Raw Value to be parsed for Actual Guild Instance and use for further developments of Queue
+   * @param {Boolean | false} forceCreate Force Create Queue by Deleting Old Queue if any present
+   * @param {Options} options Object Wised Options for Queue Creation and Saved to Cache for further Modifications for backend stuff of Framework
+   * @returns {Promise&lt;queue>} new queue(options) on Success Value with proper other sub-classes alignment
+   */
+
+  async createQueue(guildSnowflake, forceCreate = false, options = Options) {
+    try {
+      const guild = await guildResolver(this.discordClient, guildSnowflake);
+      if (!guild?.id) throw new invalidGuild();
+      this.eventEmitter.emitDebug(
+        'queue Creation',
+        'Creation of Queue Class Instance for Discord Guild Requests',
+        {
+          guildSnowflake,
+        },
+      );
+      if (forceCreate)
+        return this.#__queueMods('forceCreate', guild?.id, options);
+      else return this.#__queueMods('create', guild?.id, options);
+    } catch (errorMetadata) {
+      this.eventEmitter.emitError(
+        errorMetadata,
+        undefined,
+        'player.createQueue()',
+        {
+          guildSnowflake,
+          options,
+        },
+        options?.eventOptions ?? this.options?.eventOptions,
+      );
+      return undefined;
+    }
+  }
+
+  /**
+   * @method destroyQueue Destroy Queue from Player Caches and destroy Queue internally (if any process are running or on wait)
+   * @param {Guild | Message | User | Channel} guildSnowflake A Guild Snowflake - Meant by Resolving Raw Value to be parsed for Actual Guild Instance and use for further developments of Queue
+   * @param {Boolean | true} destroyConnection Destroy Connection if any present in guild with client
+   * @param {Options} options Destruction of Options for internal Processes
+   * @returns {Promise&lt;Boolean | undefined>} Returns Boolean or undefined on failure or success rate!
+   */
+  async destroyQueue(
+    guildSnowflake,
+    destroyConnection = true,
+    options = Options,
+  ) {
+    try {
+      const guild = await guildResolver(this.discordClient, guildSnowflake);
+      if (!guild?.id) throw new invalidGuild();
+      const requestedQueue = this.#__queueMods('get', guild?.id, options);
+      if (!requestedQueue) throw new invalidQueue();
+      this.eventEmitter.emitDebug(
+        'queue Destruction',
+        'Destruction of Queue Class Instance from Actual Player Class Caches',
+        {
+          guildSnowflake,
+        },
+      );
+      if (!requestedQueue?.destroyed)
+        await requestedQueue.destroy(options?.delayTimeout, destroyConnection);
+      this.#__queueMods('delete', guild?.id, options);
+      return true;
+    } catch (errorMetadata) {
+      this.eventEmitter.emitError(
+        errorMetadata,
+        undefined,
+        'player.destroyQueue()',
+        {
+          guildSnowflake,
+          destroyConnection,
+          options,
+        },
+        options?.eventOptions ?? this.options?.eventOptions,
+      );
+      return undefined;
+    }
+  }
+
+  /**
+   * @method getQueue Fetching/Getting of Queue Instance with proper caching and Options formulator
+   * @param {Guild | Message | User | Channel} guildSnowflake A Guild Snowflake - Meant by Resolving Raw Value to be parsed for Actual Guild Instance and use for further developments of Queue
+   * @param {Options} options Object Wised Options for Queue Fetching and Get from Cache for further Modifications for backend stuff of Framework
+   * @param {Boolean | false} forceGet Force Player to spawn new Queue and cached
+   * @returns {Promise&lt;queue>} On Success Value with proper other sub-classes alignments
+   */
+
+  async getQueue(guildSnowflake, options = Options, forceGet = false) {
+    try {
+      const guild = await guildResolver(this.discordClient, guildSnowflake);
+      if (!guild?.id) throw new invalidGuild();
+      if (forceGet) return this.#__queueMods('forceget', guild?.id, options);
+      else return this.#__queueMods('get', guild?.id);
+    } catch (errorMetadata) {
+      this.eventEmitter.emitError(
+        errorMetadata,
+        undefined,
+        'player.getQueue()',
+        {
+          guildSnowflake,
+          options,
+        },
+        options?.eventOptions ?? this.options?.eventOptions,
+      );
+      return undefined;
+    }
+  }
+
+  /**
+   * @private @method __queueMods Manupulative Works related Queue and Player
+   * @param {string} method swtich case method for queue mode work
+   * @param {string | number | Guild.id} guildId Discord Guild Id for queue fetching and creation
+   * @param {Options} options Queue Creation/Destruction Options
+   * @param {queue | object} metadata Random or un-defined metadata or queue on major conditions
+   * @returns {Boolean | queue} Returns Boolean on success or failure or Queue on creation of it
+   */
+
+  #__queueMods(method, guildId, options = Options, metadata = undefined) {
+    try {
+      switch (method?.toLowerCase()?.trim()) {
+        case 'get':
+          return player.__privateCaches[guildId?.trim()];
+        case 'forceget':
+          return (
+            player.__privateCaches[guildId?.trim()] ??
+            this.#__queueMods(
+              'create',
+              guildId,
+              options,
+              new queue(guildId, options, this),
+            )
+          );
+        case 'submit':
+          player.__privateCaches[guildId?.trim()] = metadata;
+          return metadata;
+        case 'create':
+          return (
+            this.#__queueMods('get', guildId) ??
+            this.#__queueMods(
+              'submit',
+              guildId,
+              options,
+              new queue(guildId, options, this),
+            )
+          );
+        case 'forcecreate':
+          const cachedQueue = this.#__queueMods('get', guildId);
+          if (cachedQueue) this.#__queueMods('delete', guildId);
+          return this.#__queueMods(
+            'submit',
+            guildId,
+            options,
+            new queue(guildId, options, this),
+          );
+
+        case 'delete':
+          delete player.__privateCaches[guildId?.trim()];
+          return true;
+        default:
+          return undefined;
+      }
+    } catch (errorMetadata) {
+      this.eventEmitter.emitError(
+        errorMetadata,
+        undefined,
+        'player.#__queueMods()',
+        {
+          method,
+          guildId,
+          options,
+          metadata,
+        },
+        options?.eventOptions ?? this.options?.eventOptionss,
+      );
+      return undefined;
+    }
+  }
+
+  /**
+   * @private
+   * @method __voiceHandler() Voice Handlers of Discord Client for moderating cached and working Queue on the respective Guild
+   * @param {VoiceState} oldState Old Voice State where previous State has been recorded from Client or Api
+   * @param {VoiceState} newState New Voice State where present State has been recorded from Client or Api
+   * @param {queue} queue Queue Data from Player's caches
+   * @param {object} options Voice Options if voiceMod is required
+   */
+  async #__voiceHandler(
+    oldState,
+    newState,
+    queue,
+    options = Options?.packetOption?.voiceOptions,
+  ) {
+    if (
+      (oldState?.member.id === queue?.current?.user.id ||
+        newState?.member.id === queue?.current?.user.id) &amp;&amp;
+      (!options?.leaveOn?.bot ||
+        (options?.leaveOn?.bot &amp;&amp; !newState?.member?.user?.bot))
+    ) {
+      if (!newState?.channelId &amp;&amp; !queue?.destroyed) {
+        if (oldState?.channel?.members?.size === 1)
+          this.eventEmitter.emitEvent(
+            'channelEmpty',
+            'Channel is Empty and have no members in it',
+            {
+              queue,
+              channel: oldState?.channel,
+              requestedSource: queue?.current?.requestedSource,
+            },
+          );
+        return await this.destroyQueue(queue?.guildId, true, {
+          delayTimeout:
+            options?.leaveOn?.bot &amp;&amp; !isNaN(Number(options?.leaveOn?.bot)) > 0
+              ? options?.leaveOn?.bot
+              : 0,
+        });
+      } else if (
+        newState?.channelId &amp;&amp;
+        !queue?.destroyed &amp;&amp;
+        options?.anyoneCanMoveClient
+      )
+        return await queue.voiceMod.connect(newState.channel);
+      else return undefined;
+    } else if (
+      oldState?.member.id === this.discordClient?.user?.id ||
+      newState?.member.id === this.discordClient?.user?.id
+    ) {
+      if (!newState?.channelId &amp;&amp; !queue?.destroyed)
+        return await this.destroyQueue(queue?.guildId, true, {
+          ...options,
+          voiceOptions: {
+            ...options?.voiceOptions,
+            altVoiceChannel: oldState?.channelId,
+          },
+        });
+      else if (oldState?.channelId &amp;&amp; newState?.channelId &amp;&amp; !queue?.destroyed)
+        return await queue.voiceMod.connect(
+          options?.anyoneCanMoveClient ? newState.channel : oldState?.channel,
+        );
+      else return undefined;
+    } else return undefined;
+  }
+
+  get type() {
+    return 'player';
+  }
+}
+
+module.exports = player;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.7</a> on Wed Aug 10 2022 06:31:54 GMT+0000 (Coordinated Universal Time) using <a href="https://github.com/zyrouge/jsdoc-skyceil">Skyceil Theme</a>
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/linenumber.js"></script>
+
+</body>
+</html>
