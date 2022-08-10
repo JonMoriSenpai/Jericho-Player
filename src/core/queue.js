@@ -9,13 +9,13 @@ const {
 const { Track, Options } = require('../misc/enums');
 const packets = require('../gen/packets');
 const eventEmitter = require('../utils/eventEmitter');
-const { voiceResolver } = require('../utils/snowflakes');
 const voiceMod = require('../utils/voiceMod');
 const player = require('./player');
 const {
   destroyedQueue,
   invalidQuery,
   invalidTracksCount,
+  notPlaying,
 } = require('../misc/errorEvents');
 
 /**
@@ -141,6 +141,7 @@ class queue {
   async skip(forceSkip = true, trackCount = 1) {
     try {
       if (this.destroyed) throw new destroyedQueue();
+      else if (!this.working) throw new notPlaying();
       else if (this.tracks?.length < 2) return undefined;
       else if (
         !(
@@ -150,12 +151,7 @@ class queue {
         )
       )
         throw new invalidTracksCount();
-      this.packet.__cacheAndCleanTracks(
-        { startIndex: 0, cleanTracks: trackCount },
-        1,
-      );
-      this.packet?.audioPlayer?.stop((Boolean(forceSkip) ?? true) || true);
-      return true;
+      return this.packet?.audioPlayer?.stop(Boolean(forceSkip) ?? true);
     } catch (errorMetadata) {
       this.eventEmitter.emitError(
         errorMetadata,
@@ -178,7 +174,7 @@ class queue {
   async stop(forceStop = true, preserveTracks = false) {
     try {
       if (this.destroyed) throw new destroyedQueue();
-      else if (!this.current) return undefined;
+      else if (!this.current || !this.working) throw new notPlaying();
       this.packet.__cacheAndCleanTracks(
         { startIndex: 0, cleanTracks: this.tracks?.length },
         preserveTracks ? this.tracks?.length : 0,
@@ -188,7 +184,7 @@ class queue {
     } catch (errorMetadata) {
       this.eventEmitter.emitError(
         errorMetadata,
-        ' - Please create new Queue for specific Guild if destroyed\n - Check if trackIndex is correct based/under on actual queue.tracks length',
+        ' - Please create new Queue for specific Guild if destroyed',
         'queue.stop()',
         {
           forceStop,
@@ -231,8 +227,8 @@ class queue {
   pause() {
     try {
       if (this.destroyed) throw new destroyedQueue();
-      else if (!(this.current && this.playing && !this.paused))
-        return undefined;
+      else if (!(this.current && this.playing)) throw new notPlaying();
+      else if (!this.paused) return undefined;
       return this.packet?.audioPlayer?.pause(true);
     } catch (errorMetadata) {
       this.eventEmitter.emitError(
@@ -253,10 +249,11 @@ class queue {
    * @returns {Boolean} Returns true for Success and false for Failure operation
    */
 
-  async unpause() {
+  unpause() {
     try {
       if (this.destroyed) throw new destroyedQueue();
-      else if (!(this.current && this.paused)) return undefined;
+      else if (!this.current) throw new notPlaying();
+      else if (this.paused) return undefined;
       return this.packet?.audioPlayer?.unpause();
     } catch (errorMetadata) {
       this.eventEmitter.emitError(
@@ -273,6 +270,43 @@ class queue {
   }
 
   /**
+   * @method setVolume Setting Volume of the Audio Player
+   * @param {Number} volume Volume in Number in Audio Player
+   * @returns {Number | undefined} Volume as residue or undefined on failure
+   */
+
+  setVolume(volume = 95) {
+    try {
+      if (this.destroyed) throw new destroyedQueue();
+      else if (
+        !(
+          this.current?.audioResource?.volume &&
+          !isNaN(Number(volume)) &&
+          Number(volume) >= 0 &&
+          Number(volume) <= 100 &&
+          this.volume !== Number(volume)
+        )
+      )
+        return undefined;
+      else this.current.audioResource.volume.setVolume(parseInt(volume) / 1000);
+      this.packet.__privateCaches.volumeMetadata = parseInt(volume);
+      return volume;
+    } catch (errorMetadata) {
+      this.eventEmitter.emitError(
+        errorMetadata,
+        undefined,
+        'queue.setVolume()',
+        {
+          queue: this,
+          volume,
+        },
+        this.options?.eventOptions,
+      );
+      return undefined;
+    }
+  }
+
+  /**
    * Audio Player's Volume for the Queue
    * @type {Number}
    * @readonly
@@ -280,7 +314,7 @@ class queue {
 
   get volume() {
     if (this.destroyed) return undefined;
-    return this.current?.audioResource?.volume?.volume;
+    return this.packet.__privateCaches.volumeMetadata;
   }
 
   /**

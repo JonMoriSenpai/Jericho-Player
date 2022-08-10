@@ -1,5 +1,5 @@
 const { User } = require('discord.js');
-const { playdl } = require('playdl-music-extractor');
+const { playdl, playdlQuick } = require('playdl-music-extractor');
 const player = require('../core/player');
 const queue = require('../core/queue');
 const { Options } = require('../misc/enums');
@@ -109,6 +109,29 @@ class downloader {
       streamDownload: true,
     });
     return true;
+  }
+
+  async getNonEventPlaydl(
+    rawQuery,
+    requestedSource,
+    options = Options.packetOptions.downloaderOptions,
+  ) {
+    this.eventEmitter.emitDebug(
+      'playdl - Extractor',
+      'Making Request to playdl extractors for parsing and fetch required Track Data',
+      {
+        rawQuery,
+        requestedSource,
+        downloaderOptions: options,
+      },
+    );
+    return await playdlQuick.exec(rawQuery, {
+      ...options,
+      eventReturn: {
+        metadata: { requestedSource },
+      },
+      streamDownload: true,
+    });
   }
 }
 

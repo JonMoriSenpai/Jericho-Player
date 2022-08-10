@@ -160,6 +160,14 @@ const Options = {
   packetOptions,
 };
 
+const packetPrivateCaches = {
+  completedTracksMetadata: [],
+  audioPlayerSubscription: undefined,
+  customModes: { repeat: {}, loop: {}, autoplay: {} },
+  timeMetadata: {},
+  volumeMetadata: 95,
+};
+
 module.exports = {
   Track,
   Playlist,
@@ -168,4 +176,5 @@ module.exports = {
   packetOptions,
   downloaderOptions,
   Options,
+  packetPrivateCaches,
 };
