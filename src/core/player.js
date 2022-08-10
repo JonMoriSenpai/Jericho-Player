@@ -32,19 +32,22 @@ class player extends EventEmiiter {
     super();
 
     /**
-     * @type {Client} Discord Client Instance for Discord Bot for Interaction with Discord Api
+     * Discord Client Instance for Discord Bot for Interaction with Discord Api
+     * @type {Client}
      * @readonly
      */
     this.discordClient = discordClient;
 
     /**
-     * @type {Options} Player/Queue Creation/Destruction Options + packet,downlaoder Options and even more options for caching
+     * Player/Queue Creation/Destruction Options + packet,downlaoder Options and even more options for caching
+     * @type {Options}
      * @readonly
      */
     this.options = options;
 
     /**
-     * @type {eventEmitter} Event Emitter Instance for Distributing Events based Info to the Users abou the Framework and Progress of certain Request
+     * Event Emitter Instance for Distributing Events based Info to the Users abou the Framework and Progress of certain Request
+     * @type {eventEmitter}
      * @readonly
      */
     this.eventEmitter = new eventEmitter(this, options?.eventOptions);
@@ -257,7 +260,12 @@ class player extends EventEmiiter {
    * @param {queue} queue Queue Data from Player's caches
    * @param {object} options Voice Options if voiceMod is required
    */
-  async #__voiceHandler(oldState, newState, queue, options = Options?.packetOption?.voiceOptions) {
+  async #__voiceHandler(
+    oldState,
+    newState,
+    queue,
+    options = Options?.packetOption?.voiceOptions,
+  ) {
     if (
       (oldState?.member.id === queue?.current?.user.id ||
         newState?.member.id === queue?.current?.user.id) &&

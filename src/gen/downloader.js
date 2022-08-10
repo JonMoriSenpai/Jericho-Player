@@ -17,35 +17,41 @@ class downloader {
    */
   constructor(packet, options = Options.packetOptions.downloaderOptions) {
     /**
-     * @type {packets} Packet Instance for moderating backend manupulation and request handlers and handle massive functions and events
+     * Packet Instance for moderating backend manupulation and request handlers and handle massive functions and events
+     * @type {packets}
      * @readonly
      */
     this.packet = packet;
 
     /**
-     * @type {queue} Queue data for Guild Moderation with Voice Channels/Connections
+     * Queue data for Guild Moderation with Voice Channels/Connections
+     * @type {queue}
      * @readonly
      */
     this.queue = packet?.queue;
 
     /**
-     * @type {player} Actual Jericho-Player's Class Instance for sup=properties requirements and usage
+     * Actual Jericho-Player's Class Instance for sup=properties requirements and usage
+     * @type {player}
      */
     this.player = packet?.player;
 
     /**
-     * @type {eventEmitter} Event Emitters for Error Management and Event Emitting with proper meanings
+     * Event Emitters for Error Management and Event Emitting with proper meanings
+     * @type {eventEmitter}
      */
     this.eventEmitter = packet?.eventEmitter;
 
     /**
-     * @type {Options["packetOptions"]["downloaderOptions"]} options Downloader Options for extractor's scrapping Options
+     * options Downloader Options for extractor's scrapping Options
+     * @type {Options["packetOptions"]["downloaderOptions"]}
      * @readonly
      */
     this.options = options;
 
     /**
-     * @type {playdl} Play-dl Class Instance for making solid and proper tunneled request inter-exchange
+     * Play-dl Class Instance for making solid and proper tunneled request inter-exchange
+     * @type {playdl}
      */
     this.playdl = new playdl(options);
 

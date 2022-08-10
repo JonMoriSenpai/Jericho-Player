@@ -30,49 +30,57 @@ class queue {
    */
   constructor(guildId, options = Options, player) {
     /**
-     * @type {string | number} Discord Guild Id for queue creation
+     * Discord Guild Id for queue creation
+     * @type {string | number}
      * @readonly
      */
     this.guildId = guildId;
 
     /**
-     * @type {Options} Queue Creation/Destruction Options + packet,downlaoder Options and even more options for caching
+     * Queue Creation/Destruction Options + packet,downlaoder Options and even more options for caching
+     * @type {Options}
      * @readonly
      */
     this.options = options;
 
     /**
-     * @type {player} Actual player Instance for bring forth sub properties cached with it
+     * Actual player Instance for bring forth sub properties cached with it
+     * @type {player}
      * @readonly
      */
     this.player = player;
 
     /**
-     * @type {eventEmitter} Event Emitter Instance for Distributing Events based Info to the Users abou the Framework and Progress of certain Request
+     * Event Emitter Instance for Distributing Events based Info to the Users abou the Framework and Progress of certain Request
+     * @type {eventEmitter}
      * @readonly
      */
     this.eventEmitter = player?.eventEmitter;
 
     /**
-     * @type {Client} Discord Client Instance for Discord Bot for Interaction with Discord Api
+     * Discord Client Instance for Discord Bot for Interaction with Discord Api
+     * @type {Client}
      * @readonly
      */
     this.discordClient = this.player?.discordClient;
 
     /**
-     * @type {Boolean} Queue Destroyed Status for checking wheather progress or functions to flow or emit error
+     * Queue Destroyed Status for checking wheather progress or functions to flow or emit error
+     * @type {Boolean}
      * @readonly
      */
     this.destroyed = false;
 
     /**
-     * @type {voiceMod} Voice Moderator for connecting and disconnecting from voice Channel
+     * Voice Moderator for connecting and disconnecting from voice Channel
+     * @type {voiceMod}
      * @readonly
      */
     this.voiceMod = new voiceMod(this, options?.voiceOptions);
 
     /**
-     * @type {packets} Packet Instance for moderating backend manupulation and request handlers and handle massive functions and events
+     * Packet Instance for moderating backend manupulation and request handlers and handle massive functions and events
+     * @type {packets}
      * @readonly
      */
     this.packet = new packets(this, options?.packetOptions);

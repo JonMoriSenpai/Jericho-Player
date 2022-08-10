@@ -48,61 +48,71 @@ class packets {
    */
   constructor(queue, options = Options.packetOptions) {
     /**
-     * @type {queue} Actual Related or Source Queue Data for fetching sub-property infos
+     * Actual Related or Source Queue Data for fetching sub-property infos
+     * @type {queue}
      * @readonly
      */
     this.queue = queue;
 
     /**
-     * @type {string | number} Discord Guild Id Data for checks of voiceState Updates
+     * Discord Guild Id Data for checks of voiceState Updates
+     * @type {string | number}
      * @readonly
      */
     this.guildId = queue?.guildId;
 
     /**
-     * @type {Options["packetOptions"]} Cached Options for backend stuffs
+     * Cached Options for backend stuffs
+     * @type {Options["packetOptions"]}
      * @readonly
      */
     this.options = options;
 
     /**
-     * @type {player} Actual Player for event Emitter and other sub-propeties works
+     * Actual Player for event Emitter and other sub-propeties works
+     * @type {player}
      * @readonly
      */
     this.player = queue?.player;
 
     /**
-     * @type {eventEmitter} Actual Event Emitter for emitting events based on better events handling
+     * Actual Event Emitter for emitting events based on better events handling
+     * @type {eventEmitter}
      * @readonly
      */
     this.eventEmitter = queue?.eventEmitter;
 
     /**
-     * @type {voiceMod} Actual Voice Channel Moderator on better voice Connections handling
+     * Actual Voice Channel Moderator on better voice Connections handling
+     * @type {voiceMod}
      * @readonly
      */
     this.voiceMod = queue?.voiceMod;
 
     /**
-     * @type {AudioPlayer} Actual Audio Player for subscription and play Audio Resource
+     * Actual Audio Player for subscription and play Audio Resource
+     * @type {AudioPlayer}
      * @readonly
      */
     this.audioPlayer = createAudioPlayer();
 
     /**
-     * @type {object[]} Array of Tracks and Stream-Data for backend tracks usage
+     * Array of Tracks and Stream-Data for backend tracks usage
+     * @type {object[]}
      * @readonly
      */
     this.tracksMetadata = [];
 
     /**
-     * @type {packetPrivateCaches} Comprise of private caches and settings for rare used stuff or misc stuff
+     * Comprise of private caches and settings for rare used stuff or misc stuff
+     * @type {packetPrivateCaches}
      * @readonly
      */
     this.__privateCaches = packetPrivateCaches;
 
     /**
-     * @type {downloader} Downloader Class Instance for extractors works and fetching of tracks from raw Query and other stuff
+     * Downloader Class Instance for extractors works and fetching of tracks from raw Query and other stuff
+     * @type {downloader}
      * @readonly
      */
     this.downloader = new downloader(this, options?.downloaderOptions);
@@ -447,7 +457,8 @@ class packets {
   }
 
   /**
-   * @type {Boolean | true} Boolean value related to queue.destroyed value
+   * Boolean value related to queue.destroyed value
+   * @type {Boolean | true}
    * @readonly
    */
 
@@ -456,7 +467,8 @@ class packets {
   }
 
   /**
-   * @type {string | "packet"} Class Name for Type Value as "packet"
+   * Class Name for Type Value as "packet"
+   * @type {string | "packet"}
    * @readonly
    */
 
