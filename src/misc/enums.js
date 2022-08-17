@@ -1,4 +1,5 @@
 const { AudioResource } = require('@discordjs/voice');
+const { getNonEventPlaydl } = require('../gen/downloader');
 
 class Playlist {
   #__raw = undefined;
@@ -6,7 +7,7 @@ class Playlist {
   constructor(rawMetadata) {
     this.#__raw = {
       ...rawMetadata,
-      metadata: rawMetadata?.metadata,
+      metadata: rawMetadata?.metadata?.__privateCaches,
     };
     this.patch(rawMetadata);
   }
@@ -50,7 +51,7 @@ class Track {
   constructor(rawMetadata) {
     this.#__raw = {
       ...rawMetadata,
-      metadata: rawMetadata?.metadata,
+      metadata: rawMetadata?.metadata?.__privateCaches,
     };
     this.patch(rawMetadata);
   }
@@ -83,6 +84,24 @@ class Track {
     if (!this.id || !this.raw?.stream?.buffer) return undefined;
     if (returnTrack) return { ...this, stream: this.raw?.stream };
     else return { stream: this.raw?.stream };
+  }
+
+  async __refresh(returnStream = true) {
+    const trackMetadata = await getNonEventPlaydl(
+      this.url,
+      {
+        requestedSource: this.requestedSource,
+      },
+      this.downloaderOptions,
+    )?.tracks?.[0];
+    if (trackMetadata) return undefined;
+    this.patch(trackMetadata);
+    if (returnStream) return this.__getStream();
+    else return this;
+  }
+
+  get downloaderOptions() {
+    return this.metadata?.downloaderOptions;
   }
 
   get requestedSource() {
@@ -153,6 +172,7 @@ const voiceOptions = {
 const packetOptions = {
   downloaderOptions,
   voiceOptions,
+  songQueryFilters: ['all'],
 };
 
 const Options = {

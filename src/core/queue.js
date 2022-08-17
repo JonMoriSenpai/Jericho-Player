@@ -18,9 +18,6 @@ const {
   notPlaying,
 } = require('../misc/errorEvents');
 
-/**
- * @class queue -> Queue Class for making virtual space for per Discord Guild for making a non-conflicting connectionsn and requests from various stuff and web intefs
- */
 class queue {
   /**
    * @constructor
@@ -159,6 +156,11 @@ class queue {
         )
       )
         throw new invalidTracksCount();
+      else if (parseInt(trackCount) > 1)
+        this.packet.__cacheAndCleanTracks(
+          { startIndex: 0, cleanTracks: trackCount - 1 },
+          trackCount,
+        );
       return this.packet?.audioPlayer?.stop(Boolean(forceSkip) ?? true);
     } catch (errorMetadata) {
       this.eventEmitter.emitError(
@@ -286,6 +288,8 @@ class queue {
   setVolume(volume = 95) {
     try {
       if (this.destroyed) throw new destroyedQueue();
+      else if (!this.working) throw new notPlaying();
+      else if (!this.current) throw new notPlaying();
       else if (
         !(
           this.current?.audioResource?.volume &&
@@ -307,6 +311,49 @@ class queue {
         {
           queue: this,
           volume,
+        },
+        this.options?.eventOptions,
+      );
+      return undefined;
+    }
+  }
+
+  /**
+   * @method mute Mute the Music Player of the Queue
+   * @returns {Boolean} Returns Boolean value on success or failure
+   */
+
+  mute() {
+    const response = this.setVolume(0);
+    if (response || response === 0) return true;
+    else return false;
+  }
+
+  /**
+   * @method unmute Un-Mute the Music Player of the Queue
+   * @returns {Boolean} Returns Boolean value on success or failure
+   */
+
+  unmute() {
+    const response = this.setVolume(100);
+    if (response) return true;
+    else return false;
+  }
+
+  async back(tracksCount = 1) {
+    try {
+      if (this.destroyed) throw new destroyedQueue();
+      else if (!this.working) throw new notPlaying();
+      else if (!this.current) throw new notPlaying();
+      return await this.packet?.__trackMovementManager(tracksCount, 'back');
+    } catch (errorMetadata) {
+      this.eventEmitter.emitError(
+        errorMetadata,
+        undefined,
+        'queue.forward()',
+        {
+          queue: this,
+          tracksCount,
         },
         this.options?.eventOptions,
       );

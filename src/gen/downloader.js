@@ -6,9 +6,6 @@ const { Options, downloaderOptions } = require('../misc/enums');
 const eventEmitter = require('../utils/eventEmitter');
 const packets = require('./packets');
 
-/**
- * @class downloader -> Downloader Class for fetching Tracks and Playlist data (if any) from raw Query using user-defined extractors or default extractors
- */
 class downloader {
   /**
    * @constructor
@@ -109,17 +106,22 @@ class downloader {
     );
     await this.playdl.exec(rawQuery, {
       ...options,
+      playersCompatibility: true,
       eventReturn: {
-        metadata: { requestedSource },
+        ...options?.eventReturn,
+        metadata: {
+          ...options?.eventReturn?.metadata,
+          __privateCaches: { downloaderOptions: options, requestedSource },
+        },
       },
       streamDownload: true,
     });
     return true;
   }
 
-  async getNonEventPlaydl(
+  static async getNonEventPlaydl(
     rawQuery,
-    requestedSource,
+    metadataCaches = {},
     options = Options.packetOptions.downloaderOptions,
   ) {
     this.eventEmitter.emitDebug(
@@ -127,17 +129,64 @@ class downloader {
       'Making Request to playdl extractors for parsing and fetch required Track Data',
       {
         rawQuery,
-        requestedSource,
+        metadataCaches,
         downloaderOptions: options,
       },
     );
     return await playdlQuick.exec(rawQuery, {
       ...options,
+      playersCompatibility: true,
       eventReturn: {
-        metadata: { requestedSource },
+        ...options?.eventReturn,
+        metadata: {
+          ...options?.eventReturn?.metadata,
+          __privateCaches: { ...metadataCaches },
+        },
       },
       streamDownload: true,
     });
+  }
+
+  /**
+   * @method __queryFilter Query Filter for the Song Urls checks
+   * @param {String[]} fitlers Query checking Filters from the User
+   * @returns {Boolean | false} Returns Boolean value as true
+   */
+
+  __queryFilter(rawQuery, filters = ['all']) {
+    if (!(rawQuery && typeof rawQuery === 'string' && rawQuery !== ''))
+      return undefined;
+    const isValidUrl = (urlString) => {
+      try {
+        return Boolean(new URL(urlString));
+      } catch (e) {
+        return false;
+      }
+    };
+    const isValidYoutube = (url) => {
+      const p =
+        /^(?:https?:\/\/)?(?:m\.|www\.)?(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))((\w|-){11})(?:\S+)?$/;
+      return Boolean(url.match(p)?.[1]);
+    };
+    const isValidSpotify = (url) => {
+      const p =
+        /^(?:spotify:|(?:https?:\/\/(?:open|play)\.spotify\.com\/))(?:embed)?\/?(album|podcasts|track)(?::|\/)((?:[0-9a-zA-Z]){22})/;
+    };
+    if (filters?.includes('all')) return true;
+    else if (filters?.includes('query') && !isValidUrl(rawQuery)) return true;
+    else if (
+      filters?.includes('youtube') &&
+      isValidUrl(rawQuery) &&
+      isValidYoutube(rawQuery)
+    )
+      return true;
+    else if (
+      filters?.includes('spotify') &&
+      isValidUrl(rawQuery) &&
+      isValidSpotify(rawQuery)
+    )
+      return true;
+    else return false;
   }
 }
 

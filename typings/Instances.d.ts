@@ -43,6 +43,7 @@ export type voiceOptions = {
 export type packetOptions = {
   downloaderOptions?: downloaderOptions;
   voiceOptions?: voiceOptions;
+  songQueryFilters?: String[] | ["all", "youtube", "spotify", "query"];
 };
 
 export type Options = {

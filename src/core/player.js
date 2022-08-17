@@ -13,9 +13,6 @@ const eventEmitter = require('../utils/eventEmitter');
 const { invalidGuild, invalidQueue } = require('../misc/errorEvents');
 const { Options } = require('../misc/enums');
 
-/**
- * @class player -> Player Class for Discord Client v14 for Jericho-Player Framework
- */
 class player extends EventEmiiter {
   /**
    * @static @private @property {object} __privateCaches Private Caches Library in the form of object submission and redmeption based on time and choices of function

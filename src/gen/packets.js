@@ -36,11 +36,9 @@ const voiceMod = require('../utils/voiceMod');
 const {
   invalidRequiredSource,
   invalidVoiceChannel,
+  invalidQuery,
 } = require('../misc/errorEvents');
 
-/**
- * @class packets -> Packets Class is for stream-packet of queue where it handles every backend request handlers without affecting the
- */
 class packets {
   /**
    * @constructor
@@ -143,6 +141,11 @@ class packets {
       if (this.destroyed) return undefined;
       else if (!(rawQuery && typeof rawQuery === 'string' && rawQuery !== ''))
         return undefined;
+      if (
+        options?.songQueryFilters &&
+        !this.downloader.__queryFilter(rawQuery, options?.songQueryFilters)
+      )
+        throw invalidQuery();
       requestedSource =
         interactionResolver(this.player?.discordClient, requestedSource) ??
         (await messageResolver(this.player?.discordClient, requestedSource));
@@ -324,9 +327,6 @@ class packets {
           inputType: streamData?.type ?? StreamType.Arbitrary,
         },
       );
-      rawTrackData.track.audioResource.volume.setVolume(
-        (this.__privateCaches.volumeMetadata ?? 95) / 1000,
-      );
       this.audioPlayer.play(rawTrackData.track.audioResource);
       await entersState(this.audioPlayer, AudioPlayerStatus.Playing, 2e3);
       const voiceConnection = getVoiceConnection(this.guildId);
@@ -366,6 +366,38 @@ class packets {
       );
       return undefined;
     }
+  }
+
+  /**
+   * @method __trackMovementManager Track Movement Audio Resource and Fetching Properly
+   * @param {Number | 1} trackIndex Tracks Count or Track index in the Tracks Cache
+   * @param {String | "back"} movement Movement Direction of the Track
+   * @return {boolean} Returns Success or Failure as per Boolean Value
+   */
+  async __trackMovementManager(trackIndex = 1, movement = 'back') {
+    switch (movement?.toLowerCase()?.trim()) {
+      case 'back':
+        if (trackIndex >= this.__privateCaches?.completedTracksMetadata?.length)
+          return undefined;
+        const track =
+          this.__privateCaches?.completedTracksMetadata?.[
+            this.__privateCaches?.completedTracksMetadata?.length - trackIndex
+          ];
+        if (trackIndex === 1)
+          this.__privateCaches?.completedTracksMetadata?.pop();
+        if (!track) return undefined;
+        const streamData = await track.__refresh(true);
+        if (!streamData?.stream) return undefined;
+        this.tracksMetadata?.splice(1, 0, {
+          track,
+          streamData,
+        });
+        this.audioPlayer.stop(true);
+        break;
+      default:
+        return undefined;
+    }
+    return true;
   }
 
   /**

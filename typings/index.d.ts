@@ -170,4 +170,6 @@ export class queue {
   pause(): Boolean;
   unpause(): Boolean;
   setVolume(volume?: Number): Number | undefined;
+  mute(): Boolean;
+  unmute(): Boolean;
 }
