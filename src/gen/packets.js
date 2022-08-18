@@ -372,7 +372,7 @@ class packets {
    * @method __trackMovementManager Track Movement Audio Resource and Fetching Properly
    * @param {Number | 1} trackIndex Tracks Count or Track index in the Tracks Cache
    * @param {String | "back"} movement Movement Direction of the Track
-   * @return {boolean} Returns Success or Failure as per Boolean Value
+   * @return {Promise<boolean> | boolean} Returns Success or Failure as per Boolean Value
    */
   async __trackMovementManager(trackIndex = 1, movement = 'back') {
     switch (movement?.toLowerCase()?.trim()) {

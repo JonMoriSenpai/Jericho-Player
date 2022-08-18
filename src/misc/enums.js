@@ -145,16 +145,20 @@ const eventOptions = {
 
 const downloaderOptions = {
   extractor: 'playdl',
+  playersCompatibility: true,
   fetchLyrics: true,
   eventReturn: { metadata: undefined },
   ratelimit: 0,
   ignoreInternalError: true,
   fetchOptions: {
+    tokens: {},
     fetchLimit: Infinity,
     streamQuality: 'high',
     rawCookies: undefined,
+    proxies: undefined,
+    cookiesFile: undefined,
     userAgents: undefined,
-    skipalbumLimit: false,
+    skipalbumLimit: true,
   },
 };
 
@@ -162,9 +166,9 @@ const voiceOptions = {
   eventOptions,
   delayTimeout: 0,
   leaveOn: {
-    end: false,
-    empty: false,
-    bot: false,
+    end: true,
+    empty: true,
+    bot: true,
   },
   anyoneCanMoveClient: true,
   altVoiceChannel: undefined,

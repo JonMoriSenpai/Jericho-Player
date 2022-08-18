@@ -20,11 +20,14 @@ export type downloaderOptions = {
   ratelimit?: Number | 0;
   ignoreInternalError?: Boolean | true;
   fetchOptions?: {
+    tokens?: Object | {};
+    rawCookies?: String;
+    proxies?: String[];
+    cookiesFile?: String;
     fetchLimit?: Number | "Infinity";
     streamQuality?: string | "high" | "medium" | "low" | undefined;
-    rawCookies?: string;
     userAgents?: string[];
-    skipalbumLimit?: Boolean | false;
+    skipalbumLimit?: Boolean | true;
   };
 };
 
@@ -32,9 +35,9 @@ export type voiceOptions = {
   eventOptions?: eventOptions;
   delayTimeout?: Number | 0;
   leaveOn?: {
-    end?: number | Boolean | false | 0;
-    empty?: number | Boolean | false | 0;
-    bot?: number | Boolean | false | 0;
+    end?: number | Boolean | true | 0;
+    empty?: number | Boolean | true | 0;
+    bot?: number | Boolean | true | 0;
   };
   anyoneCanMoveClient?: Boolean | true;
   altVoiceChannel?: string | number | VoiceBasedChannel;

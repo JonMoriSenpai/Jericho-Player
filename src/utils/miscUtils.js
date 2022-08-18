@@ -1,5 +1,5 @@
 const { Client, IntentsBitField } = require('discord.js');
-const { resolve, dirname } = require('path')
+const { resolve, dirname } = require('path');
 const { FFmpeg } = require('prism-media');
 
 class miscUtils {
@@ -181,38 +181,42 @@ class miscUtils {
         );
       }, 2 * 1000);
     }
-    if (
-      !(
-        discordClient &&
-        discordClient instanceof Client &&
-        discordClient?.user?.id
-      )
-    ) {
+    if (!(discordClient && discordClient instanceof Client)) {
       throw Error(
         'Invalid Discord Client has been Detected! | And get some Voice and Channel Intents too',
       );
-    } else if (
-      !discordClient.options.intents.has(
-        IntentsBitField.Flags.GuildVoiceStates,
-      ) &&
-      !discordClient.options.intents.has(IntentsBitField.Flags.Guilds)
-    ) {
-      throw SyntaxError(
-        'Missing Intents in Discord Client\n - IntentsBitField.Flags.GuildVoiceStates\n - - IntentsBitField.Flags.Guilds',
-      );
-    } else if (
-      !discordClient.options.intents.has(IntentsBitField.Flags.GuildVoiceStates)
-    ) {
-      throw SyntaxError(
-        'Missing Intents in Discord Client\n - IntentsBitField.Flags.GuildVoiceStates',
-      );
-    } else if (
-      !discordClient.options.intents.has(IntentsBitField.Flags.Guilds)
-    ) {
-      throw SyntaxError(
-        'Missing Intents in Discord Client\n -IntentsBitField.Flags.Guilds',
-      );
-    } else return undefined;
+    }
+
+    setTimeout(() => {
+      if (
+        !new IntentsBitField(discordClient.options.intents).has(
+          IntentsBitField.Flags.GuildVoiceStates,
+        ) &&
+        !new IntentsBitField(discordClient.options.intents).has(
+          IntentsBitField.Flags.Guilds,
+        )
+      ) {
+        throw SyntaxError(
+          'Missing Intents in Discord Client\n - IntentsBitField.Flags.GuildVoiceStates\n - - IntentsBitField.Flags.Guilds',
+        );
+      } else if (
+        !new IntentsBitField(discordClient.options.intents).has(
+          IntentsBitField.Flags.GuildVoiceStates,
+        )
+      ) {
+        throw SyntaxError(
+          'Missing Intents in Discord Client\n - IntentsBitField.Flags.GuildVoiceStates',
+        );
+      } else if (
+        !new IntentsBitField(discordClient.options.intents).has(
+          IntentsBitField.Flags.Guilds,
+        )
+      ) {
+        throw SyntaxError(
+          'Missing Intents in Discord Client\n -IntentsBitField.Flags.Guilds',
+        );
+      } else return undefined;
+    }, 45 * 1000);
   }
 
   /**

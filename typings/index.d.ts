@@ -106,6 +106,7 @@ declare class player extends EventEmitter {
   public readonly discordClient: Client;
   public readonly options: Options;
   public get type(): string | "player";
+  public static depReport(): String;
   public createQueue(
     guildId: Guild["id"] | String | Number,
     forceCreate?: boolean | false,
@@ -121,7 +122,6 @@ declare class player extends EventEmitter {
     destroyConnection?: Boolean | true,
     options?: Options
   ): Promise<Boolean | undefined>;
-  public depReport(): String;
 
   public on<K extends keyof playerEvents>(
     event: K,

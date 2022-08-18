@@ -340,6 +340,12 @@ class queue {
     else return false;
   }
 
+  /**
+   * @method back Back Method for the Queue
+   * @param {Number | 1} tracksCount Tracks Count for the backing command of the Queue
+   * @returns {Promise<Boolean>} Returns Boolean Value on Success and failure
+   */
+
   async back(tracksCount = 1) {
     try {
       if (this.destroyed) throw new destroyedQueue();
@@ -350,7 +356,7 @@ class queue {
       this.eventEmitter.emitError(
         errorMetadata,
         undefined,
-        'queue.forward()',
+        'queue.back()',
         {
           queue: this,
           tracksCount,

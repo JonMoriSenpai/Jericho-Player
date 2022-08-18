@@ -187,7 +187,7 @@ class player extends EventEmiiter {
    * @returns {string} Returns Report as String
    */
 
-  depReport() {
+  static depReport() {
     return scanDeps();
   }
 
@@ -202,32 +202,37 @@ class player extends EventEmiiter {
 
   #__queueMods(method, guildId, options = Options, metadata = undefined) {
     try {
+      let queue;
       switch (method?.toLowerCase()?.trim()) {
         case 'get':
           return player.__privateCaches[guildId?.trim()];
         case 'forceget':
-          return (
-            player.__privateCaches[guildId?.trim()] ??
-            this.#__queueMods(
+          queue = player.__privateCaches[guildId?.trim()];
+          if (!(queue && !queue?.destroyed)) {
+            this.#__queueMods('delete', guildId);
+            queue = this.#__queueMods(
               'create',
               guildId,
               options,
               new queue(guildId, options, this),
-            )
-          );
+            );
+          }
+          return queue;
         case 'submit':
           player.__privateCaches[guildId?.trim()] = metadata;
           return metadata;
         case 'create':
-          return (
-            this.#__queueMods('get', guildId) ??
-            this.#__queueMods(
-              'submit',
+          queue = player.__privateCaches[guildId?.trim()];
+          if (!(queue && !queue?.destroyed)) {
+            this.#__queueMods('delete', guildId);
+            queue = this.#__queueMods(
+              'create',
               guildId,
               options,
               new queue(guildId, options, this),
-            )
-          );
+            );
+          }
+          return queue;
         case 'forcecreate':
           const cachedQueue = this.#__queueMods('get', guildId);
           if (cachedQueue) this.#__queueMods('delete', guildId);
@@ -237,8 +242,8 @@ class player extends EventEmiiter {
             options,
             new queue(guildId, options, this),
           );
-
         case 'delete':
+          if (!player.__privateCaches[guildId?.trim()]) return true;
           delete player.__privateCaches[guildId?.trim()];
           return true;
         default:
