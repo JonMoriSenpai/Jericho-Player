@@ -1,5 +1,4 @@
 const { AudioResource } = require('@discordjs/voice');
-const { getNonEventPlaydl } = require('../gen/downloader');
 
 class Playlist {
   #__raw = undefined;
@@ -87,7 +86,8 @@ class Track {
   }
 
   async __refresh(returnStream = true) {
-    const trackMetadata = await getNonEventPlaydl(
+    const { getNonEventExtractor } = require('../gen/downloader');
+    const trackMetadata = await getNonEventExtractor(
       this.url,
       {
         requestedSource: this.requestedSource,
@@ -139,10 +139,12 @@ class Track {
 const eventOptions = {
   ignoreCrash: true,
   emitPlayer: true,
+  errorName: 'Error',
   debugRegister: true,
 };
 
 const downloaderOptions = {
+  extractor: 'playdl',
   fetchLyrics: true,
   eventReturn: { metadata: undefined },
   ratelimit: 0,

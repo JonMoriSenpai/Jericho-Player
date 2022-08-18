@@ -45,6 +45,7 @@
     "no-restricted-globals": "off",
     "max-classes-per-file": "off",
     "no-case-declarations": "off",
-    "no-unsafe-optional-chaining": "off"
+    "no-unsafe-optional-chaining": "off",
+    "import/no-extraneous-dependencies": "off"
   }
 }

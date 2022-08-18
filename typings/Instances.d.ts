@@ -14,6 +14,7 @@ export type eventOptions = {
 };
 
 export type downloaderOptions = {
+  extractor?: string | "playdl";
   fetchLyrics?: Boolean | true;
   eventReturn?: { metadata?: any } | undefined;
   ratelimit?: Number | 0;

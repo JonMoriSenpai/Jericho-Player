@@ -2,7 +2,8 @@ const { User } = require('discord.js');
 const { playdl, playdlQuick } = require('playdl-music-extractor');
 const player = require('../core/player');
 const queue = require('../core/queue');
-const { Options, downloaderOptions } = require('../misc/enums');
+const { downloaderOptions } = require('../misc/enums');
+const { scanDeps } = require('../utils/miscUtils');
 const eventEmitter = require('../utils/eventEmitter');
 const packets = require('./packets');
 
@@ -12,7 +13,7 @@ class downloader {
    * @param {packets} packet Packet Instance for moderating backend manupulation and request handlers and handle massive functions and events
    * @param {downloaderOptions} options Downloader Options for extractor's scrapping Options
    */
-  constructor(packet, options = Options.packetOptions.downloaderOptions) {
+  constructor(packet, options = downloaderOptions) {
     /**
      * Packet Instance for moderating backend manupulation and request handlers and handle massive functions and events
      * @type {packets}
@@ -58,6 +59,16 @@ class downloader {
       'track',
       async (extractor, playlist, rawTrack, metadata) => await this.packet.__tracksMod(extractor, playlist, rawTrack, metadata),
     );
+    if (scanDeps('video-extractor')) {
+      const { youtubedl } = require('video-extractor');
+      this.youtubedl = new youtubedl(options);
+      this.youtubedl.on('album', (playlist) => (playlist ? this.packet?.__playlistMod(playlist) : undefined));
+
+      this.youtubedl.on(
+        'track',
+        async (extractor, playlist, rawTrack, metadata) => await this.packet.__tracksMod(extractor, playlist, rawTrack, metadata),
+      );
+    }
   }
 
   /**
@@ -67,13 +78,15 @@ class downloader {
    * @param {downloaderOptions} options options Downloader Options for extractor's scrapping Options
    * @returns {Promise<Boolean | undefined>} Returns Raw Extractor Data on completion of processing and extracting
    */
-  async get(
-    rawQuery,
-    requestedSource,
-    options = Options.packetOptions.downloaderOptions,
-  ) {
+  async get(rawQuery, requestedSource, options = downloaderOptions) {
     if (!(rawQuery && typeof rawQuery === 'string' && rawQuery !== ''))
       return undefined;
+    else if (options?.extractor?.toLowerCase()?.trim() === 'youtubedl')
+      return await this.getYoutubedl(
+        rawQuery,
+        requestedSource,
+        options?.playdlOptions,
+      );
     else
       return await this.getPlaydl(
         rawQuery,
@@ -90,11 +103,7 @@ class downloader {
    * @returns {Promise<Boolean | undefined>} Returns Raw Extractor Data on completion of processing and extracting
    */
 
-  async getPlaydl(
-    rawQuery,
-    requestedSource,
-    options = Options.packetOptions.downloaderOptions,
-  ) {
+  async getPlaydl(rawQuery, requestedSource, options = downloaderOptions) {
     this.eventEmitter.emitDebug(
       'playdl - Extractor',
       'Making Request to playdl extractors for parsing and fetch required Track Data',
@@ -119,32 +128,96 @@ class downloader {
     return true;
   }
 
-  static async getNonEventPlaydl(
-    rawQuery,
-    metadataCaches = {},
-    options = Options.packetOptions.downloaderOptions,
-  ) {
+  /**
+   * @method getYoutubedl Youtube-dl extractor Function with repsect to internal functions to support the cause of usage
+   * @param {string} rawQuery String Value for fetching/Parsing with the help of extractors
+   * @param {User} requestedSource requested By Source Data for checks and avoid the further edits on it by some stranger to protect the integrity
+   * @param {downloaderOptions} options options Downloader Options for extractor's scrapping Options
+   * @returns {Promise<Boolean | undefined>} Returns Raw Extractor Data on completion of processing and extracting
+   */
+
+  async getYoutubedl(rawQuery, requestedSource, options = downloaderOptions) {
     this.eventEmitter.emitDebug(
-      'playdl - Extractor',
-      'Making Request to playdl extractors for parsing and fetch required Track Data',
+      'youtubedl - Extractor',
+      'Making Request to youtubedl extractors for parsing and fetch required Track Data',
       {
         rawQuery,
-        metadataCaches,
+        requestedSource,
         downloaderOptions: options,
       },
     );
-    return await playdlQuick.exec(rawQuery, {
+    const extractorData = await this.youtubedl.exec(rawQuery, {
       ...options,
       playersCompatibility: true,
       eventReturn: {
         ...options?.eventReturn,
         metadata: {
           ...options?.eventReturn?.metadata,
-          __privateCaches: { ...metadataCaches },
+          __privateCaches: { downloaderOptions: options, requestedSource },
         },
       },
       streamDownload: true,
     });
+    if (
+      !(
+        extractorData?.tracks &&
+        Array.isArray(extractorData?.tracks) &&
+        extractorData?.tracks?.[0]
+      )
+    ) {
+      await this.playdl.exec(rawQuery, {
+        ...options,
+        playersCompatibility: true,
+        eventReturn: {
+          ...options?.eventReturn,
+          metadata: {
+            ...options?.eventReturn?.metadata,
+            __privateCaches: { downloaderOptions: options, requestedSource },
+          },
+        },
+        streamDownload: true,
+      });
+    } else return undefined;
+    return true;
+  }
+
+  static async getNonEventExtractor(
+    rawQuery,
+    metadataCaches = {},
+    options = downloaderOptions,
+  ) {
+    if (!(rawQuery && typeof rawQuery === 'string' && rawQuery !== ''))
+      return undefined;
+    else if (
+      options?.extractor?.toLowerCase()?.trim() === 'youtubedl' &&
+      scanDeps('video-extractor')
+    ) {
+      const { youtubedlQuick } = require('video-extractor');
+      return await youtubedlQuick.exec(rawQuery, {
+        ...options,
+        playersCompatibility: true,
+        eventReturn: {
+          ...options?.eventReturn,
+          metadata: {
+            ...options?.eventReturn?.metadata,
+            __privateCaches: { ...metadataCaches, downloaderOptions: options },
+          },
+        },
+        streamDownload: true,
+      });
+    } else
+      return await playdlQuick.exec(rawQuery, {
+        ...options,
+        playersCompatibility: true,
+        eventReturn: {
+          ...options?.eventReturn,
+          metadata: {
+            ...options?.eventReturn?.metadata,
+            __privateCaches: { ...metadataCaches, downloaderOptions: options },
+          },
+        },
+        streamDownload: true,
+      });
   }
 
   /**

@@ -45,7 +45,7 @@ class packets {
    * @param {queue} queue Actual Related or Source Queue Data for fetching sub-property infos
    * @param {packetOptions} options Options for backend stuffs
    */
-  constructor(queue, options = Options.packetOptions) {
+  constructor(queue, options = packetOptions) {
     /**
      * Actual Related or Source Queue Data for fetching sub-property infos
      * @type {queue}
@@ -135,7 +135,7 @@ class packets {
     rawQuery,
     voiceSnowflake,
     requestedSource,
-    options = Options?.packetOptions,
+    options = packetOptions,
   ) {
     try {
       if (this.destroyed) return undefined;

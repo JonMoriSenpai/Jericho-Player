@@ -11,6 +11,7 @@ const queue = require('./queue');
 const { guildResolver } = require('../utils/snowflakes');
 const eventEmitter = require('../utils/eventEmitter');
 const { invalidGuild, invalidQueue } = require('../misc/errorEvents');
+const { __initialBuildChecks, scanDeps } = require('../utils/miscUtils');
 const { Options } = require('../misc/enums');
 
 class player extends EventEmiiter {
@@ -27,6 +28,8 @@ class player extends EventEmiiter {
    */
   constructor(discordClient, options = Options) {
     super();
+
+    __initialBuildChecks(discordClient, this);
 
     /**
      * Discord Client Instance for Discord Bot for Interaction with Discord Api
@@ -177,6 +180,15 @@ class player extends EventEmiiter {
       );
       return undefined;
     }
+  }
+
+  /**
+   * @method depReport Dependencies Report as String from the misc Utils
+   * @returns {string} Returns Report as String
+   */
+
+  depReport() {
+    return scanDeps();
   }
 
   /**

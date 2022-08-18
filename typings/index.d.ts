@@ -121,6 +121,7 @@ declare class player extends EventEmitter {
     destroyConnection?: Boolean | true,
     options?: Options
   ): Promise<Boolean | undefined>;
+  public depReport(): String;
 
   public on<K extends keyof playerEvents>(
     event: K,
@@ -172,4 +173,5 @@ export class queue {
   setVolume(volume?: Number): Number | undefined;
   mute(): Boolean;
   unmute(): Boolean;
+  back(tracksCount?: Number | 1): Promise<Boolean>;
 }

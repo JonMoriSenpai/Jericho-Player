@@ -1,17 +1,9 @@
 const fileSystem = require('fs');
 const path = require('path');
-const { Options } = require('../misc/enums');
+const { eventOptions } = require('../misc/enums');
 
 class eventEmitter {
-  constructor(
-    player,
-    config = {
-      ignoreCrash: false,
-      emitPlayer: true,
-      errorName: 'Error',
-      debugRegister: true,
-    },
-  ) {
+  constructor(player, config = eventOptions) {
     this.player = player;
     this.config = config;
   }
@@ -21,12 +13,7 @@ class eventEmitter {
     extraMetadata,
     eventLocation = 'unknown-location',
     eventVariable = undefined,
-    config = {
-      ignoreCrash: false,
-      emitPlayer: true,
-      errorName: 'Error',
-      debugRegister: true,
-    },
+    config = eventOptions,
   ) {
     let processedError = '';
     config = { ...this.config, ...config };

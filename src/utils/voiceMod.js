@@ -7,7 +7,7 @@ const {
 const { voiceResolver, guildResolver } = require('./snowflakes');
 const queue = require('../core/queue');
 const { invalidVoiceChannel } = require('../misc/errorEvents');
-const { Options, voiceOptions } = require('../misc/enums');
+const { voiceOptions } = require('../misc/enums');
 
 class voiceMod {
   /**
@@ -15,7 +15,7 @@ class voiceMod {
    * @param {queue} queue
    * @param {voiceOptions} options
    */
-  constructor(queue, options = Options.packetOptions.voiceOptions) {
+  constructor(queue, options = voiceOptions) {
     this.queue = queue;
     this.player = queue?.player;
     this.discordClient = queue?.discordClient;
@@ -69,7 +69,7 @@ class voiceMod {
     guildSnowflake,
     delayVoiceTimeout,
     requestedSource = this.queue?.current?.requestedSource,
-    options = this.options ?? Options.packetOptions.voiceOptions,
+    options = this.options ?? voiceOptions,
   ) {
     try {
       const guild = await guildResolver(this.discordClient, guildSnowflake);
