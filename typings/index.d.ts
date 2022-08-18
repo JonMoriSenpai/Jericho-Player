@@ -12,6 +12,7 @@ import {
   SelectMenuInteraction,
 } from "discord.js";
 import { Options, Playlist, Track, Awaitable } from "./Instances";
+import { VoiceConnection } from "@discordjs/voice";
 
 declare interface playerEvents {
   error: [
@@ -150,6 +151,9 @@ export class queue {
   public get paused(): Boolean;
   public get current(): Track | undefined;
   public get tracks(): Track[] | undefined;
+  public get previousTrack(): Track;
+  public get previousTracks(): Track[];
+  public get voiceConnection(): VoiceConnection;
   play(
     rawQuery: string,
     voiceSnowflake: string | number | VoiceChannel | StageChannel | Message,
@@ -173,5 +177,7 @@ export class queue {
   setVolume(volume?: Number): Number | undefined;
   mute(): Boolean;
   unmute(): Boolean;
+  clear(tracksCount?: Number): Boolean;
+  shuffle(): Boolean;
   back(tracksCount?: Number | 1): Promise<Boolean>;
 }

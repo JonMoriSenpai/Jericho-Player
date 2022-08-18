@@ -1,4 +1,8 @@
-const { AudioPlayerStatus } = require('@discordjs/voice');
+const {
+  AudioPlayerStatus,
+  VoiceConnection,
+  getVoiceConnection,
+} = require('@discordjs/voice');
 const {
   Client,
   VoiceChannel,
@@ -341,6 +345,72 @@ class queue {
   }
 
   /**
+   * @method shuffle Shuffle Method for the Queue
+   * @returns {Boolean} Returns Boolean Value on Success and failure
+   */
+
+  shuffle() {
+    try {
+      if (this.destroyed) throw new destroyedQueue();
+      else if (!this.working) throw new notPlaying();
+      else if (!this.current) throw new notPlaying();
+      const shuffleFunc = (rawArray = []) => {
+        for (let i = rawArray.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [rawArray[i], rawArray[j]] = [rawArray[j], rawArray[i]];
+        }
+        return rawArray;
+      };
+      return shuffleFunc(this.packet?.tracksMetadata);
+    } catch (errorMetadata) {
+      this.eventEmitter.emitError(
+        errorMetadata,
+        undefined,
+        'queue.shuffle()',
+        {
+          queue: this,
+        },
+        this.options?.eventOptions,
+      );
+      return undefined;
+    }
+  }
+
+  /**
+   * clear() -> Clear Tracks from Queue and Stream Packet
+   * @param {Number|String} tracksCount Tracks Count in Queue
+   * @returns {Boolean} true if operation emits green signal or undefined for errors
+   */
+
+  clear(tracksCount = this.tracks?.length) {
+    try {
+      if (this.destroyed) throw new destroyedQueue();
+      else if (!this.working) throw new notPlaying();
+      else if (!this.current) throw new notPlaying();
+      else if (!(tracksCount && typeof tracksCount === 'number'))
+        return undefined;
+      else if (parseInt(tracksCount) >= 1)
+        this.packet.__cacheAndCleanTracks(
+          { startIndex: 1, cleanTracks: tracksCount },
+          tracksCount,
+        );
+      return true;
+    } catch (errorMetadata) {
+      this.eventEmitter.emitError(
+        errorMetadata,
+        undefined,
+        'queue.back()',
+        {
+          queue: this,
+          tracksCount,
+        },
+        this.options?.eventOptions,
+      );
+      return undefined;
+    }
+  }
+
+  /**
    * @method back Back Method for the Queue
    * @param {Number | 1} tracksCount Tracks Count for the backing command of the Queue
    * @returns {Promise<Boolean>} Returns Boolean Value on Success and failure
@@ -365,6 +435,71 @@ class queue {
       );
       return undefined;
     }
+  }
+
+  /**
+   * Previous Track Data | Same as Queue.current , But Data of previous track
+   * @type {Track}
+   * @readonly
+   */
+
+  get previousTrack() {
+    try {
+      if (this.destroyed) throw new destroyedQueue();
+      else if (!this.working) throw new notPlaying();
+      return this.packet?.__privateCaches?.completedTracksMetadata?.[
+        this.packet?.__privateCaches?.completedTracksMetadata?.length - 1
+      ];
+    } catch (errorMetadata) {
+      this.eventEmitter.emitError(
+        errorMetadata,
+        undefined,
+        'queue.previousTrack',
+        {
+          queue: this,
+        },
+        this.options?.eventOptions,
+      );
+      return undefined;
+    }
+  }
+
+  /**
+   * Previous Tracks Data | Same as Queue.tracks , But Data of previous track
+   * @type {Track[]}
+   * @readonly
+   */
+
+  get previousTracks() {
+    try {
+      if (this.destroyed) throw new destroyedQueue();
+      else if (!this.working) throw new notPlaying();
+      return [...this.packet?.__privateCaches?.completedTracksMetadata]
+        ?.filter(Boolean)
+        ?.reverse();
+    } catch (errorMetadata) {
+      this.eventEmitter.emitError(
+        errorMetadata,
+        undefined,
+        'queue.previousTracks',
+        {
+          queue: this,
+        },
+        this.options?.eventOptions,
+      );
+      return undefined;
+    }
+  }
+
+  /**
+   * Voice Connection of the Queue Synced
+   * @type {VoiceConnection}
+   * @readonly
+   */
+
+  get voiceConnection() {
+    if (!this.guildId) return undefined;
+    else return getVoiceConnection(this.guildId);
   }
 
   /**

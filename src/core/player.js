@@ -202,40 +202,37 @@ class player extends EventEmiiter {
 
   #__queueMods(method, guildId, options = Options, metadata = undefined) {
     try {
-      let queue;
+      let queueMetadata = player.__privateCaches?.[guildId?.trim()];
       switch (method?.toLowerCase()?.trim()) {
         case 'get':
           return player.__privateCaches[guildId?.trim()];
         case 'forceget':
-          queue = player.__privateCaches[guildId?.trim()];
-          if (!(queue && !queue?.destroyed)) {
-            this.#__queueMods('delete', guildId);
-            queue = this.#__queueMods(
+          if (!(queueMetadata && !queueMetadata?.destroyed)) {
+            if (queueMetadata) delete player.__privateCaches[guildId?.trim()];
+            queueMetadata = this.#__queueMods(
               'create',
               guildId,
               options,
               new queue(guildId, options, this),
             );
           }
-          return queue;
+          return queueMetadata;
         case 'submit':
           player.__privateCaches[guildId?.trim()] = metadata;
           return metadata;
         case 'create':
-          queue = player.__privateCaches[guildId?.trim()];
-          if (!(queue && !queue?.destroyed)) {
-            this.#__queueMods('delete', guildId);
-            queue = this.#__queueMods(
-              'create',
+          if (!(queueMetadata && !queueMetadata?.destroyed)) {
+            if (queueMetadata) delete player.__privateCaches[guildId?.trim()];
+            queueMetadata = this.#__queueMods(
+              'submit',
               guildId,
               options,
               new queue(guildId, options, this),
             );
           }
-          return queue;
+          return queueMetadata;
         case 'forcecreate':
-          const cachedQueue = this.#__queueMods('get', guildId);
-          if (cachedQueue) this.#__queueMods('delete', guildId);
+          if (queueMetadata) delete player.__privateCaches[guildId?.trim()];
           return this.#__queueMods(
             'submit',
             guildId,
@@ -243,7 +240,7 @@ class player extends EventEmiiter {
             new queue(guildId, options, this),
           );
         case 'delete':
-          if (!player.__privateCaches[guildId?.trim()]) return true;
+          if (!queueMetadata) return true;
           delete player.__privateCaches[guildId?.trim()];
           return true;
         default:
