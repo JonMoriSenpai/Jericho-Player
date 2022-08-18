@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>Home</title>
+    <title>Source: utils/miscUtils.js</title>
 
     <script src="scripts/prettify/prettify.js"></script>
     <script src="scripts/prettify/lang-css.js"></script>
@@ -27,100 +27,273 @@
         <div class="burger-line-3"></div>
     </div>
 
-    <h1 class="page-title">Home</h1>
+    <h1 class="page-title">Source: utils/miscUtils.js</h1>
 
     
 
 
 
     
-
-
-    <h3>jericho-player 1.2.2</h3>
-
-
-
-
-
-
-
-
-
-
-    
-
-
-
-
     <section>
-        <article><div align="center">
-  <br />
-  <p>
-    <a href="https://jericho-player.js.org"><img src="https://raw.githubusercontent.com/SidisLiveYT/Jericho-Player/main/.github/asserts/logo.svg" width="546" alt="jericho-player" /></a>
-  </p>
-  <br />
-<p>
-<a href="https://discord.gg/MfME24sJ2a"><img src="https://img.shields.io/discord/795434308005134406?color=5865F2&logo=discord&logoColor=white" alt="Discord server" /></a>
-<a href="https://www.npmjs.com/package/jericho-player"><img src="https://img.shields.io/npm/v/jericho-player.svg?maxAge=3600" alt="npm version" /></a>
-<a href="https://www.npmjs.com/package/jericho-player"><img src="https://img.shields.io/npm/dt/jericho-player.svg?maxAge=3600" alt="npm downloads" /></a>
-<a href="https://github.com/SidisLiveYT/Jericho-Player/actions"><img src="https://github.com/discordjs/discord.js/workflows/Testing/badge.svg" alt="Tests status" /></a>
-</p>
-</div>
-<p>LightWeight Framework for <strong><a href="https://discord.js.org">discord.js v14</a></strong> Music Bots and Radio Bots with fast moderation with commands and no memory leak mode.</p>
-<h2>Installation</h2>
-<h3>Install <strong><a href="https://npmjs.com/package/jericho-player">jericho-player</a></strong></h3>
-<pre class="prettyprint source lang-sh"><code>$ npm install --save jericho-player@beta
+        <article>
+            <pre class="prettyprint source linenums"><code>const { Client, IntentsBitField } = require('discord.js');
+const { resolve, dirname } = require('path')
+const { FFmpeg } = require('prism-media');
+
+class miscUtils {
+  /**
+   * scanDeps() -> Scanning Dependencies in package.json or node_modules for package or versions list
+   * @param {String|void} packageName Package name for publishing it versions in project
+   * @returns {String|void} Publish Data which was requested for like checks and versions
+   */
+
+  static scanDeps(packageName) {
+    if (!packageName) {
+      const report = [];
+      const addVersion = (name) => report.push(
+        `- ${name}: ${miscUtils.__findPkgVersion(name) ?? 'not found'}`,
+      );
+      // general
+      report.push('Core Dependencies');
+      addVersion('@discordjs/voice');
+      addVersion('prism-media');
+      report.push('');
+
+      // opus
+      report.push('Opus Libraries');
+      addVersion('@discordjs/opus');
+      addVersion('opusscript');
+      report.push('');
+
+      // encryption
+      report.push('Encryption Libraries');
+      addVersion('sodium');
+      addVersion('libsodium-wrappers');
+      addVersion('tweetnacl');
+      report.push('');
+
+      // ffmpeg
+      report.push('FFmpeg');
+      try {
+        const info = FFmpeg.getInfo();
+        report.push(`- version: ${info.version}`);
+        report.push(
+          `- libopus: ${
+            info.output.includes('--enable-libopus') ? 'yes' : 'no'
+          }`,
+        );
+      } catch (err) {
+        report.push('- not found');
+      }
+      addVersion('ffmpeg-static');
+      report.push('');
+
+      // Extractors
+      report.push('Extractors');
+      addVersion('playdl-music-extractor');
+      addVersion('video-extractor');
+
+      return ['-'.repeat(50), ...report, '-'.repeat(50)].join('\n');
+    }
+    return (
+      miscUtils.__findPkgVersion(packageName) ??
+      miscUtils.__findPkgVersion(packageName.toLowerCase().trim())
+    );
+  }
+
+  /**
+   * @private __findPkgVersion() -> Searching Versions of Packages
+   * @param {String} name NPM Package Name
+   * @returns {String|void} Returns Package Version
+   */
+
+  static __findPkgVersion(name) {
+    try {
+      const pkg =
+        name === '@discordjs/voice'
+          ? require('../../package.json')
+          : miscUtils.__searchPackageJson(
+            dirname(require.resolve(name)),
+            name,
+            8,
+          );
+      return pkg?.version ?? undefined;
+    } catch (err) {
+      return undefined;
+    }
+  }
+  /**
+   * @private __searchPackageJson() -> Searching Every package.json with deps
+   * @param {String} dir Directory name | value
+   * @param {String} packageName NPM Package Name
+   * @param {Number} depth Depth to go in Directories or outward
+   * @returns {Object} pacakge.json file with accurate versions
+   */
+
+  static __searchPackageJson(dir, packageName, depth) {
+    if (depth === 0) return undefined;
+    const attemptedPath = resolve(dir, './package.json');
+    try {
+      const pkg = require(attemptedPath);
+      if (pkg.name !== packageName)
+        throw new Error('package.json does not match');
+      return pkg;
+    } catch (err) {
+      return miscUtils.__searchPackageJson(
+        resolve(dir, '..'),
+        packageName,
+        depth - 1,
+      );
+    }
+  }
+
+  static __initialBuildChecks(discordClient, playerInstance) {
+    let FmpeggGarbage;
+    let LibopusGarbage;
+    const MissingDeps = [' '];
+    MissingDeps.push(
+      '--[ Missing Dependencies from package.json | Do - "npm i packageName" ]--',
+    );
+    try {
+      const GarbageInfo = FFmpeg.getInfo();
+      FmpeggGarbage = !!`- version: ${GarbageInfo.version}`;
+      LibopusGarbage = !!`- libopus: ${
+        GarbageInfo.output.includes('--enable-libopus') ? 'yes' : 'no'
+      }`;
+    } catch (err) {
+      LibopusGarbage = FmpeggGarbage = undefined;
+    }
+    !miscUtils.scanDeps('@discordjs/voice')
+      ? MissingDeps.push(`${MissingDeps.length - 1})  "@discordjs/voice"`)
+      : undefined;
+    !miscUtils.scanDeps('prism-media')
+      ? MissingDeps.push(`${MissingDeps.length - 1})  "prism-media"`)
+      : undefined;
+
+    !miscUtils.scanDeps('@discordjs/opus') &amp;&amp; !miscUtils.scanDeps('opusscript')
+      ? MissingDeps.push(
+        `${MissingDeps.length - 1})  "@discordjs/opus" OR "opusscript"`,
+      )
+      : undefined;
+
+    !miscUtils.scanDeps('tweetnacl') &amp;&amp;
+    !(miscUtils.scanDeps('libsodium-wrapper') &amp;&amp; miscUtils.scanDeps('sodium'))
+      ? MissingDeps.push(
+        `${
+          MissingDeps.length - 1
+        })  "tweetnacl" OR ("libsodium-wrapper" And "sodium")`,
+      )
+      : undefined;
+
+    !miscUtils.scanDeps('ffmpeg-static') &amp;&amp; !(LibopusGarbage &amp;&amp; FmpeggGarbage)
+      ? MissingDeps.push(
+        `${
+          MissingDeps.length - 1
+        })  "ffmpeg-static" OR "Ffmpeg from [https://www.ffmpeg.org/download.html]"`,
+      )
+      : undefined;
+
+    !miscUtils.scanDeps('playdl-music-extractor') &amp;&amp;
+    !miscUtils.scanDeps('video-extractor')
+      ? MissingDeps.push(
+        `${
+          MissingDeps.length - 1
+        })  "playdl-music-extractor" OR "video-extractor"`,
+      )
+      : undefined;
+    if (MissingDeps[2]) {
+      setTimeout(() => {
+        playerInstance.emit(
+          'error',
+          playerInstance,
+          new Error(
+            [
+              '-'.repeat(50),
+              ...MissingDeps,
+              '--[ queue value will be undefined By-default as it will trigger as ->  player.on("error",errorMessage) => {} ]--',
+              '-'.repeat(50),
+            ].join('\n'),
+          ),
+          { discordClient },
+          'miscUtils.#__initialBuildChecks()',
+        );
+      }, 2 * 1000);
+    }
+    if (
+      !(
+        discordClient &amp;&amp;
+        discordClient instanceof Client &amp;&amp;
+        discordClient?.user?.id
+      )
+    ) {
+      throw Error(
+        'Invalid Discord Client has been Detected! | And get some Voice and Channel Intents too',
+      );
+    } else if (
+      !discordClient.options.intents.has(
+        IntentsBitField.Flags.GuildVoiceStates,
+      ) &amp;&amp;
+      !discordClient.options.intents.has(IntentsBitField.Flags.Guilds)
+    ) {
+      throw SyntaxError(
+        'Missing Intents in Discord Client\n - IntentsBitField.Flags.GuildVoiceStates\n - - IntentsBitField.Flags.Guilds',
+      );
+    } else if (
+      !discordClient.options.intents.has(IntentsBitField.Flags.GuildVoiceStates)
+    ) {
+      throw SyntaxError(
+        'Missing Intents in Discord Client\n - IntentsBitField.Flags.GuildVoiceStates',
+      );
+    } else if (
+      !discordClient.options.intents.has(IntentsBitField.Flags.Guilds)
+    ) {
+      throw SyntaxError(
+        'Missing Intents in Discord Client\n -IntentsBitField.Flags.Guilds',
+      );
+    } else return undefined;
+  }
+
+  /**
+   * @static
+   * Wait for Milliseconds for Delay between processes
+   * @param {Number|String|void} Milliseconds Time in Milliseconds
+   * @returns {Promise&lt;void>} return undefined for no return
+   */
+  static async TimeWait(Milliseconds = 1000) {
+    return await new Promise((resolve) => setTimeout(resolve, Number(Milliseconds)));
+  }
+
+  /**
+   * @static
+   * Checks for Valid Url and returns Boolean Results
+   * @param {String} Url Raw url for Url Checks
+   * @return {Promise&lt;Boolean>} returns undefined on completion
+   */
+  static async isUriCheck(Url) {
+    if (!Url || (Url &amp;&amp; typeof Url !== 'string')) {
+      return false;
+    }
+    const ProtocolAndDomainRegEx = /^(?:\w+:)?\/\/(\S+)$/;
+    const LocalHostDomainRegEx = /^localhost[\:?\d]*(?:[^\:?\d]\S*)?$/;
+    const NonLocalHostDomainRegEx = /^[^\s\.]+\.\S{2,}$/;
+    const SearchMatchResults = Url.match(ProtocolAndDomainRegEx);
+    if (!SearchMatchResults || (SearchMatchResults &amp;&amp; !SearchMatchResults[1])) {
+      return false;
+    }
+    if (
+      LocalHostDomainRegEx.test(SearchMatchResults[1]) ||
+      NonLocalHostDomainRegEx.test(SearchMatchResults[1])
+    ) {
+      return true;
+    }
+    return false;
+  }
+}
+
+module.exports = miscUtils;
 </code></pre>
-<h3>Install <strong><a href="https://npmjs.com/package/@discordjs/opus">@discordjs/opus</a> OR <a href="https://npmjs.com/package/opusscript">opusscript</a></strong></h3>
-<pre class="prettyprint source lang-sh"><code>$ npm install --save @discordjs/opus
-              OR
-$ npm install --save opusscript
-</code></pre>
-<h3>Install <strong><a href="https://npmjs.com/package/@discordjs/voice">@discordjs/voice</a></strong></h3>
-<pre class="prettyprint source lang-sh"><code>$ npm install --save @discordjs/voice
-</code></pre>
-<h3>Install FFmpeg or Avconv</h3>
-<ul>
-<li>
-<p>Official FFMPEG Website: <strong><a href="https://www.ffmpeg.org/download.html">https://www.ffmpeg.org/download.html</a></strong></p>
-</li>
-<li>
-<p>Node Module (FFMPEG): <strong><a href="https://npmjs.com/package/ffmpeg-static">https://npmjs.com/package/ffmpeg-static</a></strong></p>
-</li>
-<li>
-<p>Avconv: <strong><a href="https://libav.org/download">https://libav.org/download</a></strong></p>
-</li>
-</ul>
-<h1>Features</h1>
-<ul>
-<li>Simple &amp; easy to use 🤘</li>
-<li>Beginner friendly 😱</li>
-<li>Auto Proxy Feature</li>
-<li>Lightweight 🛬</li>
-<li>No-Memory-Leak-Mode Present and optimised based on <a href="https://npmjs.com/package/@discordjs/voice">@discordjs/voice</a></li>
-<li>play-dl or youtube-dl extractors support 🌌</li>
-<li>Multiple sources support ✌</li>
-<li>Supports Custom Youtube Cookies and Proxies</li>
-<li>Play in multiple servers at the same time 🚗</li>
-</ul>
-<h2><a href="https://jericho-player.js.org">Documentation</a></h2>
-<h1>Supported websites</h1>
-<p>By default, jericho-player supports <strong>YouTube</strong>, <strong>Spotify</strong>, <strong>facebook</strong>, <strong>SoundCloud</strong> and <strong>Arbitary Links</strong> streams only.</p>
-<h3>Optional dependencies</h3>
-<p>Jericho Player got some <strong>Custom Extractors</strong> that enables you to use and fast Extraction. Some packages have been made by the Sid is Live YT to add new features using this Extractors.</p>
-<h4><a href="https://npmjs.com/package/playdl-music-extractor">playdl-music-extractor</a> (latest)</h4>
-<p>Optional package that adds support for <code>vimeo</code>, <code>reverbnation</code>, <code>facebook</code>.
-You just need to install it using <code>npm i --save playdl-music-extractor</code> (jericho-player will automatically detect and use it).</p>
-<h4><a href="https://npmjs.com/package/video-extractor">video-extractor</a> (optional) (may-break)</h4>
-<p><code>video-extractor</code> is an optional package that brings support for +700 websites by using <code>youtube-dl</code> . The Npm Package Link is available <a href="https://npmjs.com/package/video-extractor">here</a>. And You can install Custom Extractor by <code>npm i --save video-extractor</code></p>
-<h1>Community Bots made with Jericho Player</h1>
-<p>These bots are made by the community, they can help you build your own!</p>
-<ul>
-<li><code>[ Updated ] </code> <strong><a href="https://github.com/SidisLiveYT/Jericho-Player-Discord-Bot">Fairy Tale - Jericho Player</a></strong> by <a href="https://github.com/SidisLiveYT">SidisLiveYT</a></li>
-</ul></article>
+        </article>
     </section>
-
-
 
 
 
