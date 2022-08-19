@@ -101,6 +101,35 @@ declare interface playerEvents {
       | ButtonInteraction
       | SelectMenuInteraction
   ];
+  botDisconnect: [
+    queue: queue,
+    oldChannel: VoiceChannel,
+    newChannel: VoiceChannel,
+    requestedSource:
+      | Message
+      | CommandInteraction
+      | ButtonInteraction
+      | SelectMenuInteraction
+  ];
+  channelShift: [
+    queue: queue,
+    oldChannel: VoiceChannel,
+    newChannel: VoiceChannel,
+    requestedSource:
+      | Message
+      | CommandInteraction
+      | ButtonInteraction
+      | SelectMenuInteraction
+  ];
+  destroyedQueue: [
+    queue: queue,
+    timeOutId: number,
+    requestedSource:
+      | Message
+      | CommandInteraction
+      | ButtonInteraction
+      | SelectMenuInteraction
+  ];
 }
 declare class player extends EventEmitter {
   constructor(discordClient: Client, options?: Options);

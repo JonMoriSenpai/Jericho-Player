@@ -21,6 +21,7 @@ const {
   invalidTracksCount,
   notPlaying,
 } = require('../misc/errorEvents');
+const { watchDestroyed } = require('../utils/miscUtils');
 
 class queue {
   /**
@@ -98,7 +99,7 @@ class queue {
 
   async play(rawQuery, voiceSnowflake, requestedSource, options = Options) {
     try {
-      if (this.destroyed)
+      if (watchDestroyed(this))
         throw new destroyedQueue('Queue has been destroyed already');
       else if (!(rawQuery && typeof rawQuery === 'string' && rawQuery !== ''))
         throw new invalidQuery();
@@ -149,7 +150,7 @@ class queue {
 
   async skip(forceSkip = true, trackCount = 1) {
     try {
-      if (this.destroyed) throw new destroyedQueue();
+      if (watchDestroyed(this)) throw new destroyedQueue();
       else if (!this.working) throw new notPlaying();
       else if (this.tracks?.length < 2) return undefined;
       else if (
@@ -187,7 +188,7 @@ class queue {
 
   async stop(forceStop = true, preserveTracks = false) {
     try {
-      if (this.destroyed) throw new destroyedQueue();
+      if (watchDestroyed(this)) throw new destroyedQueue();
       else if (!this.current || !this.working) throw new notPlaying();
       this.packet.__cacheAndCleanTracks(
         { startIndex: 0, cleanTracks: this.tracks?.length },
@@ -218,7 +219,7 @@ class queue {
    * @returns {Promise<Boolean | undefined>} Returns Boolean or undefined on failure or success rate!
    */
   async destroy(delayVoiceTimeout = 0, destroyConnection = false) {
-    if (this.destroyed) throw new destroyedQueue();
+    if (watchDestroyed(this)) throw new destroyedQueue();
     const timeOutIdResidue = await this.voiceMod.disconnect(
       this.guildId,
       {
@@ -226,6 +227,16 @@ class queue {
         delayVoiceTimeout,
       },
       this.tracks?.find((t) => t.requestedSource)?.requestedSource,
+    );
+    this.eventEmitter?.emitEvent(
+      'destroyedQueue',
+      'Queue got Destroyed in the Player',
+      {
+        queue,
+        timeOutId: timeOutIdResidue,
+        requestedSource: this.tracks?.find((t) => t.requestedSource)
+          ?.requestedSource,
+      },
     );
     this.packet.__perfectClean();
     delete this.packet;
@@ -240,7 +251,7 @@ class queue {
 
   pause() {
     try {
-      if (this.destroyed) throw new destroyedQueue();
+      if (watchDestroyed(this)) throw new destroyedQueue();
       else if (!(this.current && this.playing)) throw new notPlaying();
       else if (!this.paused) return undefined;
       return this.packet?.audioPlayer?.pause(true);
@@ -265,7 +276,7 @@ class queue {
 
   unpause() {
     try {
-      if (this.destroyed) throw new destroyedQueue();
+      if (watchDestroyed(this)) throw new destroyedQueue();
       else if (!this.current) throw new notPlaying();
       else if (this.paused) return undefined;
       return this.packet?.audioPlayer?.unpause();
@@ -291,7 +302,7 @@ class queue {
 
   setVolume(volume = 95) {
     try {
-      if (this.destroyed) throw new destroyedQueue();
+      if (watchDestroyed(this)) throw new destroyedQueue();
       else if (!this.working) throw new notPlaying();
       else if (!this.current) throw new notPlaying();
       else if (
@@ -351,7 +362,7 @@ class queue {
 
   shuffle() {
     try {
-      if (this.destroyed) throw new destroyedQueue();
+      if (watchDestroyed(this)) throw new destroyedQueue();
       else if (!this.working) throw new notPlaying();
       else if (!this.current) throw new notPlaying();
       const shuffleFunc = (rawArray = []) => {
@@ -384,7 +395,7 @@ class queue {
 
   clear(tracksCount = this.tracks?.length) {
     try {
-      if (this.destroyed) throw new destroyedQueue();
+      if (watchDestroyed(this)) throw new destroyedQueue();
       else if (!this.working) throw new notPlaying();
       else if (!this.current) throw new notPlaying();
       else if (!(tracksCount && typeof tracksCount === 'number'))
@@ -418,7 +429,7 @@ class queue {
 
   async back(tracksCount = 1) {
     try {
-      if (this.destroyed) throw new destroyedQueue();
+      if (watchDestroyed(this)) throw new destroyedQueue();
       else if (!this.working) throw new notPlaying();
       else if (!this.current) throw new notPlaying();
       return await this.packet?.__trackMovementManager(tracksCount, 'back');
@@ -445,7 +456,7 @@ class queue {
 
   get previousTrack() {
     try {
-      if (this.destroyed) throw new destroyedQueue();
+      if (watchDestroyed(this)) throw new destroyedQueue();
       else if (!this.working) throw new notPlaying();
       return this.packet?.__privateCaches?.completedTracksMetadata?.[
         this.packet?.__privateCaches?.completedTracksMetadata?.length - 1
@@ -472,7 +483,7 @@ class queue {
 
   get previousTracks() {
     try {
-      if (this.destroyed) throw new destroyedQueue();
+      if (watchDestroyed(this)) throw new destroyedQueue();
       else if (!this.working) throw new notPlaying();
       return [...this.packet?.__privateCaches?.completedTracksMetadata]
         ?.filter(Boolean)
@@ -509,7 +520,7 @@ class queue {
    */
 
   get volume() {
-    if (this.destroyed) return undefined;
+    if (watchDestroyed(this)) return undefined;
     return this.packet.__privateCaches.volumeMetadata;
   }
 

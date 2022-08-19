@@ -11,8 +11,12 @@ const queue = require('./queue');
 const { guildResolver } = require('../utils/snowflakes');
 const eventEmitter = require('../utils/eventEmitter');
 const { invalidGuild, invalidQueue } = require('../misc/errorEvents');
-const { __initialBuildChecks, scanDeps } = require('../utils/miscUtils');
-const { Options } = require('../misc/enums');
+const {
+  __initialBuildChecks,
+  scanDeps,
+  watchDestroyed,
+} = require('../utils/miscUtils');
+const { Options, voiceOptions } = require('../misc/enums');
 
 class player extends EventEmiiter {
   /**
@@ -92,8 +96,8 @@ class player extends EventEmiiter {
         },
       );
       if (forceCreate)
-        return this.#__queueMods('forceCreate', guild?.id, options);
-      else return this.#__queueMods('create', guild?.id, options);
+        return await this.#__queueMods('forceCreate', guild?.id, options);
+      else return await this.#__queueMods('create', guild?.id, options);
     } catch (errorMetadata) {
       this.eventEmitter.emitError(
         errorMetadata,
@@ -124,7 +128,7 @@ class player extends EventEmiiter {
     try {
       const guild = await guildResolver(this.discordClient, guildSnowflake);
       if (!guild?.id) throw new invalidGuild();
-      const requestedQueue = this.#__queueMods('get', guild?.id, options);
+      const requestedQueue = await this.#__queueMods('get', guild?.id, options);
       if (!requestedQueue) throw new invalidQueue();
       this.eventEmitter.emitDebug(
         'queue Destruction',
@@ -133,9 +137,7 @@ class player extends EventEmiiter {
           guildSnowflake,
         },
       );
-      if (!requestedQueue?.destroyed)
-        await requestedQueue.destroy(options?.delayTimeout, destroyConnection);
-      this.#__queueMods('delete', guild?.id, options);
+      await this.#__queueMods('delete', guild?.id, options);
       return true;
     } catch (errorMetadata) {
       this.eventEmitter.emitError(
@@ -197,51 +199,64 @@ class player extends EventEmiiter {
    * @param {string | number | Guild.id} guildId Discord Guild Id for queue fetching and creation
    * @param {Options} options Queue Creation/Destruction Options
    * @param {queue | object} metadata Random or un-defined metadata or queue on major conditions
-   * @returns {Boolean | queue} Returns Boolean on success or failure or Queue on creation of it
+   * @returns {Promise<Boolean | queue>} Returns Boolean on success or failure or Queue on creation of it
    */
 
-  #__queueMods(method, guildId, options = Options, metadata = undefined) {
+  async #__queueMods(method, guildId, options = Options, metadata = undefined) {
     try {
       let queueMetadata = player.__privateCaches?.[guildId?.trim()];
       switch (method?.toLowerCase()?.trim()) {
         case 'get':
           return player.__privateCaches[guildId?.trim()];
         case 'forceget':
-          if (!(queueMetadata && !queueMetadata?.destroyed)) {
-            if (queueMetadata) delete player.__privateCaches[guildId?.trim()];
-            queueMetadata = this.#__queueMods(
-              'create',
-              guildId,
-              options,
-              new queue(guildId, options, this),
-            );
+          if (!(queueMetadata && !watchDestroyed(queueMetadata))) {
+            queueMetadata = new queue(guildId, options, this);
+            player.__privateCaches[guildId?.trim()] = queueMetadata;
           }
+          this.eventEmitter.emitDebug(
+            'queue Creation',
+            'Creation of Queue Class Instance for Discord Guild Requests',
+            {
+              guildId,
+            },
+          );
           return queueMetadata;
         case 'submit':
           player.__privateCaches[guildId?.trim()] = metadata;
           return metadata;
         case 'create':
-          if (!(queueMetadata && !queueMetadata?.destroyed)) {
-            if (queueMetadata) delete player.__privateCaches[guildId?.trim()];
-            queueMetadata = this.#__queueMods(
-              'submit',
-              guildId,
-              options,
-              new queue(guildId, options, this),
-            );
+          if (!(queueMetadata && !watchDestroyed(queueMetadata))) {
+            queueMetadata = new queue(guildId, options, this);
+            player.__privateCaches[guildId?.trim()] = queueMetadata;
           }
+          this.eventEmitter.emitDebug(
+            'queue Creation',
+            'Creation of Queue Class Instance for Discord Guild Requests',
+            {
+              guildId,
+            },
+          );
           return queueMetadata;
         case 'forcecreate':
-          if (queueMetadata) delete player.__privateCaches[guildId?.trim()];
-          return this.#__queueMods(
-            'submit',
-            guildId,
-            options,
-            new queue(guildId, options, this),
+          if (queueMetadata && !watchDestroyed(queueMetadata))
+            await queueMetadata.destroy();
+
+          this.eventEmitter.emitDebug(
+            'queue Creation',
+            'Creation of Queue Class Instance for Discord Guild Requests',
+            {
+              guildId,
+            },
           );
+
+          queueMetadata = new queue(guildId, options, this);
+          player.__privateCaches[guildId?.trim()] = queueMetadata;
+          return queueMetadata;
         case 'delete':
           if (!queueMetadata) return true;
-          delete player.__privateCaches[guildId?.trim()];
+          else if (!watchDestroyed(queueMetadata))
+            await queueMetadata.destroy();
+          else delete player.__privateCaches[guildId?.trim()];
           return true;
         default:
           return undefined;
@@ -269,22 +284,21 @@ class player extends EventEmiiter {
    * @param {VoiceState} oldState Old Voice State where previous State has been recorded from Client or Api
    * @param {VoiceState} newState New Voice State where present State has been recorded from Client or Api
    * @param {queue} queue Queue Data from Player's caches
-   * @param {object} options Voice Options if voiceMod is required
+   * @param {voiceOptions} options Voice Options if voiceMod is required
    */
-  async #__voiceHandler(
-    oldState,
-    newState,
-    queue,
-    options = Options?.packetOption?.voiceOptions,
-  ) {
+  async #__voiceHandler(oldState, newState, queue, options = voiceOptions) {
     if (
       (oldState?.member.id === queue?.current?.user.id ||
         newState?.member.id === queue?.current?.user.id) &&
       (!options?.leaveOn?.bot ||
         (options?.leaveOn?.bot && !newState?.member?.user?.bot))
     ) {
-      if (!newState?.channelId && !queue?.destroyed) {
-        if (oldState?.channel?.members?.size === 1)
+      if (!newState?.channelId && !watchDestroyed(queue)) {
+        if (
+          oldState?.channel?.members?.size === 1 &&
+          options?.leaveOn?.empty &&
+          !isNaN(Number(options?.leaveOn?.empty)) > 0
+        ) {
           this.eventEmitter.emitEvent(
             'channelEmpty',
             'Channel is Empty and have no members in it',
@@ -294,36 +308,107 @@ class player extends EventEmiiter {
               requestedSource: queue?.current?.requestedSource,
             },
           );
-        return await this.destroyQueue(queue?.guildId, true, {
-          delayTimeout:
-            options?.leaveOn?.bot && !isNaN(Number(options?.leaveOn?.bot)) > 0
-              ? options?.leaveOn?.bot
-              : 0,
-        });
+
+          return await this.destroyQueue(queue?.guildId, true, {
+            delayTimeout:
+              options?.leaveOn?.empty &&
+              !isNaN(Number(options?.leaveOn?.empty)) > 0
+                ? options?.leaveOn?.empty
+                : undefined,
+          });
+        } else
+          return await this.destroyQueue(queue?.guildId, true, {
+            delayTimeout:
+              options?.leaveOn?.bot && !isNaN(Number(options?.leaveOn?.bot)) > 0
+                ? options?.leaveOn?.bot
+                : 0,
+          });
       } else if (
         newState?.channelId &&
-        !queue?.destroyed &&
+        !watchDestroyed(queue) &&
         options?.anyoneCanMoveClient
       )
         return await queue.voiceMod.connect(newState.channel);
-      else return undefined;
+      else if (
+        oldState?.channel?.members?.size === 1 &&
+        options?.leaveOn?.empty &&
+        !isNaN(Number(options?.leaveOn?.empty)) > 0
+      ) {
+        this.eventEmitter.emitEvent(
+          'channelEmpty',
+          'Channel is Empty and have no members in it',
+          {
+            queue,
+            channel: oldState?.channel,
+            requestedSource: queue?.current?.requestedSource,
+          },
+        );
+        const garbageResponse = await this.destroyQueue(queue?.guildId, true, {
+          delayTimeout:
+            options?.leaveOn?.empty &&
+            !isNaN(Number(options?.leaveOn?.empty)) > 0
+              ? options?.leaveOn?.empty
+              : undefined,
+        });
+        if (garbageResponse)
+          this.eventEmitter.emitEvent(
+            'botDisconnect',
+            'Bot got Disconnected Suddenly/Un-expectedly',
+            {
+              queue,
+              oldChannel: oldState?.channel,
+              newChannel: newState?.channel,
+              requestedSource: queue?.current?.requestedSource,
+            },
+          );
+        return true;
+      } else return undefined;
     } else if (
       oldState?.member.id === this.discordClient?.user?.id ||
       newState?.member.id === this.discordClient?.user?.id
     ) {
-      if (!newState?.channelId && !queue?.destroyed)
-        return await this.destroyQueue(queue?.guildId, true, {
-          ...options,
+      if (!newState?.channelId && !watchDestroyed(queue)) {
+        const garbageResponse = await this.destroyQueue(queue?.guildId, true, {
           voiceOptions: {
-            ...options?.voiceOptions,
+            ...options,
             altVoiceChannel: oldState?.channelId,
           },
         });
-      else if (oldState?.channelId && newState?.channelId && !queue?.destroyed)
-        return await queue.voiceMod.connect(
+        if (garbageResponse)
+          this.eventEmitter.emitEvent(
+            'botDisconnect',
+            'Bot got Disconnected Suddenly/Un-expectedly',
+            {
+              queue,
+              oldChannel: oldState?.channel,
+              newChannel: newState?.channel,
+              requestedSource: queue?.current?.requestedSource,
+            },
+          );
+        return true;
+      } else if (
+        oldState?.channelId &&
+        newState?.channelId &&
+        oldState?.channelId !== newState?.channelId &&
+        !watchDestroyed(queue)
+      ) {
+        const garbageResponse = await queue.voiceMod.connect(
           options?.anyoneCanMoveClient ? newState.channel : oldState?.channel,
+          queue?.current?.requestedSource,
         );
-      else return undefined;
+        if (garbageResponse && options?.anyoneCanMoveClient)
+          this.eventEmitter.emitEvent(
+            'channelShift',
+            "Bot's Channel got Shifted Suddenly/Un-expectedly",
+            {
+              queue,
+              oldChannel: oldState?.channel,
+              newChannel: newState?.channel,
+              requestedSource: queue?.current?.requestedSource,
+            },
+          );
+        return true;
+      } else return undefined;
     } else return undefined;
   }
 

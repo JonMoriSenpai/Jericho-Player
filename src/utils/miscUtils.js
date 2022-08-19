@@ -254,6 +254,21 @@ class miscUtils {
     }
     return false;
   }
+
+  /**
+   * @static
+   * @method watchDestroyed Watch Destroyed Function for NodeJS.Timeout Value if any
+   * @param {object} queue Queue Instance for destroyed checks
+   * @returns {Boolean} Returns Boolean Value for if statement or checker
+   */
+
+  static watchDestroyed = (queue) => {
+    if (queue?.destroyed && typeof queue?.destroyed === 'number') {
+      clearTimeout(queue?.destroyed);
+      queue.destroyed = false;
+      return false;
+    } else return Boolean(queue?.destroyed);
+  };
 }
 
 module.exports = miscUtils;
