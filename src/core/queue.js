@@ -238,6 +238,9 @@ class queue {
           ?.requestedSource,
       },
     );
+    this.tracks?.map((track) => (track?.extractorData && !track?.extractorData?.destroyed
+      ? this.packet.extractorDataManager(track, 'destroy')
+      : undefined));
     this.packet.__perfectClean();
     delete this.packet;
     this.destroyed = timeOutIdResidue;

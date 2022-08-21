@@ -6,6 +6,7 @@ import {
   ButtonInteraction,
   SelectMenuInteraction,
 } from "discord.js";
+import { extractorData } from "playdl-music-extractor";
 
 export type eventOptions = {
   ignoreCrash?: Boolean | true;
@@ -59,10 +60,22 @@ export class Playlist {
   public readonly id: string | number;
   public readonly name: string;
   public readonly url: string;
-  public readonly thumbnail: string | object;
+  public readonly thumbnail: string;
   public readonly views: string | number | 0;
   public readonly tracksCount: number | 0;
-  public readonly author: object;
+  public readonly author: { name: string; url: string };
+  public readonly extractorData: {
+    orignal:
+      | string
+      | "deezer"
+      | "youtube"
+      | "spotify"
+      | "facebook"
+      | "reverbnation"
+      | "soundcloud"
+      | "arbitary";
+    custom: string | "play-dl" | "youtube-dl";
+  };
   public get raw(): object;
   public get requestedSource():
     | Message
@@ -75,18 +88,34 @@ export class Playlist {
 }
 export class Track {
   public readonly id: string | number;
+  public readonly videoId: string | number;
   public readonly playlistId: string | number | undefined;
   public readonly title: string;
   public readonly url: string;
   public readonly description: string;
-  public readonly author: object;
+  public readonly author: { name: string; url: string };
   public readonly views: string | number | 0;
-  public readonly extractors: object;
-  public readonly thumbnail: string | object;
+  public readonly extractors: {
+    orignal:
+      | string
+      | "deezer"
+      | "youtube"
+      | "spotify"
+      | "facebook"
+      | "reverbnation"
+      | "soundcloud"
+      | "arbitary";
+    custom: string | "play-dl" | "youtube-dl";
+  };
+  public readonly thumbnail: {
+    Id: string | number;
+    url: string;
+  };
   public readonly isLive: Boolean;
-  public readonly duration: number;
-  public readonly ratings: object;
+  public readonly duration: { ms: Number; readable: string };
+  public readonly ratings: { likes: number; dislikes: number };
   public readonly playlist: Playlist;
+  public readonly extractorData: extractorData;
   public readonly lyrics: string;
   public get raw(): object;
   public get requestedSource():

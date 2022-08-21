@@ -57,7 +57,7 @@ class downloader {
 
     this.playdl.on(
       'track',
-      async (extractor, playlist, rawTrack, metadata) => await this.packet.__tracksMod(extractor, playlist, rawTrack, metadata),
+      async (extractor, playlist, rawTrack, extractorData, metadata) => await this.packet.__tracksMod(extractor, playlist, rawTrack, metadata),
     );
     if (scanDeps('video-extractor')) {
       const { youtubedl } = require('video-extractor');
@@ -82,17 +82,8 @@ class downloader {
     if (!(rawQuery && typeof rawQuery === 'string' && rawQuery !== ''))
       return undefined;
     else if (options?.extractor?.toLowerCase()?.trim() === 'youtubedl')
-      return await this.getYoutubedl(
-        rawQuery,
-        requestedSource,
-        options?.playdlOptions,
-      );
-    else
-      return await this.getPlaydl(
-        rawQuery,
-        requestedSource,
-        options?.playdlOptions,
-      );
+      return await this.getYoutubedl(rawQuery, requestedSource, options);
+    else return await this.getPlaydl(rawQuery, requestedSource, options);
   }
 
   /**
@@ -113,9 +104,10 @@ class downloader {
         downloaderOptions: options,
       },
     );
-    await this.playdl.exec(rawQuery, {
+    const extractorData = await this.playdl.exec(rawQuery, {
       ...options,
       playersCompatibility: true,
+      waitForPromise: false,
       eventReturn: {
         ...options?.eventReturn,
         metadata: {
@@ -125,6 +117,10 @@ class downloader {
       },
       streamDownload: true,
     });
+    extractorData.on('tracks', (tracks, playlist, metadata) => this.packet.extractorDataManager(
+      { rawTracks: tracks, playlist },
+      'parseTracks',
+    ));
     return true;
   }
 
@@ -149,6 +145,7 @@ class downloader {
     const extractorData = await this.youtubedl.exec(rawQuery, {
       ...options,
       playersCompatibility: true,
+      waitForPromise: false,
       eventReturn: {
         ...options?.eventReturn,
         metadata: {
@@ -158,16 +155,11 @@ class downloader {
       },
       streamDownload: true,
     });
-    if (
-      !(
-        extractorData?.tracks &&
-        Array.isArray(extractorData?.tracks) &&
-        extractorData?.tracks?.[0]
-      )
-    ) {
+    if (!extractorData?.tracks) {
       await this.playdl.exec(rawQuery, {
         ...options,
         playersCompatibility: true,
+        waitForPromise: false,
         eventReturn: {
           ...options?.eventReturn,
           metadata: {

@@ -21,6 +21,7 @@ class Playlist {
     this.views = rawMetadata?.views;
     this.tracksCount = rawMetadata?.tracksCount;
     this.author = rawMetadata?.author ?? rawMetadata?.channel;
+    this.extractorData = rawMetadata?.extractorData;
   }
 
   get requestedSource() {
@@ -56,7 +57,8 @@ class Track {
   }
 
   patch(rawMetadata) {
-    this.id = rawMetadata?.id ?? rawMetadata?.videoId ?? rawMetadata?.Id;
+    this.id = rawMetadata?.id ?? rawMetadata?.Id;
+    this.videoId = rawMetadata?.videoId;
     this.playlistId = rawMetadata?.albumId ?? rawMetadata?.playlistId;
     this.title = rawMetadata?.title ?? rawMetadata?.name;
     this.url = rawMetadata?.url;
@@ -76,6 +78,7 @@ class Track {
       rawMetadata?.album || rawMetadata?.playlist
         ? new Playlist(rawMetadata?.album ?? rawMetadata?.playlist)
         : undefined;
+    this.extractorData = rawMetadata?.extractorData;
     this.lyrics = rawMetadata?.lyrics;
   }
 

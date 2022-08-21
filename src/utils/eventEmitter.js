@@ -72,7 +72,6 @@ class eventEmitter {
       this.player?.emit(
         eventName,
         new Date(),
-        extraMetadata,
         ...Object.entries(eventVariable)?.map((d) => d?.[1]),
       );
     if (config?.debugRegister)

@@ -84,6 +84,18 @@ declare interface playerEvents {
       | ButtonInteraction
       | SelectMenuInteraction
   ];
+  tracksAdd: [
+    queue: queue,
+    tracksCount: Number,
+    tracks: Tracks,
+    playlist: Playlist,
+    user: User | GuildMember,
+    requestedSource:
+      | Message
+      | CommandInteraction
+      | ButtonInteraction
+      | SelectMenuInteraction
+  ];
   connectionError: [
     queue: queue,
     requestedSource:
@@ -103,8 +115,7 @@ declare interface playerEvents {
   ];
   botDisconnect: [
     queue: queue,
-    oldChannel: VoiceChannel,
-    newChannel: VoiceChannel,
+    channel: VoiceChannel,
     requestedSource:
       | Message
       | CommandInteraction
@@ -210,3 +221,15 @@ export class queue {
   shuffle(): Boolean;
   back(tracksCount?: Number | 1): Promise<Boolean>;
 }
+
+declare var cores: {
+  Track: Track;
+  Options: Options;
+  Playlist: Playlist;
+  queue: queue;
+  player: player;
+};
+
+export default cores;
+
+export { Track, Playlist, Options };

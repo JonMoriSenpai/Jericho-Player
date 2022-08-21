@@ -1,6 +1,6 @@
 {
   "name": "jericho-player",
-  "version": "1.2.5",
+  "version": "1.2.6",
   "description": "LightWeight Framework for discord.js v14 Music Bots and Radio Bots with fast moderation with commands and no memory leak mode",
   "main": "./src/index.js",
   "module": "./src/index.mjs",
@@ -38,7 +38,7 @@
     "jsdoc-skyceil": "^2.0.0",
     "nyc": "^15.1.0",
     "semantic-release": "^19.0.3",
-    "video-extractor": "^3.0.3"
+    "video-extractor": "^3.0.4"
   },
   "config": {
     "commitizen": {
@@ -56,7 +56,7 @@
     "fs": "^0.0.1-security",
     "is-url": "^1.2.4",
     "path": "^0.12.7",
-    "playdl-music-extractor": "^3.0.8",
+    "playdl-music-extractor": "^3.0.9",
     "prism-media": "^1.3.4",
     "youtube-suggest-gen": "^1.0.7"
   },

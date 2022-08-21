@@ -490,6 +490,53 @@ class packets {
   }
 
   /**
+   * @method extractorDataManager extractorDataManager for the manupualting extractorData from the Track
+   * @param {Track} rawData Track Data for extractorDataManager or Playlist or Tracks
+   * @param {String} status Status Value for switch case workign
+   * @returns {Boolean} Returns failure for undefined or true on success
+   */
+
+  extractorDataManager(rawData, status = 'destroy') {
+    if (!(status && typeof status === 'string' && status?.trim() !== ''))
+      return undefined;
+    switch (status?.toLowerCase()?.trim()) {
+      case 'destroy':
+        if (rawData?.rawTrack?.extractorData) return undefined;
+        else rawData?.rawTrack?.extractorData?.destroy(true);
+        break;
+      case 'parseracks':
+        if (
+          !(
+            rawData?.rawTracks &&
+            Array.isArray(rawData?.rawTracks) &&
+            rawData?.rawTracks?.length > 0
+          )
+        )
+          return undefined;
+        const parsedTracks = rawData?.rawTracks?.map((t) => new Track(t));
+        this.eventEmitter.emitEvent(
+          'tracksAdd',
+          'Tracks has been Added to Queue Successfully',
+          {
+            queue,
+            tracksCount: parsedTracks?.length,
+            tracks: parsedTracks,
+            playlist:
+              rawData?.playlist ??
+              parsedTracks?.find((t) => t && t?.playlist)?.playlist,
+            user: parsedTracks?.find((t) => t && t?.user)?.user,
+            requestedSource: parsedTracks?.find((t) => t && t?.requestedSource)
+              ?.requestedSource,
+          },
+        );
+        break;
+      default:
+        return undefined;
+    }
+    return true;
+  }
+
+  /**
    * Boolean value related to queue.destroyed value
    * @type {Boolean | true}
    * @readonly
