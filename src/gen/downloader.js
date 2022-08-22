@@ -142,7 +142,7 @@ class downloader {
         downloaderOptions: options,
       },
     );
-    const extractorData = await this.youtubedl.exec(rawQuery, {
+    let extractorData = await this.youtubedl.exec(rawQuery, {
       ...options,
       playersCompatibility: true,
       waitForPromise: false,
@@ -156,7 +156,7 @@ class downloader {
       streamDownload: true,
     });
     if (!extractorData?.tracks) {
-      await this.playdl.exec(rawQuery, {
+      extractorData = await this.playdl.exec(rawQuery, {
         ...options,
         playersCompatibility: true,
         waitForPromise: false,
@@ -170,6 +170,10 @@ class downloader {
         streamDownload: true,
       });
     } else return undefined;
+    extractorData.on('tracks', (tracks, playlist, metadata) => this.packet.extractorDataManager(
+      { rawTracks: tracks, playlist },
+      'parseTracks',
+    ));
     return true;
   }
 

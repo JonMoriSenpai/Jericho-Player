@@ -11,7 +11,7 @@ import {
   ButtonInteraction,
   SelectMenuInteraction,
 } from "discord.js";
-import { Options, Playlist, Track, Awaitable } from "./Instances";
+import { Options, Playlist, Track, Awaitable, TimeStamp } from "./Instances";
 import { VoiceConnection } from "@discordjs/voice";
 
 declare interface playerEvents {
@@ -194,6 +194,7 @@ export class queue {
   public get previousTrack(): Track;
   public get previousTracks(): Track[];
   public get voiceConnection(): VoiceConnection;
+  public get timeStamp(): TimeStamp;
   play(
     rawQuery: string,
     voiceSnowflake: string | number | VoiceChannel | StageChannel | Message,

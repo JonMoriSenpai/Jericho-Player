@@ -1,6 +1,7 @@
 const { Client, IntentsBitField } = require('discord.js');
 const { resolve, dirname } = require('path');
 const { FFmpeg } = require('prism-media');
+const prettyMs = require('pretty-ms').default;
 
 class miscUtils {
   /**
@@ -269,6 +270,44 @@ class miscUtils {
       return false;
     } else return Boolean(queue?.destroyed);
   };
+
+  /**
+   * @static @method readableTime convert milliseconds to human-readable format
+   * @param {number} rawData Time as milliseconds
+   * @param {string} type String type for switch case for types of converting
+   * @returns {string | undefined} String Value or undefined on converting
+   */
+
+  static readableTime(rawData, type = 'colon') {
+    if (
+      !(
+        ((rawData && !isNaN(Number(rawData))) || parseInt(rawData) === 0) &&
+        parseInt(rawData) >= 0 &&
+        type &&
+        typeof type === 'string' &&
+        type?.trim() !== ''
+      )
+    )
+      return undefined;
+    switch (type?.toLowerCase()?.trim()) {
+      case 'colon':
+        return prettyMs(rawData, {
+          colonNotation: true,
+          keepDecimalsOnWholeSeconds: false,
+        });
+      case 'small':
+        return prettyMs(rawData);
+      case 'big':
+        return prettyMs(rawData, { verbose: true });
+      case 'compact':
+        return prettyMs(rawData, {
+          compact: true,
+          keepDecimalsOnWholeSeconds: false,
+        });
+      default:
+        return undefined;
+    }
+  }
 }
 
 module.exports = miscUtils;

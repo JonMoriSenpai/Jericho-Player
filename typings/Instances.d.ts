@@ -56,6 +56,34 @@ export type Options = {
   packetOption?: packetOptions;
 };
 
+export type TimeStamp = {
+  currentTrack: {
+    total: Nummber;
+    now: Number;
+    readable: String[];
+  };
+  previousTrack: {
+    total: Nummber;
+    readable: String[];
+  };
+  nextTrack: { total: Nummber; readable: String[] };
+  queue: {
+    total: Nummber;
+    now: Number;
+    readable: String[];
+  };
+  previousQueue: {
+    total: Nummber;
+    now: Number;
+    readable: String[];
+  };
+  totalQueue: {
+    total: Nummber;
+    now: Number;
+    readable: String[];
+  };
+};
+
 export class Playlist {
   public readonly id: string | number;
   public readonly name: string;

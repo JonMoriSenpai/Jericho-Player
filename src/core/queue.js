@@ -21,7 +21,7 @@ const {
   invalidTracksCount,
   notPlaying,
 } = require('../misc/errorEvents');
-const { watchDestroyed } = require('../utils/miscUtils');
+const { watchDestroyed, readableTime } = require('../utils/miscUtils');
 
 class queue {
   /**
@@ -239,7 +239,7 @@ class queue {
       },
     );
     this.tracks?.map((track) => (track?.extractorData && !track?.extractorData?.destroyed
-      ? this.packet.extractorDataManager(track, 'destroy')
+      ? this.packet.extractorDataManager({ rawTrack: track }, 'destroy')
       : undefined));
     this.packet.__perfectClean();
     delete this.packet;
@@ -403,11 +403,15 @@ class queue {
       else if (!this.current) throw new notPlaying();
       else if (!(tracksCount && typeof tracksCount === 'number'))
         return undefined;
-      else if (parseInt(tracksCount) >= 1)
+      else if (
+        parseInt(tracksCount) >= 1 &&
+        parseInt(tracksCount) <= this.tracks?.length
+      )
         this.packet.__cacheAndCleanTracks(
           { startIndex: 1, cleanTracks: tracksCount },
           tracksCount,
         );
+      else return undefined;
       return true;
     } catch (errorMetadata) {
       this.eventEmitter.emitError(
@@ -444,6 +448,115 @@ class queue {
         {
           queue: this,
           tracksCount,
+        },
+        this.options?.eventOptions,
+      );
+      return undefined;
+    }
+  }
+
+  /**
+   * Timestamps calculated for queue and tracks and other value for queue
+   * @type {Object}
+   * @readonly
+   */
+
+  get timeStamps() {
+    try {
+      if (watchDestroyed(this)) throw new destroyedQueue();
+      else if (!this.working) throw new notPlaying();
+      const timeStamp = {
+        currentTrack: {
+          total: parseInt(this.current?.duration?.ms ?? 0),
+          now:
+            parseInt(this.current?.duration?.ms ?? 0) -
+            this.current?.audioResource?.playbackDuration,
+        },
+        previousTrack: {
+          total: parseInt(this.previousTrack?.duration?.ms ?? 0),
+        },
+        nextTrack: { total: parseInt(this.tracks?.[1]?.duration?.ms ?? 0) },
+        queue: {
+          total: parseInt(
+            this.tracks?.reduce(
+              (total, current) => total + (current?.duration?.ms ?? 0),
+              0,
+            ) ?? 0,
+          ),
+          now:
+            parseInt(this.current?.duration?.ms ?? 0) -
+            this.current?.audioResource?.playbackDuration,
+        },
+        previousQueue: {
+          total: parseInt(
+            this.previousTracks?.reduce(
+              (total, current) => total + (current?.duration?.ms ?? 0),
+              0,
+            ) ?? 0,
+          ),
+          now:
+            parseInt(this.current?.duration?.ms ?? 0) -
+            this.current?.audioResource?.playbackDuration +
+            parseInt(
+              this.previousTracks?.reduce(
+                (total, current) => total + (current?.duration?.ms ?? 0),
+                0,
+              ) ?? 0,
+            ),
+        },
+        totalQueue: {
+          total: parseInt(
+            [...this.previousTracks, ...this.tracks]?.reduce(
+              (total, current) => total + (current?.duration?.ms ?? 0),
+              0,
+            ) ?? 0,
+          ),
+          now:
+            parseInt(this.current?.duration?.ms ?? 0) -
+            this.current?.audioResource?.playbackDuration +
+            parseInt(
+              this.previousTracks?.reduce(
+                (total, current) => total + (current?.duration?.ms ?? 0),
+                0,
+              ) ?? 0,
+            ),
+        },
+      };
+      const generateReadableTime = (rawTimeStamp) => {
+        const rawGarbageArray = Object.entries(rawTimeStamp);
+        const garbageStructure = {};
+        rawGarbageArray.map((data) => {
+          garbageStructure[data?.[0]] = {
+            ...data?.[1],
+            readable: {
+              total: data?.[1]?.total
+                ? [
+                  readableTime(parseInt(data?.[1]?.total ?? 0), 'colon'),
+                  readableTime(parseInt(data?.[1]?.total ?? 0), 'big'),
+                  readableTime(parseInt(data?.[1]?.total ?? 0), 'small'),
+                ]
+                : undefined,
+              now: data?.[1]?.now
+                ? [
+                  readableTime(parseInt(data?.[1]?.now ?? 0), 'colon'),
+                  readableTime(parseInt(data?.[1]?.now ?? 0), 'big'),
+                  readableTime(parseInt(data?.[1]?.now ?? 0), 'small'),
+                ]
+                : undefined,
+            },
+          };
+          return undefined;
+        });
+        return garbageStructure;
+      };
+      return generateReadableTime(timeStamp);
+    } catch (errorMetadata) {
+      this.eventEmitter.emitError(
+        errorMetadata,
+        undefined,
+        'queue.timeStamps',
+        {
+          queue: this,
         },
         this.options?.eventOptions,
       );
