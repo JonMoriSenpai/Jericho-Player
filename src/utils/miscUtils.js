@@ -1,7 +1,7 @@
 const { Client, IntentsBitField } = require('discord.js');
 const { resolve, dirname } = require('path');
 const { FFmpeg } = require('prism-media');
-const prettyMs = require('pretty-ms').default;
+const prettyMs = require('pretty-mslux');
 
 class miscUtils {
   /**
