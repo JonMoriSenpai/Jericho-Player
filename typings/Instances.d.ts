@@ -49,6 +49,7 @@ export type packetOptions = {
   downloaderOptions?: downloaderOptions;
   voiceOptions?: voiceOptions;
   songQueryFilters?: String[] | ["all", "youtube", "spotify", "query"];
+  noMemoryLeakMode: false;
 };
 
 export type Options = {
@@ -58,27 +59,27 @@ export type Options = {
 
 export type TimeStamp = {
   currentTrack: {
-    total: Nummber;
+    total: Number;
     now: Number;
     readable: String[];
   };
   previousTrack: {
-    total: Nummber;
+    total: Number;
     readable: String[];
   };
-  nextTrack: { total: Nummber; readable: String[] };
+  nextTrack: { total: Number; readable: String[] };
   queue: {
-    total: Nummber;
+    total: Number;
     now: Number;
     readable: String[];
   };
   previousQueue: {
-    total: Nummber;
+    total: Number;
     now: Number;
     readable: String[];
   };
   totalQueue: {
-    total: Nummber;
+    total: Number;
     now: Number;
     readable: String[];
   };

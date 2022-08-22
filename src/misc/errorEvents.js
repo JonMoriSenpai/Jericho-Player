@@ -75,6 +75,16 @@ class notPlaying extends Error {
   }
 }
 
+class noMemoryLeakModeError extends Error {
+  constructor(message) {
+    super();
+    this.name = 'noMemoryLeakModeError';
+    this.message =
+      message ??
+      'No Memory Leak mode has been enabled , You can\'t manupulate the volume anymore';
+  }
+}
+
 module.exports = {
   invalidGuild,
   invalidRequiredSource,
@@ -84,4 +94,5 @@ module.exports = {
   invalidQuery,
   invalidTracksCount,
   notPlaying,
+  noMemoryLeakModeError,
 };

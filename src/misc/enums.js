@@ -57,7 +57,7 @@ class Track {
   }
 
   patch(rawMetadata) {
-    this.id = rawMetadata?.id ?? rawMetadata?.Id;
+    this.id = rawMetadata?.id ?? rawMetadata?.Id ?? rawMetadata?.trackId;
     this.videoId = rawMetadata?.videoId;
     this.playlistId = rawMetadata?.albumId ?? rawMetadata?.playlistId;
     this.title = rawMetadata?.title ?? rawMetadata?.name;
@@ -83,7 +83,7 @@ class Track {
   }
 
   __getStream(returnTrack = false) {
-    if (!this.id || !this.raw?.stream?.buffer) return undefined;
+    if (!this.videoId || !this.raw?.stream?.buffer) return undefined;
     if (returnTrack) return { ...this, stream: this.raw?.stream };
     else return { stream: this.raw?.stream };
   }
@@ -182,6 +182,7 @@ const packetOptions = {
   downloaderOptions,
   voiceOptions,
   songQueryFilters: ['all'],
+  noMemoryLeakMode: false,
 };
 
 const Options = {

@@ -324,6 +324,7 @@ class packets {
       rawTrackData.track.audioResource = createAudioResource(
         streamData?.stream?.buffer,
         {
+          inlineVolume: !this.options?.noMemoryLeakMode,
           inputType: streamData?.type ?? StreamType.Arbitrary,
         },
       );
@@ -340,6 +341,8 @@ class packets {
           requestedSource: rawTrackData?.track?.requestedSource,
         },
       );
+      if (!this.options?.noMemoryLeakMode)
+        rawTrackData.track.audioResource.volume.setVolume(0.09);
       this.__privateCaches.audioPlayerSubscription = voiceConnection.subscribe(
         this.audioPlayer,
       );

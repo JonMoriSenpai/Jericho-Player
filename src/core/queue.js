@@ -20,6 +20,7 @@ const {
   invalidQuery,
   invalidTracksCount,
   notPlaying,
+  noMemoryLeakModeError,
 } = require('../misc/errorEvents');
 const { watchDestroyed, readableTime } = require('../utils/miscUtils');
 
@@ -308,6 +309,7 @@ class queue {
       if (watchDestroyed(this)) throw new destroyedQueue();
       else if (!this.working) throw new notPlaying();
       else if (!this.current) throw new notPlaying();
+      else if (this.options?.packetOptions?.noMemoryLeakMode) throw new noMemoryLeakModeError()
       else if (
         !(
           this.current?.audioResource?.volume &&
