@@ -309,7 +309,8 @@ class queue {
       if (watchDestroyed(this)) throw new destroyedQueue();
       else if (!this.working) throw new notPlaying();
       else if (!this.current) throw new notPlaying();
-      else if (this.options?.packetOptions?.noMemoryLeakMode) throw new noMemoryLeakModeError()
+      else if (this.options?.packetOptions?.noMemoryLeakMode)
+        throw new noMemoryLeakModeError();
       else if (
         !(
           this.current?.audioResource?.volume &&
@@ -320,7 +321,8 @@ class queue {
         )
       )
         return undefined;
-      else this.current.audioResource.volume.setVolume(parseInt(volume) / 1000);
+      volume = (volume / 100) * 200;
+      this.current.audioResource.volume.setVolume(parseInt(volume) / 1000);
       this.packet.__privateCaches.volumeMetadata = parseInt(volume);
       return volume;
     } catch (errorMetadata) {

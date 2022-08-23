@@ -341,7 +341,9 @@ class packets {
         },
       );
       if (!this.options?.noMemoryLeakMode)
-        rawTrackData.track.audioResource.volume.setVolume(0.09);
+        rawTrackData.track.audioResource.volume.setVolume(
+          (this.__privateCaches?.volumeMetadata / 100) * 200,
+        );
       this.__privateCaches.audioPlayerSubscription = voiceConnection.subscribe(
         this.audioPlayer,
       );
