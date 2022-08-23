@@ -2,11 +2,11 @@ name: Deployment
 on:
   push:
     branches:
-      - '*'
-      - '!docs'
-      - '!gh-pages'
+      - "*"
+      - "!docs"
+      - "!gh-pages"
     tags:
-      - '*'
+      - "*"
 jobs:
   docs:
     name: Documentation
@@ -23,8 +23,12 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Build and deploy documentation
-        uses: discordjs/action-docs@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Generating Docs
+        run: npm run docs
+
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          personal_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./docs
           cname: jericho-player.js.org

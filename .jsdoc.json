@@ -4,15 +4,15 @@
     "dictionaries": ["jsdoc"]
   },
   "source": {
-    "include": [
-      "package.json",
-      "README.md",
-      "src"
-    ],
+    "include": ["package.json", "README.md", "src"],
     "includePattern": ".js$",
     "excludePattern": "(node_modules/|docs|tests/)"
   },
-  "plugins": ["plugins/markdown"],
+  "plugins": [
+    "plugins/markdown",
+    "jsdoc-mermaid",
+    "node_modules/better-docs/category"
+  ],
   "templates": {
     "cleverLinks": true,
     "monospaceLinks": true,
@@ -24,10 +24,13 @@
     }
   },
   "opts": {
-    "destination": "./docs/",
-    "encoding": "utf8",
     "private": false,
+    "encoding": "utf8",
+    "readme": "./readme.md",
+    "destination": "docs/",
     "recurse": true,
-    "template": "Androz2091/jsdoc-skyceil"
+    "verbose": true,
+    "tutorials": "./tutorials",
+    "template": "node_modules/better-docs/"
   }
 }
