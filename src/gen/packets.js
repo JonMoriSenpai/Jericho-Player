@@ -21,7 +21,6 @@ const downloader = require('./downloader');
 const {
   Track,
   Playlist,
-  Options,
   packetOptions,
   packetPrivateCaches,
 } = require('../misc/enums');
@@ -485,6 +484,7 @@ class packets {
    * @returns {Boolean | true} Returns Boolean value as true
    */
   __perfectClean() {
+    this.tracksMetadata = [];
     delete this.audioPlayer;
     delete this.downloader;
     delete this.__privateCaches;
@@ -504,10 +504,10 @@ class packets {
       return undefined;
     switch (status?.toLowerCase()?.trim()) {
       case 'destroy':
-        if (rawData?.rawTrack?.extractorData) return undefined;
+        if (!rawData?.rawTrack?.extractorData) return undefined;
         else rawData?.rawTrack?.extractorData?.destroy(true);
         break;
-      case 'parseracks':
+      case 'parsetracks':
         if (
           !(
             rawData?.rawTracks &&

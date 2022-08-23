@@ -28,9 +28,10 @@ declare interface playerEvents {
       | ButtonInteraction
       | SelectMenuInteraction
   ];
-  raw: [data: Date, metadata: string, variables: object];
-  debug: [eventName: string, eventMessage: string, variables: object];
+  raw: [date: Date, metadata: string, variables: object];
+  debug: [date: Date, player: player, eventMessage: string, variables: object];
   trackEnd: [
+    date: Date,
     queue: queue,
     track: Track,
     user: User,
@@ -42,6 +43,7 @@ declare interface playerEvents {
       | SelectMenuInteraction
   ];
   queueEnd: [
+    date: Date,
     queue: queue,
     track: Track,
     user: User,
@@ -53,6 +55,7 @@ declare interface playerEvents {
       | SelectMenuInteraction
   ];
   trackStart: [
+    date: Date,
     queue: queue,
     track: Track,
     user: User,
@@ -63,6 +66,7 @@ declare interface playerEvents {
       | SelectMenuInteraction
   ];
   playlistAdd: [
+    date: Date,
     queue: queue,
     playlist: Playlist,
     user: User | GuildMember,
@@ -73,6 +77,7 @@ declare interface playerEvents {
       | SelectMenuInteraction
   ];
   trackAdd: [
+    date: Date,
     queue: queue,
     track: Track,
     playlist: Playlist,
@@ -85,9 +90,10 @@ declare interface playerEvents {
       | SelectMenuInteraction
   ];
   tracksAdd: [
+    date: Date,
     queue: queue,
     tracksCount: Number,
-    tracks: Tracks,
+    tracks: Track[],
     playlist: Playlist,
     user: User | GuildMember,
     requestedSource:
@@ -97,6 +103,7 @@ declare interface playerEvents {
       | SelectMenuInteraction
   ];
   connectionError: [
+    date: Date,
     queue: queue,
     requestedSource:
       | Message
@@ -105,6 +112,7 @@ declare interface playerEvents {
       | SelectMenuInteraction
   ];
   channelEmpty: [
+    date: Date,
     queue: queue,
     channel: VoiceChannel,
     requestedSource:
@@ -114,6 +122,7 @@ declare interface playerEvents {
       | SelectMenuInteraction
   ];
   botDisconnect: [
+    date: Date,
     queue: queue,
     channel: VoiceChannel,
     requestedSource:
@@ -123,6 +132,7 @@ declare interface playerEvents {
       | SelectMenuInteraction
   ];
   channelShift: [
+    date: Date,
     queue: queue,
     oldChannel: VoiceChannel,
     newChannel: VoiceChannel,
@@ -133,6 +143,7 @@ declare interface playerEvents {
       | SelectMenuInteraction
   ];
   destroyedQueue: [
+    date: Date,
     queue: queue,
     timeOutId: number,
     requestedSource:
@@ -142,7 +153,7 @@ declare interface playerEvents {
       | SelectMenuInteraction
   ];
 }
-declare class player extends EventEmitter {
+export class player extends EventEmitter {
   constructor(discordClient: Client, options?: Options);
   public readonly discordClient: Client;
   public readonly options: Options;

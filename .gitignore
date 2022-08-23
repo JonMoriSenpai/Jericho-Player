@@ -7,3 +7,5 @@ test/
 .test/config.json
 example/config.json
 src/utils/cache
+docs/docs.json
+docs/typedoc.json
