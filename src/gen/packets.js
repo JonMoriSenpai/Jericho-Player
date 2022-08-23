@@ -342,7 +342,10 @@ class packets {
       );
       if (!this.options?.noMemoryLeakMode)
         rawTrackData.track.audioResource.volume.setVolume(
-          (this.__privateCaches?.volumeMetadata / 100) * 200,
+          (((parseInt(this.__privateCaches?.volumeMetadata ?? 95) || 95) /
+            100) *
+            200) /
+            1000,
         );
       this.__privateCaches.audioPlayerSubscription = voiceConnection.subscribe(
         this.audioPlayer,

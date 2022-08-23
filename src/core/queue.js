@@ -321,7 +321,7 @@ class queue {
         )
       )
         return undefined;
-      volume = (volume / 100) * 200;
+      volume = ((parseInt(volume ?? 95) || 95) / 100) * 200;
       this.current.audioResource.volume.setVolume(parseInt(volume) / 1000);
       this.packet.__privateCaches.volumeMetadata = parseInt(volume);
       return volume;
