@@ -196,7 +196,7 @@ class queue {
         preserveTracks ? this.tracks?.length : 0,
       );
       this.packet?.audioPlayer?.stop((Boolean(forceStop) ?? true) || true);
-      return await this.destroy();
+      return true
     } catch (errorMetadata) {
       this.eventEmitter.emitError(
         errorMetadata,
@@ -247,7 +247,6 @@ class queue {
     if (this.packet) {
       this.packet.__perfectClean();
       delete this.packet;
-      this.packet.__privateCaches.destroyProcess = false;
     }
     if (timeOutIdResidue) this.destroyed = timeOutIdResidue;
     return true;
