@@ -55,30 +55,32 @@ class downloader {
 
     this.playdl.on('album', (playlist) => (playlist ? this.packet?.__playlistMod(playlist) : undefined));
 
+    this.playdl.on('extractorData', (extractorData) => (extractorData
+      ? this.packet?.extractorDataManager(
+        { extractorData },
+        'cache',
+      )
+      : undefined));
+
     this.playdl.on(
       'track',
-      async (extractor, playlist, rawTrack, extractorData, metadata) => await this.packet.__tracksMod(
-        extractor,
-        playlist,
-        rawTrack,
-        extractorData,
-        metadata,
-      ),
+      async (extractor, playlist, rawTrack, extractorData, metadata) => await this.packet.__tracksMod(extractor, playlist, rawTrack, metadata),
     );
     if (scanDeps('video-extractor')) {
       const { youtubedl } = require('video-extractor');
       this.youtubedl = new youtubedl(options);
       this.youtubedl.on('album', (playlist) => (playlist ? this.packet?.__playlistMod(playlist) : undefined));
 
+      this.youtubedl.on('extractorData', (extractorData) => (extractorData
+        ? this.packet?.extractorDataManager(
+          { extractorData },
+          'cache',
+        )
+        : undefined));
+
       this.youtubedl.on(
         'track',
-        async (extractor, playlist, rawTrack, extractorData, metadata) => await this.packet.__tracksMod(
-          extractor,
-          playlist,
-          rawTrack,
-          extractorData,
-          metadata,
-        ),
+        async (extractor, playlist, rawTrack, extractorData, metadata) => await this.packet.__tracksMod(extractor, playlist, rawTrack, metadata),
       );
     }
   }

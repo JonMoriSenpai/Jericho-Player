@@ -462,12 +462,11 @@ class packets {
    * @param {string} extractor Extractor Data's name for checking the source of the data
    * @param {Playlist} playlist Related Playlist Data from extractor
    * @param {Track} rawTrack Raw Track Data for Parsinga and fetched from extractors for audio Resource
-   * @param {Object} extractorData extractor Data Cached
    * @param {object} metadata Metadata Value to be repaired after getting operation object value
    * @returns {Promise<Boolean | undefined>} Returns Boolean or undefined on failure or success rate!
    */
 
-  async __tracksMod(extractor, playlist, rawTrack, extractorData, metadata) {
+  async __tracksMod(extractor, playlist, rawTrack, metadata) {
     try {
       if (this.destroyed) return undefined;
       this.eventEmitter.emitDebug(
@@ -482,7 +481,6 @@ class packets {
       );
       const track = new Track(rawTrack);
       const streamData = track?.__getStream(true);
-      this.extractorDataManager({ extractorData }, 'cache');
       this.tracksMetadata.push({ track, streamData });
       if (!track.playlistId)
         this.eventEmitter.emitEvent(
