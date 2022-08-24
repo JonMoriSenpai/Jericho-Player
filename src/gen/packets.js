@@ -520,11 +520,48 @@ class packets {
    * @returns {Boolean | true} Returns Boolean value as true
    */
   __perfectClean() {
-    this.tracksMetadata = [];
+    let obj;
     this.extractorDataManager();
     delete this.audioPlayer;
     delete this.downloader;
+    if (
+      !(
+        this.__privateCaches?.completedTracksMetadata &&
+        Array.isArray(this.__privateCaches?.completedTracksMetadata) &&
+        this.__privateCaches?.completedTracksMetadata?.length > 0
+      )
+    )
+      this.__privateCaches?.completedTracksMetadata?.map((d) => {
+        obj = { d };
+        delete obj.d;
+        return undefined
+      });
+    if (
+      !(
+        this.__privateCaches?.extraDataCaches &&
+        Array.isArray(this.__privateCaches?.extraDataCaches) &&
+        this.__privateCaches?.extraDataCaches?.length > 0
+      )
+    )
+      this.__privateCaches?.extraDataCaches?.map((d) => {
+        obj = { d };
+        delete obj.d;
+        return undefined
+      });
     delete this.__privateCaches;
+    if (
+      !(
+        this.tracksMetadata &&
+        Array.isArray(this.tracksMetadata) &&
+        this.tracksMetadata?.length > 0
+      )
+    )
+      this.tracksMetadata?.map((d) => {
+        obj = { t: d?.t, s: d?.s };
+        delete obj.t;
+        delete obj.s;
+        return undefined
+      });
     delete this.tracksMetadata;
     return true;
   }
