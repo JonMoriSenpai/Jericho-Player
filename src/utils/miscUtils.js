@@ -268,7 +268,10 @@ class miscUtils {
       clearTimeout(queue?.destroyed);
       queue.destroyed = false;
       return false;
-    } else return Boolean(queue?.destroyed);
+    } else
+      return Boolean(
+        queue?.packet?.__privateCaches?.destroyProcess ?? queue?.destroyed,
+      );
   };
 
   /**

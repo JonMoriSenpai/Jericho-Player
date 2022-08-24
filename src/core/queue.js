@@ -221,6 +221,8 @@ class queue {
    */
   async destroy(delayVoiceTimeout = 0, destroyConnection = false) {
     if (watchDestroyed(this)) throw new destroyedQueue();
+    else if (this.packet.__privateCaches)
+      this.packet.__privateCaches.destroyProcess = true;
     this.tracks?.map((track) => (track?.extractorData && !track?.extractorData?.destroyed
       ? this.packet.extractorDataManager({ rawTrack: track }, 'destroy')
       : undefined));
@@ -242,9 +244,12 @@ class queue {
           ?.requestedSource,
       },
     );
-    this.packet.__perfectClean();
-    delete this.packet;
-    this.destroyed = timeOutIdResidue;
+    if (this.packet) {
+      this.packet.__perfectClean();
+      delete this.packet;
+      this.packet.__privateCaches.destroyProcess = false;
+    }
+    if (timeOutIdResidue) this.destroyed = timeOutIdResidue;
     return true;
   }
 
