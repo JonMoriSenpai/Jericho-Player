@@ -192,11 +192,11 @@ class queue {
       if (watchDestroyed(this)) throw new destroyedQueue();
       else if (!this.current || !this.working) throw new notPlaying();
       this.packet.__cacheAndCleanTracks(
-        { startIndex: 0, cleanTracks: this.tracks?.length },
+        { startIndex: 1, cleanTracks: this.tracks?.length },
         preserveTracks ? this.tracks?.length : 0,
       );
       this.packet?.audioPlayer?.stop((Boolean(forceStop) ?? true) || true);
-      return true
+      return true;
     } catch (errorMetadata) {
       this.eventEmitter.emitError(
         errorMetadata,
@@ -221,9 +221,7 @@ class queue {
    */
   async destroy(delayVoiceTimeout = 0, destroyConnection = false) {
     if (watchDestroyed(this)) throw new destroyedQueue();
-    this.tracks?.map((track) => (track?.extractorData && !track?.extractorData?.destroyed
-      ? this.packet.extractorDataManager({ rawTrack: track }, 'destroy')
-      : undefined));
+    else this.packet.extractorDataManager();
     const timeOutIdResidue = await this.voiceMod.disconnect(
       this.guildId,
       {
@@ -246,7 +244,7 @@ class queue {
       this.packet.__perfectClean();
       delete this.packet;
     }
-    if (timeOutIdResidue) this.destroyed = timeOutIdResidue;
+    this.destroyed = timeOutIdResidue ?? true;
     return true;
   }
 
