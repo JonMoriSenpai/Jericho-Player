@@ -228,7 +228,6 @@ class packets {
           queue: this.queue,
           track: this.tracksMetadata?.[0]?.track,
           user: this.tracksMetadata?.[0]?.track?.user,
-          remainingTracks: this.tracksMetadata?.slice(1) ?? [],
           requestedSource: this.tracksMetadata?.[0]?.track?.requestedSource,
         },
       );
@@ -521,7 +520,9 @@ class packets {
     let obj;
     this.extractorDataManager();
     delete this.audioPlayer;
+    this.audioPlayer = null;
     delete this.downloader;
+    this.audioPlayer = null;
     if (
       !(
         this.__privateCaches?.completedTracksMetadata &&
@@ -532,7 +533,7 @@ class packets {
       this.__privateCaches?.completedTracksMetadata?.map((d) => {
         obj = { d };
         delete obj.d;
-        return undefined
+        return undefined;
       });
     if (
       !(
@@ -544,9 +545,10 @@ class packets {
       this.__privateCaches?.extraDataCaches?.map((d) => {
         obj = { d };
         delete obj.d;
-        return undefined
+        return undefined;
       });
     delete this.__privateCaches;
+    this.__privateCaches = null;
     if (
       !(
         this.tracksMetadata &&
@@ -558,9 +560,10 @@ class packets {
         obj = { t: d?.t, s: d?.s };
         delete obj.t;
         delete obj.s;
-        return undefined
+        return undefined;
       });
     delete this.tracksMetadata;
+    this.tracksMetadata = null;
     return true;
   }
 

@@ -35,7 +35,6 @@ declare interface playerEvents {
     queue: queue,
     track: Track,
     user: User,
-    remainingTracks: Track[],
     requestedSource:
       | Message
       | CommandInteraction
