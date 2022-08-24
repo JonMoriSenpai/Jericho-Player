@@ -462,11 +462,12 @@ class packets {
    * @param {string} extractor Extractor Data's name for checking the source of the data
    * @param {Playlist} playlist Related Playlist Data from extractor
    * @param {Track} rawTrack Raw Track Data for Parsinga and fetched from extractors for audio Resource
+   * @param {Object} extractorData extractor Data Cached
    * @param {object} metadata Metadata Value to be repaired after getting operation object value
    * @returns {Promise<Boolean | undefined>} Returns Boolean or undefined on failure or success rate!
    */
 
-  async __tracksMod(extractor, playlist, rawTrack, metadata) {
+  async __tracksMod(extractor, playlist, rawTrack, extractorData, metadata) {
     try {
       if (this.destroyed) return undefined;
       this.eventEmitter.emitDebug(
@@ -481,6 +482,7 @@ class packets {
       );
       const track = new Track(rawTrack);
       const streamData = track?.__getStream(true);
+      this.extractorDataManager({ extractorData }, 'cache');
       this.tracksMetadata.push({ track, streamData });
       if (!track.playlistId)
         this.eventEmitter.emitEvent(
@@ -519,6 +521,7 @@ class packets {
    */
   __perfectClean() {
     this.tracksMetadata = [];
+    this.extractorDataManager();
     delete this.audioPlayer;
     delete this.downloader;
     delete this.__privateCaches;
@@ -528,7 +531,7 @@ class packets {
 
   /**
    * @method extractorDataManager extractorDataManager for the manupualting extractorData from the Track
-   * @param {Track} rawData Track Data for extractorDataManager or Playlist or Tracks
+   * @param {Object} rawData Track Data for extractorDataManager or Playlist or Tracks
    * @param {String} status Status Value for switch case workign
    * @returns {Boolean} Returns failure for undefined or true on success
    */
@@ -538,8 +541,17 @@ class packets {
       return undefined;
     switch (status?.toLowerCase()?.trim()) {
       case 'destroy':
-        if (!rawData?.rawTrack?.extractorData) return undefined;
-        else rawData?.rawTrack?.extractorData?.destroy(true);
+        if (
+          !(
+            this.__privateCaches?.extraDataCaches &&
+            Array.isArray(this.__privateCaches?.extraDataCaches) &&
+            this.__privateCaches?.extraDataCaches?.length > 0
+          )
+        )
+          return undefined;
+        else
+          this.__privateCaches?.extraDataCaches?.map((d) => d?.destroy(true));
+        this.__privateCaches.extraDataCaches = [];
         break;
       case 'parsetracks':
         if (
@@ -566,6 +578,21 @@ class packets {
               ?.requestedSource,
           },
         );
+        break;
+      case 'cache':
+        if (!rawData?.extractorData) return undefined;
+        else if (
+          !(
+            this.__privateCaches?.extraDataCaches &&
+            Array.isArray(this.__privateCaches?.extraDataCaches) &&
+            this.__privateCaches?.extraDataCaches?.length > 0
+          )
+        )
+          this.__privateCaches = {
+            ...this.__privateCaches,
+            extraDataCaches: [],
+          };
+        this.__privateCaches.extraDataCaches.push(rawData?.extractorData);
         break;
       default:
         return undefined;
