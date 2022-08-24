@@ -221,8 +221,6 @@ class queue {
    */
   async destroy(delayVoiceTimeout = 0, destroyConnection = false) {
     if (watchDestroyed(this)) throw new destroyedQueue();
-    else if (this.packet.__privateCaches)
-      this.packet.__privateCaches.destroyProcess = true;
     this.tracks?.map((track) => (track?.extractorData && !track?.extractorData?.destroyed
       ? this.packet.extractorDataManager({ rawTrack: track }, 'destroy')
       : undefined));

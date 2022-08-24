@@ -256,7 +256,7 @@ class player extends EventEmiiter {
           if (!queueMetadata) return true;
           else if (!watchDestroyed(queueMetadata))
             await queueMetadata.destroy();
-          else delete player.__privateCaches[guildId?.trim()];
+          delete player.__privateCaches[guildId?.trim()];
           return true;
         default:
           return undefined;

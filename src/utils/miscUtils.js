@@ -264,14 +264,13 @@ class miscUtils {
    */
 
   static watchDestroyed = (queue) => {
-    if (queue?.destroyed && typeof queue?.destroyed === 'number') {
+    if (!queue) return true
+    else if (queue?.destroyed && typeof queue?.destroyed === 'number') {
       clearTimeout(queue?.destroyed);
       queue.destroyed = false;
       return false;
     } else
-      return Boolean(
-        queue?.packet?.__privateCaches?.destroyProcess ?? queue?.destroyed,
-      );
+      return Boolean(queue?.destroyed);
   };
 
   /**
