@@ -233,15 +233,16 @@ class packets {
         },
       );
       this.__cacheAndCleanTracks();
+
       if (this.tracksMetadata?.length > 0)
         return await this.__audioResourceMod();
-      else if (this.tracksMetadata?.length === 0) {
-        const lastTrack =
-          this.__privateCaches?.completedTracksMetadata?.length > 1
-            ? this.__privateCaches?.completedTracksMetadata?.[
-              this.__privateCaches?.completedTracksMetadata?.length - 1
-            ]
-            : undefined;
+      const lastTrack =
+        this.__privateCaches?.completedTracksMetadata?.length > 1
+          ? this.__privateCaches?.completedTracksMetadata?.[
+            this.__privateCaches?.completedTracksMetadata?.length - 1
+          ]
+          : undefined;
+      if (this.tracksMetadata?.length === 0) {
         this.eventEmitter.emitEvent(
           'queueEnd',
           'Tracks Queue has been Ended with no Tracks left to play',
@@ -254,6 +255,32 @@ class packets {
           },
         );
         this.__privateCaches.completedTracksMetadata = [];
+        await this.queue.destroy(
+          this.options?.voiceOptions?.leaveOn?.end &&
+            !isNaN(Number(this.options?.voiceOptions?.leaveOn?.end)) > 0
+            ? this.options?.voiceOptions?.leaveOn?.end
+            : 0,
+        );
+      }
+      if (
+        this.tracksMetadata?.length === 0 ||
+        lastTrack?.extractorData?.tracks?.[
+          lastTrack?.extractorData?.tracks?.length - 1
+        ]?.url.includes(lastTrack?.url)
+      ) {
+        this.eventEmitter.emitEvent(
+          'queueFinished',
+          'Tracks Queue has been Finished particularly requested by someone',
+          {
+            queue: this.queue,
+            tracks: this.__privateCaches?.completedTracksMetadata?.filter(
+              (track) => track?.extractorData?.id?.includes(lastTrack?.extractorData?.id),
+            ),
+            user: lastTrack?.user,
+            previousTracks: this.__privateCaches?.completedTracksMetadata,
+            requestedSource: lastTrack?.requestedSource,
+          },
+        );
       }
       return undefined;
     } else return undefined;
@@ -340,7 +367,14 @@ class packets {
           requestedSource: rawTrackData?.track?.requestedSource,
         },
       );
-      if (!this.options?.noMemoryLeakMode)
+      if (
+        !this.options?.noMemoryLeakMode &&
+        rawTrackData.track.audioResource?.volume?.volume !==
+          (((parseInt(this.__privateCaches?.volumeMetadata ?? 95) || 95) /
+            100) *
+            200) /
+            1000
+      )
         rawTrackData.track.audioResource.volume.setVolume(
           (((parseInt(this.__privateCaches?.volumeMetadata ?? 95) || 95) /
             100) *

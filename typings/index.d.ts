@@ -54,6 +54,18 @@ declare interface playerEvents {
       | ButtonInteraction
       | SelectMenuInteraction
   ];
+  queueFinished: [
+    date: Date,
+    queue: queue,
+    tracks: Track[],
+    user: User,
+    previousTracks: Track[],
+    requestedSource:
+      | Message
+      | CommandInteraction
+      | ButtonInteraction
+      | SelectMenuInteraction
+  ];
   trackStart: [
     date: Date,
     queue: queue,

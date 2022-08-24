@@ -221,6 +221,9 @@ class queue {
    */
   async destroy(delayVoiceTimeout = 0, destroyConnection = false) {
     if (watchDestroyed(this)) throw new destroyedQueue();
+    this.tracks?.map((track) => (track?.extractorData && !track?.extractorData?.destroyed
+      ? this.packet.extractorDataManager({ rawTrack: track }, 'destroy')
+      : undefined));
     const timeOutIdResidue = await this.voiceMod.disconnect(
       this.guildId,
       {
@@ -239,9 +242,6 @@ class queue {
           ?.requestedSource,
       },
     );
-    this.tracks?.map((track) => (track?.extractorData && !track?.extractorData?.destroyed
-      ? this.packet.extractorDataManager({ rawTrack: track }, 'destroy')
-      : undefined));
     this.packet.__perfectClean();
     delete this.packet;
     this.destroyed = timeOutIdResidue;
