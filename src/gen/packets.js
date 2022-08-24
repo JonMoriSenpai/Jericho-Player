@@ -255,12 +255,7 @@ class packets {
           },
         );
         this.__privateCaches.completedTracksMetadata = [];
-        await this.queue.destroy(
-          this.options?.voiceOptions?.leaveOn?.end &&
-            !isNaN(Number(this.options?.voiceOptions?.leaveOn?.end)) > 0
-            ? this.options?.voiceOptions?.leaveOn?.end
-            : 0,
-        );
+        await this.player.destroyQueue(this.guildId);
       }
       if (
         this.tracksMetadata?.length === 0 ||

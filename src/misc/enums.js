@@ -196,7 +196,6 @@ const packetPrivateCaches = {
   customModes: { repeat: {}, loop: {}, autoplay: {} },
   timeMetadata: {},
   volumeMetadata: 95,
-  destroyProcess: false,
 };
 
 module.exports = {
