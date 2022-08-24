@@ -1,5 +1,4 @@
 const {
-  createAudioPlayer,
   createAudioResource,
   StreamType,
   entersState,
@@ -14,16 +13,13 @@ const {
   CommandInteraction,
   VoiceChannel,
   StageChannel,
+  Collection,
 } = require('discord.js');
 
+const { extractorData } = require('playdl-music-extractor');
 const queue = require('../core/queue');
 const downloader = require('./downloader');
-const {
-  Track,
-  Playlist,
-  packetOptions,
-  packetPrivateCaches,
-} = require('../misc/enums');
+const { Track, Playlist, packetOptions } = require('../misc/enums');
 const {
   voiceResolver,
   messageResolver,
@@ -85,28 +81,28 @@ class packets {
      * @type {voiceMod}
      * @readonly
      */
-    this.voiceMod = queue?.voiceMod;
+    this.voiceMod = new voiceMod(this, options?.voiceOptions);
 
     /**
-     * Actual Audio Player for subscription and play Audio Resource
-     * @type {AudioPlayer}
+     * Collection of Tracks for backend tracks usage
+     * @type {Collection<string,Track>}
      * @readonly
      */
-    this.audioPlayer = createAudioPlayer();
+    this.tracks = new Collection();
 
     /**
-     * Array of Tracks and Stream-Data for backend tracks usage
-     * @type {object[]}
+     * Collection of Previous Tracks  for backend tracks usage
+     * @type {Collection<string,Track>}
      * @readonly
      */
-    this.tracksMetadata = [];
+    this.previousTracks = new Collection();
 
     /**
-     * Comprise of private caches and settings for rare used stuff or misc stuff
-     * @type {packetPrivateCaches}
+     * Collection of and ExtractorData for backend tracks usage
+     * @type {Collection<string,extractorData>}
      * @readonly
      */
-    this.__privateCaches = packetPrivateCaches;
+    this.extractorDatas = new Collection();
 
     /**
      * Downloader Class Instance for extractors works and fetching of tracks from raw Query and other stuff
@@ -226,22 +222,16 @@ class packets {
         'Previous Track has been Ended Now',
         {
           queue: this.queue,
-          track: this.tracksMetadata?.[0]?.track,
-          user: this.tracksMetadata?.[0]?.track?.user,
-          requestedSource: this.tracksMetadata?.[0]?.track?.requestedSource,
+          track: this.tracks?.first(),
+          user: this.tracks?.first()?.user,
+          requestedSource: this.tracks?.first()?.requestedSource,
         },
       );
       this.__cacheAndCleanTracks();
 
-      if (this.tracksMetadata?.length > 0)
-        return await this.__audioResourceMod();
-      const lastTrack =
-        this.__privateCaches?.completedTracksMetadata?.length > 1
-          ? this.__privateCaches?.completedTracksMetadata?.[
-            this.__privateCaches?.completedTracksMetadata?.length - 1
-          ]
-          : undefined;
-      if (this.tracksMetadata?.length === 0) {
+      if (this.tracks?.size > 0) return await this.__audioResourceMod();
+      const lastTrack = this.previousTracks?.last();
+      if (this.tracks?.size === 0) {
         this.eventEmitter.emitEvent(
           'queueEnd',
           'Tracks Queue has been Ended with no Tracks left to play',
@@ -249,15 +239,15 @@ class packets {
             queue: this.queue,
             track: lastTrack,
             user: lastTrack?.user,
-            previousTracks: this.__privateCaches?.completedTracksMetadata,
+            previousTracks: Array.from(this.previousTracks?.values()),
             requestedSource: lastTrack?.requestedSource,
           },
         );
-        this.__privateCaches.completedTracksMetadata = [];
+        this.previousTracks.clear();
         await this.player.destroyQueue(this.guildId);
       }
       if (
-        this.tracksMetadata?.length === 0 ||
+        this.tracks?.size === 0 ||
         lastTrack?.extractorData?.tracks?.[
           lastTrack?.extractorData?.tracks?.length - 1
         ]?.url.includes(lastTrack?.url)
@@ -267,11 +257,9 @@ class packets {
           'Tracks Queue has been Finished particularly requested by someone',
           {
             queue: this.queue,
-            tracks: this.__privateCaches?.completedTracksMetadata?.filter(
-              (track) => track?.extractorData?.id?.includes(lastTrack?.extractorData?.id),
-            ),
+            tracks: this.previousTracks?.filter((track) => track?.extractorData?.id?.includes(lastTrack?.extractorData?.id)),
             user: lastTrack?.user,
-            previousTracks: this.__privateCaches?.completedTracksMetadata,
+            previousTracks: Array.from(this.previousTracks?.values()),
             requestedSource: lastTrack?.requestedSource,
           },
         );
@@ -292,8 +280,9 @@ class packets {
   ) {
     if (this.destroyed) return undefined;
     else if (
-      !this.tracksMetadata?.[0] ||
-      trackOptions?.cleanTracks > this.tracksMetadata?.length
+      !this.tracks?.first() ||
+      trackOptions?.cleanTracks > this.tracks?.size ||
+      isNaN(Number(preserveTracks))
     )
       return undefined;
     this.eventEmitter.emitDebug(
@@ -303,22 +292,24 @@ class packets {
         trackOptions,
       },
     );
-    const leftOutTracks = this.tracksMetadata.splice(
-      trackOptions?.startIndex,
-      trackOptions?.cleanTracks,
-    );
-    if (!isNaN(Number(preserveTracks)) && Number(preserveTracks) === 1)
-      this.__privateCaches.completedTracksMetadata.push(
-        leftOutTracks?.[0]?.track,
-      );
-    else if (!isNaN(Number(preserveTracks)) && Number(preserveTracks) > 1)
-      this.__privateCaches.completedTracksMetadata.push(
-        leftOutTracks
-          ?.slice(0, Number(preserveTracks))
-          .map((ob) => ob?.track)
-          ?.filter(Boolean),
-      );
-    else return undefined;
+    let garbageIndex = 0;
+    preserveTracks = parseInt(preserveTracks) || 1;
+    this.tracks?.clone()?.forEach((track, id) => {
+      if (
+        (parseInt(trackOptions?.startIndex) || 0) >= garbageIndex &&
+        garbageIndex <
+          (parseInt(trackOptions?.startIndex) || 0) +
+            (parseInt(trackOptions?.cleanTracks) || 0)
+      ) {
+        this.tracks?.delete(id);
+        ++garbageIndex;
+      }
+      if (preserveTracks > 0) {
+        this.previousTracks.set(id, track);
+        --preserveTracks;
+      }
+    });
+    garbageIndex = null;
     return true;
   }
 
@@ -329,11 +320,16 @@ class packets {
    * @returns {Promise<Boolean | undefined>} Returns Boolean or undefined on failure or success rate!
    */
 
-  async __audioResourceMod(rawTrackData = this.tracksMetadata?.[0]) {
+  async __audioResourceMod(rawTrackData = this.tracks?.first()) {
     try {
       if (this.destroyed) return undefined;
-      const streamData = rawTrackData?.streamData;
-      if (!streamData) return undefined;
+      let streamData = await rawTrackData?.getStream();
+      while (!streamData?.buffer) {
+        this.__cacheAndCleanTracks({ startIndex: 0, cleanTracks: 1 }, 0);
+        rawTrackData = this.tracks?.first();
+        streamData = await rawTrackData?.getStream();
+      }
+
       this.eventEmitter.emitDebug(
         'Audio Resource',
         'new Audio Resource will be Created for Audio Player to Play',
@@ -341,14 +337,11 @@ class packets {
           streamData,
         },
       );
-      rawTrackData.track.audioResource = createAudioResource(
-        streamData?.stream?.buffer,
-        {
-          inlineVolume: !this.options?.noMemoryLeakMode,
-          inputType: streamData?.type ?? StreamType.Arbitrary,
-        },
-      );
-      this.audioPlayer.play(rawTrackData.track.audioResource);
+      rawTrackData.audioResource = createAudioResource(streamData?.buffer, {
+        inlineVolume: !this.options?.noMemoryLeakMode,
+        inputType: streamData?.type ?? StreamType.Arbitrary,
+      });
+      this.audioPlayer.play(rawTrackData.audioResource);
       await entersState(this.audioPlayer, AudioPlayerStatus.Playing, 2e3);
       const voiceConnection = getVoiceConnection(this.guildId);
       this.eventEmitter.emitEvent(
@@ -356,26 +349,20 @@ class packets {
         'Processed Track will be Played now within few seconds',
         {
           queue: this.queue,
-          track: rawTrackData?.track,
-          user: rawTrackData?.track?.user,
-          requestedSource: rawTrackData?.track?.requestedSource,
+          track: rawTrackData,
+          user: rawTrackData?.user,
+          requestedSource: rawTrackData?.requestedSource,
         },
       );
       if (
         !this.options?.noMemoryLeakMode &&
-        rawTrackData.track.audioResource?.volume?.volume !==
-          (((parseInt(this.__privateCaches?.volumeMetadata ?? 95) || 95) /
-            100) *
-            200) /
-            1000
+        rawTrackData.audioResource?.volume?.volume !==
+          (((parseInt(this.voiceMod?.volume ?? 95) || 95) / 100) * 200) / 1000
       )
-        rawTrackData.track.audioResource.volume.setVolume(
-          (((parseInt(this.__privateCaches?.volumeMetadata ?? 95) || 95) /
-            100) *
-            200) /
-            1000,
+        rawTrackData.audioResource.volume.setVolume(
+          (((parseInt(this.voiceMod?.volume ?? 95) || 95) / 100) * 200) / 1000,
         );
-      this.__privateCaches.audioPlayerSubscription = voiceConnection.subscribe(
+      this.voiceMod.audioPlayerSubscription = voiceConnection.subscribe(
         this.audioPlayer,
       );
       this.eventEmitter.emitDebug(
@@ -412,21 +399,19 @@ class packets {
   async __trackMovementManager(trackIndex = 1, movement = 'back') {
     switch (movement?.toLowerCase()?.trim()) {
       case 'back':
-        if (trackIndex >= this.__privateCaches?.completedTracksMetadata?.length)
-          return undefined;
-        const track =
-          this.__privateCaches?.completedTracksMetadata?.[
-            this.__privateCaches?.completedTracksMetadata?.length - trackIndex
-          ];
-        if (trackIndex === 1)
-          this.__privateCaches?.completedTracksMetadata?.pop();
-        if (!track) return undefined;
-        const streamData = await track.__refresh(true);
-        if (!streamData?.stream) return undefined;
-        this.tracksMetadata?.splice(1, 0, {
-          track,
-          streamData,
+        if (trackIndex >= this.previousTracks?.size) return undefined;
+        let garbageIndex = 0;
+        const track = this.previousTracks?.clone()?.find((track) => {
+          ++garbageIndex;
+          if (garbageIndex >= trackIndex) return true;
+          else return false;
         });
+        if (!track) return undefined;
+        else if (trackIndex === 1) this.previousTracks.delete(track?.id);
+        const clonedTracks = this.tracks?.clone();
+        this.tracks.clear();
+        this.tracks.set(track?.id, track);
+        clonedTracks?.forEach((track, id) => this.tracks.set(id, track));
         this.audioPlayer.stop(true);
         break;
       default:
@@ -479,8 +464,7 @@ class packets {
         },
       );
       const track = new Track(rawTrack);
-      const streamData = track?.__getStream(true);
-      this.tracksMetadata.push({ track, streamData });
+      this.tracks.set(track.id, track);
       if (!track.playlistId)
         this.eventEmitter.emitEvent(
           'trackAdd',
@@ -490,11 +474,11 @@ class packets {
             track,
             playlist: new Playlist(playlist),
             user: track?.user,
-            tracks: this.queue?.tracks,
+            tracks: Array.from(this.tracks?.values()),
             requestedSource: track?.requestedSource,
           },
         );
-      if (this.tracksMetadata?.length === 1) await this.__audioResourceMod();
+      if (this.tracks?.size === 1) await this.__audioResourceMod();
       return true;
     } catch (errorMetadata) {
       this.eventEmitter.emitError(
@@ -517,37 +501,11 @@ class packets {
    * @returns {Boolean | true} Returns Boolean value as true
    */
   __perfectClean() {
-    let obj;
     this.extractorDataManager();
-    delete this.audioPlayer;
     delete this.downloader;
-    if (
-      !(
-        this.__privateCaches?.completedTracksMetadata &&
-        Array.isArray(this.__privateCaches?.completedTracksMetadata) &&
-        this.__privateCaches?.completedTracksMetadata?.length > 0
-      )
-    )
-      this.__privateCaches?.completedTracksMetadata?.map((d) => {
-        obj = { d };
-        delete obj.d;
-        return undefined;
-      });
-    delete this.__privateCaches;
-    if (
-      !(
-        this.tracksMetadata &&
-        Array.isArray(this.tracksMetadata) &&
-        this.tracksMetadata?.length > 0
-      )
-    )
-      this.tracksMetadata?.map((d) => {
-        obj = { t: d?.t, s: d?.s };
-        delete obj.t;
-        delete obj.s;
-        return undefined;
-      });
-    delete this.tracksMetadata;
+    delete this.voiceMod;
+    delete this.previousTracks;
+    delete this.tracks;
     return true;
   }
 
@@ -563,17 +521,9 @@ class packets {
       return undefined;
     switch (status?.toLowerCase()?.trim()) {
       case 'destroy':
-        if (
-          !(
-            this.__privateCaches?.extraDataCaches &&
-            Array.isArray(this.__privateCaches?.extraDataCaches) &&
-            this.__privateCaches?.extraDataCaches?.length > 0
-          )
-        )
-          return undefined;
-        else
-          this.__privateCaches?.extraDataCaches?.map((d) => d?.destroy(true));
-        this.__privateCaches.extraDataCaches = [];
+        if (!this.extractorDatas?.size) return undefined;
+        else this.extractorDatas?.map((d) => d?.destroy(true));
+        this.extractorDatas.clear();
         break;
       case 'parsetracks':
         if (
@@ -584,7 +534,14 @@ class packets {
           )
         )
           return undefined;
-        const parsedTracks = rawData?.rawTracks?.map((t) => new Track(t));
+        const parsedTracks =
+          rawData?.rawTracks?.map((track) => {
+            if (this.tracks.has(track?.url)) return this.tracks.get(track.url);
+            else if (this.previousTracks.has(track?.url))
+              return this.previousTracks.get(track.url);
+            else return undefined;
+          }) ?? [];
+
         this.eventEmitter.emitEvent(
           'tracksAdd',
           'Tracks has been Added to Queue Successfully',
@@ -602,19 +559,12 @@ class packets {
         );
         break;
       case 'cache':
-        if (!rawData?.extractorData) return undefined;
-        else if (
-          !(
-            this.__privateCaches?.extraDataCaches &&
-            Array.isArray(this.__privateCaches?.extraDataCaches) &&
-            this.__privateCaches?.extraDataCaches?.length > 0
-          )
-        )
-          this.__privateCaches = {
-            ...this.__privateCaches,
-            extraDataCaches: [],
-          };
-        this.__privateCaches.extraDataCaches.push(rawData?.extractorData);
+        if (!rawData?.extractorData?.id) return undefined;
+        else if (!this.extractorDatas) this.extractorDatas = new Collection();
+        this.extractorDatas.set(
+          rawData?.extractorData?.id,
+          rawData?.extractorData,
+        );
         break;
       default:
         return undefined;
@@ -630,6 +580,16 @@ class packets {
 
   get destroyed() {
     return this.queue?.destroyed;
+  }
+
+  /**
+   * Audio Player for Packets
+   * @type {AudioPlayer}
+   * @readonly
+   */
+
+  get audioPlayer() {
+    return this.voiceMod?.audioPlayer;
   }
 
   /**

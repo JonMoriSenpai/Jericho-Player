@@ -56,10 +56,7 @@ class downloader {
     this.playdl.on('album', (playlist) => (playlist ? this.packet?.__playlistMod(playlist) : undefined));
 
     this.playdl.on('extractorData', (extractorData) => (extractorData
-      ? this.packet?.extractorDataManager(
-        { extractorData },
-        'cache',
-      )
+      ? this.packet?.extractorDataManager({ extractorData }, 'cache')
       : undefined));
 
     this.playdl.on(
@@ -72,10 +69,7 @@ class downloader {
       this.youtubedl.on('album', (playlist) => (playlist ? this.packet?.__playlistMod(playlist) : undefined));
 
       this.youtubedl.on('extractorData', (extractorData) => (extractorData
-        ? this.packet?.extractorDataManager(
-          { extractorData },
-          'cache',
-        )
+        ? this.packet?.extractorDataManager({ extractorData }, 'cache')
         : undefined));
 
       this.youtubedl.on(
@@ -122,6 +116,8 @@ class downloader {
       ...options,
       playersCompatibility: true,
       waitForPromise: false,
+      streamDownload: false,
+      fetchLyrics: false,
       eventReturn: {
         ...options?.eventReturn,
         metadata: {
@@ -129,7 +125,6 @@ class downloader {
           __privateCaches: { downloaderOptions: options, requestedSource },
         },
       },
-      streamDownload: true,
     });
     extractorData.on('tracks', (tracks, playlist, metadata) => this.packet.extractorDataManager(
       { rawTracks: tracks, playlist },
@@ -167,7 +162,8 @@ class downloader {
           __privateCaches: { downloaderOptions: options, requestedSource },
         },
       },
-      streamDownload: true,
+      streamDownload: false,
+      fetchLyrics: false,
     });
     if (!extractorData?.tracks) {
       extractorData = await this.playdl.exec(rawQuery, {

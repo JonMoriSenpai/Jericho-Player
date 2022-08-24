@@ -144,8 +144,6 @@ export class Track {
   public readonly duration: { ms: Number; readable: string };
   public readonly ratings: { likes: number; dislikes: number };
   public readonly playlist: Playlist;
-  public readonly extractorData: extractorData;
-  public readonly lyrics: string;
   public get raw(): object;
   public get requestedSource():
     | Message

@@ -6,6 +6,7 @@ const {
   User,
   Channel,
   VoiceState,
+  Collection,
 } = require('discord.js');
 const queue = require('./queue');
 const { guildResolver } = require('../utils/snowflakes');
@@ -19,12 +20,6 @@ const {
 const { Options, voiceOptions } = require('../misc/enums');
 
 class player extends EventEmiiter {
-  /**
-   * @static @private @property {object} __privateCaches Private Caches Library in the form of object submission and redmeption based on time and choices of function
-   */
-
-  static __privateCaches = {};
-
   /**
    * @constructor player -> Player Class for Discord Client v14 for Jericho-Player Framework
    * @param {Client} discordClient Discord Client Instance for Discord Bot for Interaction with Discord Api
@@ -48,6 +43,13 @@ class player extends EventEmiiter {
      * @readonly
      */
     this.options = options;
+
+    /**
+     * Collection of queue caches
+     * @type {Collection<String,queue>}
+     * @readonly
+     */
+    this.queues = new Collection();
 
     /**
      * Event Emitter Instance for Distributing Events based Info to the Users abou the Framework and Progress of certain Request
@@ -204,14 +206,15 @@ class player extends EventEmiiter {
 
   async #__queueMods(method, guildId, options = Options, metadata = undefined) {
     try {
-      let queueMetadata = player.__privateCaches?.[guildId?.trim()];
+      let queueMetadata = this.queues.get(guildId?.trim());
       switch (method?.toLowerCase()?.trim()) {
         case 'get':
-          return player.__privateCaches[guildId?.trim()];
+          return this.queues.get(guildId?.trim());
         case 'forceget':
           if (!(queueMetadata && !watchDestroyed(queueMetadata))) {
+            this.queues.delete(guildId?.trim());
             queueMetadata = new queue(guildId, options, this);
-            player.__privateCaches[guildId?.trim()] = queueMetadata;
+            this.queues.set(guildId?.trim(), queueMetadata);
           }
           this.eventEmitter.emitDebug(
             'queue Creation',
@@ -222,12 +225,13 @@ class player extends EventEmiiter {
           );
           return queueMetadata;
         case 'submit':
-          player.__privateCaches[guildId?.trim()] = metadata;
+          this.queues.set(guildId?.trim(), metadata);
           return metadata;
         case 'create':
           if (!(queueMetadata && !watchDestroyed(queueMetadata))) {
+            this.queues.delete(guildId?.trim());
             queueMetadata = new queue(guildId, options, this);
-            player.__privateCaches[guildId?.trim()] = queueMetadata;
+            this.queues.set(guildId?.trim(), queueMetadata);
           }
           this.eventEmitter.emitDebug(
             'queue Creation',
@@ -238,9 +242,9 @@ class player extends EventEmiiter {
           );
           return queueMetadata;
         case 'forcecreate':
-          if (queueMetadata && !watchDestroyed(queueMetadata))
+          if (!queueMetadata) this.queues.delete(guildId?.trim());
+          else if (!watchDestroyed(queueMetadata))
             await queueMetadata.destroy();
-
           this.eventEmitter.emitDebug(
             'queue Creation',
             'Creation of Queue Class Instance for Discord Guild Requests',
@@ -250,13 +254,13 @@ class player extends EventEmiiter {
           );
 
           queueMetadata = new queue(guildId, options, this);
-          player.__privateCaches[guildId?.trim()] = queueMetadata;
+          this.queues.set(guildId?.trim(), queueMetadata);
           return queueMetadata;
         case 'delete':
           if (!queueMetadata) return true;
           else if (!watchDestroyed(queueMetadata))
             await queueMetadata.destroy();
-          delete player.__privateCaches[guildId?.trim()];
+          this.queues.delete(guildId?.trim());
           return true;
         default:
           return undefined;

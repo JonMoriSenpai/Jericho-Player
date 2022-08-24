@@ -13,7 +13,6 @@ const {
 const { Track, Options } = require('../misc/enums');
 const packets = require('../gen/packets');
 const eventEmitter = require('../utils/eventEmitter');
-const voiceMod = require('../utils/voiceMod');
 const player = require('./player');
 const {
   destroyedQueue,
@@ -73,13 +72,6 @@ class queue {
      * @readonly
      */
     this.destroyed = false;
-
-    /**
-     * Voice Moderator for connecting and disconnecting from voice Channel
-     * @type {voiceMod}
-     * @readonly
-     */
-    this.voiceMod = new voiceMod(this, options?.voiceOptions);
 
     /**
      * Packet Instance for moderating backend manupulation and request handlers and handle massive functions and events
@@ -222,7 +214,7 @@ class queue {
   async destroy(delayVoiceTimeout = 0, destroyConnection = false) {
     if (watchDestroyed(this)) throw new destroyedQueue();
     else this.packet.extractorDataManager();
-    const timeOutIdResidue = await this.voiceMod.disconnect(
+    const timeOutIdResidue = await this.packet?.voiceMod?.disconnect(
       this.guildId,
       {
         destroy: Boolean(destroyConnection),
@@ -323,7 +315,7 @@ class queue {
         return undefined;
       volume = ((parseInt(volume ?? 95) || 95) / 100) * 200;
       this.current.audioResource.volume.setVolume(parseInt(volume) / 1000);
-      this.packet.__privateCaches.volumeMetadata = parseInt(volume);
+      this.packet.voiceMod.volume = parseInt(volume);
       return volume;
     } catch (errorMetadata) {
       this.eventEmitter.emitError(
@@ -379,7 +371,7 @@ class queue {
         }
         return rawArray;
       };
-      return shuffleFunc(this.packet?.tracksMetadata);
+      return shuffleFunc(this.packet?.tracks);
     } catch (errorMetadata) {
       this.eventEmitter.emitError(
         errorMetadata,
@@ -578,9 +570,7 @@ class queue {
     try {
       if (watchDestroyed(this)) throw new destroyedQueue();
       else if (!this.working) throw new notPlaying();
-      return this.packet?.__privateCaches?.completedTracksMetadata?.[
-        this.packet?.__privateCaches?.completedTracksMetadata?.length - 1
-      ];
+      return this.packet?.previousTracks?.last();
     } catch (errorMetadata) {
       this.eventEmitter.emitError(
         errorMetadata,
@@ -605,9 +595,7 @@ class queue {
     try {
       if (watchDestroyed(this)) throw new destroyedQueue();
       else if (!this.working) throw new notPlaying();
-      return [...this.packet?.__privateCaches?.completedTracksMetadata]
-        ?.filter(Boolean)
-        ?.reverse();
+      return Array.from(this.packet?.previousTracks?.reverse()?.values());
     } catch (errorMetadata) {
       this.eventEmitter.emitError(
         errorMetadata,
@@ -641,7 +629,7 @@ class queue {
 
   get volume() {
     if (watchDestroyed(this)) return undefined;
-    return this.packet.__privateCaches.volumeMetadata;
+    return this.packet?.voiceMod?.volume ?? 95;
   }
 
   /**
@@ -702,9 +690,8 @@ class queue {
    * @readonly
    */
   get tracks() {
-    if (this.destroyed || !this.packet?.tracksMetadata?.[0]?.track)
-      return undefined;
-    else return this.packet?.tracksMetadata?.map((ob) => ob?.track);
+    if (this.destroyed || !this.packet?.tracks?.first()) return undefined;
+    else return Array.from(this.packet?.tracks?.values());
   }
 }
 

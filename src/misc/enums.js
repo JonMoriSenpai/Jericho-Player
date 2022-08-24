@@ -50,7 +50,7 @@ class Track {
 
   constructor(rawMetadata) {
     this.#__raw = {
-      ...rawMetadata,
+      track: rawMetadata,
       metadata: rawMetadata?.metadata?.__privateCaches,
     };
     this.patch(rawMetadata);
@@ -58,6 +58,7 @@ class Track {
 
   patch(rawMetadata) {
     this.id = rawMetadata?.id ?? rawMetadata?.Id ?? rawMetadata?.trackId;
+    this.uniqueId = rawMetadata?.url;
     this.videoId = rawMetadata?.videoId;
     this.playlistId = rawMetadata?.albumId ?? rawMetadata?.playlistId;
     this.title = rawMetadata?.title ?? rawMetadata?.name;
@@ -79,13 +80,13 @@ class Track {
         ? new Playlist(rawMetadata?.album ?? rawMetadata?.playlist)
         : undefined;
     this.extractorData = rawMetadata?.extractorData;
-    this.lyrics = rawMetadata?.lyrics;
   }
 
-  __getStream(returnTrack = false) {
-    if (!this.videoId || !this.raw?.stream?.buffer) return undefined;
-    if (returnTrack) return { ...this, stream: this.raw?.stream };
-    else return { stream: this.raw?.stream };
+  async getStream() {
+    if (!this.raw?.track) return undefined;
+    else
+      return (await this.raw?.track?.getStream()?.catch(() => undefined))
+        ?.stream;
   }
 
   async __refresh(returnStream = true) {
@@ -99,7 +100,7 @@ class Track {
     )?.tracks?.[0];
     if (trackMetadata) return undefined;
     this.patch(trackMetadata);
-    if (returnStream) return this.__getStream();
+    if (returnStream) return await this.getStream();
     else return this;
   }
 
@@ -190,15 +191,6 @@ const Options = {
   packetOptions,
 };
 
-const packetPrivateCaches = {
-  completedTracksMetadata: [],
-  audioPlayerSubscription: undefined,
-  customModes: { repeat: {}, loop: {}, autoplay: {} },
-  timeMetadata: {},
-  volumeMetadata: 95,
-  extraDataCaches: [],
-};
-
 module.exports = {
   Track,
   Playlist,
@@ -207,5 +199,4 @@ module.exports = {
   packetOptions,
   downloaderOptions,
   Options,
-  packetPrivateCaches,
 };

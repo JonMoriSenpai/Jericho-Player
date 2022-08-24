@@ -3,6 +3,7 @@ const {
   VoiceConnectionStatus,
   entersState,
   getVoiceConnection,
+  createAudioPlayer,
 } = require('@discordjs/voice');
 const { voiceResolver, guildResolver } = require('./snowflakes');
 const queue = require('../core/queue');
@@ -21,6 +22,14 @@ class voiceMod {
     this.discordClient = queue?.discordClient;
     this.eventEmitter = queue?.eventEmitter;
     this.options = options;
+    this.audioPlayerSubscription = undefined;
+    /**
+     * Actual Audio Player for subscription and play Audio Resource
+     * @type {AudioPlayer}
+     * @readonly
+     */
+    this.audioPlayer = createAudioPlayer();
+    this.volume = 95;
   }
 
   async connect(
@@ -82,12 +91,9 @@ class voiceMod {
         clearTimeout(this.queue?.destroyed);
       if (queue?.packet?.audioPlayer && (queue?.playing || queue?.paused))
         queue?.packet?.audioPlayer?.stop();
-      if (
-        queue?.packet?.__privateCaches?.audioPlayerSubscription &&
-        (queue?.playing || queue?.paused)
-      ) {
-        queue.packet.__privateCaches.audioPlayerSubscription.unsubscribe();
-        queue.packet.__privateCaches.audioPlayerSubscription = undefined;
+      if (this.audioPlayerSubscription && (queue?.playing || queue?.paused)) {
+        this.audioPlayerSubscription.unsubscribe();
+        delete this.audioPlayerSubscription;
       }
       const connectedChannel = await voiceResolver(
         this.discordClient,
