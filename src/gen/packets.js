@@ -293,25 +293,22 @@ class packets {
         trackOptions,
       },
     );
-    let garbageIndex = 0;
     preserveTracks = parseInt(preserveTracks);
-    this.tracks?.clone()?.map((track, id) => {
+    Array.from(this.tracks?.values())?.map((track, index) => {
       if (
-        (parseInt(trackOptions?.startIndex) || 0) <= garbageIndex &&
-        garbageIndex <
+        (parseInt(trackOptions?.startIndex) || 0) <= index &&
+        index <
           (parseInt(trackOptions?.startIndex) || 0) +
             (parseInt(trackOptions?.cleanTracks) || 0)
       ) {
-        this.tracks?.delete(id);
-        ++garbageIndex;
-        if (preserveTracks > 0) {
-          this.previousTracks.set(id, track);
+        this.tracks?.delete(track?.uniqueId);
+        if (preserveTracks > 0 && preserveTracks >= index + 1) {
+          this.previousTracks.set(track?.uniqueId, track);
           --preserveTracks;
         }
       }
       return undefined;
     });
-    garbageIndex = null;
     return true;
   }
 
