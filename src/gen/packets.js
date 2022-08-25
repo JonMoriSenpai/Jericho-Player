@@ -32,6 +32,7 @@ const {
   invalidRequiredSource,
   invalidVoiceChannel,
   invalidQuery,
+  invalidTrack,
 } = require('../misc/errorEvents');
 
 class packets {
@@ -244,7 +245,6 @@ class packets {
           },
         );
         this.previousTracks.clear();
-        await this.player.destroyQueue(this.guildId);
       }
       if (
         this.tracks?.size === 0 ||
@@ -263,6 +263,7 @@ class packets {
             requestedSource: lastTrack?.requestedSource,
           },
         );
+        await this.queue.destroy();
       }
       return undefined;
     } else return undefined;
@@ -293,10 +294,10 @@ class packets {
       },
     );
     let garbageIndex = 0;
-    preserveTracks = parseInt(preserveTracks) || 1;
+    preserveTracks = parseInt(preserveTracks);
     this.tracks?.clone()?.forEach((track, id) => {
       if (
-        (parseInt(trackOptions?.startIndex) || 0) >= garbageIndex &&
+        (parseInt(trackOptions?.startIndex) || 0) <= garbageIndex &&
         garbageIndex <
           (parseInt(trackOptions?.startIndex) || 0) +
             (parseInt(trackOptions?.cleanTracks) || 0)
@@ -324,11 +325,10 @@ class packets {
     try {
       if (this.destroyed) return undefined;
       const streamData = await rawTrackData?.getStream();
-      if (!streamData?.buffer)
-        return void this.__cacheAndCleanTracks(
-          { startIndex: 0, cleanTracks: 1 },
-          0,
-        );
+      if (!streamData?.buffer) {
+        void this.__cacheAndCleanTracks({ startIndex: 0, cleanTracks: 1 }, 0);
+        throw new invalidTrack();
+      }
 
       this.eventEmitter.emitDebug(
         'Audio Resource',
@@ -500,6 +500,8 @@ class packets {
    */
   __perfectClean() {
     this.extractorDataManager();
+    this.tracks?.clear();
+    this.previousTracks?.clear();
     delete this.downloader;
     delete this.voiceMod;
     delete this.previousTracks;

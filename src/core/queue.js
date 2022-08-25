@@ -156,8 +156,8 @@ class queue {
         throw new invalidTracksCount();
       else if (parseInt(trackCount) > 1)
         this.packet.__cacheAndCleanTracks(
-          { startIndex: 0, cleanTracks: trackCount - 1 },
-          trackCount,
+          { startIndex: 1, cleanTracks: trackCount },
+          trackCount - 1,
         );
       return this.packet?.audioPlayer?.stop(Boolean(forceSkip) ?? true);
     } catch (errorMetadata) {
@@ -175,17 +175,16 @@ class queue {
   /**
    * @method stop Stopping Current Track along side with Queue to a complete silence with cleaning
    * @param {Boolean | true} forceStop Forced Stop to even fast Stop the ending silence paddings for smooth audio play
-   * @param {Boolean | false} preserveTracks Tracks to save even after Queue got stoppped for new packet
    * @returns {Promise<Boolean | undefined>} Returns Boolean or undefined on failure or success rate!
    */
 
-  async stop(forceStop = true, preserveTracks = false) {
+  async stop(forceStop = true) {
     try {
       if (watchDestroyed(this)) throw new destroyedQueue();
       else if (!this.current || !this.working) throw new notPlaying();
       this.packet.__cacheAndCleanTracks(
         { startIndex: 1, cleanTracks: this.tracks?.length },
-        preserveTracks ? this.tracks?.length : 0,
+        0,
       );
       this.packet?.audioPlayer?.stop((Boolean(forceStop) ?? true) || true);
       return true;
@@ -196,7 +195,6 @@ class queue {
         'queue.stop()',
         {
           forceStop,
-          preserveTracks,
           queue: this,
         },
         this.options?.eventOptions,
@@ -212,7 +210,7 @@ class queue {
    * @returns {Promise<Boolean | undefined>} Returns Boolean or undefined on failure or success rate!
    */
   async destroy(delayVoiceTimeout = 0, destroyConnection = false) {
-    if (watchDestroyed(this)) throw new destroyedQueue();
+    if (watchDestroyed(this)) undefined;
     else this.packet.extractorDataManager();
     const timeOutIdResidue = await this.packet?.voiceMod?.disconnect(
       this.guildId,

@@ -175,7 +175,6 @@ const voiceOptions = {
     bot: true,
   },
   anyoneCanMoveClient: true,
-  altVoiceChannel: undefined,
   forceDestroy: false,
 };
 

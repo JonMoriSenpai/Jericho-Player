@@ -227,10 +227,7 @@ export class queue {
     forceSkip?: Boolean | true,
     trackCount?: Number | 1
   ): Promise<Boolean | undefined>;
-  stop(
-    forceStop?: Boolean | true,
-    preserveTracks?: Boolean | false
-  ): Promise<Boolean | undefined>;
+  stop(forceStop?: Boolean | true): Promise<Boolean | undefined>;
   destroy(
     delayVoiceTimeout?: Number | 0,
     destroyConnection?: Boolean | false

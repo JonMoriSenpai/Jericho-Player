@@ -41,7 +41,6 @@ export type voiceOptions = {
     bot?: number | Boolean | true | 0;
   };
   anyoneCanMoveClient?: Boolean | true;
-  altVoiceChannel?: string | number | VoiceBasedChannel;
   forceDestroy?: Boolean | false;
 };
 

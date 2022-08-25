@@ -259,7 +259,11 @@ class player extends EventEmiiter {
         case 'delete':
           if (!queueMetadata) return true;
           else if (!watchDestroyed(queueMetadata))
-            await queueMetadata.destroy();
+            await queueMetadata.destroy(
+              !isNaN(Number(options?.packetOptions?.voiceOptions?.delayTimeout))
+                ? parseInt(options?.packetOptions?.voiceOptions?.delayTimeout)
+                : undefined,
+            );
           this.queues.delete(guildId?.trim());
           return true;
         default:
@@ -288,21 +292,23 @@ class player extends EventEmiiter {
    * @param {VoiceState} oldState Old Voice State where previous State has been recorded from Client or Api
    * @param {VoiceState} newState New Voice State where present State has been recorded from Client or Api
    * @param {queue} queue Queue Data from Player's caches
-   * @param {voiceOptions} options Voice Options if voiceMod is required
+   * @param {Options} options Voice Options if voiceMod is required
    */
-  async #__voiceHandler(oldState, newState, queue, options = voiceOptions) {
-    if (
-      (oldState?.member.id === queue?.current?.user.id ||
-        newState?.member.id === queue?.current?.user.id) &&
-      (!options?.leaveOn?.bot ||
-        (options?.leaveOn?.bot && !newState?.member?.user?.bot))
-    ) {
-      if (!newState?.channelId && !watchDestroyed(queue)) {
-        if (
-          oldState?.channel?.members?.size === 1 &&
-          options?.leaveOn?.empty &&
-          !isNaN(Number(options?.leaveOn?.empty)) > 0
-        ) {
+  async #__voiceHandler(oldState, newState, queue, options = Options) {
+    const voiceChannel =
+      this.discordClient?.channels?.cache?.get(
+        newState?.channel?.id ?? oldState?.channel?.id,
+      ) ??
+      (await this.discordClient?.channels?.fetch(
+        newState?.channel?.id ?? oldState?.channel?.id,
+      ));
+    const botCheck = voiceChannel?.members?.find((m) => m?.user?.bot);
+    const actualMember = oldState?.member ?? newState?.member;
+
+    if (!voiceChannel?.id) return undefined;
+    else if (actualMember?.id !== this.discordClient?.user?.id) {
+      if (voiceChannel?.members?.size <= 2 && !watchDestroyed(queue)) {
+        if (voiceChannel?.members?.size === 1 && options?.leaveOn?.empty) {
           this.eventEmitter.emitEvent(
             'channelEmpty',
             'Channel is Empty and have no members in it',
@@ -312,28 +318,37 @@ class player extends EventEmiiter {
               requestedSource: queue?.current?.requestedSource,
             },
           );
-
           return await this.destroyQueue(queue?.guildId, true, {
-            delayTimeout:
-              options?.leaveOn?.empty &&
-              !isNaN(Number(options?.leaveOn?.empty)) > 0
-                ? options?.leaveOn?.empty
-                : undefined,
+            ...options,
+            packetOptions: {
+              ...options.packetOptions,
+              voiceOptions: {
+                ...options.packetOptions?.voiceOptions,
+                delayTimeout:
+                  options?.leaveOn?.empty &&
+                  !isNaN(Number(options?.leaveOn?.empty)) > 0
+                    ? options?.leaveOn?.empty
+                    : undefined,
+              },
+            },
           });
-        } else
+        } else if (voiceChannel?.members?.size <= 2 && botCheck)
           return await this.destroyQueue(queue?.guildId, true, {
-            delayTimeout:
-              options?.leaveOn?.bot && !isNaN(Number(options?.leaveOn?.bot)) > 0
-                ? options?.leaveOn?.bot
-                : 0,
+            ...options,
+            packetOptions: {
+              ...options.packetOptions,
+              voiceOptions: {
+                ...options.packetOptions?.voiceOptions,
+                delayTimeout:
+                  options?.leaveOn?.bot &&
+                  !isNaN(Number(options?.leaveOn?.bot)) > 0
+                    ? options?.leaveOn?.bot
+                    : undefined,
+              },
+            },
           });
+        else return undefined;
       } else if (
-        newState?.channelId &&
-        !watchDestroyed(queue) &&
-        options?.anyoneCanMoveClient
-      )
-        return await queue.voiceMod.connect(newState.channel);
-      else if (
         oldState?.channel?.members?.size === 1 &&
         options?.leaveOn?.empty &&
         !isNaN(Number(options?.leaveOn?.empty)) > 0
@@ -347,60 +362,36 @@ class player extends EventEmiiter {
             requestedSource: queue?.current?.requestedSource,
           },
         );
-        const garbageResponse = await this.destroyQueue(queue?.guildId, true, {
-          delayTimeout:
-            options?.leaveOn?.empty &&
-            !isNaN(Number(options?.leaveOn?.empty)) > 0
-              ? options?.leaveOn?.empty
-              : undefined,
-        });
-        if (garbageResponse)
-          this.eventEmitter.emitEvent(
-            'botDisconnect',
-            'Bot got Disconnected Suddenly/Un-expectedly',
-            {
-              queue,
-              oldChannel: oldState?.channel,
-              newChannel: newState?.channel,
-              requestedSource: queue?.current?.requestedSource,
+        return await this.destroyQueue(queue?.guildId, true, {
+          ...options,
+          packetOptions: {
+            ...options.packetOptions,
+            voiceOptions: {
+              ...options.packetOptions?.voiceOptions,
+              delayTimeout:
+                options?.leaveOn?.empty &&
+                !isNaN(Number(options?.leaveOn?.empty)) > 0
+                  ? options?.leaveOn?.empty
+                  : undefined,
             },
-          );
-        return true;
-      } else return undefined;
-    } else if (
-      oldState?.member.id === this.discordClient?.user?.id ||
-      newState?.member.id === this.discordClient?.user?.id
-    ) {
-      if (!newState?.channelId && !watchDestroyed(queue)) {
-        const garbageResponse = await this.destroyQueue(queue?.guildId, true, {
-          voiceOptions: {
-            ...options,
-            altVoiceChannel: oldState?.channelId,
           },
         });
-        if (garbageResponse)
-          this.eventEmitter.emitEvent(
-            'botDisconnect',
-            'Bot got Disconnected Suddenly/Un-expectedly',
-            {
-              queue,
-              oldChannel: oldState?.channel,
-              newChannel: newState?.channel,
-              requestedSource: queue?.current?.requestedSource,
-            },
-          );
-        return true;
-      } else if (
+      } else return undefined;
+    } else if (actualMember?.id === this.discordClient?.user?.id) {
+      if (!newState?.channelId && !watchDestroyed(queue))
+        return await this.destroyQueue(queue?.guildId, true, options);
+      else if (
         oldState?.channelId &&
         newState?.channelId &&
         oldState?.channelId !== newState?.channelId &&
         !watchDestroyed(queue)
       ) {
-        const garbageResponse = await queue.voiceMod.connect(
-          options?.anyoneCanMoveClient ? newState.channel : oldState?.channel,
-          queue?.current?.requestedSource,
-        );
-        if (garbageResponse && options?.anyoneCanMoveClient)
+        if (options?.packetOptions?.voiceOptions?.anyoneCanMoveClient) {
+          await queue?.packet?.voiceMod?.connect(
+            options?.anyoneCanMoveClient ? newState.channel : oldState?.channel,
+            queue?.current?.requestedSource,
+            true,
+          );
           this.eventEmitter.emitEvent(
             'channelShift',
             "Bot's Channel got Shifted Suddenly/Un-expectedly",
@@ -411,6 +402,7 @@ class player extends EventEmiiter {
               requestedSource: queue?.current?.requestedSource,
             },
           );
+        } else return await this.destroyQueue(queue?.guildId, true);
         return true;
       } else return undefined;
     } else return undefined;

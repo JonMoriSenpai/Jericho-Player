@@ -91,16 +91,16 @@ class voiceMod {
         clearTimeout(this.queue?.destroyed);
       if (queue?.packet?.audioPlayer && (queue?.playing || queue?.paused))
         queue?.packet?.audioPlayer?.stop();
-      if (this.audioPlayerSubscription && (queue?.playing || queue?.paused)) {
+      if (this.audioPlayerSubscription) {
         this.audioPlayerSubscription.unsubscribe();
         delete this.audioPlayerSubscription;
       }
       const connectedChannel = await voiceResolver(
         this.discordClient,
-        options?.altVoiceChannel ?? guild?.members?.me?.voice?.channel,
+        guild?.members?.me?.voice?.channel,
       );
       if (!connectedChannel) return undefined;
-      else if (options?.forceDestroy)
+      else if (options?.forceDestroy) {
         if (delayVoiceTimeout && delayVoiceTimeout > 0) {
           return setTimeout(() => {
             const voiceConnection = getVoiceConnection(guild?.id);
@@ -132,7 +132,7 @@ class voiceMod {
           );
           return true;
         }
-      else if (delayVoiceTimeout && delayVoiceTimeout > 0) {
+      } else if (delayVoiceTimeout && delayVoiceTimeout > 0) {
         return setTimeout(() => {
           const voiceConnection = getVoiceConnection(guild?.id);
           if (!voiceConnection) return undefined;

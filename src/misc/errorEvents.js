@@ -81,7 +81,17 @@ class noMemoryLeakModeError extends Error {
     this.name = 'noMemoryLeakModeError';
     this.message =
       message ??
-      'No Memory Leak mode has been enabled , You can\'t manupulate the volume anymore';
+      "No Memory Leak mode has been enabled , You can't manupulate the volume anymore";
+  }
+}
+
+class invalidTrack extends Error {
+  constructor(message) {
+    super();
+    this.name = 'invalidTrack';
+    this.message =
+      message ??
+      'Fetched Invalid Track from the Extractors and has been Removed from the Caches';
   }
 }
 
@@ -95,4 +105,5 @@ module.exports = {
   invalidTracksCount,
   notPlaying,
   noMemoryLeakModeError,
+  invalidTrack,
 };
