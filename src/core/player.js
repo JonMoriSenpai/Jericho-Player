@@ -62,7 +62,11 @@ class player extends EventEmiiter {
       const rawQueue = this.queues.get(
         oldState?.guild?.id ?? newState?.guild?.id,
       );
-      if (rawQueue && !rawQueue?.destroyed)
+      if (
+        rawQueue &&
+        !rawQueue?.destroyed &&
+        oldState?.channel?.id !== newState?.channel?.id
+      )
         return await this.#__voiceHandler(
           oldState,
           newState,
@@ -297,13 +301,33 @@ class player extends EventEmiiter {
       (await this.discordClient?.channels?.fetch(
         newState?.channel?.id ?? oldState?.channel?.id,
       ));
-    const botCheck = voiceChannel?.members?.find((m) => m?.user?.bot);
+    const oldBotCheck =
+      oldState?.channel?.members?.size === 0 ||
+      oldState?.channel?.members?.find(
+        (m) => m?.user?.bot && m?.user?.id !== this.discordClient?.user?.id,
+      );
+    const newBotCheck =
+      newState?.channel?.members?.size === 0 ||
+      newState?.channel?.members?.find(
+        (m) => m?.user?.bot && m?.user?.id !== this.discordClient?.user?.id,
+      );
+    const liveBotCheck =
+      voiceChannel?.members?.size === 0 ||
+      voiceChannel?.members?.find(
+        (m) => m?.user?.bot && m?.user?.id !== this.discordClient?.user?.id,
+      );
     const actualMember = oldState?.member ?? newState?.member;
+    const oldStayCheck = Boolean(
+      oldState?.channel?.guild?.members?.me?.voice?.channel?.id &&
+        oldState?.channel?.id ===
+          oldState?.channel?.guild?.members?.me?.voice?.channel?.id,
+    );
 
     if (!voiceChannel?.id) return undefined;
     else if (
+      !newState?.channel?.id &&
       actualMember?.id !== this.discordClient?.user?.id &&
-      voiceChannel?.id === voiceChannel?.guild?.members?.me?.voice?.channel?.id
+      oldStayCheck
     ) {
       if (voiceChannel?.members?.size <= 2 && !watchDestroyed(queue)) {
         if (voiceChannel?.members?.size === 1 && options?.leaveOn?.empty) {
@@ -330,7 +354,7 @@ class player extends EventEmiiter {
               },
             },
           });
-        } else if (voiceChannel?.members?.size <= 2 && botCheck)
+        } else if (voiceChannel?.members?.size <= 2 && liveBotCheck)
           return await this.destroyQueue(queue?.guildId, true, {
             ...options,
             packetOptions: {
@@ -346,47 +370,64 @@ class player extends EventEmiiter {
             },
           });
         else return undefined;
-      } else if (
-        oldState?.channel?.members?.size === 1 &&
-        options?.leaveOn?.empty &&
-        !isNaN(Number(options?.leaveOn?.empty)) > 0
-      ) {
-        this.eventEmitter.emitEvent(
-          'channelEmpty',
-          'Channel is Empty and have no members in it',
-          {
-            queue,
-            channel: oldState?.channel,
-            requestedSource: queue?.current?.requestedSource,
-          },
-        );
-        return await this.destroyQueue(queue?.guildId, true, {
-          ...options,
-          packetOptions: {
-            ...options.packetOptions,
-            voiceOptions: {
-              ...options.packetOptions?.voiceOptions,
-              delayTimeout:
-                options?.leaveOn?.empty &&
-                !isNaN(Number(options?.leaveOn?.empty)) > 0
-                  ? options?.leaveOn?.empty
-                  : undefined,
-            },
-          },
-        });
       } else return undefined;
-    } else if (actualMember?.id === this.discordClient?.user?.id) {
+    } else if (
+      oldState?.channel?.id &&
+      oldStayCheck &&
+      newState?.channel?.id &&
+      actualMember?.id !== this.discordClient?.user?.id &&
+      queue?.current &&
+      (newState?.channel?.members?.size > 1 ||
+        (newState?.channel?.members?.size <= 1 && !newBotCheck))
+    )
+      await queue?.packet?.voiceMod?.connect(
+        newState.channel,
+        queue?.current?.requestedSource,
+        true,
+      );
+    else if (
+      oldState?.channel?.id &&
+      oldStayCheck &&
+      newState?.channel?.id &&
+      actualMember?.id !== this.discordClient?.user?.id &&
+      queue?.current &&
+      (oldState?.channel?.members?.size > 2 ||
+        (oldState?.channel?.members?.size <= 2 && !oldBotCheck))
+    )
+      await queue?.packet?.voiceMod?.connect(
+        oldState.channel,
+        queue?.current?.requestedSource,
+        true,
+      );
+    else if (
+      oldState?.channel?.id &&
+      oldStayCheck &&
+      newState?.channel?.id &&
+      actualMember?.id !== this.discordClient?.user?.id &&
+      queue?.current
+    )
+      return await this.destroyQueue(queue?.guildId, true, options);
+    else if (
+      oldState?.channel?.id &&
+      oldStayCheck &&
+      actualMember?.id === this.discordClient?.user?.id
+    ) {
       if (!newState?.channelId && !watchDestroyed(queue))
         return await this.destroyQueue(queue?.guildId, true, options);
       else if (
         oldState?.channelId &&
         newState?.channelId &&
         oldState?.channelId !== newState?.channelId &&
-        !watchDestroyed(queue)
+        queue?.current
       ) {
-        if (options?.packetOptions?.voiceOptions?.anyoneCanMoveClient) {
+        if (
+          options?.packetOptions?.voiceOptions?.anyoneCanMoveClient &&
+          queue?.current &&
+          (newState?.channel?.members?.size > 2 ||
+            (newState?.channel?.members?.size <= 2 && !newBotCheck))
+        ) {
           await queue?.packet?.voiceMod?.connect(
-            options?.anyoneCanMoveClient ? newState.channel : oldState?.channel,
+            newState.channel,
             queue?.current?.requestedSource,
             true,
           );
@@ -400,10 +441,21 @@ class player extends EventEmiiter {
               requestedSource: queue?.current?.requestedSource,
             },
           );
+        } else if (
+          queue?.current &&
+          (oldState?.channel?.members?.size > 1 ||
+            (oldState?.channel?.members?.size <= 1 && !newBotCheck))
+        ) {
+          await queue?.packet?.voiceMod?.connect(
+            oldState.channel,
+            queue?.current?.requestedSource,
+            true,
+          );
         } else return await this.destroyQueue(queue?.guildId, true);
         return true;
       } else return undefined;
     } else return undefined;
+    return undefined
   }
 
   get type() {
