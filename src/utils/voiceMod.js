@@ -25,7 +25,6 @@ class voiceMod {
     this.eventEmitter = queue?.eventEmitter;
     this.options = options;
     this.guild = undefined;
-    this.voiceChannel = undefined;
     this.audioPlayerSubscription = undefined;
     /**
      * Actual Audio Player for subscription and play Audio Resource
