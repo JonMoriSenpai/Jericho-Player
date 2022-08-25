@@ -58,7 +58,6 @@ class Track {
 
   patch(rawMetadata) {
     this.id = rawMetadata?.id ?? rawMetadata?.Id ?? rawMetadata?.trackId;
-    this.uniqueId = rawMetadata?.url;
     this.videoId = rawMetadata?.videoId;
     this.playlistId = rawMetadata?.albumId ?? rawMetadata?.playlistId;
     this.title = rawMetadata?.title ?? rawMetadata?.name;
@@ -102,6 +101,10 @@ class Track {
     this.patch(trackMetadata);
     if (returnStream) return await this.getStream();
     else return this;
+  }
+
+  get uniqueId() {
+    return this.raw?.url;
   }
 
   get downloaderOptions() {

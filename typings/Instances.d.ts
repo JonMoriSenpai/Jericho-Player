@@ -151,6 +151,7 @@ export class Track {
     | SelectMenuInteraction;
   public get user(): User;
   public get metadata(): object;
+  public get uniqueId(): string;
   public get type(): string | "track";
 }
 

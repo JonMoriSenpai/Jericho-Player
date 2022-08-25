@@ -72,7 +72,7 @@ class player extends EventEmiiter {
           oldState,
           newState,
           rawQueue,
-          rawQueue?.options?.voiceOptions ?? this.options?.voiceOptions,
+          rawQueue?.options ?? this.options,
         );
       else return undefined;
     });

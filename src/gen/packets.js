@@ -295,7 +295,7 @@ class packets {
     );
     let garbageIndex = 0;
     preserveTracks = parseInt(preserveTracks);
-    this.tracks?.clone()?.forEach((track, id) => {
+    this.tracks?.clone()?.map((track, id) => {
       if (
         (parseInt(trackOptions?.startIndex) || 0) <= garbageIndex &&
         garbageIndex <
@@ -304,11 +304,12 @@ class packets {
       ) {
         this.tracks?.delete(id);
         ++garbageIndex;
+        if (preserveTracks > 0) {
+          this.previousTracks.set(id, track);
+          --preserveTracks;
+        }
       }
-      if (preserveTracks > 0) {
-        this.previousTracks.set(id, track);
-        --preserveTracks;
-      }
+      return undefined;
     });
     garbageIndex = null;
     return true;
@@ -408,7 +409,7 @@ class packets {
         else if (trackIndex === 1) this.previousTracks.delete(track?.id);
         const clonedTracks = this.tracks?.clone();
         this.tracks.clear();
-        this.tracks.set(track?.url, track);
+        this.tracks.set(track?.uniqueId, track);
         clonedTracks?.forEach((track, id) => this.tracks.set(id, track));
         this.audioPlayer.stop(true);
         break;
@@ -462,7 +463,7 @@ class packets {
         },
       );
       const track = new Track(rawTrack);
-      this.tracks.set(track.url, track);
+      this.tracks.set(track.uniqueId, track);
       if (!track.playlistId)
         this.eventEmitter.emitEvent(
           'trackAdd',
