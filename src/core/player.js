@@ -59,15 +59,10 @@ class player extends EventEmiiter {
     this.eventEmitter = new eventEmitter(this, options?.eventOptions);
 
     this.discordClient.on('voiceStateUpdate', async (oldState, newState) => {
-      const rawQueue = await this.getQueue(
+      const rawQueue = this.queues.get(
         oldState?.guild?.id ?? newState?.guild?.id,
       );
-      if (
-        rawQueue &&
-        oldState?.guild?.id === rawQueue.guildId &&
-        newState?.guild?.id === rawQueue.guildId &&
-        newState?.channelId !== oldState?.channelId
-      )
+      if (rawQueue && !rawQueue?.destroyed)
         return await this.#__voiceHandler(
           oldState,
           newState,
@@ -306,7 +301,10 @@ class player extends EventEmiiter {
     const actualMember = oldState?.member ?? newState?.member;
 
     if (!voiceChannel?.id) return undefined;
-    else if (actualMember?.id !== this.discordClient?.user?.id) {
+    else if (
+      actualMember?.id !== this.discordClient?.user?.id &&
+      voiceChannel?.id === voiceChannel?.guild?.members?.me?.voice?.channel?.id
+    ) {
       if (voiceChannel?.members?.size <= 2 && !watchDestroyed(queue)) {
         if (voiceChannel?.members?.size === 1 && options?.leaveOn?.empty) {
           this.eventEmitter.emitEvent(
