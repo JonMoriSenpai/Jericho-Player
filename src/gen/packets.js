@@ -445,6 +445,7 @@ class packets {
    * @param {string} extractor Extractor Data's name for checking the source of the data
    * @param {Playlist} playlist Related Playlist Data from extractor
    * @param {Track} rawTrack Raw Track Data for Parsinga and fetched from extractors for audio Resource
+   * @param {Object} extractorData extractor Data Cached
    * @param {object} metadata Metadata Value to be repaired after getting operation object value
    * @returns {Boolean | undefined} Returns Boolean or undefined on failure or success rate!
    */
