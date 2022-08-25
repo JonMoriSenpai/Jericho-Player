@@ -81,7 +81,7 @@ class packets {
      * @type {voiceMod}
      * @readonly
      */
-    this.voiceMod = new voiceMod(this, options?.voiceOptions);
+    this.voiceMod = new voiceMod(this.queue, options?.voiceOptions);
 
     /**
      * Collection of Tracks for backend tracks usage
@@ -323,12 +323,12 @@ class packets {
   async __audioResourceMod(rawTrackData = this.tracks?.first()) {
     try {
       if (this.destroyed) return undefined;
-      let streamData = await rawTrackData?.getStream();
-      while (!streamData?.buffer) {
-        this.__cacheAndCleanTracks({ startIndex: 0, cleanTracks: 1 }, 0);
-        rawTrackData = this.tracks?.first();
-        streamData = await rawTrackData?.getStream();
-      }
+      const streamData = await rawTrackData?.getStream();
+      if (!streamData?.buffer)
+        return void this.__cacheAndCleanTracks(
+          { startIndex: 0, cleanTracks: 1 },
+          0,
+        );
 
       this.eventEmitter.emitDebug(
         'Audio Resource',
@@ -369,13 +369,11 @@ class packets {
         'Subscription Created',
         'Player Susbcription has been Created and Discord Client started playing Songs in Voice Channel',
         {
-          voiceConnection,
           streamData,
           queue: this.queue,
           packet: this,
         },
       );
-
       return true;
     } catch (errorMetadata) {
       this.eventEmitter.emitError(
@@ -401,7 +399,7 @@ class packets {
       case 'back':
         if (trackIndex >= this.previousTracks?.size) return undefined;
         let garbageIndex = 0;
-        const track = this.previousTracks?.clone()?.find((track) => {
+        const track = this.previousTracks?.clone()?.find(() => {
           ++garbageIndex;
           if (garbageIndex >= trackIndex) return true;
           else return false;
@@ -410,7 +408,7 @@ class packets {
         else if (trackIndex === 1) this.previousTracks.delete(track?.id);
         const clonedTracks = this.tracks?.clone();
         this.tracks.clear();
-        this.tracks.set(track?.id, track);
+        this.tracks.set(track?.url, track);
         clonedTracks?.forEach((track, id) => this.tracks.set(id, track));
         this.audioPlayer.stop(true);
         break;
@@ -447,10 +445,10 @@ class packets {
    * @param {Playlist} playlist Related Playlist Data from extractor
    * @param {Track} rawTrack Raw Track Data for Parsinga and fetched from extractors for audio Resource
    * @param {object} metadata Metadata Value to be repaired after getting operation object value
-   * @returns {Promise<Boolean | undefined>} Returns Boolean or undefined on failure or success rate!
+   * @returns {Boolean | undefined} Returns Boolean or undefined on failure or success rate!
    */
 
-  async __tracksMod(extractor, playlist, rawTrack, metadata) {
+  __tracksMod(extractor, playlist, rawTrack, metadata) {
     try {
       if (this.destroyed) return undefined;
       this.eventEmitter.emitDebug(
@@ -464,7 +462,7 @@ class packets {
         },
       );
       const track = new Track(rawTrack);
-      this.tracks.set(track.id, track);
+      this.tracks.set(track.url, track);
       if (!track.playlistId)
         this.eventEmitter.emitEvent(
           'trackAdd',
@@ -478,7 +476,7 @@ class packets {
             requestedSource: track?.requestedSource,
           },
         );
-      if (this.tracks?.size === 1) await this.__audioResourceMod();
+      if (this.tracks?.size === 1) this.__audioResourceMod();
       return true;
     } catch (errorMetadata) {
       this.eventEmitter.emitError(

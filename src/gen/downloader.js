@@ -61,7 +61,7 @@ class downloader {
 
     this.playdl.on(
       'track',
-      async (extractor, playlist, rawTrack, extractorData, metadata) => await this.packet.__tracksMod(extractor, playlist, rawTrack, metadata),
+      (extractor, playlist, rawTrack, extractorData, metadata) => this.packet.__tracksMod(extractor, playlist, rawTrack, metadata),
     );
     if (scanDeps('video-extractor')) {
       const { youtubedl } = require('video-extractor');
@@ -74,7 +74,7 @@ class downloader {
 
       this.youtubedl.on(
         'track',
-        async (extractor, playlist, rawTrack, extractorData, metadata) => await this.packet.__tracksMod(extractor, playlist, rawTrack, metadata),
+        (extractor, playlist, rawTrack, extractorData, metadata) => this.packet.__tracksMod(extractor, playlist, rawTrack, metadata),
       );
     }
   }
