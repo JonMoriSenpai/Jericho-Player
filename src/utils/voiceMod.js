@@ -11,6 +11,8 @@ const { invalidVoiceChannel } = require('../misc/errorEvents');
 const { voiceOptions } = require('../misc/enums');
 
 class voiceMod {
+  #voiceChannel = undefined;
+
   /**
    * @constructor
    * @param {queue} queue
@@ -22,6 +24,8 @@ class voiceMod {
     this.discordClient = queue?.discordClient;
     this.eventEmitter = queue?.eventEmitter;
     this.options = options;
+    this.guild = undefined;
+    this.voiceChannel = undefined;
     this.audioPlayerSubscription = undefined;
     /**
      * Actual Audio Player for subscription and play Audio Resource
@@ -47,11 +51,19 @@ class voiceMod {
         );
       if (this.queue.destroyed && typeof this.queue?.destroyed !== 'boolean')
         clearTimeout(this.queue?.destroyed);
+      this.guild = this.guild ?? voiceChannel?.guild;
       const rawVoiceConnection = joinVoiceChannel({
         channelId: voiceChannel?.id,
         guildId: voiceChannel?.guildId,
         adapterCreator: voiceChannel?.guild?.voiceAdapterCreator,
       });
+      if (this.voiceChannel?.id !== voiceChannel?.id) {
+        this.audioPlayerSubscription.unsubscribe();
+        this.audioPlayerSubscription = rawVoiceConnection.subscribe(
+          this.audioPlayer,
+        );
+      }
+      this.#voiceChannel = voiceChannel;
       try {
         await entersState(
           rawVoiceConnection,
@@ -172,6 +184,10 @@ class voiceMod {
       );
       return undefined;
     }
+  }
+
+  get voiceChannel() {
+    return this.#voiceChannel ?? this.guild?.members?.me?.voice?.channel;
   }
 }
 
