@@ -104,7 +104,7 @@ class Track {
   }
 
   get uniqueId() {
-    return this.raw?.url;
+    return this.raw?.track?.url?.trim();
   }
 
   get downloaderOptions() {
