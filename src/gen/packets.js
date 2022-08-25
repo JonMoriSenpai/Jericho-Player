@@ -263,7 +263,19 @@ class packets {
             requestedSource: lastTrack?.requestedSource,
           },
         );
-        await this.queue.destroy();
+        await this.player.destroyQueue(this?.guildId, true, {
+          packetOptions: {
+            ...this.options,
+            voiceOptions: {
+              ...this.options?.voiceOptions,
+              delayTimeout:
+                this.options?.voiceOptions?.leaveOn?.end &&
+                !isNaN(Number(this.options?.voiceOptions?.leaveOn?.empty)) > 0
+                  ? this.options?.voiceOptions?.leaveOn?.empty
+                  : undefined,
+            },
+          },
+        });
       }
       return undefined;
     } else return undefined;

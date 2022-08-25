@@ -129,7 +129,7 @@ class player extends EventEmiiter {
     try {
       const guild = await guildResolver(this.discordClient, guildSnowflake);
       if (!guild?.id) throw new invalidGuild();
-      const requestedQueue = await this.#__queueMods('get', guild?.id, options);
+      const requestedQueue = this.queues.has(guild?.id);
       if (!requestedQueue) throw new invalidQueue();
       this.eventEmitter.emitDebug(
         'queue Destruction',
@@ -214,14 +214,15 @@ class player extends EventEmiiter {
             this.queues.delete(guildId?.trim());
             queueMetadata = new queue(guildId, options, this);
             this.queues.set(guildId?.trim(), queueMetadata);
+
+            this.eventEmitter.emitDebug(
+              'queue Creation',
+              'Creation of Queue Class Instance for Discord Guild Requests',
+              {
+                guildId,
+              },
+            );
           }
-          this.eventEmitter.emitDebug(
-            'queue Creation',
-            'Creation of Queue Class Instance for Discord Guild Requests',
-            {
-              guildId,
-            },
-          );
           return queueMetadata;
         case 'submit':
           this.queues.set(guildId?.trim(), metadata);
@@ -343,13 +344,15 @@ class player extends EventEmiiter {
           return await this.destroyQueue(queue?.guildId, true, {
             ...options,
             packetOptions: {
-              ...options.packetOptions,
+              ...options?.packetOptions,
               voiceOptions: {
-                ...options.packetOptions?.voiceOptions,
+                ...options?.packetOptions?.voiceOptions,
                 delayTimeout:
-                  options?.leaveOn?.empty &&
-                  !isNaN(Number(options?.leaveOn?.empty)) > 0
-                    ? options?.leaveOn?.empty
+                  options?.packetOptions?.voiceOptions?.leaveOn?.empty &&
+                  !isNaN(
+                    Number(options?.packetOptions?.voiceOptions?.leaveOn?.empty),
+                  ) > 0
+                    ? options?.packetOptions?.voiceOptions?.leaveOn?.empty
                     : undefined,
               },
             },
@@ -358,13 +361,15 @@ class player extends EventEmiiter {
           return await this.destroyQueue(queue?.guildId, true, {
             ...options,
             packetOptions: {
-              ...options.packetOptions,
+              ...options?.packetOptions,
               voiceOptions: {
-                ...options.packetOptions?.voiceOptions,
+                ...options?.packetOptions?.voiceOptions,
                 delayTimeout:
-                  options?.leaveOn?.bot &&
-                  !isNaN(Number(options?.leaveOn?.bot)) > 0
-                    ? options?.leaveOn?.bot
+                  options?.packetOptions?.voiceOptions?.leaveOn?.bot &&
+                  !isNaN(
+                    Number(options?.packetOptions?.voiceOptions?.leaveOn?.bot),
+                  ) > 0
+                    ? options?.packetOptions?.voiceOptions?.leaveOn?.bot
                     : undefined,
               },
             },
@@ -455,7 +460,7 @@ class player extends EventEmiiter {
         return true;
       } else return undefined;
     } else return undefined;
-    return undefined
+    return undefined;
   }
 
   get type() {

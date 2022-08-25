@@ -9,6 +9,7 @@ const { voiceResolver, guildResolver } = require('./snowflakes');
 const queue = require('../core/queue');
 const { invalidVoiceChannel } = require('../misc/errorEvents');
 const { voiceOptions } = require('../misc/enums');
+const { watchDestroyed } = require('./miscUtils');
 
 class voiceMod {
   #voiceChannel = undefined;
@@ -98,8 +99,7 @@ class voiceMod {
           'Wrong Voice Channel Snowflake/Resolve is Detected for voiceMod.connect()',
         );
       const queue = await this.player.getQueue(guild);
-      if (queue.destroyed && typeof queue?.destroyed !== 'boolean')
-        clearTimeout(this.queue?.destroyed);
+      if (queue && !watchDestroyed(queue)) queue.destroyed = true;
       if (queue?.packet?.audioPlayer && (queue?.playing || queue?.paused))
         queue?.packet?.audioPlayer?.stop();
       if (this.audioPlayerSubscription) {
