@@ -235,8 +235,8 @@ export class queue {
   pause(): Boolean;
   unpause(): Boolean;
   setVolume(volume?: Number): Number | undefined;
-  mute(): Boolean;
-  unmute(): Boolean;
+  mute(): Promise<Boolean>;
+  unmute(): Promise<Boolean>;
   clear(tracksCount?: Number): Boolean;
   shuffle(): Boolean;
   back(tracksCount?: Number | 1): Promise<Boolean>;

@@ -332,22 +332,54 @@ class queue {
 
   /**
    * @method mute Mute the Music Player of the Queue
-   * @returns {Boolean} Returns Boolean value on success or failure
+   * @returns {Promise<Boolean>} Returns Boolean value on success or failure
    */
 
-  mute() {
-    const response = this.setVolume(0);
+  async mute() {
+    if (watchDestroyed(this)) throw new destroyedQueue();
+    else if (!this.working) throw new notPlaying();
+    else if (!this.current) throw new notPlaying();
+    let response;
+    if (this.options?.packetOptions?.noMemoryLeakMode) {
+      const guild =
+        this.discordClient?.guilds?.cache?.get(this.guildId) ??
+        (await this.discordClient?.guilds
+          ?.fetch(this.guildId)
+          ?.catch(() => undefined));
+      if (guild?.members?.me?.voice?.selfMute) return undefined;
+      else
+        response = await guild?.members?.me?.voice
+          ?.setMute(true)
+          ?.catch(() => undefined);
+    } else if (!this.options?.packetOptions?.noMemoryLeakMode)
+      response = this.setVolume(0);
     if (response || response === 0) return true;
     else return false;
   }
 
   /**
    * @method unmute Un-Mute the Music Player of the Queue
-   * @returns {Boolean} Returns Boolean value on success or failure
+   * @returns {Promise<Boolean>} Returns Boolean value on success or failure
    */
 
-  unmute() {
-    const response = this.setVolume(100);
+  async unmute() {
+    if (watchDestroyed(this)) throw new destroyedQueue();
+    else if (!this.working) throw new notPlaying();
+    else if (!this.current) throw new notPlaying();
+    let response;
+    if (this.options?.packetOptions?.noMemoryLeakMode) {
+      const guild =
+        this.discordClient?.guilds?.cache?.get(this.guildId) ??
+        (await this.discordClient?.guilds
+          ?.fetch(this.guildId)
+          ?.catch(() => undefined));
+      if (!guild?.members?.me?.voice?.selfMute) return undefined;
+      else
+        response = await guild?.members?.me?.voice
+          ?.setMute(false)
+          ?.catch(() => undefined);
+    } else if (!this.options?.packetOptions?.noMemoryLeakMode)
+      response = this.setVolume(100);
     if (response) return true;
     else return false;
   }
