@@ -56,7 +56,7 @@
     "fs": "^0.0.1-security",
     "is-url": "^1.2.4",
     "path": "^0.12.7",
-    "playdl-music-extractor": "^3.0.12",
+    "playdl-music-extractor": "^3.0.13",
     "pretty-mslux": "^5.0.0",
     "prism-media": "^1.3.4",
     "youtube-suggest-gen": "^1.0.7"

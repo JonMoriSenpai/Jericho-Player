@@ -16,6 +16,7 @@ class Playlist {
     if (!rawMetadata || (rawMetadata && rawMetadata instanceof Boolean))
       rawMetadata = {};
     this.id = rawMetadata?.id ?? rawMetadata?.Id;
+    this.uniqueId = rawMetadata?.uniqueId ?? rawMetadata?.url;
     this.name = rawMetadata?.title ?? rawMetadata?.name;
     this.url = rawMetadata?.url;
     this.thumbnail = rawMetadata?.thumbnail;
@@ -66,8 +67,9 @@ class Track {
 
   patch(rawMetadata) {
     this.id = rawMetadata?.id ?? rawMetadata?.Id ?? rawMetadata?.trackId;
+    this.uniqueId = rawMetadata?.uniqueId ?? rawMetadata?.url;
     this.videoId = rawMetadata?.videoId;
-    this.playlistId = rawMetadata?.albumId ?? rawMetadata?.playlistId;
+    this.playlist = rawMetadata?.album ?? rawMetadata?.playlist;
     this.title = rawMetadata?.title ?? rawMetadata?.name;
     this.url = rawMetadata?.url;
     this.description = rawMetadata?.description;
@@ -109,16 +111,16 @@ class Track {
     else return this;
   }
 
-  get uniqueId() {
-    return this.raw?.track?.url?.trim();
-  }
-
   get downloaderOptions() {
     return this.metadata?.downloaderOptions;
   }
 
   get requestedSource() {
     return this.metadata?.requestedSource;
+  }
+
+  get playlistId() {
+    return this.playlist?.id;
   }
 
   get metadata() {

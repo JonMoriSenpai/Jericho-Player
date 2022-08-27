@@ -6,7 +6,7 @@ import {
   ButtonInteraction,
   SelectMenuInteraction,
 } from "discord.js";
-import { extractorData } from "playdl-music-extractor";
+import { Album, extractorData } from "playdl-music-extractor";
 
 export type eventOptions = {
   ignoreCrash?: Boolean | true;
@@ -86,6 +86,7 @@ export type TimeStamp = {
 
 export class Playlist {
   public readonly id: string | number;
+  public readonly unqiueId: string | number;
   public readonly name: string;
   public readonly url: string;
   public readonly thumbnail: string;
@@ -116,8 +117,9 @@ export class Playlist {
 }
 export class Track {
   public readonly id: string | number;
+  public readonly unqiueId: string | number;
   public readonly videoId: string | number;
-  public readonly playlistId: string | number | undefined;
+  public readonly playlist: Album | Boolean;
   public readonly title: string;
   public readonly url: string;
   public readonly description: string;
@@ -150,8 +152,8 @@ export class Track {
     | ButtonInteraction
     | SelectMenuInteraction;
   public get user(): User;
+  public get playlistId(): string | undefined;
   public get metadata(): object;
-  public get uniqueId(): string;
   public get type(): string | "track";
 }
 
