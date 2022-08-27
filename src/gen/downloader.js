@@ -63,6 +63,11 @@ class downloader {
       'track',
       (extractor, playlist, rawTrack, extractorData, metadata) => this.packet.__tracksMod(extractor, playlist, rawTrack, metadata),
     );
+    this.playdl.on('tracks', (tracks, playlist, extractorData, metadata) => this.packet.extractorDataManager(
+      { rawTracks: tracks, playlist },
+      'parseTracks',
+    ));
+
     if (scanDeps('video-extractor')) {
       const { youtubedl } = require('video-extractor');
       this.youtubedl = new youtubedl(options);
@@ -76,6 +81,11 @@ class downloader {
         'track',
         (extractor, playlist, rawTrack, extractorData, metadata) => this.packet.__tracksMod(extractor, playlist, rawTrack, metadata),
       );
+
+      this.youtubedl.on('tracks', (tracks, playlist, extractorData, metadata) => this.packet.extractorDataManager(
+        { rawTracks: tracks, playlist },
+        'parseTracks',
+      ));
     }
   }
 
@@ -112,7 +122,7 @@ class downloader {
         downloaderOptions: options,
       },
     );
-    const extractorData = await this.playdl.exec(rawQuery, {
+    return await this.playdl.exec(rawQuery, {
       ...options,
       playersCompatibility: true,
       waitForPromise: false,
@@ -126,11 +136,6 @@ class downloader {
         },
       },
     });
-    extractorData.on('tracks', (tracks, playlist, metadata) => this.packet.extractorDataManager(
-      { rawTracks: tracks, playlist },
-      'parseTracks',
-    ));
-    return true;
   }
 
   /**
@@ -180,10 +185,6 @@ class downloader {
         streamDownload: true,
       });
     } else return undefined;
-    extractorData.on('tracks', (tracks, playlist, metadata) => this.packet.extractorDataManager(
-      { rawTracks: tracks, playlist },
-      'parseTracks',
-    ));
     return true;
   }
 

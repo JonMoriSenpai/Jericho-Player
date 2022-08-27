@@ -264,6 +264,7 @@ class player extends EventEmiiter {
                 ? parseInt(options?.packetOptions?.voiceOptions?.delayTimeout)
                 : undefined,
             );
+          this.queues.set(guildId?.trim(), undefined);
           this.queues.delete(guildId?.trim());
           return true;
         default:

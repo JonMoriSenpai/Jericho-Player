@@ -1,11 +1,12 @@
 const { AudioResource } = require('@discordjs/voice');
+const trackModel = require('playdl-music-extractor').Track;
 
 class Playlist {
-  #__raw = undefined;
+  #raw = undefined;
 
   constructor(rawMetadata) {
-    this.#__raw = {
-      ...rawMetadata,
+    this.#raw = {
+      ...({ ...rawMetadata }),
       metadata: rawMetadata?.metadata?.__privateCaches,
     };
     this.patch(rawMetadata);
@@ -21,7 +22,7 @@ class Playlist {
     this.views = rawMetadata?.views;
     this.tracksCount = rawMetadata?.tracksCount;
     this.author = rawMetadata?.author ?? rawMetadata?.channel;
-    this.extractorData = rawMetadata?.extractorData;
+    this.extractorData = rawMetadata?.queue;
   }
 
   get requestedSource() {
@@ -29,7 +30,7 @@ class Playlist {
   }
 
   get metadata() {
-    return this.#__raw?.metadata;
+    return this.#raw?.metadata;
   }
 
   get user() {
@@ -41,20 +42,27 @@ class Playlist {
   }
 
   get raw() {
-    return this.#__raw;
+    return this.#raw;
   }
 }
 
 class Track {
-  #__raw = undefined;
+  #raw = undefined;
 
+  /**
+   * @param {trackModel} rawMetadata
+   */
   constructor(rawMetadata) {
-    this.#__raw = {
+    this.#raw = {
       track: rawMetadata,
       metadata: rawMetadata?.metadata?.__privateCaches,
     };
     this.patch(rawMetadata);
   }
+
+  /**
+   * @param {trackModel} rawMetadata
+   */
 
   patch(rawMetadata) {
     this.id = rawMetadata?.id ?? rawMetadata?.Id ?? rawMetadata?.trackId;
@@ -78,7 +86,7 @@ class Track {
       rawMetadata?.album || rawMetadata?.playlist
         ? new Playlist(rawMetadata?.album ?? rawMetadata?.playlist)
         : undefined;
-    this.extractorData = rawMetadata?.extractorData;
+    this.extractorData = rawMetadata?.queue;
   }
 
   async getStream() {
@@ -116,7 +124,7 @@ class Track {
   }
 
   get metadata() {
-    return this.#__raw?.metadata;
+    return this.#raw?.metadata;
   }
 
   get user() {
@@ -128,7 +136,7 @@ class Track {
   }
 
   set audioResource(resource) {
-    this.#__raw.audioResource = resource;
+    this.#raw.audioResource = resource;
   }
 
   /**
@@ -139,7 +147,7 @@ class Track {
   }
 
   get raw() {
-    return this.#__raw;
+    return this.#raw;
   }
 }
 
@@ -185,7 +193,8 @@ const packetOptions = {
   downloaderOptions,
   voiceOptions,
   songQueryFilters: ['all'],
-  noMemoryLeakMode: false,
+  noMemoryLeakMode: true,
+  autoSweeper: ['previoustracks', 'tracks', 'extractordata'],
 };
 
 const Options = {

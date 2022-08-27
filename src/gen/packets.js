@@ -112,6 +112,9 @@ class packets {
      */
     this.downloader = new downloader(this, options?.downloaderOptions);
 
+    if (this?.options?.autoSweeper)
+      setInterval(() => this.sweep(), 5 * 60 * 1000);
+
     this.audioPlayer.on(
       'stateChange',
       async (oldState, newState) => await this.__audioPlayerStateMod(oldState, newState),
@@ -228,6 +231,8 @@ class packets {
           requestedSource: this.tracks?.first()?.requestedSource,
         },
       );
+
+      // Cleaning of Tracks and its Properties
       this.__cacheAndCleanTracks();
 
       if (this.tracks?.size > 0) return await this.__audioResourceMod();
@@ -263,7 +268,7 @@ class packets {
             requestedSource: lastTrack?.requestedSource,
           },
         );
-        await this.player.destroyQueue(this?.guildId, true, {
+        return void (await this.player.destroyQueue(this?.guildId, true, {
           packetOptions: {
             ...this.options,
             voiceOptions: {
@@ -275,7 +280,7 @@ class packets {
                   : undefined,
             },
           },
-        });
+        }));
       }
       return undefined;
     } else return undefined;
@@ -306,13 +311,14 @@ class packets {
       },
     );
     preserveTracks = parseInt(preserveTracks);
-    Array.from(this.tracks?.values())?.map((track, index) => {
+    let garbage = Array.from(this.tracks?.values())?.map((track, index) => {
       if (
         (parseInt(trackOptions?.startIndex) || 0) <= index &&
         index <
           (parseInt(trackOptions?.startIndex) || 0) +
             (parseInt(trackOptions?.cleanTracks) || 0)
       ) {
+        this.tracks?.set(track?.uniqueId, undefined);
         this.tracks?.delete(track?.uniqueId);
         if (preserveTracks > 0 && preserveTracks >= index + 1) {
           this.previousTracks.set(track?.uniqueId, track);
@@ -321,6 +327,7 @@ class packets {
       }
       return undefined;
     });
+    garbage = null;
     return true;
   }
 
@@ -513,11 +520,33 @@ class packets {
     this.extractorDataManager();
     this.tracks?.clear();
     this.previousTracks?.clear();
+    this.tracks = null;
+    this.previousTracks = null;
     delete this.downloader;
     delete this.voiceMod;
     delete this.previousTracks;
     delete this.tracks;
     return true;
+  }
+
+  /**
+   * @method sweep Sweeper Method for sweeping previousTracks
+   */
+  sweep() {
+    switch (this.options?.autoSweeper) {
+      case 'previoustracks':
+        return void this.previousTracks?.sweep(
+          (t) => !!this?.extractorData?.destroyed,
+        );
+      case 'tracks':
+        return void this.tracks?.sweep(
+          (t) => !!t?.extractorData?.destroyed,
+        );
+      case 'extradata':
+        return void this.extractorDatas?.sweep((e) => !!e?.destroyed);
+      default:
+        return undefined;
+    }
   }
 
   /**
@@ -533,7 +562,12 @@ class packets {
     switch (status?.toLowerCase()?.trim()) {
       case 'destroy':
         if (!this.extractorDatas?.size) return undefined;
-        else this.extractorDatas?.map((d) => d?.destroy(true));
+        else
+          this.extractorDatas?.forEach((d, id) => {
+            d?.destroy();
+            this.extractorDatas.set(id, undefined);
+            this.extractorDatas.delete(id);
+          });
         this.extractorDatas.clear();
         break;
       case 'parsetracks':
@@ -545,7 +579,7 @@ class packets {
           )
         )
           return undefined;
-        const parsedTracks =
+        let parsedTracks =
           rawData?.rawTracks?.map((track) => {
             if (this.tracks.has(track?.url)) return this.tracks.get(track.url);
             else if (this.previousTracks.has(track?.url))
@@ -568,6 +602,7 @@ class packets {
               ?.requestedSource,
           },
         );
+        parsedTracks = null;
         break;
       case 'cache':
         if (!rawData?.extractorData?.id) return undefined;
