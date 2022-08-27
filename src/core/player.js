@@ -62,11 +62,7 @@ class player extends EventEmiiter {
       const rawQueue = this.queues.get(
         oldState?.guild?.id ?? newState?.guild?.id,
       );
-      if (
-        rawQueue &&
-        !rawQueue?.destroyed &&
-        oldState?.channel?.id !== newState?.channel?.id
-      )
+      if (rawQueue && oldState?.channel?.id !== newState?.channel?.id)
         return await this.#__voiceHandler(
           oldState,
           newState,
@@ -329,7 +325,8 @@ class player extends EventEmiiter {
     else if (
       !newState?.channel?.id &&
       actualMember?.id !== this.discordClient?.user?.id &&
-      oldStayCheck
+      oldStayCheck &&
+      !watchDestroyed(queue)
     ) {
       if (voiceChannel?.members?.size <= 2 && !watchDestroyed(queue)) {
         if (voiceChannel?.members?.size === 1 && options?.leaveOn?.empty) {
@@ -384,7 +381,8 @@ class player extends EventEmiiter {
       actualMember?.id !== this.discordClient?.user?.id &&
       queue?.current &&
       (newState?.channel?.members?.size > 1 ||
-        (newState?.channel?.members?.size <= 1 && !newBotCheck))
+        (newState?.channel?.members?.size <= 1 && !newBotCheck)) &&
+      !watchDestroyed(queue)
     )
       await queue?.packet?.voiceMod?.connect(
         newState.channel,
@@ -398,7 +396,8 @@ class player extends EventEmiiter {
       actualMember?.id !== this.discordClient?.user?.id &&
       queue?.current &&
       (oldState?.channel?.members?.size > 2 ||
-        (oldState?.channel?.members?.size <= 2 && !oldBotCheck))
+        (oldState?.channel?.members?.size <= 2 && !oldBotCheck)) &&
+      !watchDestroyed(queue)
     )
       await queue?.packet?.voiceMod?.connect(
         oldState.channel,
@@ -410,13 +409,15 @@ class player extends EventEmiiter {
       oldStayCheck &&
       newState?.channel?.id &&
       actualMember?.id !== this.discordClient?.user?.id &&
-      queue?.current
+      queue?.current &&
+      !watchDestroyed(queue)
     )
       return await this.destroyQueue(queue?.guildId, true, options);
     else if (
       oldState?.channel?.id &&
       oldStayCheck &&
-      actualMember?.id === this.discordClient?.user?.id
+      actualMember?.id === this.discordClient?.user?.id &&
+      !watchDestroyed(queue)
     ) {
       if (!newState?.channelId && !watchDestroyed(queue))
         return await this.destroyQueue(queue?.guildId, true, options);

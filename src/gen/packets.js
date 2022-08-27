@@ -533,20 +533,14 @@ class packets {
    * @method sweep Sweeper Method for sweeping previousTracks
    */
   sweep() {
-    switch (this.options?.autoSweeper) {
-      case 'previoustracks':
-        return void this.previousTracks?.sweep(
-          (t) => !!this?.extractorData?.destroyed,
-        );
-      case 'tracks':
-        return void this.tracks?.sweep(
-          (t) => !!t?.extractorData?.destroyed,
-        );
-      case 'extradata':
-        return void this.extractorDatas?.sweep((e) => !!e?.destroyed);
-      default:
-        return undefined;
-    }
+    if (this.options?.autoSweeper?.includes('previousTracks'))
+      void this.previousTracks?.sweep((t) => !!this?.extractorData?.destroyed);
+    else if (this.options?.autoSweeper?.includes('tracks'))
+      void this.tracks?.sweep((t) => !!t?.extractorData?.destroyed);
+    else if (this.options?.autoSweeper?.includes('extractor'))
+      void this.extractorDatas?.sweep((e) => !!e?.destroyed);
+    else return undefined;
+    return true;
   }
 
   /**

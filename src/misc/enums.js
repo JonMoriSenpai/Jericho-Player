@@ -6,7 +6,7 @@ class Playlist {
 
   constructor(rawMetadata) {
     this.#raw = {
-      ...({ ...rawMetadata }),
+      ...{ ...rawMetadata },
       metadata: rawMetadata?.metadata?.__privateCaches,
     };
     this.patch(rawMetadata);
@@ -91,9 +91,7 @@ class Track {
 
   async getStream() {
     if (!this.raw?.track) return undefined;
-    else
-      return (await this.raw?.track?.getStream()?.catch(() => undefined))
-        ?.stream;
+    else return await this.raw?.track?.getStream()?.catch(() => undefined);
   }
 
   async __refresh(returnStream = true) {
