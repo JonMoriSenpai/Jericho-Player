@@ -37,7 +37,10 @@
   },
   "dependencies": {
     "eris": "github:abalabahaha/eris#dev",
-    "typescript": "^4.9.3"
+    "events": "^3.3.0",
+    "linkifyjs": "^4.0.2",
+    "node-youtube-music": "^0.8.3",
+    "play-dl": "^1.9.6"
   },
   "directories": {
     "example": "example"
@@ -73,5 +76,12 @@
     "youtube-framework",
     "discord-music-player",
     "discord-player"
-  ]
+  ],
+  "devDependencies": {
+    "@types/events": "^3.0.0",
+    "@types/string-similarity": "^4.0.0",
+    "node": "link:@types\\node",
+    "tslib": "^2.4.1",
+    "typescript": "^4.9.3"
+  }
 }
