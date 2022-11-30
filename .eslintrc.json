@@ -46,6 +46,7 @@
     "max-classes-per-file": "off",
     "no-case-declarations": "off",
     "no-unsafe-optional-chaining": "off",
-    "import/no-extraneous-dependencies": "off"
+    "import/no-extraneous-dependencies": "off",
+    "no-await-in-loop": "off"
   }
 }
