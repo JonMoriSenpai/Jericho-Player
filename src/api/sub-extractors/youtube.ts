@@ -12,25 +12,37 @@ import extractor from "../extractor";
 
 export default class youtubeEx {
   static baseRegex = {
-    ytPlaylist: (url: string) => /^.*(youtu.be\/|list=)([^#\&\?]*).*/.test(url),
+    playlist: (url: string) => /^.*(youtu.be\/|list=)([^#\&\?]*).*/.test(url),
+    youtube: (url: string) =>
+      /(?:http?s?:\/\/)?(?:www.)?(?:m.)?(?:music.)?youtu(?:\.?be)(?:\.com)?(?:(?:\w*.?:\/\/)?\w*.?\w*-?.?\w*\/(?:embed|e|v|watch|.*\/)?\??(?:feature=\w*\.?\w*)?&?(?:v=)?\/?)([\w\d_-]{11})(?:\S+)?/gm.test(
+        url
+      ),
+    video: (url: string) =>
+      Boolean(
+        url.match(
+          "^(?:(?:https?):)?(?://)?[^/]*(?:youtube(?:-nocookie)?.com|youtu.be).*[=/]([-\\w]{11})(?:\\?|=|&|$)"
+        )?.[1]
+      ),
   };
 
-  static async getNonApi(url: string, meta?: any, ext?: extractor) {
-    if (!isUrl(url))
-      return await search(url, { limit: 1, source: { youtube: "video" } })
+  static async getNonApi(query: string, ext?: extractor, meta?: any) {
+    if (!isUrl(query))
+      return await search(query, { limit: 1, source: { youtube: "video" } })
         .then((tRs) => tRs.shift())
-        .then((tR) => youtubeEx.pYoutubeTrack(tR, meta, ext));
-    else if (youtubeEx.baseRegex.ytPlaylist(url))
-      return await playlist_info(url)
-        .then((pL) => youtubeEx.pYoutubeList(pL, meta, ext))
+        .then((tR) => youtubeEx.pYoutubeTrack(tR, ext, meta));
+    else if (!youtubeEx.baseRegex.youtube(query)) return undefined;
+    else if (youtubeEx.baseRegex.playlist(query))
+      return await playlist_info(query)
+        .then((pL) => youtubeEx.pYoutubeList(pL, ext, meta))
         .catch(() => undefined);
-    else
-      return await video_basic_info(url)
-        .then((tR) => youtubeEx.pYoutubeTrack(tR.video_details, meta, ext))
+    else if (youtubeEx.baseRegex.video(query))
+      return await video_basic_info(query)
+        .then((tR) => youtubeEx.pYoutubeTrack(tR.video_details, ext, meta))
         .catch(() => undefined);
+    else return undefined;
   }
 
-  static pYoutubeTrack(json: YouTubeVideo, meta?: any, ext?: extractor): Track {
+  static pYoutubeTrack(json: YouTubeVideo, ext?: extractor, meta?: any): Track {
     let track = new Track(
       {
         id: json.id,
@@ -67,8 +79,8 @@ export default class youtubeEx {
 
   static async pYoutubeList(
     json: YouTubePlayList,
-    meta?: any,
-    ext?: extractor
+    ext?: extractor,
+    meta?: any
   ): Promise<Playlist> {
     let tracks = await json.all_videos(),
       playlist = new Playlist(

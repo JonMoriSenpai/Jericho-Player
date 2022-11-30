@@ -6,7 +6,6 @@ import Track from "../../classes/track";
 import { spotifyToken } from "../../constants/dyno-json";
 import { isUrl, ms2hu } from "../../utils/baseUtils";
 import extractor from "../extractor";
-import ytMusicEx from "./yt-music";
 
 const { getData } = spotifyUrlInfo(isoFetch);
 
@@ -23,7 +22,8 @@ export default class spotifyEx {
     meta?: any
   ): Promise<Track | Playlist> {
     try {
-      if (!isUrl(query)) return await spotifyEx.apiTrack(query, ext, meta);
+      if (!isUrl(query))
+        return await spotifyEx.apiSearchTrack(query, ext, meta);
       else if (!spotifyEx.regex.url.test(query)) return undefined;
       else
         return await getData(query).then((sR: any) => {
@@ -118,7 +118,7 @@ export default class spotifyEx {
     return playlist;
   }
 
-  static async apiTrack(
+  static async apiSearchTrack(
     query: string,
     ext?: extractor,
     meta: any = {}
@@ -127,24 +127,6 @@ export default class spotifyEx {
     let track = await spotifyEx.apiClient
       .searchTracks(encodeURIComponent(query), { limit: 1 })
       .then((data) => data?.body?.tracks?.items?.[0])
-      .then(async (rqTrack) => {
-        if (
-          !(rqTrack?.artists?.[0]?.name && rqTrack?.name && rqTrack.duration_ms)
-        )
-          return undefined;
-        let streamUrl = await ytMusicEx
-          .spSearch(
-            rqTrack?.name,
-            `${rqTrack.duration_ms}`,
-            rqTrack.artists?.[0]?.name
-          )
-          .then((obj) => obj?.url);
-        if (!streamUrl) return undefined;
-        return {
-          ...rqTrack,
-          streamUrl,
-        };
-      })
       .then(
         (tR) =>
           new Track(
@@ -164,7 +146,7 @@ export default class spotifyEx {
                 popilarity: tR.popularity,
               },
             },
-            { ...meta, streamUrl: tR?.streamUrl }
+            meta
           )
       );
     if (ext) ext.emit("track", track);

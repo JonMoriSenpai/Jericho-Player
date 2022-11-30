@@ -4,7 +4,7 @@ import { isUrl, ms2hu } from "../../utils/baseUtils";
 import extractor from "../extractor";
 
 export type httpMetadataType = {
-  name?: string;
+  title?: string;
   id?: string;
   url?: string;
   description?: string;
@@ -16,34 +16,27 @@ export type httpMetadataType = {
 };
 
 export default class httpUriEx {
+  static regex = {
+    url: /https?:\/\//gm,
+    audio: /^(https?|http):\/\/(www.)?(.*?)\.(mp3)$/gm,
+  };
+
   static async getHttp(
     url: string,
     ext?: extractor,
     meta?: any
   ): Promise<Track> {
     if (!isUrl(url)) return undefined;
-    else
+    else if (httpUriEx.regex.audio.test(url))
       return await httpUriEx
         .getMetadata(url)
-        .then(
-          (data) =>
-            new Track(
-              {
-                id: data?.id,
-                title: data?.name,
-                description: data?.description,
-                url: data?.url,
-                author: data?.author,
-                duration: data?.duration,
-              },
-              meta
-            )
-        )
+        .then((data) => new Track(data, meta))
         .then((track) => {
           if (ext) ext.emit("track", track);
           return track;
         })
         ?.catch(() => undefined);
+    else return undefined;
   }
 
   static async getMetadata(url: string): Promise<httpMetadataType> {
@@ -57,12 +50,12 @@ export default class httpUriEx {
         .join("\n");
     };
 
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       fluentFfmpeg.ffprobe(url.trim(), (err, data) => {
-        if (err) reject();
+        if (err) resolve(undefined);
         else if (data?.format) {
           resolve({
-            name: data?.format?.filename?.split("/").pop(),
+            title: data?.format?.filename?.split("/").pop(),
             id:
               data?.format?.format_name +
               "_" +
@@ -78,7 +71,7 @@ export default class httpUriEx {
               ms: data?.format?.duration * 1000,
             },
           });
-        }
+        } else resolve(undefined);
       });
     });
   }

@@ -44,6 +44,7 @@
     "linkifyjs": "^4.0.2",
     "node-youtube-music": "^0.8.3",
     "play-dl": "^1.9.6",
+    "scdl-core": "^1.1.0",
     "spotify-url-info": "^3.1.9",
     "spotify-web-api-node": "^5.0.2"
   },
