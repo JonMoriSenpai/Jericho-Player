@@ -1,20 +1,28 @@
 import Track from "./track";
+
 export default class Playlist {
-  id: string;
-  title: string;
-  description: string;
-  image: string;
-  url: string;
+  readonly id: string;
+  readonly type: string = "playlist";
+  readonly title: string;
+  readonly views?: number;
+  readonly image?: string;
+  readonly url: string;
+  readonly author?: {
+    name?: string;
+    url?: string;
+    id?: string;
+    image?: string;
+  };
+  readonly extractor: string;
   tracks: Array<Track>;
   #meta: any;
 
-  constructor(trackResolve: Record<string, any>, meta?: any) {
-    Object.assign(this, trackResolve);
+  constructor(playListResolve: Record<string, any>, meta?: any) {
+    Object.assign(this, playListResolve);
     this.#meta = meta;
   }
-
-  static fromYoutube(json: Record<string, any>, meta?: any) {
-    if (!json.youtubeId) return undefined;
-    return new Playlist({}, meta);
+  
+  get tracksCount(): number {
+    return this.tracks.length;
   }
 }

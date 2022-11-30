@@ -24,7 +24,7 @@
     "semantic-release": "semantic-release --branches main",
     "commit:push": "git add . && npm run commit && git push",
     "docs": "typedoc --cname jericho-player.js.org --name Jericho-Player --includeVersion --readme --hideGenerator --out docs typings/index.d.ts",
-    "bot": "node example/src"
+    "test": "node test/noden.js"
   },
   "config": {
     "commitizen": {
@@ -38,9 +38,14 @@
   "dependencies": {
     "eris": "github:abalabahaha/eris#dev",
     "events": "^3.3.0",
+    "ffmpeg-static": "^5.1.0",
+    "fluent-ffmpeg": "^2.1.2",
+    "isomorphic-unfetch": "^3.1.0",
     "linkifyjs": "^4.0.2",
     "node-youtube-music": "^0.8.3",
-    "play-dl": "^1.9.6"
+    "play-dl": "^1.9.6",
+    "spotify-url-info": "^3.1.9",
+    "spotify-web-api-node": "^5.0.2"
   },
   "directories": {
     "example": "example"
@@ -79,8 +84,9 @@
   ],
   "devDependencies": {
     "@types/events": "^3.0.0",
-    "@types/string-similarity": "^4.0.0",
-    "node": "link:@types\\node",
+    "@types/fluent-ffmpeg": "^2.1.20",
+    "@types/node": "^18.11.9",
+    "@types/spotify-web-api-node": "^5.0.7",
     "tslib": "^2.4.1",
     "typescript": "^4.9.3"
   }

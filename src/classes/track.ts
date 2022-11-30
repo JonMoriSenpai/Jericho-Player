@@ -1,12 +1,21 @@
 export default class Track {
-  id: string;
-  title: string;
+  readonly id: string;
+  readonly title: string;
+  readonly views: number;
   description?: string;
-  image?: string;
-  url: string;
-  author: { name?: string; url?: string; id?: string };
-  album: { name?: string };
-  extractor: string;
+  readonly type: string = "track";
+  readonly image?: string;
+  readonly url: string;
+  readonly duration?: { hR?: string; ms?: number };
+  readonly author?: {
+    name?: string;
+    url?: string;
+    id?: string;
+    image?: string;
+  };
+  readonly isLive?: boolean;
+  readonly ratings?: { like?: number; popilarity?: number };
+  readonly extractor?: string;
   #meta: any;
 
   constructor(trackResolve: Record<string, any>, meta?: any) {
@@ -14,8 +23,5 @@ export default class Track {
     this.#meta = meta;
   }
 
-  static fromYoutube(json: Record<string, any>, meta?: any) {
-    if (!json.youtubeId) return undefined;
-    return new Track({}, meta);
-  }
+  async download(extractor: string = this.extractor) {}
 }

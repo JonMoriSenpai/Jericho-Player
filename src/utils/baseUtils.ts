@@ -14,3 +14,13 @@ export function hu2ms(time: string) {
     0
   );
 }
+
+export function ms2hu(time: string | number): string {
+  if (!(time && !isNaN(Number(time)))) return undefined;
+  else if (typeof time === "string") time = parseInt(time as string);
+  let huTime = new Date(time).toISOString().slice(11, 19);
+  return huTime
+    .split(":")
+    .filter((t) => parseInt(t) > 0)
+    .join(":");
+}
